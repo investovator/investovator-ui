@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  A JASA implementation of the model described in the following paper:
+
+		Iori, G., Chiarella, C., November 2002. 
+		A Simulation Analysis of the Microstructure of Double Auction Markets. 
+		Quantitative Finance 2, 346-353.
+		http://ssrn.com/abstract=841608
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<import resource="model-goog.xml"/>
+	<import resource="reports-goog.xml" />
+    <import resource="model-ibm.xml"/>
+    <import resource="report-ibm.xml"/>
+
+    <context:component-scan
+            base-package="org.investovator" />
+
+    <bean id="simulationManager" class="org.investovator.multiasset.simulation.MultiAssetSimulationManager"
+          scope="singleton">
+        <property name="simulations">
+            <list>
+                <ref bean="googController"/>
+                <ref bean="ibmController"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="exchange" class="org.investovator.exchange.Exchange" scope="singleton">
+        <property name="stocks">
+            <list>
+                <ref bean="google"/>
+                <ref bean="ibm" />
+            </list>
+        </property>
+    </bean>
+
+	<bean id="fileNamePrefix" class="net.sourceforge.jabm.util.MutableStringWrapper"
+		scope="singleton">
+		<constructor-arg value="data/" />
+	</bean>
+</beans>

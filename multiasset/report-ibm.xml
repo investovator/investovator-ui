@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  A JASA implementation of the model described in the following paper:
+
+		Iori, G., Chiarella, C., November 2002.
+		A Simulation Analysis of the Microstructure of Double Auction Markets.
+		Quantitative Finance 2, 346-353.
+		http://ssrn.com/abstract=841608
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- A graphical display of the current state of the order book -->
+    <bean id="orderBookViewIBM" class="net.sourceforge.jasa.view.OrderBookView">
+        <property name="maxDepth" value="20"/>
+    </bean>
+
+    <!-- A report tracking transaction prices.  Every time a TransactionExecutedEvent is received,
+            the price of the transaction is recorded. -->
+    <bean id="transactionPriceTimeSeriesReportIBM" class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jasa.event.TransactionExecutedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="transactionPriceTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="currentPriceTimeSeriesReportIBM" class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jabm.event.InteractionsFinishedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="currentPriceTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="gbmPriceTimeSeriesReportIBM" class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jabm.event.InteractionsFinishedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="gbmPriceTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="spreadTimeSeriesReportIBM" class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jabm.event.RoundFinishedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="spreadTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="equilibriumPriceTimeSeriesReportIBM"
+          class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jabm.event.InteractionsFinishedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="equilibriumPriceTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="svwapTimeSeriesReportIBM" class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jasa.event.TransactionExecutedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="svwapTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="midPriceTimeSeriesReportIBM" class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jasa.event.OrderPlacedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="midPriceTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="orderFlowTimeSeriesReportIBM" class="net.sourceforge.jabm.report.SimEventReport">
+        <property name="eventPrototype">
+            <bean class="net.sourceforge.jasa.event.OrderPlacedEvent">
+            </bean>
+        </property>
+        <property name="reportVariables" ref="orderFlowTimeSeriesIBM"/>
+    </bean>
+
+    <bean id="priceTimeSeriesIBM" class="net.sourceforge.jabm.report.CombiSeriesReportVariables">
+        <property name="seriesList">
+            <list>
+                <ref bean="transactionPriceTimeSeriesIBM"/>
+                <!--<ref bean="midPriceTimeSeriesIBM"/>-->
+                <!--<ref bean="orderFlowTimeSeriesIBM"/>-->
+                <ref bean="gbmPriceTimeSeriesIBM"/>
+                <ref bean="currentPriceTimeSeriesIBM"/>
+                <ref bean="equilibriumPriceTimeSeriesIBM"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="orderFlowTimeSeriesIBM" class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="orderFlowReportVariablesIBM" />
+    </bean>
+
+    <bean id="transactionPriceCSVReportIBM"
+          class="net.sourceforge.jabm.report.InteractionIntervalReport">
+        <property name="reportVariables" ref="transactionPriceCSVReportVariablesIBM"/>
+        <property name="sampleInterval" value="1"/>
+    </bean>
+
+    <bean id="transactionPriceCSVReportVariablesIBM"
+          class="net.sourceforge.jabm.report.CSVReportVariables">
+        <property name="reportVariables" ref="transactionPriceReportVariablesIBM"/>
+        <property name="fileNamePrefix" ref="fileNamePrefix" />
+        <property name="fileNameSuffix" value="transprice - IBM" />
+        <property name="fileNameExtension" value=".csv" />
+        <property name="passThrough" value="true" />
+    </bean>
+
+    <bean id="gbmPriceCSVReportVariablesIBM"
+          class="net.sourceforge.jabm.report.CSVReportVariables">
+        <property name="reportVariables" ref="gbmPriceProcessIBM"/>
+        <property name="fileNamePrefix" ref="fileNamePrefix" />
+        <property name="fileNameSuffix" value="gbmprice - IBM" />
+        <property name="fileNameExtension" value=".csv" />
+        <property name="passThrough" value="true" />
+    </bean>
+
+    <bean id="currentPriceCSVReportIBM" class="net.sourceforge.jabm.report.InteractionIntervalReport">
+        <property name="reportVariables" ref="currentPriceCSVReportVariablesIBM"/>
+        <property name="sampleInterval" value="1"/>
+    </bean>
+
+    <bean id="gbmPriceCSVReportIBM" class="net.sourceforge.jabm.report.InteractionIntervalReport">
+        <property name="reportVariables" ref="gbmPriceCSVReportVariablesIBM"/>
+        <property name="sampleInterval" value="1"/>
+    </bean>
+
+    <bean id="equilibriumPriceCSVReportIBM" class="net.sourceforge.jabm.report.InteractionIntervalReport">
+        <property name="reportVariables" ref="equilibriumPriceCSVReportVariablesIBM"/>
+        <property name="sampleInterval" value="1"/>
+    </bean>
+
+    <bean id="spreadCSVReportIBM" class="net.sourceforge.jabm.report.InteractionIntervalReport">
+        <property name="reportVariables" ref="spreadCSVReportVariablesIBM"/>
+        <property name="sampleInterval" value="1"/>
+    </bean>
+
+    <bean id="spreadCSVReportVariablesIBM" class="net.sourceforge.jabm.report.CSVReportVariables">
+        <property name="reportVariables" ref="spreadReportVariablesIBM"/>
+        <property name="fileNamePrefix" ref="fileNamePrefix"/>
+        <property name="fileNameSuffix" value="spread - IBM"/>
+        <property name="fileNameExtension" value=".csv"/>
+    </bean>
+
+    <bean id="currentPriceCSVReportVariablesIBM"
+          class="net.sourceforge.jabm.report.CSVReportVariables">
+        <property name="reportVariables" ref="currentPriceReportVariablesIBM"/>
+        <property name="fileNamePrefix" ref="fileNamePrefix"/>
+        <property name="fileNameSuffix" value="price - IBM"/>
+        <property name="fileNameExtension" value=".csv"/>
+    </bean>
+
+    <bean id="equilibriumPriceCSVReportVariablesIBM"
+          class="net.sourceforge.jabm.report.CSVReportVariables">
+        <property name="reportVariables" ref="equilibriumPriceReportVariablesIBM"/>
+        <property name="fileNamePrefix" ref="fileNamePrefix"/>
+        <property name="fileNameSuffix" value="equilibrium-price - IBM"/>
+        <property name="fileNameExtension" value=".csv"/>
+    </bean>
+
+    <bean id="transactionPriceTimeSeriesIBM"
+          class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="transactionPriceReportVariablesIBM"/>
+    </bean>
+
+    <bean id="svwapTimeSeriesIBM"
+          class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="svwapReportVariablesIBM"/>
+    </bean>
+
+    <bean id="populationWeightsTimeSeriesIBM"
+          class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="populationWeightsReportVariablesIBM"/>
+    </bean>
+
+    <bean id="populationWeightsCSVReportIBM"
+          class="net.sourceforge.jabm.report.InteractionIntervalReport">
+        <property name="reportVariables" ref="csvPopulationWeightsIBM"/>
+        <property name="sampleInterval" value="1"/>
+    </bean>
+
+    <bean id="transactionPriceReportVariablesIBM"
+          class="net.sourceforge.jasa.report.TransactionPriceReportVariables">
+    </bean>
+
+    <bean id="midPriceTimeSeriesIBM" class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="midPriceReportVariablesIBM"/>
+    </bean>
+
+    <bean id="currentPriceTimeSeriesIBM" class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="currentPriceReportVariablesIBM"/>
+    </bean>
+
+    <bean id="spreadTimeSeriesIBM" class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="spreadReportVariablesIBM"/>
+    </bean>
+
+    <bean id="equilibriumPriceTimeSeriesIBM" class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="equilibriumPriceReportVariablesIBM"/>
+    </bean>
+
+    <bean id="gbmPriceTimeSeriesIBM" class="net.sourceforge.jabm.report.SeriesReportVariables">
+        <property name="reportVariables" ref="gbmPriceProcessIBM"/>
+    </bean>
+
+    <bean id="midPriceReportVariablesIBM" class="net.sourceforge.jasa.report.MidPriceReportVariables">
+    </bean>
+
+    <bean id="currentPriceReportVariablesIBM" class="net.sourceforge.jasa.report.CurrentPriceReportVariables">
+    </bean>
+
+    <bean id="equilibriumPriceUpdaterIBM" class="net.sourceforge.jabm.report.InteractionIntervalReport">
+        <property name="sampleInterval" value="1"/>
+        <property name="reportVariables" ref="equilibriumPriceReportVariablesIBM"/>
+    </bean>
+
+    <bean id="equilibriumPriceReportVariablesIBM" class="net.sourceforge.jasa.report.EquilibriumReportVariables">
+    </bean>
+
+    <bean id="spreadReportVariablesIBM" class="net.sourceforge.jasa.report.SpreadReportVariables">
+    </bean>
+
+    <bean id="priceTimeSeriesChartIBM"
+          class="net.sourceforge.jabm.view.TimeSeriesChart">
+        <property name="series" ref="priceTimeSeriesIBM"/>
+        <property name="chartTitle" value="Price time series - IBM"/>
+        <property name="rangeAxisLabel" value="Price (LKR)"/>
+    </bean>
+
+    <bean id="spreadTimeSeriesChartIBM"
+          class="net.sourceforge.jabm.view.TimeSeriesChart">
+        <property name="series" ref="spreadTimeSeries"/>
+        <property name="chartTitle" value="Spread"/>
+        <property name="rangeAxisLabel" value="$"/>
+    </bean>
+
+    <bean id="equilibriumPriceTimeSeriesChartIBM"
+          class="net.sourceforge.jabm.view.TimeSeriesChart">
+        <property name="series" ref="equilibriumPriceTimeSeries"/>
+        <property name="chartTitle" value="Equilibrium Price"/>
+    </bean>
+
+    <bean id="svwapTimeSeriesChartIBM"
+          class="net.sourceforge.jabm.view.TimeSeriesChart">
+        <property name="series" ref="svwapTimeSeries"/>
+        <property name="chartTitle" value="SVWAP"/>
+        <property name="rangeAxisLabel" value="$"/>
+    </bean>
+
+    <bean id="orderFlowCSVFileIBM"
+          class="net.sourceforge.jabm.report.CSVReportVariables">
+        <property name="reportVariables" ref="orderFlowReportVariables"/>
+        <property name="fileNamePrefix" ref="fileNamePrefix" />
+        <property name="fileNameSuffix" value="orderflow - IBM" />
+        <property name="fileNameExtension" value=".csv" />
+    </bean>
+
+    <bean id="orderFlowReportVariablesIBM"
+          class="net.sourceforge.jasa.report.OfferPriceReportVariables">
+    </bean>
+
+    <bean id="reportedSupplyAndDemandGraphIBM"
+          class="net.sourceforge.jasa.view.ReportedSupplyAndDemandFrame">
+    </bean>
+
+    <bean id="auctionStateSupplyAndDemandGraphIBM"
+          class="net.sourceforge.jasa.view.AuctionStateFrame">
+    </bean>
+</beans>
