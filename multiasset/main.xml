@@ -18,8 +18,8 @@
     <import resource="model-ibm.xml"/>
     <import resource="report-ibm.xml"/>
 
-    <context:component-scan
-            base-package="org.investovator" />
+    <!--<context:component-scan-->
+            <!--base-package="org.investovator" />-->
 
     <bean id="simulationManager" class="org.investovator.multiasset.simulation.MultiAssetSimulationManager"
           scope="singleton">
