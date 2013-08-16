@@ -49,6 +49,11 @@
             <artifactId>jasa</artifactId>
             <version>${jasa.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jabm</groupId>
+            <artifactId>jabm</artifactId>
+            <version>0.8</version>
+        </dependency>
         <!-- End of JASA related -->
 
 		<dependency>
