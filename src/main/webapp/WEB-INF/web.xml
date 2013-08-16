@@ -1,0 +1,11 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+    <context-param>
+        <param-name>jabm.config</param-name>
+        <param-value>/multiasset/main.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.investovator.utils.SystemPropertiesHelper</listener-class>
+    </listener>
+
+</web-app>

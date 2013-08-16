@@ -27,7 +27,7 @@ public class MyVaadinUI extends UI
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         setContent(layout);
-        
+
         Button button = new Button("Click Me");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
@@ -35,6 +35,12 @@ public class MyVaadinUI extends UI
             }
         });
         layout.addComponent(button);
+
+        //test JASA code
+        Main main=new Main();
+        String[] v=new String[1];
+        v[0]="d";
+        main.main(v);
     }
 
 }
