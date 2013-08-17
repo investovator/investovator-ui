@@ -6,31 +6,40 @@
     </formats>
 
     <!-- Adds dependencies to zip package under lib directory -->
-    <dependencySets>
-        <dependencySet>
-            <!--
-               Project artifact is not copied under library directory since
-               it is added to the root directory of the zip package.
-           -->
-            <useProjectArtifact>false</useProjectArtifact>
-            <outputDirectory>lib</outputDirectory>
-            <unpack>false</unpack>
-        </dependencySet>
-    </dependencySets>
+    <!--<dependencySets>-->
+        <!--<dependencySet>-->
+            <!--&lt;!&ndash;-->
+               <!--Project artifact is not copied under library directory since-->
+               <!--it is added to the root directory of the zip package.-->
+           <!--&ndash;&gt;-->
+            <!--<useProjectArtifact>true</useProjectArtifact>-->
+            <!--<outputDirectory>lib</outputDirectory>-->
+            <!--<unpack>false</unpack>-->
+        <!--</dependencySet>-->
+    <!--</dependencySets>-->
 
-    <fileSets>
-        <!--
-           Adds startup scripts to the root directory of zip package. The startup
-           scripts are located to src/main/scripts directory as stated by Maven
-           conventions.
-       -->
-        <fileSet>
-            <directory>multiasset</directory>
-            <outputDirectory>multiasset</outputDirectory>
-            <includes>
-                <include>*.xml</include>
-            </includes>
-        </fileSet>
+    <!--<dependencySets>-->
+        <!--<dependencySet>-->
+            <!--<outputDirectory>/</outputDirectory>-->
+            <!--<useProjectArtifact>true</useProjectArtifact>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependencySet>-->
+    <!--</dependencySets>-->
+
+    <!--<fileSets>-->
+        <!--&lt;!&ndash;-->
+           <!--Adds startup scripts to the root directory of zip package. The startup-->
+           <!--scripts are located to src/main/scripts directory as stated by Maven-->
+           <!--conventions.-->
+       <!--&ndash;&gt;-->
+        <!--<fileSet>-->
+            <!--<directory>multiasset</directory>-->
+            <!--<outputDirectory>multiasset</outputDirectory>-->
+            <!--<includes>-->
+                <!--<include>*.xml</include>-->
+                <!--<include>*.properties</include>-->
+            <!--</includes>-->
+        <!--</fileSet>-->
         <!-- adds jar package to the root directory of zip package -->
         <!--<fileSet>-->
             <!--<directory>${project.build.directory}</directory>-->
@@ -39,5 +48,21 @@
                 <!--<include>*.jar</include>-->
             <!--</includes>-->
         <!--</fileSet>-->
+    <!--</fileSets>-->
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>WEB-INF/lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/webapp</directory>
+            <!--<outputDirectory></outputDirectory>-->
+
+            <includes>
+            <include>**/web.xml</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>
