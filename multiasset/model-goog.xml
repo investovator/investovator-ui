@@ -32,9 +32,9 @@
                 <ref bean="equilibriumPriceTimeSeriesReport"/>
                 <ref bean="equilibriumPriceReportVariables"/>
                 <ref bean="equilibriumPriceUpdater"/>
-                <ref bean="equilibriumPriceCSVReport"/>
+                <!--<ref bean="equilibriumPriceCSVReport"/>-->
                 <ref bean="currentPriceTimeSeriesReport" />
-                <ref bean="currentPriceCSVReport"/>
+                <!--<ref bean="currentPriceCSVReport"/>-->
                 <ref bean="currentPriceReportVariables" />
                 <ref bean="spreadTimeSeriesReport" />
                 <ref bean="spreadReportVariables" />
@@ -61,7 +61,7 @@
     <property name="agentMixer" ref="randomArrivalAgentMixer"/>
     <property name="agentInitialiser" ref="agentInitialiserProxy"/>
     <property name="auctioneer" ref="cda"/>
-    <property name="initialPrice" value="100"/>
+    <property name="initialPrice" value="10000"/>
     <property name="stockID" value="GOOG" />
 </bean>
 

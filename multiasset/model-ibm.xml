@@ -33,9 +33,9 @@
                 <ref bean="equilibriumPriceTimeSeriesReportIBM"/>
                 <ref bean="equilibriumPriceReportVariablesIBM"/>
                 <ref bean="equilibriumPriceUpdaterIBM"/>
-                <ref bean="equilibriumPriceCSVReportIBM"/>
+                <!--<ref bean="equilibriumPriceCSVReportIBM"/>-->
                 <ref bean="currentPriceTimeSeriesReportIBM" />
-                <ref bean="currentPriceCSVReportIBM"/>
+                <!--<ref bean="currentPriceCSVReportIBM"/>-->
                 <ref bean="currentPriceReportVariablesIBM" />
                 <ref bean="spreadTimeSeriesReportIBM" />
                 <ref bean="spreadReportVariablesIBM" />
@@ -62,7 +62,7 @@
     <property name="agentMixer" ref="randomArrivalAgentMixerIBM"/>
     <property name="agentInitialiser" ref="agentInitialiserProxyIBM"/>
     <property name="auctioneer" ref="cdaIBM"/>
-    <property name="initialPrice" value="100"/>
+    <property name="initialPrice" value="1"/>
     <property name="stockID" value="IBM" />
 </bean>
 

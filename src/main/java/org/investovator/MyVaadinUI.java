@@ -11,6 +11,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.utils.MainClassRunner;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
@@ -28,19 +29,16 @@ public class MyVaadinUI extends UI
         layout.setMargin(true);
         setContent(layout);
 
-        Button button = new Button("Click Me");
+        Button button = new Button("Click Me to run JASA");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-                layout.addComponent(new Label("Thank you for clicking"));
+                new Thread(new MainClassRunner()).start();
+                layout.addComponent(new Label("JASA running in background!"));
             }
         });
         layout.addComponent(button);
 
-        //test JASA code
-        Main main=new Main();
-        String[] v=new String[1];
-        v[0]="d";
-        main.main(v);
+
     }
 
 }
