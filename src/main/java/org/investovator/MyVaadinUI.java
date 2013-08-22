@@ -2,15 +2,24 @@ package org.investovator;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.*;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+//import org.dussan.vaadin.dcharts.DCharts;
+//import org.dussan.vaadin.dcharts.base.elements.XYaxis;
+//import org.dussan.vaadin.dcharts.data.DataSeries;
+//import org.dussan.vaadin.dcharts.data.Ticks;
+//import org.dussan.vaadin.dcharts.metadata.renderers.AxisRenderers;
+//import org.dussan.vaadin.dcharts.metadata.renderers.SeriesRenderers;
+//import org.dussan.vaadin.dcharts.options.Axes;
+//import org.dussan.vaadin.dcharts.options.Highlighter;
+//import org.dussan.vaadin.dcharts.options.Options;
+//import org.dussan.vaadin.dcharts.options.SeriesDefaults;
 import org.investovator.utils.MainClassRunner;
 
 @Theme("mytheme")
@@ -37,8 +46,104 @@ public class MyVaadinUI extends UI
             }
         });
         layout.addComponent(button);
+        layout.addComponent(getChart());
 
 
+
+    }
+
+    @Override
+    public String getDescription() {
+        return "Bart with negative stack";
+    }
+
+//    @Override
+    protected Component getChart() {
+        Chart chart = new Chart(ChartType.BAR);
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("Population pyramid for Germany, midyear 2010");
+        conf.setSubTitle("Source: www.census.gov");
+
+        final String[] categories = new String[] { "0-4", "5-9", "10-14",
+                "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49",
+                "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84",
+                "85-89", "90-94", "95-99", "100 +" };
+
+        XAxis x1 = new XAxis();
+        conf.addxAxis(x1);
+        x1.setCategories(categories);
+        x1.setReversed(false);
+
+        XAxis x2 = new XAxis();
+        conf.addxAxis(x2);
+        x2.setCategories(categories);
+        x2.setOpposite(true);
+        x2.setReversed(false);
+        x2.setLinkedTo(x1);
+
+        YAxis y = new YAxis();
+        y.setMin(-4000000);
+        y.setMax(4000000);
+        y.setTitle(new Title(""));
+        conf.addyAxis(y);
+
+        PlotOptionsSeries plot = new PlotOptionsSeries();
+        plot.setStacking(Stacking.NORMAL);
+        conf.setPlotOptions(plot);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("''+ this.series.name +', age '+ this.point.category +''+ 'Population: '+ Highcharts.numberFormat(Math.abs(this.point.y), 0)");
+        conf.setTooltip(tooltip);
+
+        conf.addSeries(new ListSeries("Male", -1746181, -1884428, -2089758,
+                -2222362, -2537431, -2507081, -2443179, -2664537, -3556505,
+                -3680231, -3143062, -2721122, -2229181, -2227768, -2176300,
+                -1329968, -836804, -354784, -90569, -28367, -3878));
+        conf.addSeries(new ListSeries("Female", 1656154, 1787564, 1981671,
+                2108575, 2403438, 2366003, 2301402, 2519874, 3360596, 3493473,
+                3050775, 2759560, 2304444, 2426504, 2568938, 1785638, 1447162,
+                1005011, 330870, 130632, 21208));
+
+        chart.drawChart(conf);
+
+        return chart;
+    }
+
+    protected void graph(Layout layout){
+        System.out.println("Called");
+//        DataSeries dataSeries = new DataSeries()
+//                .add(2, 6, 7, 10);
+//
+//
+//        SeriesDefaults seriesDefaults = new SeriesDefaults()
+//                .setRenderer(SeriesRenderers.BAR);
+//
+//        Axes axes = new Axes()
+//                .addAxis(
+//                        new XYaxis()
+//                                .setRenderer(AxisRenderers.CATEGORY)
+//                                .setTicks(
+//                                        new Ticks()
+//                                                .add("a", "b", "c", "d")));
+//
+//        Highlighter highlighter = new Highlighter()
+//                .setShow(false);
+//
+//        Options options = new Options()
+//                .setSeriesDefaults(seriesDefaults)
+//                .setAxes(axes)
+//                .setHighlighter(highlighter);
+//
+//        DCharts chart = new DCharts()
+//                .setDataSeries(dataSeries)
+//                .setOptions(options)
+//                .show();
+//        layout.addComponent(chart);
+
+
+        System.out.println("Ended");
     }
 
 }
