@@ -63,6 +63,8 @@
     <property name="auctioneer" ref="cda"/>
     <property name="initialPrice" value="10000"/>
     <property name="stockID" value="GOOG" />
+    <property name="slowSleepInterval" value="100" />
+
 </bean>
 
 <!-- A continuous double auction (CDA) will be used to model the exchange -->

@@ -146,7 +146,7 @@ public class MyVaadinUI extends UI
         return chart;
     }
 
-    public void updateTable(Chart chart){
+    public int updateTable(Chart chart, int count){
         System.out.println("called");
 
         ListSeries ls = (ListSeries)chart.getConfiguration().getSeries().get(0);
@@ -155,14 +155,16 @@ public class MyVaadinUI extends UI
         //ls.getPlotOptions().setPointStart(1959);
 
         CombiSeriesReportVariables report = (CombiSeriesReportVariables)BeanFactorySingleton.getBean("priceTimeSeriesIBM");
-        for(int i=0;i<report.size(0);i++){
+        for(int i=count;i<report.size(0);i++){
 //            System.out.println(report.getX(0,i).toString());
 //            layout.addComponent(new Label(report.getY(0,i).toString()));
             ls.addData(report.getY(0,i));
+            count++;
             //report.setSeriesList();
             //System.out.println(report.getY(0,i));
         }
 
+        return count;
 
 //        Configuration configuration=chart.getConfiguration();
 //        configuration.addSeries(ls);
@@ -281,20 +283,18 @@ public class MyVaadinUI extends UI
     class TableUpdater implements Button.ClickListener{
 
         Chart chart;
+        int count;
 
         TableUpdater(Chart chart) {
             this.chart = chart;
+            count=0;
         }
 
         @Override
         public void buttonClick(ClickEvent clickEvent) {
-            System.out.println("Caleed");
-            System.out.println("Caleed");
-            System.out.println("Caleed");
-            System.out.println("Caleed");
-            System.out.println("Caleed");
 
-            updateTable(chart);
+            count = updateTable(chart, count);
+            System.out.println(count);
 
         }
     }
