@@ -1,5 +1,5 @@
 <assembly>
-    <id>bin</id>
+    <id>ass</id>
     <!-- Generates a zip package containing the needed files -->
     <formats>
         <format>war</format>

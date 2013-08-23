@@ -41,26 +41,29 @@ public class MyVaadinUI extends UI
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         setContent(layout);
+        Chart chart=getBasicChart();
 
         Button button = new Button("Click Me to run JASA");
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                new Thread(new MainClassRunner()).start();
-                layout.addComponent(new Label("JASA running in background!"));
-            }
-        });
+        button.addClickListener(new JasaRunner(chart, layout));
         layout.addComponent(button);
-        layout.addComponent(getChart());
 
 
-        Button button1 = new Button("drawGraph");
-        button1.addClickListener(new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                 layout.addComponent(getBasicChart());
 
-            }
-        });
-        layout.addComponent(button1);
+//        Button button1 = new Button("drawGraph");
+//        button1.addClickListener(new Button.ClickListener() {
+//            public void buttonClick(ClickEvent event) {
+//                chart=getBasicChart(chart);
+//                 layout.addComponent();
+//
+//            }
+//        });
+//        layout.addComponent(button1);
+
+        Button button2 = new Button("updateGraph");
+        button2.addClickListener(new TableUpdater(chart));
+        layout.addComponent(button2);
+
+        layout.addComponent(chart);
 
 
     }
@@ -70,25 +73,25 @@ public class MyVaadinUI extends UI
         return "Bart with negative stack";
     }
 
-    protected Component getBasicChart(){
+    protected Chart getBasicChart(){
         Chart chart = new Chart();
         chart.setHeight("450px");
         chart.setWidth("100%");
 
         Configuration configuration = new Configuration();
-        configuration.getChart().setType(ChartType.LINE);
+        configuration.getChart().setType(ChartType.SPLINE);
         configuration.getChart().setMarginRight(130);
         configuration.getChart().setMarginBottom(25);
 
-        configuration.getTitle().setText("Monthly Average Temperature");
-        configuration.getSubTitle().setText("Source: WorldClimate.com");
+        configuration.getTitle().setText("Stock prices of IBM");
+        configuration.getSubTitle().setText("Source: JASA simulation-1");
 
-        configuration.getxAxis().setCategories("Jan", "Feb", "Mar", "Apr",
-                "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+//        configuration.getxAxis().setCategories("Jan", "Feb", "Mar", "Apr",
+//                "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
         Axis yAxis = configuration.getyAxis();
         yAxis.setMin(-5d);
-        yAxis.setTitle(new Title("Temperature (°C)"));
+        yAxis.setTitle(new Title("Prices"));
         yAxis.getTitle().setVerticalAlign(VerticalAlign.HIGH);
 
         configuration
@@ -97,7 +100,7 @@ public class MyVaadinUI extends UI
                         "''+ this.series.name +''+this.x +': '+ this.y +'°C'");
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
-        plotOptions.setDataLabels(new Labels(true));
+        //plotOptions.setDataLabels(new Labels(true));
         configuration.setPlotOptions(plotOptions);
 
         Legend legend = configuration.getLegend();
@@ -109,14 +112,14 @@ public class MyVaadinUI extends UI
         legend.setBorderWidth(0);
 
         ListSeries ls = new ListSeries();
-        ls.setName("Tokyo");
+        ls.setName("IBM");
         //ls.getPlotOptions().setPointStart(1959);
 
-        CombiSeriesReportVariables report = (CombiSeriesReportVariables)BeanFactorySingleton.getBean("priceTimeSeriesIBM");
-        for(int i=0;i<report.size(0);i++){
+        //CombiSeriesReportVariables report = (CombiSeriesReportVariables)BeanFactorySingleton.getBean("priceTimeSeriesIBM");
+        for(int i=0;i<10;i++){
 //            System.out.println(report.getX(0,i).toString());
 //            layout.addComponent(new Label(report.getY(0,i).toString()));
-            ls.setData(report.getY(0,i));
+            ls.addData(i);
         }
 
 //        ls.setData(7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3,
@@ -139,7 +142,34 @@ public class MyVaadinUI extends UI
 //        configuration.addSeries(ls);
 
         chart.drawChart(configuration);
+        System.out.println("Chart creatred");
         return chart;
+    }
+
+    public void updateTable(Chart chart){
+        System.out.println("called");
+
+        ListSeries ls = (ListSeries)chart.getConfiguration().getSeries().get(0);
+        ls.setName("IBM");
+
+        //ls.getPlotOptions().setPointStart(1959);
+
+        CombiSeriesReportVariables report = (CombiSeriesReportVariables)BeanFactorySingleton.getBean("priceTimeSeriesIBM");
+        for(int i=0;i<report.size(0);i++){
+//            System.out.println(report.getX(0,i).toString());
+//            layout.addComponent(new Label(report.getY(0,i).toString()));
+            ls.addData(report.getY(0,i));
+            //report.setSeriesList();
+            //System.out.println(report.getY(0,i));
+        }
+
+
+//        Configuration configuration=chart.getConfiguration();
+//        configuration.addSeries(ls);
+//        chart.drawChart(configuration);
+//        chart.
+
+
     }
 
 //    @Override
@@ -229,6 +259,44 @@ public class MyVaadinUI extends UI
 
 
         System.out.println("Ended");
+    }
+
+    class JasaRunner implements Button.ClickListener {
+
+        Chart chart;
+        Layout layout;
+
+        JasaRunner(Chart chart, Layout layout) {
+            this.chart = chart;
+            this.layout=layout;
+        }
+
+        @Override
+        public void buttonClick(ClickEvent clickEvent) {
+            new Thread(new MainClassRunner()).start();
+            layout.addComponent(new Label("JASA running in background!"));
+        }
+    }
+
+    class TableUpdater implements Button.ClickListener{
+
+        Chart chart;
+
+        TableUpdater(Chart chart) {
+            this.chart = chart;
+        }
+
+        @Override
+        public void buttonClick(ClickEvent clickEvent) {
+            System.out.println("Caleed");
+            System.out.println("Caleed");
+            System.out.println("Caleed");
+            System.out.println("Caleed");
+            System.out.println("Caleed");
+
+            updateTable(chart);
+
+        }
     }
 
 }
