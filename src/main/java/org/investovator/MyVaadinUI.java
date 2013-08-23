@@ -23,6 +23,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import net.sourceforge.jabm.report.CombiSeriesReportVariables;
 import net.sourceforge.jabm.report.SimEventReport;
 import net.sourceforge.jabm.spring.BeanFactorySingleton;
+import org.investovator.utils.ChartUpdater;
 import org.investovator.utils.MainClassRunner;
 import org.springframework.beans.factory.BeanFactory;
 
@@ -293,8 +294,9 @@ public class MyVaadinUI extends UI
         @Override
         public void buttonClick(ClickEvent clickEvent) {
 
-            count = updateTable(chart, count);
-            System.out.println(count);
+            new Thread(new ChartUpdater(chart)).start();
+//            count = updateTable(chart, count);
+//            System.out.println(count);
 
         }
     }
