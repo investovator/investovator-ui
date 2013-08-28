@@ -32,7 +32,7 @@ import org.springframework.beans.factory.BeanFactory;
 public class MyVaadinUI extends UI
 {
 
-    @WebServlet(value = "/*", asyncSupported = true)
+    @WebServlet(value = "/app/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = MyVaadinUI.class, widgetset = "org.investovator.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
@@ -43,6 +43,8 @@ public class MyVaadinUI extends UI
         layout.setMargin(true);
         setContent(layout);
         Chart chart=getBasicChart();
+
+
 
         Button button = new Button("Click Me to run JASA");
         button.addClickListener(new JasaRunner(chart, layout));
