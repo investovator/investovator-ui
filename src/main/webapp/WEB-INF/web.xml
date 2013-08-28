@@ -8,4 +8,14 @@
         <listener-class>org.investovator.utils.SystemPropertiesHelper</listener-class>
     </listener>
 
+    <servlet>
+        <servlet-name>test</servlet-name>
+        <jsp-file>/WEB-INF/classes/test/index.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>test</servlet-name>
+        <url-pattern>/test</url-pattern>
+    </servlet-mapping>
+
+
 </web-app>
