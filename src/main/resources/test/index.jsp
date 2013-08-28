@@ -15,7 +15,7 @@
 <script type="text/javascript">
     function test() {
 
-        $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
+        $.getJSON('http://localhost:8080/ui-0.1-a/graphData', function(data) {    //$.getJSON('http://localhost:8080/ui-0.1-a/graphData', function(data) {
             // Create the chart
             $('#container').highcharts('StockChart', {
 
@@ -25,7 +25,7 @@
                 },
 
                 title : {
-                    text : 'AAPL Stock Price'
+                    text : 'JASA Simulation'
                 },
 
                 series : [{

@@ -17,5 +17,14 @@
         <url-pattern>/test</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>graphData</servlet-name>
+        <jsp-file>/WEB-INF/classes/test/graphData.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>graphData</servlet-name>
+        <url-pattern>/graphData</url-pattern>
+    </servlet-mapping>
+
 
 </web-app>
