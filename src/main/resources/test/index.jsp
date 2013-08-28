@@ -40,11 +40,11 @@
 
     }
 
-    //window.onload = test;
+    window.onload = test;
 
 </script>
 
-<button onclick="test()">Try it</button>
+<%--<button onclick="test()">Try it</button>--%>
 
 </body>
 </html>
