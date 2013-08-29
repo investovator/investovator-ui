@@ -5,6 +5,8 @@
 <%@ page import="java.util.ArrayList" %>
 
 <%
+    //add the callback token
+    out.print(request.getParameter("callback"));
     CombiSeriesReportVariables report = (CombiSeriesReportVariables) BeanFactorySingleton.getBean("priceTimeSeriesIBM");
 
 
@@ -41,7 +43,7 @@
 //    }
 
     StringBuilder sb=new StringBuilder();
-    sb.append("[");
+    sb.append("([");
     //out.print("[");
     for(String key:jsonOrderedMap.keySet()){
 //        out.print("[");
@@ -57,11 +59,11 @@
 //        out.print("]");
         sb.append(",");
     }
-    sb.replace(sb.length()-1,sb.length(),"]");
+    sb.replace(sb.length()-1,sb.length(),"]);");
 
 
     //out.print(["1147651200000", "67.79"], ["1147651300000", "67.60"]);
-    //out.print(sb);
+    out.print(sb);
 
 //    out.flush();
 
@@ -71,13 +73,13 @@
 <%--[--%>
 <%--/* May 2006 */--%>
 <%--start--%>
-[[1147651200000,67.79],
-[1147737600000,64.98],
-[1147824000000,65.26],
-[1147910400000,63.18],
-[1147996800000,64.51],
-[1148256000000,63.38],
-[1148342400000,63.15]]
+<%--[[1147651200000,67.79],--%>
+<%--[1147737600000,64.98],--%>
+<%--[1147824000000,65.26],--%>
+<%--[1147910400000,63.18],--%>
+<%--[1147996800000,64.51],--%>
+<%--[1148256000000,63.38],--%>
+<%--[1148342400000,63.15]]--%>
 <%--end--%>
 <%--[1148428800000,63.34],--%>
 <%--[1148515200000,64.33],--%>
