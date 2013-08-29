@@ -14,12 +14,13 @@
 
 <script type="text/javascript">
     function test() {
-        console.log("in");
+
+
+
         $.getJSON('http://localhost:8080/ui-0.1-a/graphData?callback=?', function(data) {
-            console.log("ss");
-            // Create the chart
-            console.log(data);
-            $('#container').highcharts('StockChart', {
+
+            var options= {
+
 
 
                 rangeSelector : {
@@ -27,17 +28,66 @@
                 },
 
                 title : {
-                    text : 'AAPL Stock Price'
+                    text : 'IBM Stock Price'
                 },
 
-                series : [{
-                    name : 'AAPL',
-                    data : data,
-                    tooltip: {
-                        valueDecimals: 2
-                    }
-                }]
-            });
+                    series: [{
+                name : 'IBM',
+                data : [1,2,3,2,1],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            }],
+                chart : {
+                    events : {
+                        load : function() {
+
+                            // set up the updating of the chart each second
+                            // var series = this.series[0];
+                            setInterval(function() {
+//                                var x = (new Date()).getTime(), // current time
+//                                        y = Math.round(Math.random() * 100);
+//                                series.addPoint([x, y], true, true);
+                                //this.series[0]=$.get('http://localhost:8080/ui-0.1-a/graphData?callback=?')
+                                chart.series[0].data=$.get('http://localhost:8080/ui-0.1-a/graphData');
+                                console.log($.get('http://localhost:8080/ui-0.1-a/graphData'));
+                            }, 1000);
+                        }
+                    },
+                    renderTo : 'container'
+                }
+
+            }
+
+            // Create the chart
+            console.log(data);
+            options.series[0].data=[5,6,7,8];
+            chart = new Highcharts.StockChart(options);
+            //$('#container').highcharts('StockChart', options
+
+//                chart : {
+//                    events : {
+//                        load : function() {
+//
+//                            // set up the updating of the chart each second
+//                            var series = this.series[0];
+//                            setInterval(function() {
+////                                var x = (new Date()).getTime(), // current time
+////                                        y = Math.round(Math.random() * 100);
+////                                series.addPoint([x, y], true, true);
+//                                //this.series[0]=$.get('http://localhost:8080/ui-0.1-a/graphData?callback=?')
+//                                //dataSet.data=$.get('http://localhost:8080/ui-0.1-a/graphData?callback=?');
+//                                console.log($.get('http://localhost:8080/ui-0.1-a/graphData?callback=?'));
+//                            }, 1000);
+//                        }
+//                    }
+//                },
+
+
+
+
+
+
         });
 
     }

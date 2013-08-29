@@ -6,7 +6,14 @@
 
 <%
     //add the callback token
-    out.print(request.getParameter("callback"));
+    boolean parameterExists=false;
+    if (request.getParameter("callback") != null) {
+           parameterExists=true;
+    }
+    if(parameterExists){
+        out.print(request.getParameter("callback"));
+
+    }
     CombiSeriesReportVariables report = (CombiSeriesReportVariables) BeanFactorySingleton.getBean("priceTimeSeriesIBM");
 
 
