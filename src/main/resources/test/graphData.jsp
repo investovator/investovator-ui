@@ -2,21 +2,33 @@
 <%@ page import="net.sourceforge.jabm.spring.BeanFactorySingleton" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="java.util.ArrayList" %>
 
 <%
     CombiSeriesReportVariables report = (CombiSeriesReportVariables) BeanFactorySingleton.getBean("priceTimeSeriesIBM");
 
+
     //to keep the data in sorted order
     LinkedHashMap<String, String> jsonOrderedMap = new LinkedHashMap<String, String>();
-    jsonOrderedMap.put("1147651200000", "67.79");
-    jsonOrderedMap.put("1147737600000", "64.98");
-    jsonOrderedMap.put("1147824000000", "65.26");
-    jsonOrderedMap.put("1147996800000", "59.77");
-    jsonOrderedMap.put("1147996800001", "59.77");
-    //jsonOrderedMap.put("114799680002", "59.77");
 
+    for(int i=0;i<report.size(0);i++){
+        jsonOrderedMap.put(report.getX(0,i).toString(),report.getY(0,i).toString());
 
-    JSONObject json = new JSONObject(jsonOrderedMap);
+    }
+
+//    jsonOrderedMap.put("1147651200000", "67.79");
+//    jsonOrderedMap.put("1147737600000", "64.98");
+//    jsonOrderedMap.put("1147824000000", "65.26");
+//    jsonOrderedMap.put("1147996800000", "59.77");
+//    jsonOrderedMap.put("1148256000000", "59.77");
+//    jsonOrderedMap.put("1148342400000", "59.77");
+//    ArrayList<ArrayList<String>> t = new ArrayList<ArrayList<String>>(4);
+//    ArrayList i=new ArrayList<String>();
+//    i.add()
+//    t.add();
+
+//    JSONObject json = new JSONObject([["1147651200000", "67.79"], ["1147651300000", "67.60"]]);
+//    JSONObject json = new JSONObject(jsonOrderedMap);
 //    json.put("1147651200000", "67.79");
 //    json.put("1147737600000", "64.98");
 //    json.put("1147824000000", "65.26");
@@ -28,16 +40,37 @@
 //        json.put(Integer.toString(114799)+Integer.toString(6800)+Integer.toString(i),"23");
 //    }
 
-//    out.print("[");
-//    out.print(json);
+    StringBuilder sb=new StringBuilder();
+    sb.append("[");
+    //out.print("[");
+    for(String key:jsonOrderedMap.keySet()){
+//        out.print("[");
+        sb.append("[");
+        sb.append(key);
+//        out.print(key);
+
+//        out.print(",");
+        sb.append(",");
+//        out.print(jsonOrderedMap.get(key));
+        sb.append(jsonOrderedMap.get(key));
+        sb.append("]");
+//        out.print("]");
+        sb.append(",");
+    }
+    sb.replace(sb.length()-1,sb.length(),"]");
+
+
+    //out.print(["1147651200000", "67.79"], ["1147651300000", "67.60"]);
+    //out.print(sb);
+
 //    out.flush();
-//    out.print("]");
 
 
 %>
 
 <%--[--%>
 <%--/* May 2006 */--%>
+<%--start--%>
 [[1147651200000,67.79],
 [1147737600000,64.98],
 [1147824000000,65.26],
@@ -45,6 +78,7 @@
 [1147996800000,64.51],
 [1148256000000,63.38],
 [1148342400000,63.15]]
+<%--end--%>
 <%--[1148428800000,63.34],--%>
 <%--[1148515200000,64.33],--%>
 <%--[1148601600000,63.55],--%>

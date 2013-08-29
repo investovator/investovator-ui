@@ -26,5 +26,21 @@
         <url-pattern>/graphData</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+               <servlet-name>Vaadin Application Servlet</servlet-name>
+                <url-pattern>/VAADIN/*</url-pattern>
+
+           </servlet-mapping>
+
+
+    <servlet>
+            <servlet-name>Vaadin Application Servlet</servlet-name>
+            <servlet-class>com.vaadin.server.VaadinServlet</servlet-class>
+            <init-param>
+                <description>Vaadin UI to display</description>
+                <param-name>UI</param-name>
+                <param-value>test.MyVaadinUI</param-value>
+            </init-param>
+        </servlet>
 
 </web-app>

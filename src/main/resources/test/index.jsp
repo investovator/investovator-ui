@@ -14,9 +14,11 @@
 
 <script type="text/javascript">
     function test() {
-
-        $.getJSON('http://localhost:8080/ui-0.1-a/graphData', function(data) {    //$.getJSON('http://localhost:8080/ui-0.1-a/graphData', function(data) {
+        console.log("in");
+        $.getJSON('http://localhost:8080/ui-0.1-a/graphData', function(data) {
+            console.log("ss");
             // Create the chart
+            console.log(data);
             $('#container').highcharts('StockChart', {
 
 
@@ -25,7 +27,7 @@
                 },
 
                 title : {
-                    text : 'JASA Simulation'
+                    text : 'AAPL Stock Price'
                 },
 
                 series : [{
