@@ -49,7 +49,7 @@
 //                                        y = Math.round(Math.random() * 100);
 //                                series.addPoint([x, y], true, true);
                                 //this.series[0]=$.get('http://localhost:8080/ui-0.1-a/graphData?callback=?')
-                                chart.series[0].data=$.get('http://localhost:8080/ui-0.1-a/graphData');
+                                chart.series[0].setData($.get('http://localhost:8080/ui-0.1-a/graphData'));
                                 console.log($.get('http://localhost:8080/ui-0.1-a/graphData'));
                             }, 1000);
                         }
