@@ -6,10 +6,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
-import org.investovator.Authentication.AgentGamingView;
-import org.investovator.Authentication.DataPlaybackView;
 import org.investovator.Authentication.LoginView;
-import org.investovator.Authentication.MainGamingView;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -37,14 +34,15 @@ public class MyVaadinUI extends UI
 
         // Create and register the views
         navigator.addView("", new LoginView());
-        navigator.addView(MAINVIEW, new MainGamingView());
-        navigator.addView(AGENTVIEW, new AgentGamingView());
-        navigator.addView(DATAPLAYVIEW, new DataPlaybackView());
-    }
+        //navigator.addView(MAINVIEW, new MainGamingView());
+        //navigator.addView(AGENTVIEW, new AgentGamingView());
+        //navigator.addView(DATAPLAYVIEW, new DataPlaybackView());
 
         //test JASA code
-        /*Main main=new Main();
+        Main main=new Main();
         String[] v=new String[1];
         v[0]="d";
-        main.main(v);*/
+        main.main(v);
     }
+
+}
