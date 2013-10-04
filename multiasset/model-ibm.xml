@@ -7,10 +7,10 @@
 		Quantitative Finance 2, 346-353.
 		http://ssrn.com/abstract=841608
  -->
- 
+
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
     <bean id="ibmController"
@@ -33,9 +33,9 @@
                 <ref bean="equilibriumPriceTimeSeriesReportIBM"/>
                 <ref bean="equilibriumPriceReportVariablesIBM"/>
                 <ref bean="equilibriumPriceUpdaterIBM"/>
-                <ref bean="equilibriumPriceCSVReportIBM"/>
+                <!--<ref bean="equilibriumPriceCSVReportIBM"/>-->
                 <ref bean="currentPriceTimeSeriesReportIBM" />
-                <ref bean="currentPriceCSVReportIBM"/>
+                <!--<ref bean="currentPriceCSVReportIBM"/>-->
                 <ref bean="currentPriceReportVariablesIBM" />
                 <ref bean="spreadTimeSeriesReportIBM" />
                 <ref bean="spreadReportVariablesIBM" />
@@ -52,350 +52,351 @@
 
     </bean>
 
-<!--  This is the top-level bean defining the experiment to be run -->
-<bean id="ibm" class="net.sourceforge.jasa.market.MarketSimulation"
-		scope="singleton">
-	<property name="simulationController" ref="ibmController"/>
-	<property name="maximumDays" value="1"/>
-	<property name="lengthOfDay" value="200000"/>
-	<property name="population" ref="staticPopulationIBM"/>
-    <property name="agentMixer" ref="randomArrivalAgentMixerIBM"/>
-    <property name="agentInitialiser" ref="agentInitialiserProxyIBM"/>
-    <property name="auctioneer" ref="cdaIBM"/>
-    <property name="initialPrice" value="100"/>
-    <property name="stockID" value="IBM" />
-</bean>
+    <!--  This is the top-level bean defining the experiment to be run -->
+    <bean id="ibm" class="net.sourceforge.jasa.market.MarketSimulation"
+          scope="singleton">
+        <property name="simulationController" ref="ibmController"/>
+        <property name="maximumDays" value="1"/>
+        <property name="lengthOfDay" value="200000"/>
+        <property name="population" ref="staticPopulationIBM"/>
+        <property name="agentMixer" ref="randomArrivalAgentMixerIBM"/>
+        <property name="agentInitialiser" ref="agentInitialiserProxyIBM"/>
+        <property name="auctioneer" ref="cdaIBM"/>
+        <property name="initialPrice" value="1"/>
+        <property name="stockID" value="IBM" />
+        <property name="slowSleepInterval" value="100" />
+    </bean>
 
-<!-- A continuous double auction (CDA) will be used to model the exchange -->
-<bean id="cdaIBM" scope="simulation"
-        class="net.sourceforge.jasa.market.auctioneer.ContinuousDoubleAuctioneer">
-	<property name="pricingPolicy" ref="stockMarketTimePriorityPricingPolicy"/>
-</bean>
+    <!-- A continuous double auction (CDA) will be used to model the exchange -->
+    <bean id="cdaIBM" scope="simulation"
+          class="net.sourceforge.jasa.market.auctioneer.ContinuousDoubleAuctioneer">
+        <property name="pricingPolicy" ref="stockMarketTimePriorityPricingPolicy"/>
+    </bean>
 
-<!-- Transaction prices are set to the price of the earliest order to arrive -->
-<bean id="timePriorityPricingIBM" scope="simulation"
-        class="net.sourceforge.jasa.market.rules.TimePriorityPricingPolicy">
-</bean>
+    <!-- Transaction prices are set to the price of the earliest order to arrive -->
+    <bean id="timePriorityPricingIBM" scope="simulation"
+          class="net.sourceforge.jasa.market.rules.TimePriorityPricingPolicy">
+    </bean>
 
     <!-- Transaction prices are set to the price of the ask -->
     <!--<bean id="stockMarketTimePriorityPricingPolicy" scope="simulation"-->
-          <!--class="net.sourceforge.jasa.market.rules.StockMarketTimePriorityPricingPolicy">-->
+    <!--class="net.sourceforge.jasa.market.rules.StockMarketTimePriorityPricingPolicy">-->
     <!--</bean>-->
 
-<!-- Agents will arrive at the market with the specified probability -->
-<bean id="randomArrivalAgentMixerIBM" scope="simulation"
-        class="net.sourceforge.jabm.mixing.RandomArrivalAgentMixer">
-    <constructor-arg ref="prng"/>
-    <!--  In this model the probability of an agent arriving represents the
-            total liquidity of the market  -->
-    <property name="arrivalProbability" value="0.5"/>
-</bean>
+    <!-- Agents will arrive at the market with the specified probability -->
+    <bean id="randomArrivalAgentMixerIBM" scope="simulation"
+          class="net.sourceforge.jabm.mixing.RandomArrivalAgentMixer">
+        <constructor-arg ref="prng"/>
+        <!--  In this model the probability of an agent arriving represents the
+                total liquidity of the market  -->
+        <property name="arrivalProbability" value="0.5"/>
+    </bean>
 
-<bean id="agentInitialiserProxyIBM" scope="simulation"
-		class="org.springframework.aop.framework.ProxyFactoryBean">
-	<property name="targetSource">
-		<bean class="org.springframework.aop.target.LazyInitTargetSource">
-			<property name="targetBeanName">
-				<idref local="agentInitialiserIBM" />
-			</property>
-		</bean>
-	</property>
-</bean>
+    <bean id="agentInitialiserProxyIBM" scope="simulation"
+          class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="targetSource">
+            <bean class="org.springframework.aop.target.LazyInitTargetSource">
+                <property name="targetBeanName">
+                    <idref local="agentInitialiserIBM" />
+                </property>
+            </bean>
+        </property>
+    </bean>
 
-<bean id="agentInitialiserIBM" scope="simulation"
-		class="net.sourceforge.jasa.agent.MarketAgentInitialiser">
-    <property name="market" ref="ibm"/>
-</bean>
+    <bean id="agentInitialiserIBM" scope="simulation"
+          class="net.sourceforge.jasa.agent.MarketAgentInitialiser">
+        <property name="market" ref="ibm"/>
+    </bean>
 
 
-<!--<bean id="prng" class="cern.jet.random.engine.MersenneTwister64" scope="prototype">
-	<constructor-arg>
-		<bean class="java.util.Date"/>
-	</constructor-arg>
-</bean>-->
+    <!--<bean id="prng" class="cern.jet.random.engine.MersenneTwister64" scope="prototype">
+        <constructor-arg>
+            <bean class="java.util.Date"/>
+        </constructor-arg>
+    </bean>-->
 
-<bean id="staticPopulationIBM" class="net.sourceforge.jabm.Population"
-		scope="simulation" >
-<!-- 	<property name="agentFactory" ref="linearCombinationTraderFactory"/> -->
-	<property name="agentList" ref="linearCombinationTradersIBM"/>
-</bean> 
+    <bean id="staticPopulationIBM" class="net.sourceforge.jabm.Population"
+          scope="simulation" >
+        <!-- 	<property name="agentFactory" ref="linearCombinationTraderFactory"/> -->
+        <property name="agentList" ref="linearCombinationTradersIBM"/>
+    </bean>
 
-<!--  The population consists of 200 agents using linear-combination
-		forecasting rules -->
-<bean id="linearCombinationTradersIBM"
-	scope="simulation" class="net.sourceforge.jabm.agent.AgentList"
-		init-method="populateFromFactory">
-    <property name="size" value="200"/>
-    <property name="agentFactory" ref="linearCombinationTraderFactoryIBM"/>
-</bean>
+    <!--  The population consists of 200 agents using linear-combination
+            forecasting rules -->
+    <bean id="linearCombinationTradersIBM"
+          scope="simulation" class="net.sourceforge.jabm.agent.AgentList"
+          init-method="populateFromFactory">
+        <property name="size" value="200"/>
+        <property name="agentFactory" ref="linearCombinationTraderFactoryIBM"/>
+    </bean>
 
-<bean id="linearCombinationTraderFactoryIBM" scope="simulation"
-        class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
-    <property name="targetBeanName">
-        <idref local="linearCombinationTraderPrototypeIBM"/>
-    </property>        
-</bean>
+    <bean id="linearCombinationTraderFactoryIBM" scope="simulation"
+          class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+        <property name="targetBeanName">
+            <idref local="linearCombinationTraderPrototypeIBM"/>
+        </property>
+    </bean>
 
-<bean id="noiseTraderFactoryIBM" scope="simulation"
-	class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
-	<property name="targetBeanName">
-		<idref local="noiseTraderPrototypeIBM" />
-	</property>
-</bean>
+    <bean id="noiseTraderFactoryIBM" scope="simulation"
+          class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+        <property name="targetBeanName">
+            <idref local="noiseTraderPrototypeIBM" />
+        </property>
+    </bean>
 
-<bean id="fundamentalistFactoryIBM" scope="simulation"
-    class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
-    <property name="targetBeanName">
-        <idref local="fundamentalistPrototypeIBM" />
-    </property>
-</bean>
+    <bean id="fundamentalistFactoryIBM" scope="simulation"
+          class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+        <property name="targetBeanName">
+            <idref local="fundamentalistPrototypeIBM" />
+        </property>
+    </bean>
 
-<bean id="chartistFactoryIBM" scope="simulation"
-    class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
-    <property name="targetBeanName">
-        <idref local="chartistPrototypeIBM" />
-    </property>
-</bean>
+    <bean id="chartistFactoryIBM" scope="simulation"
+          class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+        <property name="targetBeanName">
+            <idref local="chartistPrototypeIBM" />
+        </property>
+    </bean>
 
-<bean id="linearCombinationTraderPrototypeIBM" scope="prototype"
-            class="net.sourceforge.jasa.agent.SimpleTradingAgent">
-    <property name="strategy" ref="returnForecastStrategyIBM"/>
-    <property name="valuationPolicy" ref="linearCombinationValuationPolicyIBM"/>
-</bean>
+    <bean id="linearCombinationTraderPrototypeIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.SimpleTradingAgent">
+        <property name="strategy" ref="returnForecastStrategyIBM"/>
+        <property name="valuationPolicy" ref="linearCombinationValuationPolicyIBM"/>
+    </bean>
 
-<bean id="noiseTraderPrototypeIBM" scope="prototype"
-        class="net.sourceforge.jasa.agent.SimpleTradingAgent">
-	<property name="strategy" ref="returnForecastStrategyIBM"/>
-	<property name="valuationPolicy" ref="noiseTraderValuationPolicyIBM"/>
-</bean>
+    <bean id="noiseTraderPrototypeIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.SimpleTradingAgent">
+        <property name="strategy" ref="returnForecastStrategyIBM"/>
+        <property name="valuationPolicy" ref="noiseTraderValuationPolicyIBM"/>
+    </bean>
 
-<bean id="fundamentalistPrototypeIBM" scope="prototype"
-        class="net.sourceforge.jasa.agent.SimpleTradingAgent">
-    <property name="strategy" ref="returnForecastStrategyIBM"/>
-    <property name="valuationPolicy" ref="fundamentalistValuationPolicyIBM"/>
-</bean>
+    <bean id="fundamentalistPrototypeIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.SimpleTradingAgent">
+        <property name="strategy" ref="returnForecastStrategyIBM"/>
+        <property name="valuationPolicy" ref="fundamentalistValuationPolicyIBM"/>
+    </bean>
 
-<bean id="chartistPrototypeIBM" scope="prototype"
-        class="net.sourceforge.jasa.agent.SimpleTradingAgent">
+    <bean id="chartistPrototypeIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.SimpleTradingAgent">
         <property name="strategy" ref="returnForecastStrategyIBM"/>
         <property name="valuationPolicy" ref="chartistValuationPolicyIBM"/>
-</bean>
+    </bean>
 
-<bean id="strategyIBM" scope="prototype"
-	class="net.sourceforge.jabm.strategy.AbstractStrategy">
-	<property name="scheduler" ref="ibmController"/>
-</bean>
+    <bean id="strategyIBM" scope="prototype"
+          class="net.sourceforge.jabm.strategy.AbstractStrategy">
+        <property name="scheduler" ref="ibmController"/>
+    </bean>
 
-<bean id="returnForecastStrategyIBM" scope="prototype" parent="strategyIBM"
-        class="net.sourceforge.jasa.agent.strategy.SimpleMarkupStrategy">
-    <property name="markupDistribution" ref="markupDistributionIBM"/>
-    <property name="prng" ref="prng"/>
-    <property name="tradeDirectionPolicy">
-    	<bean class="net.sourceforge.jasa.agent.strategy.ForecastTradeDirectionPolicy">
-    		<property name="prng" ref="prng"/>
-    	</bean>
-    </property>
-</bean>
-
-<bean id="markupDistributionIBM" scope="singleton"
-    class="net.sourceforge.jabm.distribution.UniformDistribution">
-    <property name="min" value="0.0"/>
-    <property name="max" value="0.5"/>
-    <property name="prng" ref="prng"/>
-</bean>
-
-<bean id="timeHorizonForecasterIBM" scope="simulation"
-		class="net.sourceforge.jasa.agent.valuation.ReturnForecasterWithTimeHorizon">
-	<property name="timeHorizon" value="200"/>
-</bean>
-
-<bean id="noiseTraderForecasterIBM" parent="timeHorizonForecasterIBM"
-		scope="simulation"
-		class="net.sourceforge.jasa.agent.valuation.NoiseTraderForecaster">
-	<property name="prng" ref="prng"/>
-</bean>
-
-<bean id="chartistForecasterIBM" parent="timeHorizonForecasterIBM" scope="prototype"
-            class="net.sourceforge.jasa.agent.valuation.ChartistForecaster">
-    <property name="windowSizeDistribution" ref="chartistWindowSizeDistributionIBM"/>
- <property name="sampleInterval" value="1"/>  
-</bean>
-
-<bean id="fundamentalistForecasterIBM" parent="timeHorizonForecasterIBM"
-	scope="simulation" 
-	class="net.sourceforge.jasa.agent.valuation.FundamentalistForecaster">
-	<property name="fundamentalPrice" ref="constantFundamentalPriceIBM" />
-</bean>
-
-<bean id="constantFundamentalPriceIBM"
-		class="net.sourceforge.jabm.util.MutableDoubleWrapper">
-	<property name="value" value="500.0"/>
-</bean>
-
-<bean id="gbmFundamentalPriceIBM" scope="singleton"
- 		class="net.sourceforge.jabm.util.MutableDoubleWrapper">
-	<property name="value" value="500.0"/>
-</bean>
-
-<bean id="gbmPriceProcessIBM"  scope="simulation"
-		class="net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess">
-	<property name="priceWrapper" ref="gbmFundamentalPriceIBM"/>
-	<property name="drift" value="0.2"/>
-	<property name="volatility" value="0.4"/>
-	<property name="dt" value="0.00005"/>
-	<property name="prng" ref="prng"/>
-</bean>
-
-<bean id="noiseTraderValuationPolicyIBM" scope="prototype"
-		class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
-	<property name="forecaster" ref="noiseTraderForecasterIBM"/>
-</bean>
-
-<bean id="fundamentalistValuationPolicyIBM" scope="prototype"
-	class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
-	<property name="forecaster" ref="fundamentalistForecasterIBM"/>
-</bean>
-
-<bean id="chartistValuationPolicyIBM" scope="prototype"
-		class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
-		<property name="forecaster" ref="chartistForecasterIBM"/>
-</bean>
-
-<bean id="linearCombinationValuationPolicyIBM" scope="prototype"
-	class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
-	<property name="forecaster" ref="linearCombinationForecasterIBM"/>
-</bean>
-
-<bean id="linearCombinationForecasterIBM" scope="prototype"
-            class="net.sourceforge.jasa.agent.valuation.LinearWeightedReturnForecaster">
-    
-    <property name="timeHorizon" value="7"/>
-    
-    <property name="forecasters">
-        <list>
-            <ref bean="fundamentalistForecasterIBM"/>
-            <ref bean="chartistForecasterIBM"/>
-            <ref bean="noiseTraderForecasterIBM"/>
-        </list>
-    </property>
-    
-    <property name="distributions">
-        <list>
-            <ref bean="fundamentalistWeightDistributionIBM"/>
-            <ref bean="chartistWeightDistributionIBM"/>
-            <ref bean="noiseTraderWeightDistributionIBM"/>
-        </list>
-    </property>
-    
-    <property name="scaling" value="1.0"/>
-</bean>
-
-<bean id="fundamentalistWeightDistributionIBM"
-        class="net.sourceforge.jabm.util.AbsoluteContinuousDistribution"
-        scope="prototype">
-       <property name="underlyingDistribution">
-	        <bean class="net.sourceforge.jabm.distribution.NormalDistribution">
-	        	<property name="mean" value="0.0"/>
-				<property name="stdev" ref="weightStdevDistributionIBM"/>
-	        	<property name="prng" ref="prng"/>
-	        </bean>
+    <bean id="returnForecastStrategyIBM" scope="prototype" parent="strategyIBM"
+          class="net.sourceforge.jasa.agent.strategy.SimpleMarkupStrategy">
+        <property name="markupDistribution" ref="markupDistributionIBM"/>
+        <property name="prng" ref="prng"/>
+        <property name="tradeDirectionPolicy">
+            <bean class="net.sourceforge.jasa.agent.strategy.ForecastTradeDirectionPolicy">
+                <property name="prng" ref="prng"/>
+            </bean>
         </property>
-</bean>
+    </bean>
 
-	<bean id="chartistWeightDistributionIBM"
-		class="net.sourceforge.jabm.util.AbsoluteContinuousDistribution"
-		scope="prototype">
-		<property name="underlyingDistribution" ref="chartistNormalIBM"/>
-	</bean>
+    <bean id="markupDistributionIBM" scope="singleton"
+          class="net.sourceforge.jabm.distribution.UniformDistribution">
+        <property name="min" value="0.0"/>
+        <property name="max" value="0.5"/>
+        <property name="prng" ref="prng"/>
+    </bean>
 
-	<bean id="chartistNormalIBM" class="net.sourceforge.jabm.distribution.NormalDistribution"
-		scope="prototype">
-		<property name="mean" value="0.0" />
-		<property name="stdev" ref="weightStdevDistributionIBM" />
-		<property name="prng" ref="prng" />
-	</bean>
+    <bean id="timeHorizonForecasterIBM" scope="simulation"
+          class="net.sourceforge.jasa.agent.valuation.ReturnForecasterWithTimeHorizon">
+        <property name="timeHorizon" value="200"/>
+    </bean>
 
-<bean id="noiseTraderWeightDistributionIBM"
-	class="net.sourceforge.jabm.distribution.NormalDistribution"
-        scope="prototype">
-	<property name="mean" value="0.0"/>
-	<property name="stdev" ref="weightStdevDistributionIBM"/>
-	<property name="prng" ref="prng"/>
-</bean>
+    <bean id="noiseTraderForecasterIBM" parent="timeHorizonForecasterIBM"
+          scope="simulation"
+          class="net.sourceforge.jasa.agent.valuation.NoiseTraderForecaster">
+        <property name="prng" ref="prng"/>
+    </bean>
 
-<bean id="weightStdevDistributionIBM"
-	class="net.sourceforge.jabm.spring.RandomDoubleFactoryBean">
-	<property name="distribution">
-		<bean class="net.sourceforge.jabm.distribution.UniformDistribution">
-			<property name="min" value="0.1"/>
-			<property name="max" value="0.3"/>
-			<property name="prng" ref="prng"/>
-		</bean>
-	</property>
-</bean>
+    <bean id="chartistForecasterIBM" parent="timeHorizonForecasterIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.valuation.ChartistForecaster">
+        <property name="windowSizeDistribution" ref="chartistWindowSizeDistributionIBM"/>
+        <property name="sampleInterval" value="1"/>
+    </bean>
 
-<bean id="chartistWindowSizeDistributionIBM"
-		class="net.sourceforge.jabm.distribution.UniformDistribution"
-        scope="prototype">
-	<property name="min" value="200.0"/>
-	<property name="max" value="2000.0"/>
-	<property name="prng" ref="prng"/>
-</bean>
+    <bean id="fundamentalistForecasterIBM" parent="timeHorizonForecasterIBM"
+          scope="simulation"
+          class="net.sourceforge.jasa.agent.valuation.FundamentalistForecaster">
+        <property name="fundamentalPrice" ref="constantFundamentalPriceIBM" />
+    </bean>
 
-<bean id="randomValuationPolicyIBM"
-            class="net.sourceforge.jasa.agent.valuation.RandomValuer">
-	<constructor-arg value="10"/>
-	<constructor-arg value="100"/>
-	<constructor-arg ref="prng"/>
-</bean>
+    <bean id="constantFundamentalPriceIBM"
+          class="net.sourceforge.jabm.util.MutableDoubleWrapper">
+        <property name="value" value="500.0"/>
+    </bean>
+
+    <bean id="gbmFundamentalPriceIBM" scope="singleton"
+          class="net.sourceforge.jabm.util.MutableDoubleWrapper">
+        <property name="value" value="500.0"/>
+    </bean>
+
+    <bean id="gbmPriceProcessIBM"  scope="simulation"
+          class="net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess">
+        <property name="priceWrapper" ref="gbmFundamentalPriceIBM"/>
+        <property name="drift" value="0.2"/>
+        <property name="volatility" value="0.4"/>
+        <property name="dt" value="0.00005"/>
+        <property name="prng" ref="prng"/>
+    </bean>
+
+    <bean id="noiseTraderValuationPolicyIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
+        <property name="forecaster" ref="noiseTraderForecasterIBM"/>
+    </bean>
+
+    <bean id="fundamentalistValuationPolicyIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
+        <property name="forecaster" ref="fundamentalistForecasterIBM"/>
+    </bean>
+
+    <bean id="chartistValuationPolicyIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
+        <property name="forecaster" ref="chartistForecasterIBM"/>
+    </bean>
+
+    <bean id="linearCombinationValuationPolicyIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.valuation.ReturnForecastValuationPolicy">
+        <property name="forecaster" ref="linearCombinationForecasterIBM"/>
+    </bean>
+
+    <bean id="linearCombinationForecasterIBM" scope="prototype"
+          class="net.sourceforge.jasa.agent.valuation.LinearWeightedReturnForecaster">
+
+        <property name="timeHorizon" value="7"/>
+
+        <property name="forecasters">
+            <list>
+                <ref bean="fundamentalistForecasterIBM"/>
+                <ref bean="chartistForecasterIBM"/>
+                <ref bean="noiseTraderForecasterIBM"/>
+            </list>
+        </property>
+
+        <property name="distributions">
+            <list>
+                <ref bean="fundamentalistWeightDistributionIBM"/>
+                <ref bean="chartistWeightDistributionIBM"/>
+                <ref bean="noiseTraderWeightDistributionIBM"/>
+            </list>
+        </property>
+
+        <property name="scaling" value="1.0"/>
+    </bean>
+
+    <bean id="fundamentalistWeightDistributionIBM"
+          class="net.sourceforge.jabm.util.AbsoluteContinuousDistribution"
+          scope="prototype">
+        <property name="underlyingDistribution">
+            <bean class="net.sourceforge.jabm.distribution.NormalDistribution">
+                <property name="mean" value="0.0"/>
+                <property name="stdev" ref="weightStdevDistributionIBM"/>
+                <property name="prng" ref="prng"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="chartistWeightDistributionIBM"
+          class="net.sourceforge.jabm.util.AbsoluteContinuousDistribution"
+          scope="prototype">
+        <property name="underlyingDistribution" ref="chartistNormalIBM"/>
+    </bean>
+
+    <bean id="chartistNormalIBM" class="net.sourceforge.jabm.distribution.NormalDistribution"
+          scope="prototype">
+        <property name="mean" value="0.0" />
+        <property name="stdev" ref="weightStdevDistributionIBM" />
+        <property name="prng" ref="prng" />
+    </bean>
+
+    <bean id="noiseTraderWeightDistributionIBM"
+          class="net.sourceforge.jabm.distribution.NormalDistribution"
+          scope="prototype">
+        <property name="mean" value="0.0"/>
+        <property name="stdev" ref="weightStdevDistributionIBM"/>
+        <property name="prng" ref="prng"/>
+    </bean>
+
+    <bean id="weightStdevDistributionIBM"
+          class="net.sourceforge.jabm.spring.RandomDoubleFactoryBean">
+        <property name="distribution">
+            <bean class="net.sourceforge.jabm.distribution.UniformDistribution">
+                <property name="min" value="0.1"/>
+                <property name="max" value="0.3"/>
+                <property name="prng" ref="prng"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="chartistWindowSizeDistributionIBM"
+          class="net.sourceforge.jabm.distribution.UniformDistribution"
+          scope="prototype">
+        <property name="min" value="200.0"/>
+        <property name="max" value="2000.0"/>
+        <property name="prng" ref="prng"/>
+    </bean>
+
+    <bean id="randomValuationPolicyIBM"
+          class="net.sourceforge.jasa.agent.valuation.RandomValuer">
+        <constructor-arg value="10"/>
+        <constructor-arg value="100"/>
+        <constructor-arg ref="prng"/>
+    </bean>
 
 
-<!-- Beans defining co-evolutionary learning   -->
+    <!-- Beans defining co-evolutionary learning   -->
 
-<bean id="evolvingPopulationIBM" parent="staticPopulation"
-		class="net.sourceforge.jabm.evolution.EvolvingPopulation" 
-		scope="simulation">
-	<property name="prng" ref="prng"/>
-	<property name="breeder" ref="uniformBreederIBM"/>
-	<property name="breedingInterval" value="1"/>
-</bean> 
+    <bean id="evolvingPopulationIBM" parent="staticPopulation"
+          class="net.sourceforge.jabm.evolution.EvolvingPopulation"
+          scope="simulation">
+        <property name="prng" ref="prng"/>
+        <property name="breeder" ref="uniformBreederIBM"/>
+        <property name="breedingInterval" value="1"/>
+    </bean>
 
-<bean id="uniformBreederIBM" class="net.sourceforge.jabm.evolution.CombiBreeder">
-	<property name="breedingPipeline">
-		<list>
-			<ref bean="fitnessProportionateBreederIBM"/>
-			<ref bean="mutationBreederIBM"/>
-		</list>
-	</property>
-</bean>
+    <bean id="uniformBreederIBM" class="net.sourceforge.jabm.evolution.CombiBreeder">
+        <property name="breedingPipeline">
+            <list>
+                <ref bean="fitnessProportionateBreederIBM"/>
+                <ref bean="mutationBreederIBM"/>
+            </list>
+        </property>
+    </bean>
 
-<bean id="mutationBreederIBM"
-	class="net.sourceforge.jabm.evolution.MutationBreeder">
-	<property name="mutationProbability" value="0.005"/>
-	<property name="prng" ref="prng"/>
-	<property name="mutationOperator">
-		<bean class="net.sourceforge.jasa.agent.valuation.evolution.WeightMutationOperator"/>
-	</property>
-</bean>
+    <bean id="mutationBreederIBM"
+          class="net.sourceforge.jabm.evolution.MutationBreeder">
+        <property name="mutationProbability" value="0.005"/>
+        <property name="prng" ref="prng"/>
+        <property name="mutationOperator">
+            <bean class="net.sourceforge.jasa.agent.valuation.evolution.WeightMutationOperator"/>
+        </property>
+    </bean>
 
-<bean id="fitnessProportionateBreederIBM"
-	class="net.sourceforge.jabm.evolution.FitnessProportionateBreeder"
-		scope="simulation">
-	
-	<property name="prng" ref="prng"/>
-	
-	<property name="fitnessFunction">
-		<bean class="net.sourceforge.jasa.agent.valuation.evolution.ForecastErrorFitnessFunction"
-				scope="simulation"/>
-	</property>
-	
-	<property name="imitationOperator">
-		<bean class="net.sourceforge.jasa.agent.valuation.evolution.ValuationPolicyImitationOperator"/>
-	</property>	
-	
-	<property name="imitationProbability" value="0.2"/>
-	
-</bean>
+    <bean id="fitnessProportionateBreederIBM"
+          class="net.sourceforge.jabm.evolution.FitnessProportionateBreeder"
+          scope="simulation">
+
+        <property name="prng" ref="prng"/>
+
+        <property name="fitnessFunction">
+            <bean class="net.sourceforge.jasa.agent.valuation.evolution.ForecastErrorFitnessFunction"
+                  scope="simulation"/>
+        </property>
+
+        <property name="imitationOperator">
+            <bean class="net.sourceforge.jasa.agent.valuation.evolution.ValuationPolicyImitationOperator"/>
+        </property>
+
+        <property name="imitationProbability" value="0.2"/>
+
+    </bean>
 
 
 </beans>
