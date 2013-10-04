@@ -1,16 +1,17 @@
 package org.investovator;
 
-import javax.servlet.annotation.WebServlet;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import org.investovator.Authentication.AgentGamingView;
+import org.investovator.Authentication.DataPlaybackView;
+import org.investovator.Authentication.LoginView;
+import org.investovator.Authentication.MainGamingView;
+
+import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
@@ -22,25 +23,28 @@ public class MyVaadinUI extends UI
     public static class Servlet extends VaadinServlet {
     }
 
+    private Navigator navigator;
+    private static final String MAINVIEW = "main";
+    private static final String AGENTVIEW = "agentView";
+    private static final String DATAPLAYVIEW = "playbackView";
+
     @Override
     protected void init(VaadinRequest request) {
-        final VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true);
-        setContent(layout);
+        getPage().setTitle("investovator | Gaming Framework");
 
-        Button button = new Button("Click Me");
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                layout.addComponent(new Label("Thank you for clicking"));
-            }
-        });
-        layout.addComponent(button);
+        // Create a navigator to control the views
+        navigator = new Navigator(this, this);
 
-        //test JASA code
-        Main main=new Main();
-        String[] v=new String[1];
-        v[0]="d";
-        main.main(v);
+        // Create and register the views
+        navigator.addView("", new LoginView());
+        navigator.addView(MAINVIEW, new MainGamingView());
+        navigator.addView(AGENTVIEW, new AgentGamingView());
+        navigator.addView(DATAPLAYVIEW, new DataPlaybackView());
     }
 
-}
+        //test JASA code
+        /*Main main=new Main();
+        String[] v=new String[1];
+        v[0]="d";
+        main.main(v);*/
+    }
