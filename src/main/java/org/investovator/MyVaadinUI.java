@@ -10,6 +10,7 @@ import org.investovator.Authentication.AgentGamingView;
 import org.investovator.Authentication.DataPlaybackView;
 import org.investovator.Authentication.LoginView;
 import org.investovator.Authentication.MainGamingView;
+import org.investovator.utils.UIConstants;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -24,9 +25,7 @@ public class MyVaadinUI extends UI
     }
 
     private Navigator navigator;
-    private static final String MAINVIEW = "main";
-    private static final String AGENTVIEW = "agentView";
-    private static final String DATAPLAYVIEW = "playbackView";
+
 
     @Override
     protected void init(VaadinRequest request) {
@@ -37,9 +36,9 @@ public class MyVaadinUI extends UI
 
         // Create and register the views
         navigator.addView("", new LoginView());
-        navigator.addView(MAINVIEW, new MainGamingView());
-        navigator.addView(AGENTVIEW, new AgentGamingView());
-        navigator.addView(DATAPLAYVIEW, new DataPlaybackView());
+        navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
+        navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
+        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackView());
 
         //test JASA code
 //        Main main=new Main();
