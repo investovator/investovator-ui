@@ -42,10 +42,10 @@ public class MyVaadinUI extends UI
         navigator.addView(DATAPLAYVIEW, new DataPlaybackView());
 
         //test JASA code
-        Main main=new Main();
-        String[] v=new String[1];
-        v[0]="d";
-        main.main(v);
+//        Main main=new Main();
+//        String[] v=new String[1];
+//        v[0]="d";
+//        main.main(v);
     }
 
 }
