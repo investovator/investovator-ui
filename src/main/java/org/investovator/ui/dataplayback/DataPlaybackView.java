@@ -4,7 +4,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import org.investovator.ui.Authentication.Authenticator;
+import org.investovator.ui.authentication.Authenticator;
 
 /**
  * Created with IntelliJ IDEA.

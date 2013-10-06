@@ -8,7 +8,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import org.investovator.ui.agentgaming.AgentGamingView;
 import org.investovator.ui.dataplayback.DataPlaybackView;
-import org.investovator.ui.Authentication.LoginView;
+import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.utils.UIConstants;
 

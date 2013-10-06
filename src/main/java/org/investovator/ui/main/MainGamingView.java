@@ -7,7 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import org.investovator.ui.Authentication.Authenticator;
+import org.investovator.ui.authentication.Authenticator;
 
 /**
  * Created with IntelliJ IDEA.
