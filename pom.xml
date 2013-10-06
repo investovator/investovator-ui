@@ -62,7 +62,24 @@
             <artifactId>controller</artifactId>
             <version>0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.investovator</groupId>
+            <artifactId>dataPlaybackEngine</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!--end of investovator related-->
+
+        <!--for asynchronous server pushes-->
+        <!--source : https://vaadin.com/wiki/-/wiki/Main/Enabling%20server%20push-->
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-push</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+
+        <!--end of asynchronous server pushes-->
+
 
 		<dependency>
 			<groupId>com.vaadin</groupId>

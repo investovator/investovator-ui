@@ -1,5 +1,6 @@
 package org.investovator;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
@@ -16,6 +17,7 @@ import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
+@Push
 public class MyVaadinUI extends UI
 {
 
