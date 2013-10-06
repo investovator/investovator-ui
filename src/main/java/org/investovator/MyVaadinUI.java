@@ -6,11 +6,11 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
-import org.investovator.Authentication.AgentGamingView;
-import org.investovator.Authentication.DataPlaybackView;
-import org.investovator.Authentication.LoginView;
-import org.investovator.Authentication.MainGamingView;
-import org.investovator.utils.UIConstants;
+import org.investovator.ui.agentgaming.AgentGamingView;
+import org.investovator.ui.dataplayback.DataPlaybackView;
+import org.investovator.ui.Authentication.LoginView;
+import org.investovator.ui.main.MainGamingView;
+import org.investovator.ui.utils.UIConstants;
 
 import javax.servlet.annotation.WebServlet;
 

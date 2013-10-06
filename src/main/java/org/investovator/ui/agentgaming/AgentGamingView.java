@@ -1,9 +1,10 @@
-package org.investovator.Authentication;
+package org.investovator.ui.agentgaming;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.ui.Authentication.Authenticator;
 
 /**
  * Created with IntelliJ IDEA.

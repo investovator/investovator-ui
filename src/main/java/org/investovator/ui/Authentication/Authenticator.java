@@ -1,4 +1,4 @@
-package org.investovator.Authentication;
+package org.investovator.ui.Authentication;
 
 /**
  * Created with IntelliJ IDEA.

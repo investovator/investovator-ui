@@ -5,7 +5,7 @@
     </context-param>
 
     <listener>
-        <listener-class>org.investovator.utils.SystemPropertiesHelper</listener-class>
+        <listener-class>org.investovator.ui.utils.SystemPropertiesHelper</listener-class>
     </listener>
 
 </web-app>

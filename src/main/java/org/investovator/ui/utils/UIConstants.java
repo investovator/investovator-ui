@@ -1,4 +1,4 @@
-package org.investovator.utils;
+package org.investovator.ui.utils;
 
 /**
  * @author: ishan

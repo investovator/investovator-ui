@@ -1,4 +1,4 @@
-package org.investovator.Authentication;
+package org.investovator.ui.Authentication;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
