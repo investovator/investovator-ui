@@ -20,25 +20,43 @@ import java.util.Observer;
 @SuppressWarnings("serial")
 public class DataPlaybackView extends VerticalLayout implements View, Observer {
     Authenticator authenticator;
+    DataPlayer player ;
     Label entry;
     int i = 0;
 
     public DataPlaybackView() {
         authenticator = Authenticator.getInstance();
-        entry = new Label("Enter this");
+        entry = new Label();
+        player= new DataPlayer("GOOG", this);
     }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        // TODO Auto-generated method stub
         if (!authenticator.isLoggedIn()) {
             getUI().getNavigator().navigateTo("");
         } else {
             Notification.show("Welcome to Data Playback Engine");
             addComponent(entry);
             addComponent(new Label("------------------------------------------------"));
-            DataPlayer player = new DataPlayer("GOOG", this);
-            player.runPlayback(1);
+
+            Button startBut=new Button("play");
+            startBut.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    player.runPlayback(1);
+                }
+            });
+
+            Button stopBut=new Button("stop");
+            stopBut.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    player.stopPlayback();
+                }
+            });
+            addComponent(startBut);
+            addComponent(stopBut);
+
 
 
         }
@@ -49,7 +67,6 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
     @Override
     public void update(Observable o, Object arg) {
         final HistoryOrderData d = (HistoryOrderData) arg;
-
 
         getUI().access(new Runnable() {
             @Override
