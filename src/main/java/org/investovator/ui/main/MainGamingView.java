@@ -8,6 +8,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.UIConstants;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,9 +31,8 @@ public class MainGamingView extends VerticalLayout implements View {
         Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                // TODO Auto-generated method stub
                 if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo("agentView");
+                    getUI().getNavigator().navigateTo(UIConstants.AGENTVIEW);
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -43,16 +43,26 @@ public class MainGamingView extends VerticalLayout implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                // TODO Auto-generated method stub
                 if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo("playbackView");
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
                 }
             }
         });
-        FormLayout layout = new FormLayout(agentGames,dataPlayback);
+        Button nnGames = new Button("NN Gaming Engine", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(authenticator.isLoggedIn()){
+                    getUI().getNavigator().navigateTo(UIConstants.NNVIEW);
+                }
+                else {
+                    getUI().getNavigator().navigateTo("");
+                }
+            }
+        });
+        FormLayout layout = new FormLayout(agentGames,dataPlayback,nnGames);
         addComponent(layout);
     }
 

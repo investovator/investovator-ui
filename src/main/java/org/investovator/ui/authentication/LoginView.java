@@ -3,6 +3,7 @@ package org.investovator.ui.authentication;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
+import org.investovator.ui.utils.UIConstants;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +19,10 @@ import com.vaadin.ui.*;
 
         public LoginView() {
             authenticator = Authenticator.getInstance();
+            init();
+        }
+
+        private void init(){
             Label userName = new Label("User Name");
             Label password = new Label("Password");
             com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
@@ -30,7 +35,7 @@ import com.vaadin.ui.*;
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
                             authenticator.setLoggedIn(true);
-                            getUI().getNavigator().navigateTo("main");
+                            getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
                         }
                     });
             layout.addComponents(userName,userField,password,pwdField,loginButton);
