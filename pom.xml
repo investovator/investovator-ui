@@ -81,7 +81,16 @@
         <!--end of asynchronous server pushes-->
 
 
-		<dependency>
+        <!--dcharts-->
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>dcharts-widget</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <!--end of dcharts-->
+
+
+        <dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 			<version>${vaadin.version}</version>
