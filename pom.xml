@@ -59,7 +59,7 @@
         <!--investovator related-->
         <dependency>
             <groupId>org.investovator</groupId>
-            <artifactId>controller</artifactId>
+            <artifactId>investovator-core</artifactId>
             <version>0.1</version>
         </dependency>
         <dependency>
@@ -83,8 +83,8 @@
 
         <!--dcharts-->
         <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>dcharts-widget</artifactId>
+            <groupId>org.dussan.vaadin</groupId>
+            <artifactId>dcharts</artifactId>
             <version>1.7.0</version>
         </dependency>
         <!--end of dcharts-->

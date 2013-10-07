@@ -13,7 +13,7 @@ import org.dussan.vaadin.dcharts.metadata.locations.TooltipLocations;
 import org.dussan.vaadin.dcharts.metadata.renderers.AxisRenderers;
 import org.dussan.vaadin.dcharts.options.*;
 import org.dussan.vaadin.dcharts.renderers.tick.AxisTickRenderer;
-import org.investovator.controller.data.types.HistoryOrderData;
+import org.investovator.core.data.types.HistoryOrderData;
 import org.investovator.dataPlayBackEngine.DataPlayer;
 import org.investovator.ui.Authentication.Authenticator;
 
@@ -72,6 +72,8 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
         }
 
         ///
+        int k=0;
+        System.out.println(k++);
         DataSeries dataSeries = new DataSeries()
                 .newSeries()
                 .add("23-May-08", 1)
@@ -79,10 +81,12 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
                 .add("25-May-08", 2)
                 .add("26-May-08", 6);
 
+        System.out.println(k++);
         SeriesDefaults seriesDefaults = new SeriesDefaults()
                 .setTrendline(
                         new Trendline()
                                 .setShow(true));
+        System.out.println(k++);
 
         Axes axes = new Axes()
                 .addAxis(
@@ -97,6 +101,7 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
                                 .setTickOptions(
                                         new AxisTickRenderer()
                                                 .setFormatString("$%.2f")));
+        System.out.println(k++);
 
         Highlighter highlighter = new Highlighter()
                 .setShow(true)
@@ -105,21 +110,25 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
                 .setTooltipAxes(TooltipAxes.Y)
                 .setTooltipFormatString("<b><i><span style='color:red;'>hello</span></i></b> %.2f")
                 .setUseAxesFormatters(false);
+        System.out.println(k++);
 
         Cursor cursor = new Cursor()
                 .setShow(true);
+        System.out.println(k++);
 
         Options options = new Options()
                 .addOption(seriesDefaults)
                 .addOption(axes)
                 .addOption(highlighter)
                 .addOption(cursor);
+        System.out.println(k++);
 
         DCharts chart = new DCharts()
                 .setDataSeries(dataSeries)
                 .setOptions(options)
                 .show();
 
+        System.out.println(k++);
 
 
         //
