@@ -127,6 +127,10 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
                 .setDataSeries(dataSeries)
                 .setOptions(options)
                 .show();
+        System.out.println(k++);
+
+        addComponent(chart);
+
 
         System.out.println(k++);
 
