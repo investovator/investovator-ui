@@ -4,6 +4,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import org.dussan.vaadin.dcharts.DCharts;
+import org.dussan.vaadin.dcharts.base.elements.Animation;
 import org.dussan.vaadin.dcharts.base.elements.Trendline;
 import org.dussan.vaadin.dcharts.base.elements.XYaxis;
 import org.dussan.vaadin.dcharts.data.DataSeries;
@@ -12,6 +13,8 @@ import org.dussan.vaadin.dcharts.metadata.XYaxes;
 import org.dussan.vaadin.dcharts.metadata.locations.TooltipLocations;
 import org.dussan.vaadin.dcharts.metadata.renderers.AxisRenderers;
 import org.dussan.vaadin.dcharts.options.*;
+import org.dussan.vaadin.dcharts.renderers.series.animations.BarAnimation;
+import org.dussan.vaadin.dcharts.renderers.series.animations.LineAnimation;
 import org.dussan.vaadin.dcharts.renderers.tick.AxisTickRenderer;
 import org.investovator.core.data.types.HistoryOrderData;
 import org.investovator.dataPlayBackEngine.DataPlayer;
@@ -116,7 +119,9 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
                 .setShow(true);
         System.out.println(k++);
 
-        Options options = new Options()
+//        LineAnimation an=new LineAnimation().setShow(true);
+
+        Options options = new Options().setAnimate(true)
                 .addOption(seriesDefaults)
                 .addOption(axes)
                 .addOption(highlighter)
