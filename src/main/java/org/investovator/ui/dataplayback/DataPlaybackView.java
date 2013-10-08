@@ -3,7 +3,7 @@ package org.investovator.ui.dataplayback;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
-import org.investovator.controller.data.types.HistoryOrderData;
+import org.investovator.core.data.types.HistoryOrderData;
 import org.investovator.dataPlayBackEngine.DataPlayer;
 import org.investovator.ui.Authentication.Authenticator;
 
@@ -27,7 +27,8 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
     public DataPlaybackView() {
         authenticator = Authenticator.getInstance();
         entry = new Label();
-        player= new DataPlayer("GOOG", this);
+        player= new DataPlayer("GOOG");
+        player.setObserver(this);
     }
 
     @Override
