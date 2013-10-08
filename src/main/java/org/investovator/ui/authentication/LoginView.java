@@ -23,10 +23,10 @@ import org.investovator.ui.utils.UIConstants;
         }
 
         private void init(){
-            Label userName = new Label("User Name");
-            Label password = new Label("Password");
-            com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
-            PasswordField pwdField = new PasswordField();
+            final Label userName = new Label("User Name");
+            final Label password = new Label("Password");
+            final com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
+            final PasswordField pwdField = new PasswordField();
 
             FormLayout layout = new FormLayout();
 
@@ -34,7 +34,7 @@ import org.investovator.ui.utils.UIConstants;
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
-                            authenticator.setLoggedIn(true);
+                            authenticator.authenticate(userField.getValue(), pwdField.getValue());
                             getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
                         }
                     });
