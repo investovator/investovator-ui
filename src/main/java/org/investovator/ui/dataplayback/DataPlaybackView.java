@@ -4,6 +4,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import org.investovator.core.data.types.HistoryOrderData;
+import org.investovator.core.excelimporter.HistoryData;
 import org.investovator.dataPlayBackEngine.DataPlayer;
 import org.investovator.ui.Authentication.Authenticator;
 
@@ -36,6 +37,9 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
         if (!authenticator.isLoggedIn()) {
             getUI().getNavigator().navigateTo("");
         } else {
+
+            //related to ticker data playback
+
             Notification.show("Welcome to Data Playback Engine");
             addComponent(entry);
             addComponent(new Label("------------------------------------------------"));
@@ -57,6 +61,30 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
             });
             addComponent(startBut);
             addComponent(stopBut);
+
+//            end of related to ticker data playback
+
+            //OHLC data playback related
+            Button ohlcStartBut=new Button("play OHLC");
+            ohlcStartBut.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    final HistoryData d=player.getOHLCPrice("Goog", "2012-10-3-19-45-33");
+
+                    getUI().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            //entry.setValue(d.getDate() + "-" + d.getStockId() + "-" + i);
+                            addComponent(new Label(d.getOpeningPrice() + "-" + d.getClosingPrice() + "-" + i));
+                            i++;
+
+
+                        }
+                    });
+                }
+            });
+
+            addComponent(ohlcStartBut);
 
 
 
