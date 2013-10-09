@@ -1,10 +1,10 @@
 package org.investovator.ui.agentgaming;
 
 import com.vaadin.data.Property;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Notification;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.controller.config.ModelGenerator;
 import org.investovator.ui.GlobalView;
 import com.vaadin.ui.*;
 import org.investovator.ui.authentication.Authenticator;
@@ -25,7 +25,7 @@ public class AgentGamingView extends GlobalView {
 
 
     String[] selectedStocks;
-    //ConfigGenerator configGenerator = new ConfigGenerator()
+    ConfigGenerator configGenerator;
 
 
     public AgentGamingView(){
@@ -34,8 +34,8 @@ public class AgentGamingView extends GlobalView {
         stockSelectView = new VerticalLayout();
         agentSelectView = new VerticalLayout();
 
-        stockSelectState();
-        setSimulationSettings();
+        setViews();
+
     }
 
 
@@ -57,7 +57,7 @@ public class AgentGamingView extends GlobalView {
     }
 
 
-    private void stockSelectState(){
+    private void setViews(){
 
         TwinColSelect stockSelectList = new TwinColSelect("Select Stocks for Game");
         stockSelectList.addItem("SAMP");
@@ -67,6 +67,12 @@ public class AgentGamingView extends GlobalView {
 
         stockSelectView.addStyleName("outlined");
         stockSelectView.addComponent(stockSelectList);
+
+
+        agentSelectList = new TwinColSelect("Select Agents for Game");
+        agentSelectView.addStyleName("outlined");
+        agentSelectView.addComponent(agentSelectList);
+
 
         stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -96,10 +102,11 @@ public class AgentGamingView extends GlobalView {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 //To change body of implemented methods use File | Settings | File Templates.
 
-                for (int i = 0; i < selectedStocks.length; i++) {
-                    agentSelectList.addItem(selectedStocks[i]);
-                }
+                String outputPath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/config";
+                configGenerator = new ConfigGenerator(selectedStocks,outputPath);
+
                 getUI().getNavigator().navigateTo(UIConstants.AGENTVIEW + "/agentSelect");
+                setAgentSettingsView();
             }
         });
 
@@ -108,17 +115,28 @@ public class AgentGamingView extends GlobalView {
 
 
 
-    private void setSimulationSettings(){
+    private void setAgentSettingsView(){
+
+        String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+        String  templateFile = basepath +"/WEB-INF/templates/model_template.xml";
 
 
-
-        agentSelectList = new TwinColSelect("Select Agents for Game");
-
-        agentSelectView.addStyleName("outlined");
-        agentSelectView.addComponent(agentSelectList);
+        configGenerator.setModelTemlpateFile(templateFile);
+        String[] availableAgents = configGenerator.getSupportedAgentTypes();
 
 
+        int width = 0;
+
+        for (int i = 0; i < availableAgents.length; i++) {
+            String agent = availableAgents[i];
+            if(width<agent.length()) width = agent.length();
+            agentSelectList.addItem(agent);
+        }
+
+        agentSelectList.setWidth(width+10,Unit.EM);
     }
+
+
 
 
     //UI Widgets
