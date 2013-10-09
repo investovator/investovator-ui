@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <imports>
+        <!--Auto Fill Imports-->
+    </imports>
+
+    <bean id="simulationManager" class="org.investovator.multiasset.simulation.MultiAssetSimulationManager"
+          scope="singleton">
+        <property name="simulations">
+            <list>
+                <controllers/>   <!--Auto Fill-->
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="exchange" class="org.investovator.exchange.Exchange" scope="singleton">
+        <property name="stocks">
+            <list>
+                <stocks/>   <!--Auto Fill-->
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="fileNamePrefix" class="net.sourceforge.jabm.util.MutableStringWrapper"
+          scope="singleton">
+        <constructor-arg value="data/" />
+    </bean>
+</beans>
