@@ -7,7 +7,9 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import org.investovator.ui.Authentication.Authenticator;
+import org.investovator.ui.GlobalView;
+import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.UIConstants;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,21 +20,20 @@ import org.investovator.ui.Authentication.Authenticator;
  */
 @SuppressWarnings("serial")
 
-public class MainGamingView extends VerticalLayout implements View {
+public class MainGamingView extends GlobalView{
+
     Navigator navigator;
-    Authenticator authenticator;
 
     public MainGamingView(){
         init();
-        authenticator = Authenticator.getInstance();
     }
+
     private void init(){
         Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                // TODO Auto-generated method stub
                 if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo("agentView");
+                    getUI().getNavigator().navigateTo(UIConstants.AGENTVIEW);
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -43,27 +44,33 @@ public class MainGamingView extends VerticalLayout implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                // TODO Auto-generated method stub
                 if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo("playbackView");
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
                 }
             }
         });
-        FormLayout layout = new FormLayout(agentGames,dataPlayback);
+        Button nnGames = new Button("NN Gaming Engine", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(authenticator.isLoggedIn()){
+                    getUI().getNavigator().navigateTo(UIConstants.NNVIEW);
+                }
+                else {
+                    getUI().getNavigator().navigateTo("");
+                }
+            }
+        });
+        FormLayout layout = new FormLayout(agentGames,dataPlayback,nnGames);
         addComponent(layout);
     }
 
     @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-        if(!authenticator.isLoggedIn()){
-            getUI().getNavigator().navigateTo("");
-        }
-        else{
-            Notification.show("Welcome to Main Gaming Engine");
-        }
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        Notification.show("Welcome to Main Gaming Engine");
     }
+
 
 }

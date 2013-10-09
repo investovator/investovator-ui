@@ -1,8 +1,9 @@
-package org.investovator.ui.Authentication;
+package org.investovator.ui.authentication;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
+import org.investovator.ui.utils.UIConstants;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,10 +19,14 @@ import com.vaadin.ui.*;
 
         public LoginView() {
             authenticator = Authenticator.getInstance();
-            Label userName = new Label("User Name");
-            Label password = new Label("Password");
-            com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
-            PasswordField pwdField = new PasswordField();
+            init();
+        }
+
+        private void init(){
+            final Label userName = new Label("User Name");
+            final Label password = new Label("Password");
+            final com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
+            final PasswordField pwdField = new PasswordField();
 
             FormLayout layout = new FormLayout();
 
@@ -29,8 +34,8 @@ import com.vaadin.ui.*;
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
-                            authenticator.setLoggedIn(true);
-                            getUI().getNavigator().navigateTo("main");
+                            authenticator.authenticate(userField.getValue(), pwdField.getValue());
+                            getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
                         }
                     });
             layout.addComponents(userName,userField,password,pwdField,loginButton);

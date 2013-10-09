@@ -14,7 +14,8 @@ import com.vaadin.ui.*;
 import org.investovator.core.data.types.HistoryOrderData;
 import org.investovator.core.excelimporter.HistoryData;
 import org.investovator.dataPlayBackEngine.DataPlayer;
-import org.investovator.ui.Authentication.Authenticator;
+import org.investovator.ui.GlobalView;
+import org.investovator.ui.authentication.Authenticator;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -27,7 +28,7 @@ import java.util.Observer;
  * To change this template use File | Settings | File Templates.
  */
 @SuppressWarnings("serial")
-public class DataPlaybackView extends VerticalLayout implements View, Observer {
+public class DataPlaybackView extends GlobalView implements Observer {
     Authenticator authenticator;
     DataPlayer player ;
     Label entry;
@@ -299,10 +300,13 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
 
 
         }
+    }
 
 
 
 
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        Notification.show("Welcome to Data Playback Engine");
     }
 
     private PlotOptionsBoxPlot getPlotBoxOptions() {

@@ -1,4 +1,4 @@
-package org.investovator.ui.Authentication;
+package org.investovator.ui.authentication;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,8 +28,19 @@ public class Authenticator {
         return true;
     }
 
-    public void setLoggedIn(boolean loggedIn) {
+    private void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
+    }
+
+    public boolean authenticate(String userName,String password){
+           if(userName.equals("Hasala") && password.equals("CSE")){
+               setLoggedIn(true);
+               return isLoggedIn();
+           }
+           else{
+               return isLoggedIn();
+           }
+
     }
 
 }

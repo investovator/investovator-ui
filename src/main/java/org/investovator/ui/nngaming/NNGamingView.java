@@ -1,4 +1,4 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -10,24 +10,20 @@ import org.investovator.ui.authentication.Authenticator;
 /**
  * Created with IntelliJ IDEA.
  * User: hasala
- * Date: 10/4/13
- * Time: 5:38 PM
+ * Date: 10/7/13
+ * Time: 11:41 AM
  * To change this template use File | Settings | File Templates.
  */
-@SuppressWarnings("serial")
-public class AgentGamingView extends GlobalView {
-
+public class NNGamingView extends GlobalView {
     Authenticator authenticator;
 
-    public AgentGamingView(){
+    public NNGamingView(){
 
     }
-
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        Notification.show("Welcome to Agent Gaming Engine");
+        //To change body of implemented methods use File | Settings | File Templates.
+        Notification.show("Welcome to NN Gaming Engine");
     }
-
 }
-
