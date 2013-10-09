@@ -3,9 +3,11 @@ package org.investovator.ui.dataplayback;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.ChartClickEvent;
 import com.vaadin.addon.charts.ChartClickListener;
+import com.vaadin.addon.charts.ChartOptions;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.model.style.Style;
+import com.vaadin.addon.charts.themes.GrayTheme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
@@ -77,6 +79,8 @@ public class DataPlaybackView extends VerticalLayout implements View, Observer {
 
             //boxplot
             final Chart chart = new Chart();
+
+            ChartOptions.get().setTheme(new GrayTheme());
 
             chart.getConfiguration().setTitle("Box Plot Example");
 
