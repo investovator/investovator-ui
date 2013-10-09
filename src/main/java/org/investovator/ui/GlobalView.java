@@ -17,12 +17,13 @@ public abstract class GlobalView extends VerticalLayout implements View
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
+        authenticator = Authenticator.getInstance();
+
         if(!authenticator.isLoggedIn()){
             getUI().getNavigator().navigateTo("");
         }
-        else{
-            Notification.show("Welcome to Agent Gaming Engine");
-        }
+
+        setupUI(viewChangeEvent);
     }
 
     public abstract void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent);

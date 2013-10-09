@@ -7,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.ui.GlobalView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.UIConstants;
 
@@ -19,14 +20,14 @@ import org.investovator.ui.utils.UIConstants;
  */
 @SuppressWarnings("serial")
 
-public class MainGamingView extends VerticalLayout implements View {
+public class MainGamingView extends GlobalView{
+
     Navigator navigator;
-    Authenticator authenticator;
 
     public MainGamingView(){
         init();
-        authenticator = Authenticator.getInstance();
     }
+
     private void init(){
         Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
             @Override
@@ -67,13 +68,9 @@ public class MainGamingView extends VerticalLayout implements View {
     }
 
     @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-        if(!authenticator.isLoggedIn()){
-            getUI().getNavigator().navigateTo("");
-        }
-        else{
-            Notification.show("Welcome to Main Gaming Engine");
-        }
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        Notification.show("Welcome to Main Gaming Engine");
     }
+
 
 }
