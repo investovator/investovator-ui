@@ -56,6 +56,14 @@
         </dependency>
         <!-- End of JASA related -->
 
+        <!--investovator related-->
+        <dependency>
+            <groupId>org.investovator</groupId>
+            <artifactId>controller</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <!--end of investovator related-->
+
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>

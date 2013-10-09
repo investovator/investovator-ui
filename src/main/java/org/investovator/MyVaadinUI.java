@@ -1,16 +1,19 @@
 package org.investovator;
 
-import javax.servlet.annotation.WebServlet;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import org.investovator.ui.agentgaming.AgentGamingView;
+import org.investovator.ui.dataplayback.DataPlaybackView;
+import org.investovator.ui.authentication.LoginView;
+import org.investovator.ui.main.MainGamingView;
+import org.investovator.ui.nngaming.NNGamingView;
+import org.investovator.ui.utils.UIConstants;
+
+import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
@@ -22,25 +25,28 @@ public class MyVaadinUI extends UI
     public static class Servlet extends VaadinServlet {
     }
 
+    private Navigator navigator;
+
+
     @Override
     protected void init(VaadinRequest request) {
-        final VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true);
-        setContent(layout);
+        getPage().setTitle("investovator | Gaming Framework");
 
-        Button button = new Button("Click Me");
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                layout.addComponent(new Label("Thank you for clicking"));
-            }
-        });
-        layout.addComponent(button);
+        // Create a navigator to control the views
+        navigator = new Navigator(this, this);
+
+        // Create and register the views
+        navigator.addView("", new LoginView());
+        navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
+        navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
+        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackView());
+        navigator.addView(UIConstants.NNVIEW, new NNGamingView());
 
         //test JASA code
-        Main main=new Main();
-        String[] v=new String[1];
-        v[0]="d";
-        main.main(v);
+//        Main main=new Main();
+//        String[] v=new String[1];
+//        v[0]="d";
+//        main.main(v);
     }
 
 }
