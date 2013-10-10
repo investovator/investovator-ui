@@ -209,6 +209,10 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
+                <configuration>
+                    <war>${basedir}/target/investovator-ui-0.1-bin.war</war>
+                    <!--<webAppSourceDirectory>${basedir}/src</webAppSourceDirectory>-->
+                </configuration>
 			</plugin>
             <!-- The configuration of maven-assembly-plugin -->
             <plugin>

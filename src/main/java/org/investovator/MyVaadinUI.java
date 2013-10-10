@@ -8,7 +8,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import org.investovator.ui.agentgaming.AgentGamingView;
-import org.investovator.ui.dataplayback.DataPlaybackView;
+import org.investovator.ui.dataplayback.DataPlaybackViewBackup;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingView;
@@ -41,14 +41,14 @@ public class MyVaadinUI extends UI
         navigator.addView("", new LoginView());
         navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
         navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
-        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackView());
+        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackViewBackup());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
 
         //test JASA code
-//        Main main=new Main();
-//        String[] v=new String[1];
-//        v[0]="d";
-//        main.main(v);
+        Main main=new Main();
+        String[] v=new String[1];
+        v[0]="d";
+        main.main(v);
     }
 
 }
