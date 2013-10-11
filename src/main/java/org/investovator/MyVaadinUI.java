@@ -15,7 +15,7 @@ import org.investovator.ui.utils.UIConstants;
 
 import javax.servlet.annotation.WebServlet;
 
-@Theme("mytheme")
+@Theme("dashboard")
 @SuppressWarnings("serial")
 public class MyVaadinUI extends UI
 {
