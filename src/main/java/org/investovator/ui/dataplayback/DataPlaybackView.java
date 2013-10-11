@@ -48,6 +48,10 @@ public class DataPlaybackView extends GlobalView {
         //to make the dashboard take up the whole space of the browser
         this.setSizeFull();
 
+        //stop re adding components in case of a reload
+        root.removeAllComponents();
+        menu.removeAllComponents();
+
         root.setSizeFull();
         addComponent(root);
 
@@ -56,9 +60,6 @@ public class DataPlaybackView extends GlobalView {
         root.setSizeFull();
 
 
-        TextField tf = new TextField("A TextField");
-        TextField tf1 = new TextField("A TextField");
-        TextField tf2 = new TextField("A TextField");
 //        tf.setIcon(new ThemeResource("icons/user.png"));
 
         addStyleName("main-view");
@@ -75,7 +76,7 @@ public class DataPlaybackView extends GlobalView {
                     {
                         addStyleName("branding");
                         Label logo = new Label(
-                                "<span>QuickTickets</span> Dashboard",
+                                "<span><center>Investovator</center></span> Data Playback",
                                 ContentMode.HTML);
                         logo.setSizeUndefined();
                         addComponent(logo);
@@ -99,67 +100,63 @@ public class DataPlaybackView extends GlobalView {
                                 new ThemeResource("img/profile-pic.png"));
                         profilePic.setWidth("34px");
                         addComponent(profilePic);
-                        Label userName = new Label("hh");
+                        Label userName = new Label("User");
                         userName.setSizeUndefined();
                         addComponent(userName);
 
-//                        MenuBar.Command cmd = new MenuBar.Command() {
-//                            @Override
-//                            public void menuSelected(
-//                                    MenuBar.MenuItem selectedItem) {
-//                                Notification
-//                                        .show("Not implemented in this demo");
-//                            }
-//                        };
-//                        MenuBar settings = new MenuBar();
-//                        MenuBar.MenuItem settingsMenu = settings.addItem("",
-//                                null);
-//                        settingsMenu.setStyleName("icon-cog");
-//                        settingsMenu.addItem("Settings", cmd);
-//                        settingsMenu.addItem("Preferences", cmd);
-//                        settingsMenu.addSeparator();
-//                        settingsMenu.addItem("My Account", cmd);
-//                        addComponent(settings);
+                        MenuBar.Command cmd = new MenuBar.Command() {
+                            @Override
+                            public void menuSelected(
+                                    MenuBar.MenuItem selectedItem) {
+                                Notification
+                                        .show("Not implemented in this demo");
+                            }
+                        };
+                        MenuBar settings = new MenuBar();
+                        MenuBar.MenuItem settingsMenu = settings.addItem("",
+                                null);
+                        settingsMenu.setStyleName("icon-cog");
+                        settingsMenu.addItem("Settings", cmd);
+                        settingsMenu.addItem("Preferences", cmd);
+                        settingsMenu.addSeparator();
+                        settingsMenu.addItem("My Account", cmd);
+                        addComponent(settings);
 
-//                        Button exit = new NativeButton("Exit");
-//                        exit.addStyleName("icon-cancel");
-//                        exit.setDescription("Sign Out");
-//                        addComponent(exit);
-//                        exit.addClickListener(new Button.ClickListener() {
-//                            @Override
-//                            public void buttonClick(Button.ClickEvent event) {
-//                                buildLoginView(true);
-//                            }
-//                        });
+                        Button exit = new NativeButton("Exit");
+                        exit.addStyleName("icon-cancel");
+                        exit.setDescription("Sign Out");
+                        addComponent(exit);
+                        exit.addClickListener(new Button.ClickListener() {
+                            @Override
+                            public void buttonClick(Button.ClickEvent event) {
+                                getUI().getNavigator().navigateTo("");
+                            }
+                        });
                     }
                 });
             }
         });
 
-        menu.addComponent(tf);
-        menu.addComponent(tf1);
-        menu.addComponent(tf2);
 
-        String view = "TESt";
-        Button b = new NativeButton(view.substring(0, 1).toUpperCase()
-                + view.substring(1).replace('-', ' '));
-        b.addStyleName("icon-" + view);
+        String[] items = {"link1","link2","link3"};
+        for(String item:items){
+            Button b = new NativeButton(item.substring(0, 1).toUpperCase()
+                    + item.substring(1).replace('-', ' '));
+            //b.addStyleName("icon-" + item);
 
-        menu.addComponent(b);
+            menu.addComponent(b);
+
+        }
+
+
+
         menu.addStyleName("no-vertical-drag-hints");
         menu.addStyleName("no-horizontal-drag-hints");
-
-
-//
 
         menu.addStyleName("menu");
         menu.setHeight("100%");
 
         addComponent(root);
-
-
-//
-
 
     }
 
