@@ -28,6 +28,7 @@
             <excludes>
                 <exclude>org.investovator:ui</exclude>
             </excludes>
+            <useProjectArtifact>false</useProjectArtifact>
         </dependencySet>
     </dependencySets>
 

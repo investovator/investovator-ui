@@ -2,6 +2,7 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.GlobalView;
@@ -25,5 +26,8 @@ public class NNGamingView extends GlobalView {
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         //To change body of implemented methods use File | Settings | File Templates.
         Notification.show("Welcome to NN Gaming Engine");
+
+        Button bb=new Button("ANN");
+        addComponent(bb);
     }
 }

@@ -1,19 +1,22 @@
-package org.investovator.ui.dataplayback;
+package org.investovator.ui;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
-import org.investovator.ui.GlobalView;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 /**
+ * @author: ishan
+ * @version: ${Revision}
+ *
+ *
  * This is a sample template for a dashboard. setUpButtons() is the only method a developer needs to override.
+ *
  */
-@SuppressWarnings("serial")
-public class DataPlaybackView extends GlobalView {
+public class DashboardTemplate extends GlobalView {
 
     //contains the side bar
     CssLayout menu;
@@ -25,7 +28,7 @@ public class DataPlaybackView extends GlobalView {
     //used to store the buttons of the menu bar and their respective panels
     LinkedHashMap<String, Panel> menuItems;
 
-    public DataPlaybackView() {
+    public DashboardTemplate() {
         this.menu = new CssLayout();
         this.root = new CssLayout();
         this.content = new CssLayout();
@@ -228,7 +231,4 @@ public class DataPlaybackView extends GlobalView {
         End of Example Button 1
          */
     }
-
-
 }
-
