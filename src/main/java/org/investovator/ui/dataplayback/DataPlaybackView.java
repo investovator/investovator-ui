@@ -1,24 +1,10 @@
 package org.investovator.ui.dataplayback;
 
-import com.vaadin.annotations.Theme;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.ui.GlobalView;
-import org.investovator.ui.agentgaming.AgentGamingView;
-import org.investovator.ui.authentication.Authenticator;
-import org.investovator.ui.authentication.LoginView;
-import org.investovator.ui.main.MainGamingView;
-import org.investovator.ui.nngaming.NNGamingView;
 import org.investovator.ui.utils.UIConstants;
 
 import java.util.HashMap;
@@ -33,62 +19,43 @@ import java.util.Iterator;
  */
 @SuppressWarnings("serial")
 public class DataPlaybackView extends GlobalView {
-    Authenticator authenticator;
 
-    CssLayout menu = new CssLayout();
+    //contains the side bar
+    CssLayout menu;
+    //contains the whole layout
+    CssLayout root;
+    //contains the content in the right pane
+    CssLayout content;
 
-    CssLayout root = new CssLayout();
-
-    CssLayout content = new CssLayout();
-
-
-    Navigator nav;
-
-    HashMap<String, GlobalView> menuItems = new HashMap<String, GlobalView>() {
-        {
-            put("agent games", new AgentGamingView());
-            put("ann games", new NNGamingView());
-//            put("/transactions", TransactionsView.class);
-//            put("/reports", ReportsView.class);
-//            put("/schedule", ScheduleView.class);
-        }
-    };
-
-
+    //used to store the buttons of the menu bar and their respective panels
+    HashMap<String, Panel> menuItems;
 
     public DataPlaybackView() {
+        this.menu = new CssLayout();
+        this.root = new CssLayout();
+        this.content = new CssLayout();
+        this.menuItems = new HashMap<String, Panel>();
     }
-
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show("Welcome to Data Playback Engine");
 
-//        nav=new Navigator(getUI(),content);
-        //nav.addView("", MainGamingView.class);
+        setUpButtons();
+        setUpBasicDashboard();
 
+        String parameter=viewChangeEvent.getParameters();
 
-//        for (String item : menuItems.keySet()) {
-//            nav.addView(item, menuItems.get(item));
-//        }
+        //if the parameter is not empty
+        if(!parameter.equalsIgnoreCase("")){
+            //if the parameter is recognizable
+            if(menuItems.containsKey(parameter)){
+                content.removeAllComponents();
+                content.addComponent(menuItems.get(parameter));
+            }
 
-        //add the exit link manually
-//        nav.addView("exit", LoginView.class);
-
-        System.out.println(viewChangeEvent.getParameters());
-
-        if(viewChangeEvent.getParameters().equalsIgnoreCase("CC")){
-            VerticalLayout panelContent = new VerticalLayout();
-            panelContent.addComponent(new Button("ddaa"));
-
-            Panel panel=new Panel();
-            panel.setContent(panelContent);
-            content.addComponent(panel);
-            System.out.println("called");
         }
 
-
-        setUpBasicDashboard();
     }
 
     /**
@@ -108,11 +75,6 @@ public class DataPlaybackView extends GlobalView {
 
         root.addStyleName("root");
         root.setSizeFull();
-
-
-//        tf.setIcon(new ThemeResource("icons/user.png"));
-
-        //addStyleName("main-view");
 
         root.addComponent(new HorizontalLayout() {
             {
@@ -147,7 +109,6 @@ public class DataPlaybackView extends GlobalView {
                         // User menu
                         addComponent(new VerticalLayout() {
                             {
-//                        setSizeUndefined();
                                 addStyleName("user");
                                 Image profilePic = new Image(
                                         null,
@@ -199,8 +160,7 @@ public class DataPlaybackView extends GlobalView {
             }
         });
 
-
-        //String[] items = {"link1", "link2", "link3"};
+        //add the buttons to the menu bar
         for (final String item : menuItems.keySet()) {
             Button b = new NativeButton(item.substring(0, 1).toUpperCase()
                     + item.substring(1).replace('-', ' '));
@@ -219,16 +179,9 @@ public class DataPlaybackView extends GlobalView {
                     }
                     //mark as selected
                     clickEvent.getButton().addStyleName("selected");
+                    //navigate to the view
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW+"/"+item);
 
-//                    content.removeAllComponents();
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW+"/CC");
-
-
-//                    content.setVisible(true);
-
-//                    if (!nav.getState().equals(item)){
-//                        nav.navigateTo(item);
-//                }
                 }
             });
 
@@ -245,6 +198,38 @@ public class DataPlaybackView extends GlobalView {
 
         addComponent(root);
 
+    }
+
+    /**
+     * Create the views for the buttons as you desire and add them to the menuItems hash map
+     */
+    public void setUpButtons(){
+
+        /*
+        Example Button 1
+         */
+        VerticalLayout panelContent = new VerticalLayout();
+        panelContent.addComponent(new Button("Test 1"));
+
+        Panel panel=new Panel();
+        panel.setContent(panelContent);
+        menuItems.put("test 1",panel);
+         /*
+        End of Example Button 1
+         */
+
+        /*
+        Example Button 2
+         */
+        VerticalLayout panelContent2 = new VerticalLayout();
+        panelContent2.addComponent(new Button("Test 2"));
+
+        Panel panel2=new Panel();
+        panel2.setContent(panelContent2);
+        menuItems.put("test 2",panel2);
+         /*
+        End of Example Button 1
+         */
     }
 
 
