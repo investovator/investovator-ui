@@ -62,74 +62,80 @@ public class DataPlaybackView extends GlobalView {
 
 //        tf.setIcon(new ThemeResource("icons/user.png"));
 
-        addStyleName("main-view");
+        //addStyleName("main-view");
 
-        root.addComponent(new VerticalLayout() {
-            // Sidebar
+        root.addComponent(new HorizontalLayout() {
             {
-                addStyleName("sidebar");
-                setWidth(null);
-                setHeight("100%");
-
-                // Branding element
-                addComponent(new CssLayout() {
+                setSizeFull();
+                addStyleName("main-view");
+                addComponent(new VerticalLayout() {
+                    // Sidebar
                     {
-                        addStyleName("branding");
-                        Label logo = new Label(
-                                "<span><center>Investovator</center></span> Data Playback",
-                                ContentMode.HTML);
-                        logo.setSizeUndefined();
-                        addComponent(logo);
+                        addStyleName("sidebar");
+                        setWidth(null);
+                        setHeight("100%");
+
+                        // Branding element
+                        addComponent(new CssLayout() {
+                            {
+                                addStyleName("branding");
+                                Label logo = new Label(
+                                        "<span><center>Investovator</center></span> Data Playback",
+                                        ContentMode.HTML);
+                                logo.setSizeUndefined();
+                                addComponent(logo);
 //                        addComponent(new Image(null, new
 //                                ThemeResource(
 //                                "img/branding.png")));
-                    }
-                });
-
-                // Main menu
-                addComponent(menu);
-                setExpandRatio(menu, 1);
-
-                // User menu
-                addComponent(new VerticalLayout() {
-                    {
-//                        setSizeUndefined();
-                        addStyleName("user");
-                        Image profilePic = new Image(
-                                null,
-                                new ThemeResource("img/profile-pic.png"));
-                        profilePic.setWidth("34px");
-                        addComponent(profilePic);
-                        Label userName = new Label("User");
-                        userName.setSizeUndefined();
-                        addComponent(userName);
-
-                        MenuBar.Command cmd = new MenuBar.Command() {
-                            @Override
-                            public void menuSelected(
-                                    MenuBar.MenuItem selectedItem) {
-                                Notification
-                                        .show("Not implemented in this demo");
                             }
-                        };
-                        MenuBar settings = new MenuBar();
-                        MenuBar.MenuItem settingsMenu = settings.addItem("",
-                                null);
-                        settingsMenu.setStyleName("icon-cog");
-                        settingsMenu.addItem("Settings", cmd);
-                        settingsMenu.addItem("Preferences", cmd);
-                        settingsMenu.addSeparator();
-                        settingsMenu.addItem("My Account", cmd);
-                        addComponent(settings);
+                        });
 
-                        Button exit = new NativeButton("Exit");
-                        exit.addStyleName("icon-cancel");
-                        exit.setDescription("Sign Out");
-                        addComponent(exit);
-                        exit.addClickListener(new Button.ClickListener() {
-                            @Override
-                            public void buttonClick(Button.ClickEvent event) {
-                                getUI().getNavigator().navigateTo("");
+                        // Main menu
+                        addComponent(menu);
+                        setExpandRatio(menu, 1);
+
+                        // User menu
+                        addComponent(new VerticalLayout() {
+                            {
+//                        setSizeUndefined();
+                                addStyleName("user");
+                                Image profilePic = new Image(
+                                        null,
+                                        new ThemeResource("img/profile-pic.png"));
+                                profilePic.setWidth("34px");
+                                addComponent(profilePic);
+                                Label userName = new Label("User");
+                                userName.setSizeUndefined();
+                                addComponent(userName);
+
+                                MenuBar.Command cmd = new MenuBar.Command() {
+                                    @Override
+                                    public void menuSelected(
+                                            MenuBar.MenuItem selectedItem) {
+                                        Notification
+                                                .show("Not implemented in this demo");
+                                    }
+                                };
+                                MenuBar settings = new MenuBar();
+                                MenuBar.MenuItem settingsMenu = settings.addItem("",
+                                        null);
+                                settingsMenu.setStyleName("icon-cog");
+                                settingsMenu.addItem("Settings", cmd);
+                                settingsMenu.addItem("Preferences", cmd);
+                                settingsMenu.addSeparator();
+                                settingsMenu.addItem("My Account", cmd);
+                                addComponent(settings);
+
+                                Button exit = new NativeButton("Exit");
+                                exit.addStyleName("icon-cancel");
+                                exit.setDescription("Sign Out");
+                                addComponent(exit);
+                                exit.addClickListener(new Button.ClickListener() {
+                                    @Override
+                                    public void buttonClick(Button.ClickEvent event) {
+                                        getUI().getNavigator().navigateTo("");
+                                    }
+                                });
                             }
                         });
                     }
@@ -138,16 +144,31 @@ public class DataPlaybackView extends GlobalView {
         });
 
 
-        String[] items = {"link1","link2","link3"};
-        for(String item:items){
+        String[] items = {"link1", "link2", "link3"};
+        for (String item : items) {
             Button b = new NativeButton(item.substring(0, 1).toUpperCase()
                     + item.substring(1).replace('-', ' '));
             //b.addStyleName("icon-" + item);
 
+            //add the click listener
+            b.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    //clear all the other selections
+                    for (Iterator<Component> it = menu.getComponentIterator(); it.hasNext();) {
+                        Component next = it.next();
+                        if (next instanceof NativeButton) {
+                            next.removeStyleName("selected");
+                        }
+                    }
+                    //mark as selected
+                    clickEvent.getButton().addStyleName("selected");
+                }
+            });
+
             menu.addComponent(b);
 
         }
-
 
 
         menu.addStyleName("no-vertical-drag-hints");
