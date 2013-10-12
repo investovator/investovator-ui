@@ -9,9 +9,7 @@ import org.investovator.ui.GlobalView;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-/**
- * This is a sample template for a dashboard. setUpButtons() is the only method a developer needs to override.
- */
+
 @SuppressWarnings("serial")
 public class DataPlaybackView extends GlobalView {
 
