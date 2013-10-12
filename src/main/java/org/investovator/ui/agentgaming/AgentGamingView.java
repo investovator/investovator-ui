@@ -2,6 +2,7 @@ package org.investovator.ui.agentgaming;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.GlobalView;
@@ -27,6 +28,9 @@ public class AgentGamingView extends GlobalView {
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show("Welcome to Agent Gaming Engine");
+
+        Button bb=new Button("Agent");
+        addComponent(bb);
     }
 
 }

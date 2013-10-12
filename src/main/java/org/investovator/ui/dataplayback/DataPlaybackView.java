@@ -19,6 +19,7 @@ import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingView;
+import org.investovator.ui.utils.UIConstants;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,10 +44,10 @@ public class DataPlaybackView extends GlobalView {
 
     Navigator nav;
 
-    HashMap<String, Class<? extends View>> menuItems = new HashMap<String, Class<? extends View>>() {
+    HashMap<String, GlobalView> menuItems = new HashMap<String, GlobalView>() {
         {
-            put("agent games", AgentGamingView.class);
-            put("ann games", NNGamingView.class);
+            put("agent games", new AgentGamingView());
+            put("ann games", new NNGamingView());
 //            put("/transactions", TransactionsView.class);
 //            put("/reports", ReportsView.class);
 //            put("/schedule", ScheduleView.class);
@@ -63,16 +64,28 @@ public class DataPlaybackView extends GlobalView {
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show("Welcome to Data Playback Engine");
 
-        nav=new Navigator(getParentUI(),content);
+//        nav=new Navigator(getUI(),content);
         //nav.addView("", MainGamingView.class);
 
 
-        for (String item : menuItems.keySet()) {
-            nav.addView(item, menuItems.get(item));
-        }
+//        for (String item : menuItems.keySet()) {
+//            nav.addView(item, menuItems.get(item));
+//        }
 
         //add the exit link manually
-        nav.addView("exit", LoginView.class);
+//        nav.addView("exit", LoginView.class);
+
+        System.out.println(viewChangeEvent.getParameters());
+
+        if(viewChangeEvent.getParameters().equalsIgnoreCase("CC")){
+            VerticalLayout panelContent = new VerticalLayout();
+            panelContent.addComponent(new Button("ddaa"));
+
+            Panel panel=new Panel();
+            panel.setContent(panelContent);
+            content.addComponent(panel);
+            System.out.println("called");
+        }
 
 
         setUpBasicDashboard();
@@ -170,7 +183,7 @@ public class DataPlaybackView extends GlobalView {
                                 exit.addClickListener(new Button.ClickListener() {
                                     @Override
                                     public void buttonClick(Button.ClickEvent event) {
-                                        getUI().getNavigator().navigateTo("exit");
+                                        getUI().getNavigator().navigateTo("");
                                     }
                                 });
                             }
@@ -207,9 +220,15 @@ public class DataPlaybackView extends GlobalView {
                     //mark as selected
                     clickEvent.getButton().addStyleName("selected");
 
-                    if (!nav.getState().equals(item)){
-                        nav.navigateTo(item);
-                }
+//                    content.removeAllComponents();
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW+"/CC");
+
+
+//                    content.setVisible(true);
+
+//                    if (!nav.getState().equals(item)){
+//                        nav.navigateTo(item);
+//                }
                 }
             });
 
