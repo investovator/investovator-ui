@@ -12,11 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 /**
- * Created with IntelliJ IDEA.
- * User: hasala
- * Date: 10/4/13
- * Time: 5:34 PM
- * To change this template use File | Settings | File Templates.
+ * This is a sample template for a dashboard. setUpButtons() is the only method a developer needs to override.
  */
 @SuppressWarnings("serial")
 public class DataPlaybackView extends GlobalView {
@@ -45,12 +41,12 @@ public class DataPlaybackView extends GlobalView {
         setUpButtons();
         setUpBasicDashboard();
 
-        String parameter=viewChangeEvent.getParameters();
+        String parameter = viewChangeEvent.getParameters();
 
         //if the parameter is not empty
-        if(!parameter.equalsIgnoreCase("")){
+        if (!parameter.equalsIgnoreCase("")) {
             //if the parameter is recognizable
-            if(menuItems.containsKey(parameter)){
+            if (menuItems.containsKey(parameter)) {
                 content.removeAllComponents();
                 content.addComponent(menuItems.get(parameter));
             }
@@ -62,13 +58,13 @@ public class DataPlaybackView extends GlobalView {
     /**
      * Draws the basic dashboard componentes such as menus, backgrounds, buttons
      */
-    public void setUpBasicDashboard(){
+    public void setUpBasicDashboard() {
         //to make the dashboard take up the whole space of the browser
         this.setSizeFull();
 
         //stop re adding components in case of a reload
         root.removeAllComponents();
-        menu.removeAllComponents();
+        //menu.removeAllComponents();
 
         root.setSizeFull();
         addComponent(root);
@@ -161,33 +157,36 @@ public class DataPlaybackView extends GlobalView {
             }
         });
 
-        //add the buttons to the menu bar
-        for (final String item : menuItems.keySet()) {
-            Button b = new NativeButton(item.substring(0, 1).toUpperCase()
-                    + item.substring(1).replace('-', ' '));
-            //b.addStyleName("icon-" + item);
+        //if the buttons are not already in the menu
+        if (menu.getComponentCount() == 0) {
+            //add the buttons to the menu bar
+            for (final String item : menuItems.keySet()) {
 
-            //add the click listener
-            b.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent clickEvent) {
-                    //clear all the other selections
-                    for (Iterator<Component> it = menu.getComponentIterator(); it.hasNext();) {
-                        Component next = it.next();
-                        if (next instanceof NativeButton) {
-                            next.removeStyleName("selected");
+                Button b = new NativeButton(item.substring(0, 1).toUpperCase()
+                        + item.substring(1).replace('-', ' '));
+                //b.addStyleName("icon-sales");
+
+                //add the click listener
+                b.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        //clear all the other selections
+                        for (Iterator<Component> it = menu.getComponentIterator(); it.hasNext(); ) {
+                            Component next = it.next();
+                            if (next instanceof NativeButton) {
+                                next.removeStyleName("selected");
+                            }
                         }
+                        //mark as selected
+                        clickEvent.getButton().addStyleName("selected");
+                        //navigate to the view
+                        getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW + "/" + item);
+
                     }
-                    //mark as selected
-                    clickEvent.getButton().addStyleName("selected");
-                    //navigate to the view
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW+"/"+item);
+                });
 
-                }
-            });
-
-            menu.addComponent(b);
-
+                menu.addComponent(b);
+            }
         }
 
 
@@ -203,23 +202,30 @@ public class DataPlaybackView extends GlobalView {
 
     /**
      * Create the views for the buttons as you desire and add them to the menuItems hash map
+     * This is the only method a developer needs to change.
      */
-    public void setUpButtons(){
+    public void setUpButtons() {
 
         /*
         Example Button 1
          */
+
+        //create the components you need
         VerticalLayout panelContent = new VerticalLayout();
         panelContent.setSizeFull();
-        Button but=new Button("Test 1");
+        Button but = new Button("Test 1");
         but.setSizeFull();
         panelContent.addComponent(but);
         panelContent.addComponent(new Button("Another button!"));
 
-        Panel panel=new Panel();
+        Panel panel = new Panel();
         panel.setSizeFull();
+
+        //add everything to a panel
         panel.setContent(panelContent);
-        menuItems.put("test 1",panel);
+
+        //add the panel to the hash map
+        menuItems.put("test 1", panel);
          /*
         End of Example Button 1
          */
@@ -230,9 +236,9 @@ public class DataPlaybackView extends GlobalView {
         VerticalLayout panelContent2 = new VerticalLayout();
         panelContent2.addComponent(new Button("Test 2"));
 
-        Panel panel2=new Panel();
+        Panel panel2 = new Panel();
         panel2.setContent(panelContent2);
-        menuItems.put("test 2",panel2);
+        menuItems.put("test 2", panel2);
          /*
         End of Example Button 1
          */
