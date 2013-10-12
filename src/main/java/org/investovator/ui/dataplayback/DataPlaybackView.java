@@ -210,9 +210,14 @@ public class DataPlaybackView extends GlobalView {
         Example Button 1
          */
         VerticalLayout panelContent = new VerticalLayout();
-        panelContent.addComponent(new Button("Test 1"));
+        panelContent.setSizeFull();
+        Button but=new Button("Test 1");
+        but.setSizeFull();
+        panelContent.addComponent(but);
+        panelContent.addComponent(new Button("Another button!"));
 
         Panel panel=new Panel();
+        panel.setSizeFull();
         panel.setContent(panelContent);
         menuItems.put("test 1",panel);
          /*
