@@ -1,21 +1,16 @@
 package org.investovator.ui.agentgaming;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
-import com.vaadin.addon.charts.model.style.SolidColor;
-import com.vaadin.data.Property;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.VaadinService;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.server.*;
 import org.investovator.ui.GlobalView;
-import com.vaadin.ui.*;
-import org.investovator.ui.authentication.Authenticator;
 import org.investovator.controller.config.ConfigGenerator;
-import org.investovator.ui.utils.UIConstants;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -33,11 +28,11 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
     Wizard agentWiz = new Wizard();
 
-    StockSelectView stockSelect ;
-    AgentSelectView agentSelect ;
+    StockSelectView stockSelect;
+    AgentSelectView agentSelect;
     AgentPctView agentPct;
 
-    public AgentGamingView(){
+    public AgentGamingView() {
 
         super();
 
@@ -63,42 +58,31 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
 
-
     }
 
-
-
-
-    //UI Widgets
-    VerticalLayout agentSelectView ;
-    VerticalLayout stockSelectView ;
-
-    VerticalLayout agentPercentageView;
-    FormLayout agentPctForm;
-
-
-    TwinColSelect agentSelectList;
 
     @Override
     public void activeStepChanged(WizardStepActivationEvent event) {
         //To change body of implemented methods use File | Settings | File Templates.
-        WizardStep step =  event.getActivatedStep();
+        WizardStep step = event.getActivatedStep();
 
-        if(step instanceof AgentSelectView) {
+        if (step instanceof AgentSelectView) {
             String outputPath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/config";
-            configGenerator = new ConfigGenerator(stockSelect.getSelectedStocks(),outputPath);
+            configGenerator = new ConfigGenerator(stockSelect.getSelectedStocks(), outputPath);
 
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-            String  templateFile = basepath +"/WEB-INF/templates/model_template.xml";
+            String templateFile = basepath + "/WEB-INF/templates/model_template.xml";
+            String reportTemplateFile =  basepath + "/WEB-INF/templates/report_template.xml";
 
 
             configGenerator.setModelTemlpateFile(templateFile);
+            configGenerator.setReportTemlpateFile(reportTemplateFile);
             String[] availableAgents = configGenerator.getSupportedAgentTypes();
 
-            agentSelect.setAgents(availableAgents);
+            ((AgentSelectView) step).setAgents(availableAgents);
         }
 
-        if(step instanceof AgentPctView){
+        if (step instanceof AgentPctView) {
 
             ((AgentPctView) step).setAgents(agentSelect.getSelectedAgents());
         }
@@ -113,7 +97,23 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
     @Override
     public void wizardCompleted(WizardCompletedEvent event) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        HashMap<String, Integer> agentPopulation = agentPct.getAgentPopulation();
+
+        Iterator<String> agentsSet = agentPopulation.keySet().iterator();
+
+        //Adding reports is hard coded for now
+        String[] types = configGenerator.getSupportedReports();
+        String[] result = configGenerator.getDependencyReportBeans(types[0]);
+        configGenerator.addDependencyReportBean(result);
+
+
+        while (agentsSet.hasNext()) {
+            String agent = agentsSet.next();
+            configGenerator.addAgent(agent, agentPopulation.get(agent));
+        }
+
+        configGenerator.createConfigs();
     }
 
     @Override
