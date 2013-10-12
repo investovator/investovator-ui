@@ -5,9 +5,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.ui.GlobalView;
-import org.investovator.ui.utils.UIConstants;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -41,18 +39,6 @@ public class DataPlaybackView extends GlobalView {
         setUpButtons();
         setUpBasicDashboard();
 
-        String parameter = viewChangeEvent.getParameters();
-
-        //if the parameter is not empty
-        if (!parameter.equalsIgnoreCase("")) {
-            //if the parameter is recognizable
-            if (menuItems.containsKey(parameter)) {
-                content.removeAllComponents();
-                content.addComponent(menuItems.get(parameter));
-            }
-
-        }
-
     }
 
     /**
@@ -64,7 +50,7 @@ public class DataPlaybackView extends GlobalView {
 
         //stop re adding components in case of a reload
         root.removeAllComponents();
-        //menu.removeAllComponents();
+        menu.removeAllComponents();
 
         root.setSizeFull();
         addComponent(root);
@@ -157,36 +143,35 @@ public class DataPlaybackView extends GlobalView {
             }
         });
 
-        //if the buttons are not already in the menu
-        if (menu.getComponentCount() == 0) {
-            //add the buttons to the menu bar
-            for (final String item : menuItems.keySet()) {
+        //add the buttons to the menu bar
+        for (final String item : menuItems.keySet()) {
 
-                Button b = new NativeButton(item.substring(0, 1).toUpperCase()
-                        + item.substring(1).replace('-', ' '));
-                //b.addStyleName("icon-sales");
+            Button b = new NativeButton(item.substring(0, 1).toUpperCase()
+                    + item.substring(1).replace('-', ' '));
+            b.addStyleName("icon-sales");
 
-                //add the click listener
-                b.addClickListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-                        //clear all the other selections
-                        for (Iterator<Component> it = menu.getComponentIterator(); it.hasNext(); ) {
-                            Component next = it.next();
-                            if (next instanceof NativeButton) {
-                                next.removeStyleName("selected");
-                            }
+            //add the click listener
+            b.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    //clear all the other selections
+                    for (Iterator<Component> it = menu.getComponentIterator(); it.hasNext(); ) {
+                        Component next = it.next();
+                        if (next instanceof NativeButton) {
+                            next.removeStyleName("selected");
                         }
-                        //mark as selected
-                        clickEvent.getButton().addStyleName("selected");
-                        //navigate to the view
-                        getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW + "/" + item);
-
                     }
-                });
+                    //mark as selected
+                    clickEvent.getButton().addStyleName("selected");
+                    //navigate to the view
 
-                menu.addComponent(b);
-            }
+                    content.removeAllComponents();
+                    content.addComponent(menuItems.get(clickEvent.getButton().getCaption().toLowerCase()));
+
+                }
+            });
+
+            menu.addComponent(b);
         }
 
 
