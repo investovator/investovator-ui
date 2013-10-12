@@ -17,7 +17,6 @@ public abstract class GlobalView extends VerticalLayout implements View
 
 
     public GlobalView(){
-        this.setWidth(500,Unit.PIXELS);
         this.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
     }
 
