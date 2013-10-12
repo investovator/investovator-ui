@@ -44,7 +44,13 @@ public class DataPlaybackView extends GlobalView {
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show("Welcome to Data Playback Engine");
 
+        setUpBasicDashboard();
+    }
 
+    /**
+     * Draws the basic dashboard componentes such as menus, backgrounds, buttons
+     */
+    public void setUpBasicDashboard(){
         //to make the dashboard take up the whole space of the browser
         this.setSizeFull();
 
@@ -80,7 +86,7 @@ public class DataPlaybackView extends GlobalView {
                             {
                                 addStyleName("branding");
                                 Label logo = new Label(
-                                        "<span><center>Investovator</center></span> Data Playback",
+                                        "<span><center>investovator</center></span> Data Playback",
                                         ContentMode.HTML);
                                 logo.setSizeUndefined();
                                 addComponent(logo);
