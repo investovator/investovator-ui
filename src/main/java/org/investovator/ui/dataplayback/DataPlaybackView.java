@@ -14,8 +14,13 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.ui.GlobalView;
+import org.investovator.ui.agentgaming.AgentGamingView;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.authentication.LoginView;
+import org.investovator.ui.main.MainGamingView;
+import org.investovator.ui.nngaming.NNGamingView;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -33,8 +38,22 @@ public class DataPlaybackView extends GlobalView {
 
     CssLayout root = new CssLayout();
 
+    CssLayout content = new CssLayout();
 
-    VerticalLayout loginLayout;
+
+    Navigator nav;
+
+    HashMap<String, Class<? extends View>> menuItems = new HashMap<String, Class<? extends View>>() {
+        {
+            put("agent games", AgentGamingView.class);
+            put("ann games", NNGamingView.class);
+//            put("/transactions", TransactionsView.class);
+//            put("/reports", ReportsView.class);
+//            put("/schedule", ScheduleView.class);
+        }
+    };
+
+
 
     public DataPlaybackView() {
     }
@@ -43,6 +62,18 @@ public class DataPlaybackView extends GlobalView {
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show("Welcome to Data Playback Engine");
+
+        nav=new Navigator(getParentUI(),content);
+        //nav.addView("", MainGamingView.class);
+
+
+        for (String item : menuItems.keySet()) {
+            nav.addView(item, menuItems.get(item));
+        }
+
+        //add the exit link manually
+        nav.addView("exit", LoginView.class);
+
 
         setUpBasicDashboard();
     }
@@ -139,19 +170,25 @@ public class DataPlaybackView extends GlobalView {
                                 exit.addClickListener(new Button.ClickListener() {
                                     @Override
                                     public void buttonClick(Button.ClickEvent event) {
-                                        getUI().getNavigator().navigateTo("");
+                                        getUI().getNavigator().navigateTo("exit");
                                     }
                                 });
                             }
                         });
                     }
                 });
+
+                // Content
+                addComponent(content);
+                content.setSizeFull();
+                content.addStyleName("view-content");
+                setExpandRatio(content, 1);
             }
         });
 
 
-        String[] items = {"link1", "link2", "link3"};
-        for (String item : items) {
+        //String[] items = {"link1", "link2", "link3"};
+        for (final String item : menuItems.keySet()) {
             Button b = new NativeButton(item.substring(0, 1).toUpperCase()
                     + item.substring(1).replace('-', ' '));
             //b.addStyleName("icon-" + item);
@@ -169,6 +206,10 @@ public class DataPlaybackView extends GlobalView {
                     }
                     //mark as selected
                     clickEvent.getButton().addStyleName("selected");
+
+                    if (!nav.getState().equals(item)){
+                        nav.navigateTo(item);
+                }
                 }
             });
 
