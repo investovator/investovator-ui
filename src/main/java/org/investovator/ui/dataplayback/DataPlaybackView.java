@@ -9,6 +9,7 @@ import org.investovator.ui.utils.UIConstants;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,13 +29,13 @@ public class DataPlaybackView extends GlobalView {
     CssLayout content;
 
     //used to store the buttons of the menu bar and their respective panels
-    HashMap<String, Panel> menuItems;
+    LinkedHashMap<String, Panel> menuItems;
 
     public DataPlaybackView() {
         this.menu = new CssLayout();
         this.root = new CssLayout();
         this.content = new CssLayout();
-        this.menuItems = new HashMap<String, Panel>();
+        this.menuItems = new LinkedHashMap<String, Panel>();
     }
 
     @Override
