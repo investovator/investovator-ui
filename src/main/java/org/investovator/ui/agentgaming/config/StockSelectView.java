@@ -1,4 +1,4 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
