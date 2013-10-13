@@ -22,7 +22,7 @@ import java.util.Observer;
 
 /**
  * Created with IntelliJ IDEA.
- * User: hasala
+ * User: ishan
  * Date: 10/4/13
  * Time: 5:34 PM
  * To change this template use File | Settings | File Templates.

@@ -9,6 +9,10 @@ import org.investovator.ui.GlobalView;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+/**
+ * @author: Ishan Thilina
+ */
+
 
 @SuppressWarnings("serial")
 public class DataPlaybackView extends GlobalView {
