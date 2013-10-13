@@ -1,8 +1,10 @@
 package org.investovator.ui.utils.dashboard;
 
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import org.investovator.ui.GlobalView;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,24 +13,57 @@ import java.util.LinkedHashMap;
  * @author: ishan
  * @version: ${Revision}
  *
- * Builds the basic components of the dashboard
+ *
+ * This is a sample template for a dashboard. setUpButtons() is the only method a developer needs to override.
+ *
  */
-public class DashboardBuilder {
+public abstract class BasicDashboard extends GlobalView {
 
-    public static Component buildDashboard(final LinkedHashMap<String, Panel> menuItems){
+    //contains the side bar
+    private CssLayout menu;
+    //contains the whole layout
+    private CssLayout root;
+    //contains the content in the right pane
+    private CssLayout content;
 
-        //contains the side bar
-        final CssLayout menu=new CssLayout();
-        //contains the whole layout
-        final CssLayout root=new CssLayout();
-        //contains the content in the right pane
-        final CssLayout content=new CssLayout();
+    //used to store the buttons of the menu bar and their respective panels
+    private LinkedHashMap<String, Panel> menuItems;
+
+    public BasicDashboard() {
+        this.menu = new CssLayout();
+        this.root = new CssLayout();
+        this.content = new CssLayout();
+        this.menuItems = getMenuItems();
+
+        //to make the dashboard take up the whole space of the browser
+        this.setSizeFull();
+    }
+
+    @Override
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        Notification.show("Welcome to Data Playback Engine");
+
+       setUpBasicDashboard();
+
+
+    }
+
+    public abstract LinkedHashMap<String, Panel> getMenuItems();
+
+    /**
+     * Draws the basic dashboard components such as menus, backgrounds, buttons
+     */
+    public void setUpBasicDashboard() {
+        //to make the dashboard take up the whole space of the browser
+        this.setSizeFull();
 
         //stop re adding components in case of a reload
         root.removeAllComponents();
         menu.removeAllComponents();
 
         root.setSizeFull();
+        addComponent(root);
+
 
         root.addStyleName("root");
         root.setSizeFull();
@@ -155,9 +190,8 @@ public class DashboardBuilder {
         menu.addStyleName("menu");
         menu.setHeight("100%");
 
-        return root;
-
-
+        addComponent(root);
 
     }
+
 }
