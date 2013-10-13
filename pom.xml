@@ -62,7 +62,18 @@
             <artifactId>controller</artifactId>
             <version>0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.investovator</groupId>
+            <artifactId>dataPlaybackEngine</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!--end of investovator related-->
+
+        <dependency>
+            <groupId>com.vaadin.addon</groupId>
+            <artifactId>vaadin-charts</artifactId>
+            <version>1.1.2</version>
+        </dependency>
 
         <dependency>
             <groupId>com.vaadin</groupId>

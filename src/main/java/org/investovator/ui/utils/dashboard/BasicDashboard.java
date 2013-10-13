@@ -1,9 +1,10 @@
-package org.investovator.ui;
+package org.investovator.ui.utils.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import org.investovator.ui.GlobalView;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -16,38 +17,48 @@ import java.util.LinkedHashMap;
  * This is a sample template for a dashboard. setUpButtons() is the only method a developer needs to override.
  *
  */
-public class DashboardTemplate extends GlobalView {
+public abstract class BasicDashboard extends GlobalView {
 
     //contains the side bar
-    CssLayout menu;
+    private CssLayout menu;
     //contains the whole layout
-    CssLayout root;
+    private CssLayout root;
     //contains the content in the right pane
-    CssLayout content;
+    private CssLayout content;
 
     //used to store the buttons of the menu bar and their respective panels
-    LinkedHashMap<String, Panel> menuItems;
+    private LinkedHashMap<String, Panel> menuItems;
 
-    public DashboardTemplate() {
+    public BasicDashboard(String name) {
         this.menu = new CssLayout();
         this.root = new CssLayout();
         this.content = new CssLayout();
-        this.menuItems = new LinkedHashMap<String, Panel>();
+        this.menuItems = getMenuItems();
+
+        //to make the dashboard take up the whole space of the browser
+        this.setSizeFull();
+
+        setUpBasicDashboard(name);
     }
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show("Welcome to Data Playback Engine");
-
-        setUpButtons();
-        setUpBasicDashboard();
-
     }
 
     /**
-     * Draws the basic dashboard componentes such as menus, backgrounds, buttons
+     * Guidelines - Create your components here. The keys you add to hash map
+     * will be used as the text in the menu buttons.
+     *
+     * Also the icon names for those buttons should be in the form of "icon-<KEY_NAME>"
+     * @return
      */
-    public void setUpBasicDashboard() {
+    public abstract LinkedHashMap<String, Panel> getMenuItems();
+
+    /**
+     * Draws the basic dashboard components such as menus, backgrounds, buttons
+     */
+    private void setUpBasicDashboard(final String name) {
         //to make the dashboard take up the whole space of the browser
         this.setSizeFull();
 
@@ -78,7 +89,7 @@ public class DashboardTemplate extends GlobalView {
                             {
                                 addStyleName("branding");
                                 Label logo = new Label(
-                                        "<span><center>investovator</center></span> Data Playback",
+                                        name,
                                         ContentMode.HTML);
                                 logo.setSizeUndefined();
                                 addComponent(logo);
@@ -188,47 +199,4 @@ public class DashboardTemplate extends GlobalView {
 
     }
 
-    /**
-     * Create the views for the buttons as you desire and add them to the menuItems hash map
-     * This is the only method a developer needs to change.
-     */
-    public void setUpButtons() {
-
-        /*
-        Example Button 1
-         */
-
-        //create the components you need
-        VerticalLayout panelContent = new VerticalLayout();
-        panelContent.setSizeFull();
-        Button but = new Button("Test 1");
-        but.setSizeFull();
-        panelContent.addComponent(but);
-        panelContent.addComponent(new Button("Another button!"));
-
-        Panel panel = new Panel();
-        panel.setSizeFull();
-
-        //add everything to a panel
-        panel.setContent(panelContent);
-
-        //add the panel to the hash map
-        menuItems.put("test 1", panel);
-         /*
-        End of Example Button 1
-         */
-
-        /*
-        Example Button 2
-         */
-        VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
-
-        Panel panel2 = new Panel();
-        panel2.setContent(panelContent2);
-        menuItems.put("test 2", panel2);
-         /*
-        End of Example Button 1
-         */
-    }
 }

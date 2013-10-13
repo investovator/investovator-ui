@@ -1,5 +1,6 @@
 package org.investovator;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
@@ -8,16 +9,17 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import org.investovator.ui.agentgaming.AgentDashboard;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
-import org.investovator.ui.dataplayback.DataPlaybackView;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingView;
 import org.investovator.ui.utils.UIConstants;
+import org.investovator.ui.utils.dashboard.DashboardTest;
 
 import javax.servlet.annotation.WebServlet;
 
 @Theme("dashboard")
 @SuppressWarnings("serial")
+@Push
 public class MyVaadinUI extends UI
 {
 
@@ -40,7 +42,7 @@ public class MyVaadinUI extends UI
         navigator.addView("", new LoginView());
         navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
         navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
-        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackView());
+        navigator.addView(UIConstants.DATAPLAYVIEW, new DashboardTest());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
         navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
 
