@@ -25,7 +25,7 @@ public class Authenticator {
     }
 
     public boolean isLoggedIn() {
-        return loggedIn;
+        return true;
     }
 
     private void setLoggedIn(boolean loggedIn) {

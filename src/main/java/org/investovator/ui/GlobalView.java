@@ -2,7 +2,6 @@ package org.investovator.ui;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.authentication.Authenticator;
 
