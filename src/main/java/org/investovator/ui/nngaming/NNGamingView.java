@@ -2,9 +2,12 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.Property;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import org.investovator.ui.GlobalView;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,7 +19,7 @@ import java.util.HashMap;
  * Time: 11:41 AM
  * To change this template use File | Settings | File Templates.
  */
-public class NNGamingView extends GlobalView implements Upload.Receiver {
+public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.SucceededListener {
 
     private HashMap<String,String> parameters;
     private final Window paramWindow;
@@ -54,8 +57,11 @@ public class NNGamingView extends GlobalView implements Upload.Receiver {
         Label newParam = new Label("Specify New Parameter");
         Label dataSet = new Label("Specify Data Set");
         modalLayout.addComponents(newParam,newParamField,dataSet,upload);
+        modalLayout.setMargin(true);
         paramWindow.setContent(modalLayout);
         paramWindow.setModal(true);
+
+        upload.addSucceededListener(this);
     }
 
     private void initTwincolSelect(){
@@ -100,7 +106,26 @@ public class NNGamingView extends GlobalView implements Upload.Receiver {
     }
 
     @Override
-    public OutputStream receiveUpload(String s, String s2) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public OutputStream receiveUpload(String filename,String mimeType) {
+        Notification.show("In Call Back");
+        File file;
+        FileOutputStream fos = null;
+        try {
+            // Open the file for writing.
+            file = new File("/resources/" + filename);
+            fos = new FileOutputStream(file);
+        } catch (final java.io.FileNotFoundException e) {
+            new Notification("Could not open file<br/>",
+                    e.getMessage(),
+                    Notification.Type.ERROR_MESSAGE)
+                    .show(Page.getCurrent());
+            return null;
+        }
+        return fos;
+    }
+
+    @Override
+    public void uploadSucceeded(Upload.SucceededEvent succeededEvent) {
+        Notification.show("In Call Back");
     }
 }
