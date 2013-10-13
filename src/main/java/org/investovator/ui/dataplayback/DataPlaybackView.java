@@ -189,35 +189,49 @@ public class DataPlaybackView extends GlobalView {
      */
     public void setUpButtons() {
 
-        /*
-        Example Button 1
-         */
+        Chart chart = new Chart();
+        chart.setHeight("450px");
+        chart.setWidth("100%");
 
-        //create the components you need
-        VerticalLayout panelContent = new VerticalLayout();
-        panelContent.setSizeFull();
-        Button but = new Button("Test 1");
-        but.setSizeFull();
-        panelContent.addComponent(but);
-        panelContent.addComponent(new Button("Another button!"));
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShared(true);
+        tooltip.setUseHTML(true);
+        tooltip.setHeaderFormat("{point.key}");
+        tooltip.setPointFormat("");
+        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
 
-        Panel panel = new Panel();
-        panel.setSizeFull();
+        Configuration configuration = new Configuration();
+        configuration.setTooltip(tooltip);
 
-        //add everything to a panel
-        panel.setContent(panelContent);
+        configuration.getxAxis().setCategories("Jan", "Feb", "Mar", "Apr",
+                "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
-        //add the panel to the hash map
-        menuItems.put("test 1", panel);
-         /*
-        End of Example Button 1
-         */
+        ListSeries ls = new ListSeries();
+        ls.setName("Short");
+        ls.setData(29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4,
+                194.1, 95.6, 54.4);
+        configuration.addSeries(ls);
+        ls = new ListSeries();
+        ls.setName("Long named series");
+        Number[] data = new Number[] { 129.9, 171.5, 106.4, 129.2, 144.0,
+                176.0, 135.6, 148.5, 216.4, 194.1, 195.6, 154.4 };
+        for (int i = 0; i < data.length / 2; i++) {
+            Number number = data[i];
+            data[i] = data[data.length - i - 1];
+            data[data.length - i - 1] = number;
+        }
+
+        ls.setData(data);
+        configuration.addSeries(ls);
+
+        chart.drawChart(configuration);
+
 
         /*
         Example Button 2
          */
         VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
+        panelContent2.addComponent(chart);
 
         Panel panel2 = new Panel();
         panel2.setContent(panelContent2);
