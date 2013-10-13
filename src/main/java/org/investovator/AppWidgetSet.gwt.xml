@@ -30,10 +30,6 @@
     <!-- <set-configuration-property name="devModeRedirectEnabled" value="true" /> -->
 
 
-    
-
-    
-
     <inherits name="com.vaadin.addon.charts.Widgetset" />
 
     <inherits name="com.vaadin.addon.timeline.gwt.TimelineWidgetSet" />

@@ -22,8 +22,6 @@ import org.investovator.ui.utils.UIConstants;
 
 public class MainGamingView extends GlobalView{
 
-    Navigator navigator;
-
     public MainGamingView(){
         init();
     }
