@@ -4,9 +4,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <imports>
+    <file-imports>
         <!--Auto Fill Imports-->
-    </imports>
+    </file-imports>
 
     <bean id="simulationManager" class="org.investovator.multiasset.simulation.MultiAssetSimulationManager"
           scope="singleton">

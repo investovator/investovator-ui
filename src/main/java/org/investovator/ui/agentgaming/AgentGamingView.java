@@ -1,6 +1,5 @@
 package org.investovator.ui.agentgaming;
 
-import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
 import org.investovator.ui.GlobalView;
@@ -31,6 +30,7 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
     StockSelectView stockSelect;
     AgentSelectView agentSelect;
     AgentPctView agentPct;
+    OtherSimulationSettingsView otherSettings;
 
     public AgentGamingView() {
 
@@ -43,10 +43,12 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
         stockSelect = new StockSelectView();
         agentSelect = new AgentSelectView();
         agentPct = new AgentPctView();
+        otherSettings = new OtherSimulationSettingsView();
 
         agentWiz.addStep(stockSelect);
         agentWiz.addStep(agentSelect);
         agentWiz.addStep(agentPct);
+        agentWiz.addStep(otherSettings);
 
         agentWiz.addListener(this);
         this.addComponent(agentWiz);
@@ -73,10 +75,13 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
             String templateFile = basepath + "/WEB-INF/templates/model_template.xml";
             String reportTemplateFile =  basepath + "/WEB-INF/templates/report_template.xml";
+            String mainTemplateFile =  basepath + "/WEB-INF/templates/main_template.xml";
 
 
             configGenerator.setModelTemlpateFile(templateFile);
             configGenerator.setReportTemlpateFile(reportTemplateFile);
+            configGenerator.setMainTemplateFile(mainTemplateFile);
+
             String[] availableAgents = configGenerator.getSupportedAgentTypes();
 
             ((AgentSelectView) step).setAgents(availableAgents);
@@ -107,14 +112,21 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
         String[] result = configGenerator.getDependencyReportBeans(types[0]);
         configGenerator.addDependencyReportBean(result);
 
-
+        //Agent Percentages
         while (agentsSet.hasNext()) {
             String agent = agentsSet.next();
             configGenerator.addAgent(agent, agentPopulation.get(agent));
         }
 
+        //Other agent Properties
+        configGenerator.setInitialPrice(100);  //Should get this from history data.
+        configGenerator.setNoOfDays(otherSettings.getNumberOfDays());
+        configGenerator.setSpeedFactor(otherSettings.getSpeedFactor());
+
+
         configGenerator.createConfigs();
-    }
+
+     }
 
     @Override
     public void wizardCancelled(WizardCancelledEvent event) {
