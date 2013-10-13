@@ -14,6 +14,7 @@ import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingView;
 import org.investovator.ui.utils.UIConstants;
+import org.investovator.ui.utils.dashboard.DashboardTemplate;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -42,7 +43,7 @@ public class MyVaadinUI extends UI
         navigator.addView("", new LoginView());
         navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
         navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
-        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackView());
+        navigator.addView(UIConstants.DATAPLAYVIEW, new DashboardTemplate());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
 
         //test JASA code
