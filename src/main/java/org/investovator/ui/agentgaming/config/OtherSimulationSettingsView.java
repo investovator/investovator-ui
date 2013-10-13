@@ -1,4 +1,4 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;

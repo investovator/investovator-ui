@@ -1,4 +1,4 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
@@ -8,10 +8,8 @@ import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * @author Amila Surendra
