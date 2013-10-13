@@ -27,7 +27,5 @@ public class NNGamingView extends GlobalView {
         //To change body of implemented methods use File | Settings | File Templates.
         Notification.show("Welcome to NN Gaming Engine");
 
-        Button bb=new Button("ANN");
-        addComponent(bb);
     }
 }
