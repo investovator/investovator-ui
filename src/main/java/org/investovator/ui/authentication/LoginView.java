@@ -34,8 +34,13 @@ import org.investovator.ui.utils.UIConstants;
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
-                            authenticator.authenticate(userField.getValue(), pwdField.getValue());
-                            getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                            boolean loginStatus = authenticator.authenticate();
+                            if(loginStatus){
+                                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                            }
+                            else{
+                                Notification.show("Incorrect UserName or Password");
+                            }
                         }
                     });
             layout.addComponents(userName,userField,password,pwdField,loginButton);

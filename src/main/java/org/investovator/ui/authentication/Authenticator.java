@@ -32,14 +32,10 @@ public class Authenticator {
         this.loggedIn = loggedIn;
     }
 
-    public boolean authenticate(String userName,String password){
-           if(userName.equals("Hasala") && password.equals("CSE")){
-               setLoggedIn(true);
-               return isLoggedIn();
-           }
-           else{
-               return isLoggedIn();
-           }
+    public boolean authenticate(){
+
+        setLoggedIn(true);
+        return isLoggedIn();
 
     }
 
