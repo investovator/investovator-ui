@@ -1,5 +1,9 @@
 package org.investovator.ui.dataplayback;
 
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.Configuration;
+import com.vaadin.addon.charts.model.ListSeries;
+import com.vaadin.addon.charts.model.Tooltip;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -10,7 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 /**
- * @author: Ishan Thilina
+ * @author: Ishan
  */
 
 
@@ -231,17 +235,26 @@ public class DataPlaybackView extends GlobalView {
         chart.drawChart(configuration);
 
 
+        VerticalLayout panelContent = new VerticalLayout();
+        panelContent.addComponent(chart);
+
+        Panel panel = new Panel();
+        panel.setContent(panelContent);
+        menuItems.put("main view", panel);
+
+
+
         /*
         Example Button 2
          */
         VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(chart);
+        panelContent2.addComponent(new Button("Test 2"));
 
         Panel panel2 = new Panel();
         panel2.setContent(panelContent2);
         menuItems.put("test 2", panel2);
          /*
-        End of Example Button 1
+        End of Example Button 2
          */
     }
 

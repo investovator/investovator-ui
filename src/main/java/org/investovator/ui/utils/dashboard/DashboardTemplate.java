@@ -1,9 +1,10 @@
-package org.investovator.ui;
+package org.investovator.ui.utils.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import org.investovator.ui.GlobalView;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -228,7 +229,7 @@ public class DashboardTemplate extends GlobalView {
         panel2.setContent(panelContent2);
         menuItems.put("test 2", panel2);
          /*
-        End of Example Button 1
+        End of Example Button 2
          */
     }
 }
