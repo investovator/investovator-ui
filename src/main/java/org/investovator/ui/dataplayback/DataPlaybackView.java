@@ -1,9 +1,7 @@
 package org.investovator.ui.dataplayback;
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.Configuration;
-import com.vaadin.addon.charts.model.ListSeries;
-import com.vaadin.addon.charts.model.Tooltip;
+import com.vaadin.addon.charts.model.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -32,6 +30,34 @@ public class DataPlaybackView extends BasicDashboard {
     public LinkedHashMap<String, Panel> getMenuItems() {
         LinkedHashMap<String,Panel> map=new LinkedHashMap<String, Panel>();
 
+
+
+        VerticalLayout panelContent = new VerticalLayout();
+        panelContent.addComponent(buildMainChart());
+
+        Panel panel = new Panel();
+        panel.setContent(panelContent);
+        map.put("main view", panel);
+
+
+
+        /*
+        Example Button 2
+         */
+        VerticalLayout panelContent2 = new VerticalLayout();
+        panelContent2.addComponent(new Button("Test 2"));
+
+        Panel panel2 = new Panel();
+        panel2.setContent(panelContent2);
+        map.put("test 2", panel2);
+         /*
+        End of Example Button 2
+         */
+
+        return map;
+    }
+
+    private Chart buildMainChart(){
         Chart chart = new Chart();
         chart.setHeight("450px");
         chart.setWidth("100%");
@@ -45,6 +71,12 @@ public class DataPlaybackView extends BasicDashboard {
 
         Configuration configuration = new Configuration();
         configuration.setTooltip(tooltip);
+        configuration.getChart().setType(ChartType.SPLINE);
+
+        PlotOptionsLine plotOptions = new PlotOptionsLine();
+        plotOptions.setDataLabels(new Labels(true));
+        plotOptions.setEnableMouseTracking(false);
+        configuration.setPlotOptions(plotOptions);
 
         configuration.getxAxis().setCategories("Jan", "Feb", "Mar", "Apr",
                 "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
@@ -68,31 +100,7 @@ public class DataPlaybackView extends BasicDashboard {
         configuration.addSeries(ls);
 
         chart.drawChart(configuration);
-
-
-        VerticalLayout panelContent = new VerticalLayout();
-        panelContent.addComponent(chart);
-
-        Panel panel = new Panel();
-        panel.setContent(panelContent);
-        map.put("main view", panel);
-
-
-
-        /*
-        Example Button 2
-         */
-        VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
-
-        Panel panel2 = new Panel();
-        panel2.setContent(panelContent2);
-        map.put("test 2", panel2);
-         /*
-        End of Example Button 2
-         */
-
-        return map;
+        return chart;
     }
 }
 
