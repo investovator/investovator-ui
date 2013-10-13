@@ -29,7 +29,7 @@ public abstract class BasicDashboard extends GlobalView {
     //used to store the buttons of the menu bar and their respective panels
     private LinkedHashMap<String, Panel> menuItems;
 
-    public BasicDashboard() {
+    public BasicDashboard(String name) {
         this.menu = new CssLayout();
         this.root = new CssLayout();
         this.content = new CssLayout();
@@ -37,23 +37,28 @@ public abstract class BasicDashboard extends GlobalView {
 
         //to make the dashboard take up the whole space of the browser
         this.setSizeFull();
+
+        setUpBasicDashboard(name);
     }
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show("Welcome to Data Playback Engine");
-
-       setUpBasicDashboard();
-
-
     }
 
+    /**
+     * Guidelines - Create your components here. The keys you add to hash map
+     * will be used as the text in the menu buttons.
+     *
+     * Also the icon names for those buttons should be in the form of "icon-<KEY_NAME>"
+     * @return
+     */
     public abstract LinkedHashMap<String, Panel> getMenuItems();
 
     /**
      * Draws the basic dashboard components such as menus, backgrounds, buttons
      */
-    public void setUpBasicDashboard() {
+    private void setUpBasicDashboard(final String name) {
         //to make the dashboard take up the whole space of the browser
         this.setSizeFull();
 
@@ -84,7 +89,7 @@ public abstract class BasicDashboard extends GlobalView {
                             {
                                 addStyleName("branding");
                                 Label logo = new Label(
-                                        "<span><center>investovator</center></span> Data Playback",
+                                        name,
                                         ContentMode.HTML);
                                 logo.setSizeUndefined();
                                 addComponent(logo);

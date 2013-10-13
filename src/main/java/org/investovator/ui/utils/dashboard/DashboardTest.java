@@ -15,6 +15,10 @@ import java.util.LinkedHashMap;
  */
 public class DashboardTest extends BasicDashboard {
 
+    public DashboardTest() {
+        super("<span><center>investovator</center></span> Data Playback");
+    }
+
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         super.setupUI(viewChangeEvent);
