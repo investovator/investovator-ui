@@ -4,14 +4,11 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.Configuration;
 import com.vaadin.addon.charts.model.ListSeries;
 import com.vaadin.addon.charts.model.Tooltip;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
-import org.investovator.ui.GlobalView;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 /**
@@ -23,19 +20,15 @@ import java.util.LinkedHashMap;
 public class DataPlaybackView extends BasicDashboard {
 
 
-
+    public DataPlaybackView() {
+        super("<span><center>investovator</center></span> Data Playback");
+    }
 
     /**
      * Create the views for the buttons as you desire and add them to the menuItems hash map
      * This is the only method a developer needs to change.
      */
-    public void setUpButtons() {
-
-
-    }
-
-
-    @Override
+     @Override
     public LinkedHashMap<String, Panel> getMenuItems() {
         LinkedHashMap<String,Panel> map=new LinkedHashMap<String, Panel>();
 
