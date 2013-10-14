@@ -1,7 +1,7 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
     <context-param>
         <param-name>jabm.config</param-name>
-        <param-value>/multiasset/main.xml</param-value>
+        <param-value>/config/main.xml</param-value>
     </context-param>
 
     <listener>
