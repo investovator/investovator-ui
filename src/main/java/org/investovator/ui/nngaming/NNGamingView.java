@@ -2,14 +2,8 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.Property;
 import com.vaadin.navigator.ViewChangeListener;
-<<<<<<< HEAD
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
-=======
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
->>>>>>> master
 import org.investovator.ui.GlobalView;
 
 import java.io.File;
