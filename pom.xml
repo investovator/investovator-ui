@@ -85,6 +85,11 @@
             <artifactId>vaadin-client-compiled</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>investovator</groupId>
+            <artifactId>investovator-ann</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!--
           Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 
