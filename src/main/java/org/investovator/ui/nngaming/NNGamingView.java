@@ -13,11 +13,10 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
- * Created with IntelliJ IDEA.
- * User: hasala
- * Date: 10/7/13
- * Time: 11:41 AM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author: hasala
+ * @version: ${Revision}
+ *
  */
 public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.SucceededListener {
 
@@ -36,8 +35,19 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
         initUI();
     }
 
+    private void initStockList(){
+        // Create a selection component
+        Label stockIDLabel = new Label("Please specify the Stock ID");
+        Select select = new Select ();
+
+        // Add some items and give each an item ID
+        //To Do-----------------------------------
+        layout.addComponents(stockIDLabel,select);
+    }
+
     private void initUI(){
 
+        initStockList();
         initTwincolSelect();
         initParamWindow();
         Button createGame = new Button("Create Game",new Button.ClickListener() {
@@ -62,6 +72,7 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
         paramWindow.setModal(true);
 
         upload.addSucceededListener(this);
+        upload.setReceiver(this);
     }
 
     private void initTwincolSelect(){
@@ -113,7 +124,7 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
         FileOutputStream fos = null;
         try {
             // Open the file for writing.
-            file = new File("/resources/" + filename);
+            file = new File(filename);
             fos = new FileOutputStream(file);
         } catch (final java.io.FileNotFoundException e) {
             new Notification("Could not open file<br/>",
@@ -127,6 +138,7 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
 
     @Override
     public void uploadSucceeded(Upload.SucceededEvent succeededEvent) {
-        Notification.show("In Call Back");
+        Notification.show("Parameter Added");
+        UI.getCurrent().removeWindow(paramWindow);
     }
 }
