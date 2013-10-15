@@ -19,9 +19,15 @@ import java.util.Observer;
 @SuppressWarnings("serial")
 public class DataPlaybackView extends BasicDashboard implements Observer{
 
+    //decides the number of points shown in the ticker chart
+    private static int TICKER_CHART_LENGTH=10;
+
     DataPlayer player;
     //used for counting data iteration number
     int a=0;
+
+    //to keep track of the number of points in the ticker chart
+    int tickerChartPointCounter=0;
 
     DataPlaybackView mySelf;
 
@@ -211,7 +217,7 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
 
-        ListSeries ls = new ListSeries();
+        DataSeries ls = new DataSeries();
         ls.setName("GOOG");
         ls.setPlotOptions(new PlotOptionsSpline());
         configuration.addSeries(ls);
@@ -232,16 +238,33 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
     public void update(Observable o, Object arg) {
         final StockEvent event=(StockEvent) arg;
 
-                        if (tickerChart.isConnectorEnabled()) {
-                            getSession().lock();
-                            try {
-                                ListSeries series=(ListSeries)tickerChart.getConfiguration().getSeries().get(0);
-                                series.addData(event.getPrice());
-                                tickerChart.setImmediate(true);
-                            } finally {
-                                getSession().unlock();
-                            }
-                        }
+        if (tickerChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+                //ListSeries series=(ListSeries)tickerChart.getConfiguration().getSeries().get(0);
+
+                DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
+//
+                if (series.getData().size() > TICKER_CHART_LENGTH) {
+
+//                                    series.addData(event.getPrice(),true,true);
+
+                    series.add(new DataSeriesItem(event.getTime(), event.getPrice()), true, true);
+                    System.out.println(event.getTime() + "==" + event.getPrice());
+
+                } else {
+//                                    series.addData(event.getPrice());
+                    series.add(new DataSeriesItem(event.getTime(), event.getPrice()));
+                    System.out.println(event.getTime() + "==" + event.getPrice());
+
+                    //tickerChartPointCounter++;
+
+                }
+                tickerChart.setImmediate(true);
+            } finally {
+                getSession().unlock();
+            }
+        }
     }
 }
 
