@@ -21,9 +21,9 @@
 //import java.util.Observer;
 //
 ///**
-// * @author: ishan
-// * @version: ${Revision}
-// */
+//* @author: ishan
+//* @version: ${Revision}
+//*/
 //@SuppressWarnings("serial")
 //public class DataPlaybackViewBackup extends GlobalView implements Observer {
 //    Authenticator authenticator;
