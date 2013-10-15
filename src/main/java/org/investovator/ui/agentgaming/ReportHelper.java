@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.investovator.jasa.api.JASAFacade;
+import org.investovator.jasa.api.MarketFacade;
+
 /**
  * @author Amila Surendra
  * @version $Revision
@@ -37,8 +40,7 @@ public class ReportHelper {
     HashMap<String,ArrayList<Report>> reports;
     GeometricBrownianMotionPriceProcess googGBM =null;
 
-    /*
-    private simulationFacade = JASAFacade.getMarketFacade();
+    private MarketFacade simulationFacade = JASAFacade.getMarketFacade();
 
     public void viewReport(){
 
@@ -63,23 +65,22 @@ public class ReportHelper {
         }
 
     }
-    */
 
 
     public int getValue(){
 
-        //if(googGBM==null){
-        //   viewReport();
-        //   return 0;
-        //}
-
-        //else{
+//        if(googGBM==null){
+//           viewReport();
+//           return 0;
+//        }
+//
+//        else{
         return googGBM.getY(0).intValue();
-        // }
+//        }
     }
 
 
-     /*   public int[] getValues(){
+       /* public int[] getValues(){
 
         List<Integer> values = new ArrayList<Integer>();
 

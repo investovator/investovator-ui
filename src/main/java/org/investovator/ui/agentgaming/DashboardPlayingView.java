@@ -47,7 +47,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
 
     boolean simulationRunning = false;
-
+    boolean reportsReady=false;
 
 
     public DashboardPlayingView() {
@@ -59,7 +59,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
 
         Button test = new Button("Start");
-        Button stop  = new Button("Stop");
+        Button stop = new Button("Stop");
 
         test.addClickListener(new Button.ClickListener() {
             @Override
@@ -67,7 +67,17 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
                 //testing
                 simulationFacade = JASAFacade.getMarketFacade();
                 simulationFacade.startSimulation();
-                simulationRunning=true;
+                simulationRunning = true;
+
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                reportHelper.viewReport();
+
+                reportsReady = true;
 
             }
         });
@@ -86,7 +96,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         content.addComponent(watchListTable);
         content.addComponent(test);
         content.addComponent(stop);
-        content.setComponentAlignment(test,Alignment.MIDDLE_CENTER);
+        content.setComponentAlignment(test, Alignment.MIDDLE_CENTER);
         content.addComponent(getChart());
 
         content.setSizeFull();
@@ -105,13 +115,9 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
     }
 
 
+    protected Table getTable() {
 
-
-
-
-    protected Table getTable(){
-
-        BeanContainer<String,StockItemBean> watchList = new BeanContainer<String,StockItemBean>(StockItemBean.class);
+        BeanContainer<String, StockItemBean> watchList = new BeanContainer<String, StockItemBean>(StockItemBean.class);
         watchList.setBeanIdProperty("stockID");
 
         StockItemBean stockItemBean = new StockItemBean();
@@ -122,15 +128,18 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
         watchList.addBean(stockItemBean);
 
-        Table table = new Table("Watch List",watchList);
+        Table table = new Table("Watch List", watchList);
 
         table.setSizeFull();
         table.setSelectable(true);
-
-        Object[] columns = table.getVisibleColumns();
+        table.setImmediate(true);
 
         return table;
     }
+
+
+    final ListSeries series = new ListSeries(0);
+
 
 
 
@@ -147,13 +156,11 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         configuration.disableCredits();
 
 
-        final ListSeries series = new ListSeries(0);
         configuration.setSeries(series);
 
         chart.drawChart(configuration);
 
 
-        /*
         Thread randomDataGenerator = new Thread() {
             @Override
             public void run() {
@@ -166,7 +173,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
                         if (chart.isConnectorEnabled()) {
                             getSession().lock();
                             try {
-                                series.addData(getValue());
+                                series.addData(reportHelper.getValue());
                             } finally {
                                 getSession().unlock();
                             }
@@ -179,7 +186,6 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         };
 
         randomDataGenerator.start();
-                             */
 
 
         return chart;
@@ -192,11 +198,19 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
         String changedStockID = stockChanged.getStockID();
 
-        BeanContainer<String,StockItemBean> shownStocks = (BeanContainer<String,StockItemBean>) watchListTable.getContainerDataSource();
+        BeanContainer<String, StockItemBean> shownStocks = (BeanContainer<String, StockItemBean>) watchListTable.getContainerDataSource();
 
-        shownStocks.removeItem(changedStockID);
 
-        shownStocks.addBean(stockChanged);
+        if (watchListTable.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+                shownStocks.removeItem(changedStockID);
+                shownStocks.addBean(stockChanged);
+            } finally {
+                getSession().unlock();
+            }
+        }
+
 
     }
 }
