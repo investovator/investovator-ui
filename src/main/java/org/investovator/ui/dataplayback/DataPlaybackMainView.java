@@ -1,3 +1,22 @@
+/*
+ * investovator, Stock Market Gaming Framework
+ *     Copyright (C) 2013  investovator
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.investovator.ui.dataplayback;
 
 import com.vaadin.addon.charts.Chart;
@@ -5,22 +24,18 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.ui.*;
 import org.investovator.dataPlayBackEngine.DataPlayer;
 import org.investovator.dataPlayBackEngine.events.StockEvent;
-import org.investovator.ui.utils.dashboard.BasicDashboard;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
 
 /**
- * @author: Ishan
+ * @author: ishan
+ * @version: ${Revision}
  */
-
-
-@SuppressWarnings("serial")
-public class DataPlaybackView extends BasicDashboard implements Observer{
+public class DataPlaybackMainView extends Panel implements Observer {
 
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH=10;
@@ -33,48 +48,13 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
     int timeTracker =0;
 
     //used in ticker data observing
-    DataPlaybackView mySelf;
+    DataPlaybackMainView mySelf;
 
     Chart tickerChart;
 
-
-
-    public DataPlaybackView() {
-        super("<span><center>investovator</center></span> Data Playback");
+    public DataPlaybackMainView() {
+        //set a link to this class
         mySelf=this;
-    }
-
-    /**
-     * Create the views for the buttons as you desire and add them to the menuItems hash map
-     * This is the only method a developer needs to change.
-     */
-     @Override
-    public LinkedHashMap<String, Panel> getMenuItems() {
-        LinkedHashMap<String,Panel> map=new LinkedHashMap<String, Panel>();
-
-        map.put("main view", buildMainPanel());
-
-
-
-        /*
-        Example Button 2
-         */
-        VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
-
-        Panel panel2 = new Panel();
-        panel2.setContent(panelContent2);
-        map.put("test 2", panel2);
-         /*
-        End of Example Button 2
-         */
-
-        return map;
-    }
-
-
-    private Panel buildMainPanel(){
-        Panel panel = new Panel();
 
         //add the main graph
         VerticalLayout panelContent = new VerticalLayout();
@@ -132,7 +112,7 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
                 try {
                     Date eventTime =format.parse(date);
 
-                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
+                    series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
 
 
                 } catch (ParseException e) {
@@ -191,9 +171,7 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         //add ticker chart
         panelContent.addComponent(buildTickerChart());
 
-        panel.setContent(panelContent);
-
-        return  panel;
+        this.setContent(panelContent);
     }
 
     private Chart buildMainChart(){
@@ -296,4 +274,3 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
 
     }
 }
-
