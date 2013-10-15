@@ -6,7 +6,7 @@
     <artifactId>investovator-ui</artifactId>
     <packaging>war</packaging>
     <version>0.1</version>
-    <name>Vaadin Web Application</name>
+    <name>investovator - Front end</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
