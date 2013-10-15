@@ -115,9 +115,8 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         playGameButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-//                Notification.show(Float.toString(player.getOHLCPrice("Goog","2012-10-3-19-45-3"+Integer.toString(a))));
                 ListSeries series=(ListSeries)mainChart.getConfiguration().getSeries().get(0);
-                series.addData(player.getOHLCPrice("Goog","2012-10-3-19-45-3"+Integer.toString(a)));
+                series.addData(player.getOHLCPrice("Goog","2012-10-3-19-45-"+Integer.toString(a)));
                 a++;
 
                 //start event playing
@@ -140,9 +139,8 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         nextDayB.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                //Notification.show(Float.toString(player.getOHLCPrice("Goog","2012-10-3-19-45-3"+Integer.toString(a))));
                 ListSeries series=(ListSeries)mainChart.getConfiguration().getSeries().get(0);
-                series.addData(player.getOHLCPrice("Goog","2012-10-3-19-45-3"+Integer.toString(a)));
+                series.addData(player.getOHLCPrice("Goog","2012-10-3-19-45-"+Integer.toString(a)));
                 a++;
             }
         });
@@ -152,8 +150,6 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
 
         //add ticker chart
         panelContent.addComponent(buildTickerChart());
-//        panelContent.addComponent(new Button("dd"));
-        //
 
         panel.setContent(panelContent);
 
@@ -181,30 +177,14 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
 
-//        configuration.getxAxis().setCategories("Jan", "Feb", "Mar", "Apr",
-//                "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-
         ListSeries ls = new ListSeries();
-//        ls.setName("Short");
-//        ls.setData(29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4,
-//                194.1, 95.6, 54.4);
-//        configuration.addSeries(ls);
-//        ls = new ListSeries();
         ls.setName("GOOG");
-//        Number[] data = new Number[] { 129.9, 171.5, 106.4, 129.2, 144.0,
-//                176.0, 135.6, 148.5, 216.4, 194.1, 195.6, 154.4 };
-//        for (int i = 0; i < data.length / 2; i++) {
-//            Number number = data[i];
-//            data[i] = data[data.length - i - 1];
-//            data[data.length - i - 1] = number;
-//        }
 
-//        ls.setData(data);
         configuration.addSeries(ls);
 
         //disable trademark
         chart.getConfiguration().disableCredits();
-        chart.getConfiguration().setTitle("Stock Closing Prices");
+        chart.getConfiguration().getTitle().setText("Stock Closing Prices");
 
         chart.drawChart(configuration);
         return chart;
@@ -231,31 +211,16 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
 
-//        configuration.getxAxis().setCategories("Jan", "Feb", "Mar", "Apr",
-//                "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-
         ListSeries ls = new ListSeries();
-//        ls.setName("Short");
-//        ls.setData(29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4,
-//                194.1, 95.6, 54.4);
-//        configuration.addSeries(ls);
-//        ls = new ListSeries();
         ls.setName("GOOG");
-//        Number[] data = new Number[] { 129.9, 171.5, 106.4, 129.2, 144.0,
-//                176.0, 135.6, 148.5, 216.4, 194.1, 195.6, 154.4 };
-//        for (int i = 0; i < data.length / 2; i++) {
-//            Number number = data[i];
-//            data[i] = data[data.length - i - 1];
-//            data[data.length - i - 1] = number;
-//        }
-
-//        ls.setData(data);
+        ls.setPlotOptions(new PlotOptionsSpline());
         configuration.addSeries(ls);
+
 
         //disable trademark
         tickerChart.getConfiguration().disableCredits();
 
-        tickerChart.getConfiguration().setTitle("Real-time Stock Prices");
+        tickerChart.getConfiguration().getTitle().setText("Real-time Stock Prices");
 
 
         tickerChart.drawChart(configuration);
@@ -267,49 +232,16 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
     public void update(Observable o, Object arg) {
         final StockEvent event=(StockEvent) arg;
 
-//        getUI().access(new Runnable() {
-//            @Override
-//            public void run() {
-//                //entry.setValue(d.getDate() + "-" + d.getStockId() + "-" + i);
-////                addComponent(new Label(Float.toString(event.getPrice())));
-//
-//                while (true) {
-
-//                    System.out.println(event.getPrice());
-//                    ListSeries series=(ListSeries)tickerChart.getConfiguration().getSeries();
-//                    series.addData(event.getPrice());
-                    //i++;
-
-//
-//                   try {
-//                        Thread.sleep(1000);
                         if (tickerChart.isConnectorEnabled()) {
                             getSession().lock();
                             try {
-//                                System.out.println(event.getPrice());
                                 ListSeries series=(ListSeries)tickerChart.getConfiguration().getSeries().get(0);
                                 series.addData(event.getPrice());
-                                //tickerChart.drawChart();
                                 tickerChart.setImmediate(true);
                             } finally {
                                 getSession().unlock();
                             }
-                        } else {
-//                            break;
                         }
-                    //
-
-//                } catch (InterruptedException e) {
-//                       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                   }
-
-
-//                }
-//        }
-//}
-//    );
-
-
     }
 }
 
