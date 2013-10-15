@@ -20,6 +20,7 @@ package org.investovator.ui.agentgaming;
 
 import net.sourceforge.jabm.report.Report;
 import net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess;
+import net.sourceforge.jasa.report.CurrentPriceReportVariables;
 import org.investovator.jasa.api.JASAFacade;
 
 import java.util.ArrayList;
@@ -38,33 +39,45 @@ public class ReportHelper {
     int lastIndex = 0;
     boolean reportsReady = false;
     HashMap<String,ArrayList<Report>> reports;
-    GeometricBrownianMotionPriceProcess googGBM =null;
+
+    HashMap<String,CurrentPriceReportVariables> currentPriceReports = new HashMap<String, CurrentPriceReportVariables>();
+
 
     private MarketFacade simulationFacade = JASAFacade.getMarketFacade();
 
-    public void viewReport(){
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+
+    public ReportHelper() {
+        //Add Current Time Reports
+
+    }
+
+
+    public void initReports(){
 
         reports = simulationFacade.getReports();
-        if(reports == null) return;
+        currentPriceReports.put("GOOG", getCurrentPriceReport("GOOG"));
+        reportsReady = true;
 
-        ArrayList<Report> goog = reports.get("GOOG");
+    }
 
 
+    private CurrentPriceReportVariables getCurrentPriceReport(String stockID){
 
-        for (int i = 0; i < goog.size(); i++) {
-            Report tmp = goog.get(i);
-            if(tmp.getName().equals("GBM")){
-                googGBM = (GeometricBrownianMotionPriceProcess) tmp;
+        ArrayList<Report> allReports = reports.get(stockID);
+        CurrentPriceReportVariables currentPriceReport = null;
+
+        for (int i = 0; i < allReports.size(); i++) {
+            Report tmp = allReports.get(i);
+            if(tmp.getName().equals("current")){
+                currentPriceReport = (CurrentPriceReportVariables) tmp;
             }
         }
 
+        return currentPriceReport;
     }
+
 
 
     public int getValue(){
@@ -75,8 +88,9 @@ public class ReportHelper {
 //        }
 //
 //        else{
-        return googGBM.getY(0).intValue();
+       // return googGBM.getY(0).intValue();
 //        }
+        return 0;
     }
 
 
@@ -113,6 +127,21 @@ public class ReportHelper {
 
         return result;
     }*/
+
+
+
+    public float getCurrentPrice(String stockID){
+
+        CurrentPriceReportVariables report = currentPriceReports.get(stockID);
+        return report.getY(0).floatValue();
+
+    }
+
+
+    public StockItemBean getStockUpdates(String stockID){
+
+       return  null;
+    }
 
 }
 

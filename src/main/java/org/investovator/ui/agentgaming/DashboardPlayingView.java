@@ -43,12 +43,10 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
     MarketFacade simulationFacade = JASAFacade.getMarketFacade();
 
     Table watchListTable;
+    Chart currentPriceChart;
     WatchList watchList;
 
-
     boolean simulationRunning = false;
-    boolean reportsReady=false;
-
 
     public DashboardPlayingView() {
 
@@ -60,6 +58,16 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
         Button test = new Button("Start");
         Button stop = new Button("Stop");
+        Button reports = new Button("Init Reports");
+
+        reports.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                reportHelper.initReports();
+                simulationRunning = true;
+
+            }
+        });
 
         test.addClickListener(new Button.ClickListener() {
             @Override
@@ -69,18 +77,9 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
                 simulationFacade.startSimulation();
                 simulationRunning = true;
 
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                reportHelper.viewReport();
-
-                reportsReady = true;
-
             }
         });
+
 
         stop.addClickListener(new Button.ClickListener() {
             @Override
@@ -91,13 +90,19 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
 
         watchListTable = getTable();
+        currentPriceChart = getChart();
+
+        VerticalLayout buttons = new VerticalLayout();
+        buttons.addComponent(test);
+        buttons.addComponent(stop);
+        buttons.addComponent(reports);
 
 
         content.addComponent(watchListTable);
-        content.addComponent(test);
-        content.addComponent(stop);
-        content.setComponentAlignment(test, Alignment.MIDDLE_CENTER);
-        content.addComponent(getChart());
+        content.addComponent(currentPriceChart);
+        content.setComponentAlignment(watchListTable,Alignment.MIDDLE_CENTER);
+        content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
+        content.addComponent(buttons);
 
         content.setSizeFull();
 
@@ -131,6 +136,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         Table table = new Table("Watch List", watchList);
 
         table.setSizeFull();
+        table.setWidth("90%");
         table.setSelectable(true);
         table.setImmediate(true);
 
@@ -144,11 +150,11 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
 
 
-    protected Component getChart() {
+    protected Chart getChart() {
 
         final Chart chart = new Chart();
         chart.setHeight("450px");
-        chart.setWidth("75%");
+        chart.setWidth("90%");
 
         final Configuration configuration = new Configuration();
 
@@ -160,34 +166,6 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
         chart.drawChart(configuration);
 
-
-        Thread randomDataGenerator = new Thread() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        sleep(1000);
-
-                        if(!reportsReady) continue;
-
-                        if (chart.isConnectorEnabled()) {
-                            getSession().lock();
-                            try {
-                                series.addData(reportHelper.getValue());
-                            } finally {
-                                getSession().unlock();
-                            }
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-
-        randomDataGenerator.start();
-
-
         return chart;
     }
 
@@ -195,6 +173,8 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
     @Override
     public void onStockChange(StockItemBean stockChanged) {
         //To change body of implemented methods use File | Settings | File Templates.
+
+        if(!simulationRunning) return;
 
         String changedStockID = stockChanged.getStockID();
 
@@ -206,6 +186,16 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
             try {
                 shownStocks.removeItem(changedStockID);
                 shownStocks.addBean(stockChanged);
+            } finally {
+                getSession().unlock();
+            }
+        }
+
+
+        if (currentPriceChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+                series.addData(stockChanged.getMarketPrice());
             } finally {
                 getSession().unlock();
             }

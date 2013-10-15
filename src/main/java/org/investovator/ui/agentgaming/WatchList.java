@@ -67,24 +67,21 @@ public class WatchList implements Runnable{
     @Override
     public void run() {
 
-        float mPrice = 100;
-
 
         while(true){
 
-            mPrice++;
-
             try {
                 Thread.sleep(1000);
+                if(!helper.reportsReady) continue;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             StockItemBean stockItemBean = new StockItemBean();
-            stockItemBean.setStockID("IBM");
+            stockItemBean.setStockID("GOOG");
             stockItemBean.setLastAsk(125.4f);
             stockItemBean.setLastBid(100);
-            stockItemBean.setMarketPrice(mPrice);
+            stockItemBean.setMarketPrice(helper.getCurrentPrice("GOOG"));
 
             notifyListeners(stockItemBean);
 
