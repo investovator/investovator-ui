@@ -7,6 +7,9 @@ import org.investovator.dataPlayBackEngine.DataPlayer;
 import org.investovator.dataPlayBackEngine.events.StockEvent;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -22,12 +25,12 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH=10;
 
+    //decides the number of points shown in the OHLC chart
+    private static int OHLC_CHART_LENGTH=10;
+
     DataPlayer player;
     //used for counting data iteration number
-    int a=0;
-
-    //to keep track of the number of points in the ticker chart
-    int tickerChartPointCounter=0;
+    int timeTracker =0;
 
     DataPlaybackView mySelf;
 
@@ -121,9 +124,20 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         playGameButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                ListSeries series=(ListSeries)mainChart.getConfiguration().getSeries().get(0);
-                series.addData(player.getOHLCPrice("Goog","2012-10-3-19-45-"+Integer.toString(a)));
-                a++;
+                DataSeries series=(DataSeries)mainChart.getConfiguration().getSeries().get(0);
+                String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
+                //convert date string to a real date object
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
+                try {
+                    Date eventTime =format.parse(date);
+
+                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
+
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                timeTracker++;
 
                 //start event playing
                 player.runPlayback(1);
@@ -145,9 +159,28 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         nextDayB.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                ListSeries series=(ListSeries)mainChart.getConfiguration().getSeries().get(0);
-                series.addData(player.getOHLCPrice("Goog","2012-10-3-19-45-"+Integer.toString(a)));
-                a++;
+                DataSeries series=(DataSeries)mainChart.getConfiguration().getSeries().get(0);
+
+                String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
+                //convert date string to a real date object
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
+                try {
+                    Date eventTime =format.parse(date);
+
+                    if (series.getData().size() > TICKER_CHART_LENGTH) {
+
+                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)), true, true);
+                    } else{
+                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
+                    }
+
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                timeTracker++;
+
             }
         });
 
@@ -183,7 +216,7 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
 
-        ListSeries ls = new ListSeries();
+        DataSeries ls = new DataSeries();
         ls.setName("GOOG");
 
         configuration.addSeries(ls);
@@ -219,7 +252,6 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
 
         DataSeries ls = new DataSeries();
         ls.setName("GOOG");
-        ls.setPlotOptions(new PlotOptionsSpline());
         configuration.addSeries(ls);
 
 
@@ -238,33 +270,29 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
     public void update(Observable o, Object arg) {
         final StockEvent event=(StockEvent) arg;
 
-        if (tickerChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
-                //ListSeries series=(ListSeries)tickerChart.getConfiguration().getSeries().get(0);
+        //only update for GOOG stocks
+        if("GOOG".equalsIgnoreCase(event.getStockId())){
 
-                DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
-//
-                if (series.getData().size() > TICKER_CHART_LENGTH) {
+            if (tickerChart.isConnectorEnabled()) {
+                getSession().lock();
+                try {
+                    DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
 
-//                                    series.addData(event.getPrice(),true,true);
+                    if (series.getData().size() > TICKER_CHART_LENGTH) {
 
-                    series.add(new DataSeriesItem(event.getTime(), event.getPrice()), true, true);
-                    System.out.println(event.getTime() + "==" + event.getPrice());
+                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()), true, true);
 
-                } else {
-//                                    series.addData(event.getPrice());
-                    series.add(new DataSeriesItem(event.getTime(), event.getPrice()));
-                    System.out.println(event.getTime() + "==" + event.getPrice());
+                    } else {
+                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()));
 
-                    //tickerChartPointCounter++;
-
+                    }
+                    tickerChart.setImmediate(true);
+                } finally {
+                    getSession().unlock();
                 }
-                tickerChart.setImmediate(true);
-            } finally {
-                getSession().unlock();
             }
         }
+
     }
 }
 
