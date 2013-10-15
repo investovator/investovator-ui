@@ -32,6 +32,7 @@ public class DataPlaybackView extends BasicDashboard implements Observer{
     //used for counting data iteration number
     int timeTracker =0;
 
+    //used in ticker data observing
     DataPlaybackView mySelf;
 
     Chart tickerChart;
