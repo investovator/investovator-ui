@@ -66,8 +66,29 @@ public class WatchList implements Runnable{
 
     @Override
     public void run() {
-        //To change body of implemented methods use File | Settings | File Templates.
-        throw new NotImplementedException();
+
+        float mPrice = 100;
+
+
+        while(true){
+
+            mPrice++;
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            StockItemBean stockItemBean = new StockItemBean();
+            stockItemBean.setStockID("IBM");
+            stockItemBean.setLastAsk(125.4f);
+            stockItemBean.setLastBid(100);
+            stockItemBean.setMarketPrice(mPrice);
+
+            notifyListeners(stockItemBean);
+
+        }
     }
 }
 

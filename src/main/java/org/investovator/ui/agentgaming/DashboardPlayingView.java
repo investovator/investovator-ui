@@ -1,20 +1,33 @@
+/*
+ * investovator, Stock Market Gaming framework
+ * Copyright (C) 2013  investovator
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.investovator.ui.agentgaming;
 
-import com.google.gwt.aria.client.TimerRole;
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.ChartClickEvent;
-import com.vaadin.addon.charts.ChartClickListener;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.Configuration;
 import com.vaadin.addon.charts.model.ListSeries;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
-import net.sourceforge.jabm.report.Report;
-import net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess;
-import net.sourceforge.jasa.report.CurrentPriceReportVariables;
 import org.investovator.jasa.api.JASAFacade;
 import org.investovator.jasa.api.MarketFacade;
-import org.investovator.jasa.multiasset.simulation.HeadlessMultiAssetSimulationManager;
-import org.springframework.core.env.Environment;
 
 
 import java.util.*;
@@ -23,21 +36,27 @@ import java.util.*;
  * @author Amila Surendra
  * @version $Revision
  */
-public class DashboardPlayingView extends Panel {
+public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
-    VerticalLayout content;
+    GridLayout content;
+    ReportHelper reportHelper;
+    MarketFacade simulationFacade = JASAFacade.getMarketFacade();
 
-   MarketFacade simulationFacade = JASAFacade.getMarketFacade();
+    Table watchListTable;
+    WatchList watchList;
 
-    HashMap<String,ArrayList<Report>>  reports;
-
-    String mainXmlPath;
 
     boolean simulationRunning = false;
 
 
+
     public DashboardPlayingView() {
-        content = new VerticalLayout();
+
+        //Setup Layout
+        content = new GridLayout();
+        content.setRows(2);
+        content.setColumns(2);
+
 
         Button test = new Button("Start");
         Button stop  = new Button("Stop");
@@ -46,15 +65,10 @@ public class DashboardPlayingView extends Panel {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 //testing
-
-                System.out.println(System.getProperty("jabm.config"));
-
                 simulationFacade = JASAFacade.getMarketFacade();
                 simulationFacade.startSimulation();
                 simulationRunning=true;
 
-                viewReport();
-                reportsReady = true;
             }
         });
 
@@ -66,9 +80,13 @@ public class DashboardPlayingView extends Panel {
         });
 
 
+        watchListTable = getTable();
 
+
+        content.addComponent(watchListTable);
         content.addComponent(test);
         content.addComponent(stop);
+        content.setComponentAlignment(test,Alignment.MIDDLE_CENTER);
         content.addComponent(getChart());
 
         content.setSizeFull();
@@ -77,92 +95,45 @@ public class DashboardPlayingView extends Panel {
 
         this.setContent(content);
 
+        //Reports Config
+        reportHelper = new ReportHelper();
+        watchList = new WatchList(reportHelper);
+        watchList.addStockChangeListener(this);
 
-    }
-
-
-    boolean reportsReady = false;
-
-    GeometricBrownianMotionPriceProcess googGBM =null;
-
-    public void viewReport(){
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        reports = simulationFacade.getReports();
-        if(reports == null) return;
-
-        ArrayList<Report> goog = reports.get("GOOG");
-
-
-
-        for (int i = 0; i < goog.size(); i++) {
-            Report tmp = goog.get(i);
-            if(tmp.getName().equals("GBM")){
-                googGBM = (GeometricBrownianMotionPriceProcess) tmp;
-            }
-        }
+        new Thread(watchList).start();
 
     }
 
 
 
 
-    int lastIndex = 0;
-
- /*   public int[] getValues(){
-
-        List<Integer> values = new ArrayList<Integer>();
-
-        if(googGBM==null){
-            viewReport();
-            int[] tmp = {};
-            return tmp;
-        }
-
-        else{
-
-            int count = lastIndex;
-
-            while(true){
-
-                googGBM.get
-                Number num = googGBM.getY(count);
-                if(num==null) break;
-
-                values.add(num.intValue());
-                lastIndex++;
-
-            }
-        }
-
-        int[] result = new int[values.size()];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = values.get(i);
-        }
-
-        return result;
-    }*/
 
 
-    public int getValue(){
+    protected Table getTable(){
 
-        //if(googGBM==null){
-         //   viewReport();
-         //   return 0;
-        //}
+        BeanContainer<String,StockItemBean> watchList = new BeanContainer<String,StockItemBean>(StockItemBean.class);
+        watchList.setBeanIdProperty("stockID");
 
-        //else{
-         return googGBM.getY(0).intValue();
-       // }
+        StockItemBean stockItemBean = new StockItemBean();
+        stockItemBean.setStockID("GOOG");
+        stockItemBean.setLastAsk(125.4f);
+        stockItemBean.setLastBid(100);
+        stockItemBean.setMarketPrice(102.5f);
+
+        watchList.addBean(stockItemBean);
+
+        Table table = new Table("Watch List",watchList);
+
+        table.setSizeFull();
+        table.setSelectable(true);
+
+        Object[] columns = table.getVisibleColumns();
+
+        return table;
     }
 
 
-    final ListSeries series = new ListSeries(0);
+
 
     protected Component getChart() {
 
@@ -173,13 +144,16 @@ public class DashboardPlayingView extends Panel {
         final Configuration configuration = new Configuration();
 
         configuration.getChart().setType(ChartType.SPLINE);
+        configuration.disableCredits();
 
 
+        final ListSeries series = new ListSeries(0);
         configuration.setSeries(series);
 
         chart.drawChart(configuration);
 
 
+        /*
         Thread randomDataGenerator = new Thread() {
             @Override
             public void run() {
@@ -204,17 +178,27 @@ public class DashboardPlayingView extends Panel {
             }
         };
 
-
         randomDataGenerator.start();
+                             */
 
 
         return chart;
     }
 
 
+    @Override
+    public void onStockChange(StockItemBean stockChanged) {
+        //To change body of implemented methods use File | Settings | File Templates.
 
+        String changedStockID = stockChanged.getStockID();
 
+        BeanContainer<String,StockItemBean> shownStocks = (BeanContainer<String,StockItemBean>) watchListTable.getContainerDataSource();
 
+        shownStocks.removeItem(changedStockID);
+
+        shownStocks.addBean(stockChanged);
+
+    }
 }
 
 

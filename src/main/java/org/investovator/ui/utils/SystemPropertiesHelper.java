@@ -40,6 +40,8 @@ public class SystemPropertiesHelper implements
         }
 
         System.setProperty("DATA_FOL", context.getRealPath("data"));
+
+        System.setProperty("jabm.config", "/home/amila/config/main.xml");
     }
 
     public void contextDestroyed(ServletContextEvent event) {
