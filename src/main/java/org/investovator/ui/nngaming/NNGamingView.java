@@ -22,6 +22,7 @@ import com.vaadin.data.Property;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
+import neuralnet.NNManager;
 import org.investovator.ui.GlobalView;
 
 import java.io.File;
@@ -38,29 +39,39 @@ import java.util.HashMap;
  */
 public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.SucceededListener {
 
-    private HashMap<String,String> parameters;
     private final Window paramWindow;
     private final TwinColSelect select;
+
+    private HashMap<String,String> parameters;
     private TextField newParamField;
     private FormLayout layout;
+    private String selectedStockID;
+    private Collection selectedInputParams;
 
     public NNGamingView(){
+
         paramWindow = new Window();
         select = new TwinColSelect();
         layout = new FormLayout();
         newParamField = new TextField();
+
         parameters = new HashMap<String, String>();
+
         initUI();
     }
 
     private void initStockList(){
-        // Create a selection component
-        Label stockIDLabel = new Label("Please specify the Stock ID");
-        Select select = new Select ();
 
-        // Add some items and give each an item ID
-        //To Do-----------------------------------
-        layout.addComponents(stockIDLabel,select);
+        Label stockIDLabel = new Label("Please specify the Stock ID");
+        Select selectStockID = new Select();
+
+        selectStockID.setNullSelectionAllowed(false);
+        selectStockID.addItem("Sampath");
+
+        selectedStockID = (String) selectStockID.getValue();
+        Notification.show(selectedStockID);
+
+        layout.addComponents(stockIDLabel,selectStockID);
     }
 
     private void initUI(){
@@ -68,12 +79,15 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
         initStockList();
         initTwincolSelect();
         initParamWindow();
+
         Button createGame = new Button("Create Game",new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                //To change body of implemented methods use File | Settings | File Templates.
+                NNManager manager = new NNManager();
+                //manager.createNeuralNetwork(parameters,,selectedStockID);
             }
         });
+
         layout.addComponent(createGame);
         addComponent(layout);
     }
@@ -81,43 +95,45 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
     private void initParamWindow(){
         FormLayout modalLayout = new FormLayout();
         Upload upload = new Upload();
-        upload.setButtonCaption("Add Parameter");
         Label newParam = new Label("Specify New Parameter");
         Label dataSet = new Label("Specify Data Set");
+
         modalLayout.addComponents(newParam,newParamField,dataSet,upload);
         modalLayout.setMargin(true);
+
         paramWindow.setContent(modalLayout);
         paramWindow.setModal(true);
         paramWindow.setResizable(false);
 
+        upload.setButtonCaption("Add Parameter");
         upload.addSucceededListener(this);
         upload.setReceiver(this);
     }
 
     private void initTwincolSelect(){
         Label parameterLabel = new Label("Select Input Parameters for the Game..!!");
+
         select.setLeftColumnCaption("Available Input Parameters");
         select.setRightColumnCaption("Selected Input Parameters");
-        // Put some data in the select
+
         String param[] = {"High Price","Low Price","Closing Price","No of Trades","No of Shares","Turnover"};
         for (int count=0; count<param.length; count++)
         {
             select.addItem(param[count]);
         }
+
         select.setRows(param.length);
+
         select.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
-                Collection selectedItems = (Collection) event.getProperty().getValue();
-                    Notification.show(selectedItems.toString());
+                    selectedInputParams = (Collection) event.getProperty().getValue();
             }
         });
         select.setImmediate(true);
 
-
         Button newParam = new Button("Add New Parameter",new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                //To change body of implemented methods use File | Settings | File Templates.
                 UI.getCurrent().addWindow(paramWindow);
             }
         });
@@ -131,25 +147,25 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        //To change body of implemented methods use File | Settings | File Templates.
         Notification.show("Welcome to NN Gaming Engine");
-
     }
 
     @Override
     public OutputStream receiveUpload(String filename,String mimeType) {
-        Notification.show("In Call Back");
         File file;
-        FileOutputStream fos = null;
+        FileOutputStream fos;
+
         try {
-            // Open the file for writing.
-            file = new File(filename);
-            fos = new FileOutputStream(file);
+                // Open the file for writing.
+                file = new File(filename);
+                fos = new FileOutputStream(file);
+
+                addNewParameter(newParamField.getValue(),file.getAbsolutePath());
+                newParamField.setValue("");
+
         } catch (final java.io.FileNotFoundException e) {
-            new Notification("Could not open file<br/>",
-                    e.getMessage(),
-                    Notification.Type.ERROR_MESSAGE)
-                    .show(Page.getCurrent());
+                new Notification("Could not open file<br/>",e.getMessage(),
+                    Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
             return null;
         }
         return fos;
