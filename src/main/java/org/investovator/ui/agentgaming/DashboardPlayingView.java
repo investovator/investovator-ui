@@ -66,6 +66,10 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
                 reportHelper.initReports();
                 simulationRunning = true;
 
+                simulationFacade.addListener("GOOG",watchList);
+                simulationFacade.addListener("IBM",watchList);
+                simulationFacade.addListener("SAMP",watchList);
+
             }
         });
 
@@ -115,7 +119,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         watchList = new WatchList(reportHelper);
         watchList.addStockChangeListener(this);
 
-        new Thread(watchList).start();
+        //new Thread(watchList).start();
 
     }
 
@@ -139,6 +143,8 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         table.setWidth("90%");
         table.setSelectable(true);
         table.setImmediate(true);
+
+        table.setVisibleColumns(new String[]{"stockID","bestBid","bestAsk","marketPrice"});
 
         return table;
     }
@@ -170,6 +176,17 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
     }
 
 
+    public Component getQuoteUI(){
+
+        VerticalLayout content= new VerticalLayout();
+
+
+
+
+        return content;
+    }
+
+
     @Override
     public void onStockChange(StockItemBean stockChanged) {
         //To change body of implemented methods use File | Settings | File Templates.
@@ -192,14 +209,14 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         }
 
 
-        if (currentPriceChart.isConnectorEnabled()) {
+        /*f (currentPriceChart.isConnectorEnabled()) {
             getSession().lock();
             try {
                 series.addData(stockChanged.getMarketPrice());
             } finally {
                 getSession().unlock();
             }
-        }
+        }*/
 
 
     }

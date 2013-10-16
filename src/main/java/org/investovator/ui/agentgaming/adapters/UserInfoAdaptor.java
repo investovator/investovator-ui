@@ -1,4 +1,4 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.adapters;
 
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
