@@ -20,6 +20,7 @@
 package org.investovator.ui.dataplayback.wizards;
 
 import com.vaadin.data.Property;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
@@ -29,9 +30,7 @@ import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: ishan
@@ -221,42 +220,41 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     class ThirdStep implements WizardStep {
 
-        TwinColSelect selector;
 
         ThirdStep() {
-            this.selector=new TwinColSelect();
 
 
         }
 
         @Override
         public String getCaption() {
-            return "Select the Securities to play";
+            return "Select the game start day";
         }
 
         @Override
         public Component getContent() {
             VerticalLayout content = new VerticalLayout();
 
-            content.addComponent(selector);
+            InlineDateField datePicker=new InlineDateField();
+            content.addComponent(datePicker);
+            //TODO - set this to the starting/ending date of the data set
+            datePicker.setValue(new Date());
+            datePicker.setImmediate(true);
+            datePicker.setTimeZone(TimeZone.getTimeZone("UTC"));
+            datePicker.setLocale(Locale.US);
+            //if this is a OHLC game
+            if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                datePicker.setResolution(Resolution.DAY);
 
-            selector.setRows(6);
-            selector.setMultiSelect(true);
-            selector.setImmediate(true);
-            selector.setLeftColumnCaption("Available securities");
-            selector.setRightColumnCaption("Selected securities");
-
-            //select a default Item
-            selector.select(1);
-
-            try {
-                HashMap<String,String> companyList= mainView.getDataPlayer().getStocksList();
-                for(String stock:companyList.keySet()){
-                    selector.addItem(stock+" ("+companyList.get(stock)+")");
-                }
-            } catch (DataAccessException e) {
-                e.printStackTrace();
             }
+            //else if this is a Ticker data based game
+            else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                datePicker.setResolution(Resolution.SECOND);
+
+            }
+
+
+//            content.addComponent();
             //TODO - calculate the date range that has data for those stocks (in the DPE) and show that range
 
 
@@ -266,24 +264,9 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         @Override
         public boolean onAdvance() {
 
-            //obtain the selected items
-            Set selectedStocks= (Set) selector.getValue();
 
-            //if there are selested stocks
-            if(selectedStocks.size()>0){
-                ArrayList<String> stocksList=new ArrayList<String>();
-                for (Object items:selectedStocks){
-                    String stock=((String)items).split(" ")[0];
-                    stocksList.add(stock);
-                }
-                DataPlaybackEngineStates.playingSymbols=stocksList.toArray(new String[stocksList.size()]);
-                System.out.println(DataPlaybackEngineStates.playingSymbols[0]);
-                return true;
-            }
-            else{
                 Notification.show("Please select stocks to play");
                 return false;
-            }
 
         }
 
