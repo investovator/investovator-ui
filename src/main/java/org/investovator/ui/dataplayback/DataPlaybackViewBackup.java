@@ -5,6 +5,7 @@
 //import com.vaadin.ui.*;
 //import org.investovator.dataPlayBackEngine.DataPlayer;
 //import org.investovator.dataPlayBackEngine.events.StockEvent;
+//import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
 //import org.investovator.ui.utils.dashboard.BasicDashboard;
 //
 //import java.text.ParseException;
@@ -15,12 +16,12 @@
 //import java.util.Observer;
 //
 ///**
-// * @author: Ishan
-// */
+//* @author: Ishan
+//*/
 //
 //
 //@SuppressWarnings("serial")
-//public class DataPlaybackViewBackup extends BasicDashboard implements Observer{
+//public class DataPlaybackViewBackup extends Panel implements Observer {
 //
 //    //decides the number of points shown in the ticker chart
 //    private static int TICKER_CHART_LENGTH=10;
@@ -37,54 +38,19 @@
 //
 //    Chart tickerChart;
 //
-//
-//
 //    public DataPlaybackViewBackup() {
-//        super("<span><center>investovator</center></span> Data Playback");
+//        //set a link to this class
 //        mySelf=this;
-//    }
-//
-//    /**
-//     * Create the views for the buttons as you desire and add them to the menuItems hash map
-//     * This is the only method a developer needs to change.
-//     */
-//     @Override
-//    public LinkedHashMap<String, Panel> getMenuItems() {
-//        LinkedHashMap<String,Panel> map=new LinkedHashMap<String, Panel>();
-//
-//        map.put("main view", buildMainPanel());
-//
-//
-//
-//        /*
-//        Example Button 2
-//         */
-//        VerticalLayout panelContent2 = new VerticalLayout();
-//        panelContent2.addComponent(new Button("Test 2"));
-//
-//        Panel panel2 = new Panel();
-//        panel2.setContent(panelContent2);
-//        map.put("test 2", panel2);
-//         /*
-//        End of Example Button 2
-//         */
-//
-//        return map;
-//    }
-//
-//
-//    private Panel buildMainPanel(){
-//        Panel panel = new Panel();
 //
 //        //add the main graph
-//        VerticalLayout panelContent = new VerticalLayout();
+//        final VerticalLayout panelContent = new VerticalLayout();
 //
 //        HorizontalLayout topBar=new HorizontalLayout();
 //        HorizontalLayout topButtonContainer=new HorizontalLayout();
 //        topButtonContainer.setStyleName("sidebar");
 //        topBar.addComponent(topButtonContainer);
 //        //to set the alignment of the buttons
-//        topBar.setComponentAlignment(topButtonContainer, Alignment.MIDDLE_RIGHT);
+//        topBar.setComponentAlignment(topButtonContainer,Alignment.MIDDLE_RIGHT);
 //        topButtonContainer.setSizeFull();
 //
 //        panelContent.addComponent(topBar);
@@ -103,9 +69,9 @@
 //
 //        //set alignments of the buttons
 //        topButtonContainer.setComponentAlignment(addGameButton,Alignment.MIDDLE_RIGHT);
-//        topButtonContainer.setComponentAlignment(playGameButton, Alignment.MIDDLE_RIGHT);
+//        topButtonContainer.setComponentAlignment(playGameButton,Alignment.MIDDLE_RIGHT);
 //        topButtonContainer.setComponentAlignment(pauseGameButton,Alignment.MIDDLE_RIGHT);
-//        topButtonContainer.setComponentAlignment(stopGameButton, Alignment.MIDDLE_RIGHT);
+//        topButtonContainer.setComponentAlignment(stopGameButton,Alignment.MIDDLE_RIGHT);
 ////        topButtonContainer.setSpacing(false);
 //
 //        //add the action listeners for buttons
@@ -120,19 +86,22 @@
 //
 //                //add as an observer
 //                player.setObserver(mySelf);
+//
+//                //test wizard
+//                startAddGameWizard();
 //            }
 //        });
 //        playGameButton.addClickListener(new Button.ClickListener() {
 //            @Override
 //            public void buttonClick(Button.ClickEvent clickEvent) {
-//                DataSeries series = (DataSeries) mainChart.getConfiguration().getSeries().get(0);
-//                String date = "2012-10-3-19-45-" + Integer.toString(timeTracker);
+//                DataSeries series=(DataSeries)mainChart.getConfiguration().getSeries().get(0);
+//                String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
 //                //convert date string to a real date object
 //                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
 //                try {
-//                    Date eventTime = format.parse(date);
+//                    Date eventTime =format.parse(date);
 //
-//                    series.add(new DataSeriesItem(eventTime, player.getOHLCPrice("Goog", date)));
+//                    series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
 //
 //
 //                } catch (ParseException e) {
@@ -160,19 +129,19 @@
 //        nextDayB.addClickListener(new Button.ClickListener() {
 //            @Override
 //            public void buttonClick(Button.ClickEvent clickEvent) {
-//                DataSeries series = (DataSeries) mainChart.getConfiguration().getSeries().get(0);
+//                DataSeries series=(DataSeries)mainChart.getConfiguration().getSeries().get(0);
 //
-//                String date = "2012-10-3-19-45-" + Integer.toString(timeTracker);
+//                String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
 //                //convert date string to a real date object
 //                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
 //                try {
-//                    Date eventTime = format.parse(date);
+//                    Date eventTime =format.parse(date);
 //
 //                    if (series.getData().size() > TICKER_CHART_LENGTH) {
 //
-//                        series.add(new DataSeriesItem(eventTime, player.getOHLCPrice("Goog", date)), true, true);
-//                    } else {
-//                        series.add(new DataSeriesItem(eventTime, player.getOHLCPrice("Goog", date)));
+//                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)), true, true);
+//                    } else{
+//                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
 //                    }
 //
 //
@@ -191,9 +160,7 @@
 //        //add ticker chart
 //        panelContent.addComponent(buildTickerChart());
 //
-//        panel.setContent(panelContent);
-//
-//        return  panel;
+//        this.setContent(panelContent);
 //    }
 //
 //    private Chart buildMainChart(){
@@ -266,6 +233,27 @@
 //        return tickerChart;
 //    }
 //
+//    private void startAddGameWizard(){
+//        // Create a sub-window and set the content
+//        Window subWindow = new Window("Create New Game");
+//        VerticalLayout subContent = new VerticalLayout();
+//        subContent.setMargin(true);
+//        subWindow.setContent(subContent);
+//
+//        // Put some components in it
+//        subContent.addComponent(new NewDataPlaybackGameWizard(subWindow, this));
+//
+//        // set window characteristics
+//        subWindow.center();
+//        subWindow.setClosable(false);
+//        subWindow.setDraggable(false);
+//        subWindow.setResizable(false);
+//        subWindow.setModal(true);
+//
+//        // Add it to the root component
+//        UI.getCurrent().addWindow(subWindow);
+//    }
+//
 //
 //    @Override
 //    public void update(Observable o, Object arg) {
@@ -296,4 +284,3 @@
 //
 //    }
 //}
-//
