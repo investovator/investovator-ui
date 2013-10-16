@@ -18,6 +18,11 @@
 
 package org.investovator.ui.agentgaming;
 
+import net.sourceforge.jabm.event.EventListener;
+import net.sourceforge.jabm.event.SimEvent;
+import net.sourceforge.jasa.event.OrderPlacedEvent;
+import net.sourceforge.jasa.event.TransactionExecutedEvent;
+import net.sourceforge.jasa.market.Order;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
@@ -28,7 +33,7 @@ import java.util.List;
  * @author Amila Surendra
  * @version $Revision
  */
-public class WatchList implements Runnable{
+public class WatchList implements Runnable, EventListener{
 
     private List<StockChangedEvent> listners;
     private HashMap<String,StockItemBean> watchList;
@@ -82,6 +87,24 @@ public class WatchList implements Runnable{
             stockItemBean.setLastAsk(125.4f);
             stockItemBean.setLastBid(100);
             stockItemBean.setMarketPrice(helper.getCurrentPrice("GOOG"));
+
+            notifyListeners(stockItemBean);
+
+        }
+    }
+
+    @Override
+    public void eventOccurred(SimEvent simEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
+        if(simEvent instanceof TransactionExecutedEvent){
+
+            StockItemBean stockItemBean = new StockItemBean();
+            stockItemBean.setStockID(((TransactionExecutedEvent) simEvent).getAuction().getStockID());
+            stockItemBean.setLastAsk(125.4f);
+            stockItemBean.setLastBid(100);
+            stockItemBean.setMarketPrice((float)((TransactionExecutedEvent) simEvent).getPrice());
+
+
 
             notifyListeners(stockItemBean);
 
