@@ -52,6 +52,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         this.addStep(new FirstStep());
         this.addStep(new SecondStep());
+        this.addStep(new ThirdStep());
 
         //use the same class to listen to the events from the wizard
         this.addListener(this);
@@ -217,6 +218,83 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
     }
+
+    class ThirdStep implements WizardStep {
+
+        TwinColSelect selector;
+
+        ThirdStep() {
+            this.selector=new TwinColSelect();
+
+
+        }
+
+        @Override
+        public String getCaption() {
+            return "Select the Securities to play";
+        }
+
+        @Override
+        public Component getContent() {
+            VerticalLayout content = new VerticalLayout();
+
+            content.addComponent(selector);
+
+            selector.setRows(6);
+            selector.setMultiSelect(true);
+            selector.setImmediate(true);
+            selector.setLeftColumnCaption("Available securities");
+            selector.setRightColumnCaption("Selected securities");
+
+            //select a default Item
+            selector.select(1);
+
+            try {
+                HashMap<String,String> companyList= mainView.getDataPlayer().getStocksList();
+                for(String stock:companyList.keySet()){
+                    selector.addItem(stock+" ("+companyList.get(stock)+")");
+                }
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+            //TODO - calculate the date range that has data for those stocks (in the DPE) and show that range
+
+
+            return content;
+        }
+
+        @Override
+        public boolean onAdvance() {
+
+            //obtain the selected items
+            Set selectedStocks= (Set) selector.getValue();
+
+            //if there are selested stocks
+            if(selectedStocks.size()>0){
+                ArrayList<String> stocksList=new ArrayList<String>();
+                for (Object items:selectedStocks){
+                    String stock=((String)items).split(" ")[0];
+                    stocksList.add(stock);
+                }
+                DataPlaybackEngineStates.playingSymbols=stocksList.toArray(new String[stocksList.size()]);
+                System.out.println(DataPlaybackEngineStates.playingSymbols[0]);
+                return true;
+            }
+            else{
+                Notification.show("Please select stocks to play");
+                return false;
+            }
+
+        }
+
+        @Override
+        public boolean onBack() {
+            return true;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+    }
+
 
 
 }
