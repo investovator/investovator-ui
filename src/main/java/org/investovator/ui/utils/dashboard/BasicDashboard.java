@@ -186,6 +186,12 @@ public abstract class BasicDashboard extends GlobalView {
             });
 
             menu.addComponent(b);
+            //select the first item in the menu initially
+            if(menu.getComponentCount()==1){
+                b.addStyleName("selected");
+                content.removeAllComponents();
+                content.addComponent(menuItems.get(b.getCaption().toLowerCase()));
+            }
         }
 
 
