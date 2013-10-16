@@ -11,6 +11,7 @@ public class Authenticator {
 
     private static Authenticator authenticator;
     private boolean loggedIn;
+    private String currentUser = null;
 
     private Authenticator(){
         loggedIn = false;
@@ -35,12 +36,19 @@ public class Authenticator {
     public boolean authenticate(String userName,String password){
            if(userName.equals("Hasala") && password.equals("CSE")){
                setLoggedIn(true);
+               currentUser = userName;
                return isLoggedIn();
            }
            else{
                return isLoggedIn();
            }
 
+    }
+
+    public String getCurrentUser(){
+
+        //TODO: implement after getting rajja's user API
+        return "testUser1";
     }
 
 }

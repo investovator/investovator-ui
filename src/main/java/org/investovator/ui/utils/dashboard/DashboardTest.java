@@ -23,8 +23,6 @@ public class DashboardTest extends BasicDashboard {
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        super.setupUI(viewChangeEvent);
-
         System.out.println("Kewl!");
     }
 

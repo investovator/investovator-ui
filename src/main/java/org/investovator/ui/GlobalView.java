@@ -13,10 +13,13 @@ public abstract class GlobalView extends VerticalLayout implements View
 {
     protected Authenticator authenticator;
 
+    protected GlobalView() {
+        authenticator = Authenticator.getInstance();
+    }
+
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
-        authenticator = Authenticator.getInstance();
 
         if(!authenticator.isLoggedIn()){
             getUI().getNavigator().navigateTo("");
