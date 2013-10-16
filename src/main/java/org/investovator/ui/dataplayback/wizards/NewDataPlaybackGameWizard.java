@@ -19,8 +19,11 @@
 
 package org.investovator.ui.dataplayback.wizards;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
+import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
+import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
@@ -36,18 +39,17 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     //Parent view class
     DataPlaybackMainView mainView;
 
-    public NewDataPlaybackGameWizard(Window window,DataPlaybackMainView mainView ) {
 
-        this.mainView=mainView;
-        this.window=window;
+    public NewDataPlaybackGameWizard(Window window, DataPlaybackMainView mainView) {
+
+        this.mainView = mainView;
+        this.window = window;
 
         this.addStep(new FirstStep());
         this.addStep(new SecondStep());
 
         //use the same class to listen to the events from the wizard
         this.addListener(this);
-
-
 
     }
 
@@ -74,12 +76,11 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         Notification.show("Cancelled");
         this.window.close();
 
-//        this.setVisible(false);
-
+        System.out.println(getUI().getParent());
     }
 
 
-    class FirstStep implements WizardStep{
+    class FirstStep implements WizardStep {
 
         @Override
         public String getCaption() {
@@ -88,26 +89,57 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public Component getContent() {
-            Panel content=new Panel();
-            content.setContent(new Label("DDD"));
+            VerticalLayout content = new VerticalLayout();
+
+
+            //add the game types
+            OptionGroup gameTypes = new OptionGroup();
+            content.addComponent(gameTypes);
+            gameTypes.setMultiSelect(false);
+            gameTypes.setHtmlContentAllowed(true);
+            gameTypes.addItem(DataPLaybackEngineGameTypes.OHLC_BASED);
+            gameTypes.setItemCaption(DataPLaybackEngineGameTypes.OHLC_BASED, "<b>OHLC price based game</b>");
+
+            gameTypes.addItem(DataPLaybackEngineGameTypes.TICKER_BASED);
+            gameTypes.setItemCaption(DataPLaybackEngineGameTypes.TICKER_BASED, "<b>Ticker data based game</b>");
+
+            //default item
+            gameTypes.select(DataPLaybackEngineGameTypes.OHLC_BASED);
+
+            //fire value change events immediately
+            gameTypes.setImmediate(true);
+
+            //monitor the selected item
+            gameTypes.addValueChangeListener(new Property.ValueChangeListener() {
+                @Override
+                public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                    if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.OHLC_BASED)) {
+
+                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
+
+                    } else if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.TICKER_BASED)) {
+
+                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.TICKER_BASED;
+                    }
+                }
+            });
+
             return content;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override
         public boolean onAdvance() {
-            System.out.println("Called");
 
             return true;
         }
 
         @Override
         public boolean onBack() {
-            System.out.println("Called back");
             return true;
         }
     }
 
-    class SecondStep implements WizardStep{
+    class SecondStep implements WizardStep {
 
         @Override
         public String getCaption() {
@@ -116,7 +148,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public Component getContent() {
-            Panel content=new Panel();
+            Panel content = new Panel();
             content.setContent(new Label("2222"));
             return content;  //To change body of implemented methods use File | Settings | File Templates.
         }
