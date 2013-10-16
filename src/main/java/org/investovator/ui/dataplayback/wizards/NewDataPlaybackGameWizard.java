@@ -19,9 +19,17 @@
 
 package org.investovator.ui.dataplayback.wizards;
 
+import org.vaadin.teemu.wizards.Wizard;
+
 /**
  * @author: ishan
  * @version: ${Revision}
  */
 public class NewDataPlaybackGameWizard {
+
+    Wizard wizard;
+
+    public NewDataPlaybackGameWizard() {
+        this.wizard = new Wizard();
+    }
 }
