@@ -19,6 +19,7 @@
 
 package org.investovator.ui.dataplayback;
 
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -33,6 +34,11 @@ import java.util.LinkedHashMap;
 public class DataPlaybackDashboard extends BasicDashboard {
     public DataPlaybackDashboard() {
         super("<span><center>investovator</center></span> Data Playback");
+    }
+
+    @Override
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
