@@ -22,14 +22,15 @@ import com.vaadin.data.Property;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
-import neuralnet.NNManager;
 import org.investovator.ui.GlobalView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
@@ -46,7 +47,8 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
     private TextField newParamField;
     private FormLayout layout;
     private String selectedStockID;
-    private Collection selectedInputParams;
+    private ArrayList<String> selectedParameters;
+    private Select selectStockID;
 
     public NNGamingView(){
 
@@ -63,13 +65,10 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
     private void initStockList(){
 
         Label stockIDLabel = new Label("Please specify the Stock ID");
-        Select selectStockID = new Select();
+        selectStockID = new Select();
 
         selectStockID.setNullSelectionAllowed(false);
         selectStockID.addItem("Sampath");
-
-        selectedStockID = (String) selectStockID.getValue();
-        Notification.show(selectedStockID);
 
         layout.addComponents(stockIDLabel,selectStockID);
     }
@@ -80,13 +79,8 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
         initTwincolSelect();
         initParamWindow();
 
-        Button createGame = new Button("Create Game",new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                NNManager manager = new NNManager();
-                //manager.createNeuralNetwork(parameters,,selectedStockID);
-            }
-        });
+        Button createGame = new Button("Create Game");
+        createGame.addClickListener(listener);
 
         layout.addComponent(createGame);
         addComponent(layout);
@@ -117,16 +111,26 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
         select.setRightColumnCaption("Selected Input Parameters");
 
         String param[] = {"High Price","Low Price","Closing Price","No of Trades","No of Shares","Turnover"};
-        for (int count=0; count<param.length; count++)
-        {
-            select.addItem(param[count]);
+        for (String aParam : param) {
+            select.addItem(aParam);
         }
 
         select.setRows(param.length);
 
         select.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
-                    selectedInputParams = (Collection) event.getProperty().getValue();
+
+                    Set<String> results = (Set) event.getProperty().getValue();
+
+                    selectedParameters = new ArrayList<String>(results.size());
+
+                    int i = 0;
+
+                    for (Iterator<String> iterator = results.iterator(); iterator.hasNext();) {
+                        String next = iterator.next();
+                        selectedParameters.add(next);
+                        i++;
+                    }
             }
         });
         select.setImmediate(true);
@@ -176,4 +180,12 @@ public class NNGamingView extends GlobalView implements Upload.Receiver,Upload.S
         Notification.show("Parameter Added");
         UI.getCurrent().removeWindow(paramWindow);
     }
+
+    Button.ClickListener listener = new Button.ClickListener() {
+        @Override
+        public void buttonClick(Button.ClickEvent clickEvent) {
+            Notification.show("Hello", Notification.Type.ERROR_MESSAGE);
+            /* ToDo */
+        }
+    };
 }

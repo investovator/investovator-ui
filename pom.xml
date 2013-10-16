@@ -67,6 +67,11 @@
             <artifactId>dataPlaybackEngine</artifactId>
             <version>0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.investovator</groupId>
+            <artifactId>ann</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!--end of investovator related-->
 
         <dependency>
@@ -85,11 +90,7 @@
             <artifactId>vaadin-client-compiled</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
-        <dependency>
-            <groupId>investovator</groupId>
-            <artifactId>investovator-ann</artifactId>
-            <version>0.1</version>
-        </dependency>
+
         <!--
           Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 
