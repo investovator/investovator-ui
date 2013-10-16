@@ -30,8 +30,26 @@ public class StockItemBean implements Serializable {
     private float marketPrice;
     private float lastBid;
     private float lastAsk;
+    private float bestBid;
+    private float bestAsk;
 
     public StockItemBean() {
+    }
+
+    public float getBestBid() {
+        return bestBid;
+    }
+
+    public void setBestBid(float bestBid) {
+        this.bestBid = bestBid;
+    }
+
+    public float getBestAsk() {
+        return bestAsk;
+    }
+
+    public void setBestAsk(float bestAsk) {
+        this.bestAsk = bestAsk;
     }
 
     public String getStockID() {
