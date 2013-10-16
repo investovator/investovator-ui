@@ -13,7 +13,7 @@ import java.util.HashMap;
  * @author Amila Surendra
  * @version $Revision
  */
-public class UserInfoAdaptor implements UserData {
+public class UserInfoTestImpl implements UserData {
 
     @Override
     public void addUser(String username, String firstname, String lastname, String emailaddress, String password) throws DataAccessException {
