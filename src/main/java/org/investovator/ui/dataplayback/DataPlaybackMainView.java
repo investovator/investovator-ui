@@ -269,6 +269,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
         UI.getCurrent().addWindow(subWindow);
     }
 
+    public DataPlayer getDataPlayer(){
+        return player;
+    }
+
 
     @Override
     public void update(Observable o, Object arg) {

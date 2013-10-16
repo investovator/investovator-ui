@@ -21,12 +21,17 @@ package org.investovator.ui.dataplayback.wizards;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author: ishan
@@ -68,7 +73,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         Notification.show("Complete");
 
         this.window.close();
-//        this.setVisible(false);
     }
 
     @Override
@@ -76,7 +80,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         Notification.show("Cancelled");
         this.window.close();
 
-        System.out.println(getUI().getParent());
     }
 
 
@@ -141,32 +144,74 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     class SecondStep implements WizardStep {
 
+        TwinColSelect selector;
+
+        SecondStep() {
+            this.selector=new TwinColSelect();
+
+
+        }
+
         @Override
         public String getCaption() {
-            return "Set Game Parameters";
+            return "Select the Securities to play";
         }
 
         @Override
         public Component getContent() {
             VerticalLayout content = new VerticalLayout();
 
-            //TODO - get all the stocks
+            content.addComponent(selector);
+
+            selector.setRows(6);
+            selector.setMultiSelect(true);
+            selector.setImmediate(true);
+            selector.setLeftColumnCaption("Available securities");
+            selector.setRightColumnCaption("Selected securities");
+
+            //select a default Item
+            selector.select(1);
+
+            try {
+                HashMap<String,String> companyList= mainView.getDataPlayer().getStocksList();
+                for(String stock:companyList.keySet()){
+                    selector.addItem(stock+" ("+companyList.get(stock)+")");
+                }
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
             //TODO - calculate the date range that has data for those stocks (in the DPE) and show that range
 
 
-            return content;  //To change body of implemented methods use File | Settings | File Templates.
+            return content;
         }
 
         @Override
         public boolean onAdvance() {
-            System.out.println("Called");
 
-            return true;  //To change body of implemented methods use File | Settings | File Templates.
+            //obtain the selected items
+            Set selectedStocks= (Set) selector.getValue();
+
+            //if there are selested stocks
+            if(selectedStocks.size()>0){
+                ArrayList<String> stocksList=new ArrayList<String>();
+                for (Object items:selectedStocks){
+                    String stock=((String)items).split(" ")[0];
+                    stocksList.add(stock);
+                }
+                DataPlaybackEngineStates.playingSymbols=stocksList.toArray(new String[stocksList.size()]);
+                System.out.println(DataPlaybackEngineStates.playingSymbols[0]);
+                return true;
+            }
+            else{
+                Notification.show("Please select stocks to play");
+                return false;
+            }
+
         }
 
         @Override
         public boolean onBack() {
-            System.out.println("Called back");
             return true;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
