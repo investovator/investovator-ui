@@ -148,8 +148,12 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public Component getContent() {
-            Panel content = new Panel();
-            content.setContent(new Label("2222"));
+            VerticalLayout content = new VerticalLayout();
+
+            //TODO - get all the stocks
+            //TODO - calculate the date range that has data for those stocks (in the DPE) and show that range
+
+
             return content;  //To change body of implemented methods use File | Settings | File Templates.
         }
 

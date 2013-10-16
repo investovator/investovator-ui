@@ -25,6 +25,9 @@ package org.investovator.ui.dataplayback.util;
  */
 public class DataPlaybackEngineStates {
     public static DataPLaybackEngineGameTypes currentGameMode;
+
+    //stores the stock symbols up on which the game is played
+    public static String[] playingSymbols;
 }
 
 
