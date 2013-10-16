@@ -24,6 +24,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.ui.*;
 import org.investovator.dataPlayBackEngine.DataPlayer;
 import org.investovator.dataPlayBackEngine.events.StockEvent;
+import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -57,7 +58,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
         mySelf=this;
 
         //add the main graph
-        VerticalLayout panelContent = new VerticalLayout();
+        final VerticalLayout panelContent = new VerticalLayout();
 
         HorizontalLayout topBar=new HorizontalLayout();
         HorizontalLayout topButtonContainer=new HorizontalLayout();
@@ -100,6 +101,9 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
                 //add as an observer
                 player.setObserver(mySelf);
+
+                //test wizard
+                 startAddGameWizard();
             }
         });
         playGameButton.addClickListener(new Button.ClickListener() {
@@ -242,6 +246,27 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
         tickerChart.drawChart(configuration);
         return tickerChart;
+    }
+
+    private void startAddGameWizard(){
+        // Create a sub-window and set the content
+        Window subWindow = new Window("Create New Game");
+        VerticalLayout subContent = new VerticalLayout();
+        subContent.setMargin(true);
+        subWindow.setContent(subContent);
+
+        // Put some components in it
+        subContent.addComponent(new NewDataPlaybackGameWizard(subWindow,this));
+
+        // set window characteristics
+        subWindow.center();
+        subWindow.setClosable(false);
+        subWindow.setDraggable(false);
+        subWindow.setResizable(false);
+        subWindow.setModal(true);
+
+        // Add it to the root component
+        UI.getCurrent().addWindow(subWindow);
     }
 
 
