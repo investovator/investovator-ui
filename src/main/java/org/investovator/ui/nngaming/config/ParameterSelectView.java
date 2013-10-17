@@ -30,7 +30,7 @@ import java.util.Set;
  * @version: ${Revision}
  */
 public class ParameterSelectView implements WizardStep{
-    String[] selectedParameters;
+    String[] selectedParameters = null;
     Boolean addNewParamStatus;
 
     TwinColSelect parameterSelectList;
@@ -84,7 +84,15 @@ public class ParameterSelectView implements WizardStep{
 
     @Override
     public boolean onAdvance() {
-        return true;
+        if(selectedParameters == null)
+        {
+            Notification.show("Please Select Input Parameters", Notification.Type.WARNING_MESSAGE);
+            return false;
+        }
+        else{
+
+            return true;
+        }
     }
 
     @Override

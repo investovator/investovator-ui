@@ -19,10 +19,13 @@
 package org.investovator.ui.nngaming.config;
 
 import com.vaadin.navigator.ViewChangeListener;
+import org.investovator.ann.neuralnet.NNManager;
 import org.investovator.ui.GlobalView;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
+
+import java.util.HashMap;
 
 /**
  * @author: Hasala Surasinghe
@@ -84,12 +87,21 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
     @Override
     public void wizardCompleted(WizardCompletedEvent event) {
 
-        //HashMap<String, String> newParameters =
+        NNManager nnManager;
+
+        HashMap<String, String> newParameters = parameterAdd.getAddedParameterList();
         String stockID = stockSelect.getSelectedStock();
         String [] selectedParams = parameterSelect.getSelectedParameters();
 
-       // NNManager nnManager = new NNManager(newParameters,stockID,selectedParams);
-        //nnManager.createNeuralNetwork();
+        if(newParameters.size() == 0)
+        {
+            nnManager = new NNManager(selectedParams,stockID);
+        }
+        else{
+            nnManager = new NNManager(newParameters,selectedParams,stockID);
+        }
+
+        nnManager.createNeuralNetwork();
 
     }
 
