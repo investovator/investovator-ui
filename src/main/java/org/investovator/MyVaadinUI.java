@@ -10,7 +10,7 @@ import com.vaadin.ui.UI;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.main.MainGamingView;
-import org.investovator.ui.nngaming.NNGamingView;
+import org.investovator.ui.nngaming.config.NNGamingView;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.DashboardTest;
 
