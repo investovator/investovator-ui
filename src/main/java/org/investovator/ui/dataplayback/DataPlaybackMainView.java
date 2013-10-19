@@ -21,9 +21,18 @@ package org.investovator.ui.dataplayback;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.client.ui.calendar.schedule.DateUtil;
 import com.vaadin.ui.*;
+import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataPlayBackEngine.DataPlayer;
 import org.investovator.dataPlayBackEngine.events.StockEvent;
+import org.investovator.dataplaybackengine.DataPlayer;
+import org.investovator.dataplaybackengine.OHLCDataPLayer;
+import org.investovator.dataplaybackengine.RealTimeDataPlayer;
+import org.investovator.dataplaybackengine.events.StockEvent;
+import org.investovator.dataplaybackengine.utils.DateUtils;
+import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
+import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
 
 import java.text.ParseException;
@@ -44,7 +53,19 @@ public class DataPlaybackMainView extends Panel implements Observer {
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH=10;
 
-    DataPlayer player;
+    OHLCDataPLayer ohlcPLayer;
+    RealTimeDataPlayer realTimePlayer;
+
+    //stocks to playback
+    String[] stocks;
+
+    //the day the game starts
+    Date startDate;
+    //the day the game ends
+    Date endingDate;
+    //Date format used in the game
+    String dateFormat= DateUtils.DATE_FORMAT_1;
+
     //used for counting data iteration number
     int timeTracker =0;
 
@@ -93,14 +114,14 @@ public class DataPlaybackMainView extends Panel implements Observer {
         addGameButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                //TODO- fix this static value
-                String[] stocks=new String[2];
-                stocks[0]="GOOG";
-                stocks[1]="APPL";
-                player=new DataPlayer(stocks);
-
-                //add as an observer
-                player.setObserver(mySelf);
+//                //TODO- fix this static value
+//                String[] stocks=new String[2];
+//                stocks[0]="GOOG";
+//                stocks[1]="APPL";
+//                player=new DataPlayer(stocks);
+//
+//                //add as an observer
+//                player.setObserver(mySelf);
 
                 //test wizard
                  startAddGameWizard();
@@ -176,6 +197,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
         panelContent.addComponent(buildTickerChart());
 
         this.setContent(panelContent);
+    }
+
+    public void setStocks(String[] stocks) {
+        this.stocks = stocks;
     }
 
     private Chart buildMainChart(){
@@ -273,9 +298,51 @@ public class DataPlaybackMainView extends Panel implements Observer {
         return player;
     }
 
+    //used to setup the game initially(after the wizard)
+    public void setUpGame() {
+        //if the game type is OHLC
+        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
+            //TODO - find a proper place to define attributes
+            //define the attributes needed
+            TradingDataAttribute attributes[]=new TradingDataAttribute[2];
+
+            //just the closing price is enough for now
+            attributes[0]=TradingDataAttribute.DAY;
+            attributes[1]=TradingDataAttribute.PRICE;
+
+            try {
+                ohlcPLayer=new OHLCDataPLayer(this.stocks,attributes);
+                ohlcPLayer.setStartDate(this.startDate);
+            } catch (ParseException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        //if the game type is ticker data based
+        else if(DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED){
+
+            //TODO - find a proper place to define attributes
+            //define the attributes needed
+            TradingDataAttribute attributes[]=new TradingDataAttribute[3];
+
+            //just the closing price is enough for now
+            attributes[0]=TradingDataAttribute.DAY;
+            attributes[1]=TradingDataAttribute.PRICE;
+            attributes[2]=TradingDataAttribute.SHARES;
+
+            realTimePlayer=new RealTimeDataPlayer(this.stocks,this.startDate,attributes);
+
+            //set myself as an observer
+            realTimePlayer.setObserver(this);
+
+
+        }
+
+    }
+
 
     @Override
     public void update(Observable o, Object arg) {
+        //TODO - handle all cases
         final StockEvent event=(StockEvent) arg;
 
         //only update for GOOG stocks

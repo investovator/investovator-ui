@@ -265,7 +265,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         public boolean onAdvance() {
 
 
-                Notification.show("Please select stocks to play");
+                Notification.show("Not implemented");
                 return false;
 
         }
