@@ -29,6 +29,7 @@ import org.investovator.dataplaybackengine.RealTimeDataPlayer;
 import org.investovator.dataplaybackengine.events.EventManager;
 import org.investovator.dataplaybackengine.events.StockEvent;
 import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
+import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -188,6 +189,13 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
                 try {
                     Date eventTime =format.parse(date);
+                    try {
+                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
+                                getData().get(TradingDataAttribute.PRICE)));
+                    } catch (GameFinishedException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+
 
                     //TODO - implement properly
 //
