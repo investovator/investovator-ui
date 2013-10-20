@@ -77,6 +77,9 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     public void wizardCompleted(WizardCompletedEvent wizardCompletedEvent) {
         Notification.show("Complete");
 
+        mainView.setUpGame();
+
+
         this.window.close();
     }
 
@@ -237,9 +240,13 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     class ThirdStep implements WizardStep {
 
+        InlineDateField datePicker;
+
+
+
 
         ThirdStep() {
-
+            datePicker=new InlineDateField();
 
         }
 
@@ -252,7 +259,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         public Component getContent() {
             VerticalLayout content = new VerticalLayout();
 
-            final InlineDateField datePicker=new InlineDateField();
             content.addComponent(datePicker);
             //TODO - set this to the starting/ending date of the data set
             datePicker.setValue(new Date());
@@ -332,9 +338,9 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         @Override
         public boolean onAdvance() {
 
+            DataPlaybackEngineStates.gameStartDate=datePicker.getValue();
 
-                Notification.show("Not implemented");
-                return false;
+                return true;
 
         }
 
