@@ -26,7 +26,9 @@ import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.DataPlayer;
 import org.investovator.dataplaybackengine.OHLCDataPLayer;
 import org.investovator.dataplaybackengine.RealTimeDataPlayer;
+import org.investovator.dataplaybackengine.events.EventManager;
 import org.investovator.dataplaybackengine.events.StockEvent;
+import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -57,7 +59,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
 //    String[] stocks;
 
     //the day the game starts
-    Date startDate;
+//    Date startDate;
     //the day the game ends
     Date endingDate;
     //Date format used in the game
@@ -87,8 +89,8 @@ public class DataPlaybackMainView extends Panel implements Observer {
         topButtonContainer.setSizeFull();
 
         panelContent.addComponent(topBar);
-        final Chart mainChart=buildMainChart();
-        panelContent.addComponent(mainChart);
+        final Chart ohlcChart=buildMainChart();
+        panelContent.addComponent(ohlcChart);
 
         //create the buttons
         Button addGameButton=new Button("New Game");
@@ -127,15 +129,33 @@ public class DataPlaybackMainView extends Panel implements Observer {
         playGameButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                DataSeries series=(DataSeries)mainChart.getConfiguration().getSeries().get(0);
                 String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
                 //convert date string to a real date object
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
                 try {
                     Date eventTime =format.parse(date);
 
-                    //TODO - implement properly
-//                    series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
+                    //if an OHLC based game
+                    if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                        //TODO - what if there were multiple serieses?
+                        DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
+                        try {
+                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.startGame()[0].
+                                    getData().get(TradingDataAttribute.PRICE)));
+                        } catch (GameAlreadyStartedException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+
+                    }
+                    //if a ticker based game
+                    else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                        //TODO - what if there were multiple serieses?
+                        DataSeries series=(DataSeries)tickerChart.getConfiguration().getSeries().get(0);
+                        //TODO - how to set resolution?
+                            realTimePlayer.startPlayback(1);
+
+                    }
+
 
 
                 } catch (ParseException e) {
@@ -143,9 +163,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 }
                 timeTracker++;
 
-                //TODO - implement properly
-                //start event playing
-//                player.runPlayback(1);
             }
         });
 
@@ -164,7 +181,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
         nextDayB.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                DataSeries series=(DataSeries)mainChart.getConfiguration().getSeries().get(0);
+                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
 
                 String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
                 //convert date string to a real date object
@@ -314,7 +331,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
             try {
                 ohlcPLayer=new OHLCDataPLayer(DataPlaybackEngineStates.playingSymbols,attributes);
-                ohlcPLayer.setStartDate(this.startDate);
+                ohlcPLayer.setStartDate(DataPlaybackEngineStates.gameStartDate);
             } catch (ParseException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -331,7 +348,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
             attributes[1]=TradingDataAttribute.PRICE;
             attributes[2]=TradingDataAttribute.SHARES;
 
-            realTimePlayer=new RealTimeDataPlayer(DataPlaybackEngineStates.playingSymbols,this.startDate,attributes);
+            realTimePlayer=new RealTimeDataPlayer(DataPlaybackEngineStates.playingSymbols,DataPlaybackEngineStates.gameStartDate,attributes);
 
             //set myself as an observer
             realTimePlayer.setObserver(this);
@@ -344,33 +361,45 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        //TODO - handle all cases
-        final StockEvent event=(StockEvent) arg;
+        //if this is a stock price update
+        if(arg instanceof StockEvent){
+            final StockEvent event=(StockEvent) arg;
 
-        //only update for GOOG stocks
-        if("GOOG".equalsIgnoreCase(event.getStockId())){
+            //TODO - only updates for GOOG stocks
+            if("GOOG".equalsIgnoreCase(event.getStockId())){
+                if (tickerChart.isConnectorEnabled()) {
+                    getSession().lock();
+                    try {
+                        DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
 
-            if (tickerChart.isConnectorEnabled()) {
-                getSession().lock();
-                try {
-                    DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
+                        if (series.getData().size() > TICKER_CHART_LENGTH) {
 
-                    //TODO - implement properly
-//
-//                    if (series.getData().size() > TICKER_CHART_LENGTH) {
-//
-//                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()), true, true);
-//
-//                    } else {
-//                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()));
-//
-//                    }
-                    tickerChart.setImmediate(true);
-                } finally {
-                    getSession().unlock();
+                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)), true, true);
+
+                        } else {
+                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)));
+
+                        }
+                        tickerChart.setImmediate(true);
+                    } finally {
+                        getSession().unlock();
+                    }
                 }
+
             }
+
+
+
         }
+        //if the game has stopped
+        else if(arg == EventManager.RealTimePlayerStates.GAME_OVER){
+            //TODO - how to handle this?
+        }
+
+        //TODO - handle all cases
+
+
+
 
     }
 }

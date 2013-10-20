@@ -19,6 +19,8 @@
 
 package org.investovator.ui.dataplayback.util;
 
+import java.util.Date;
+
 /**
  * @author: ishan
  * @version: ${Revision}
@@ -28,6 +30,9 @@ public class DataPlaybackEngineStates {
 
     //stores the stock symbols up on which the game is played
     public static String[] playingSymbols;
+
+    //stores the game start date
+    public static Date gameStartDate;
 }
 
 
