@@ -287,18 +287,25 @@ public class DataPlaybackMainView extends Panel implements Observer {
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
 
-        DataSeries ls = new DataSeries();
-        ls.setName("GOOG");
-        configuration.addSeries(ls);
+        if(DataPlaybackEngineStates.playingSymbols!=null){
+            for(String stock:DataPlaybackEngineStates.playingSymbols){
+                DataSeries ls = new DataSeries();
+                ls.setName(stock);
+                configuration.addSeries(ls);
+
+            }
+        }
 
 
-        //disable trademark
-        tickerChart.getConfiguration().disableCredits();
 
-        tickerChart.getConfiguration().setTitle("Real-time Stock Prices");
 
 
         tickerChart.drawChart(configuration);
+        //disable trademark
+        tickerChart.getConfiguration().disableCredits();
+
+
+        tickerChart.getConfiguration().setTitle("Real-time Stock Prices");
         return tickerChart;
     }
 
@@ -477,7 +484,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
             }
         });
 
-        //TODO
         content.addComponent(nextDayB, 1, 2);
         content.setComponentAlignment(nextDayB, Alignment.MIDDLE_CENTER);
 
@@ -516,28 +522,59 @@ public class DataPlaybackMainView extends Panel implements Observer {
         if(arg instanceof StockEvent){
             final StockEvent event=(StockEvent) arg;
 
-            //TODO - only updates for GOOG stocks
-            if("GOOG".equalsIgnoreCase(event.getStockId())){
-                if (tickerChart.isConnectorEnabled()) {
-                    getSession().lock();
-                    try {
-                        DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
+            //iterate every series in the chart at the moment
+            for(Series series:tickerChart.getConfiguration().getSeries()){
+                DataSeries dSeries=(DataSeries)series;
+                //if this series matches the stock events stock
+                if(dSeries.getName().equalsIgnoreCase(event.getStockId())){
 
-                        if (series.getData().size() > TICKER_CHART_LENGTH) {
+                    if (tickerChart.isConnectorEnabled()) {
+                        getSession().lock();
+                        try{
+                            if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
-                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)), true, true);
+                                dSeries.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)), true, true);
 
-                        } else {
-                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)));
+                            } else {
+                                dSeries.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)));
 
+                            }
+                            tickerChart.setImmediate(true);
+
+                        } finally {
+                            getSession().unlock();
                         }
-                        tickerChart.setImmediate(true);
-                    } finally {
-                        getSession().unlock();
                     }
+
+
+
                 }
 
             }
+
+
+//            //TODO - only updates for GOOG stocks
+//            if("GOOG".equalsIgnoreCase(event.getStockId())){
+//                if (tickerChart.isConnectorEnabled()) {
+//                    getSession().lock();
+//                    try {
+//                        DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
+//
+//                        if (series.getData().size() > TICKER_CHART_LENGTH) {
+//
+//                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)), true, true);
+//
+//                        } else {
+//                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)));
+//
+//                        }
+//                        tickerChart.setImmediate(true);
+//                    } finally {
+//                        getSession().unlock();
+//                    }
+//                }
+//
+//            }
 
 
 
