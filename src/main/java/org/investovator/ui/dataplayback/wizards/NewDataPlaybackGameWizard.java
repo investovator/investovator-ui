@@ -22,6 +22,7 @@ package org.investovator.ui.dataplayback.wizards;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.dataplaybackengine.DataPlayer;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
@@ -89,6 +90,12 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     class FirstStep implements WizardStep {
 
+        OptionGroup gameTypes;
+
+        FirstStep() {
+            gameTypes= new OptionGroup();
+        }
+
         @Override
         public String getCaption() {
             return "Decide the Game type";
@@ -100,7 +107,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
             //add the game types
-            OptionGroup gameTypes = new OptionGroup();
+
             content.addComponent(gameTypes);
             gameTypes.setMultiSelect(false);
             gameTypes.setHtmlContentAllowed(true);
@@ -116,26 +123,33 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             //fire value change events immediately
             gameTypes.setImmediate(true);
 
-            //monitor the selected item
-            gameTypes.addValueChangeListener(new Property.ValueChangeListener() {
-                @Override
-                public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                    if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.OHLC_BASED)) {
-
-                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
-
-                    } else if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.TICKER_BASED)) {
-
-                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.TICKER_BASED;
-                    }
-                }
-            });
+//            //monitor the selected item
+//            gameTypes.addValueChangeListener(new Property.ValueChangeListener() {
+//                @Override
+//                public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+//                    if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.OHLC_BASED)) {
+//
+//                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
+//
+//                    } else if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.TICKER_BASED)) {
+//
+//                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.TICKER_BASED;
+//                    }
+//                }
+//            });
 
             return content;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override
         public boolean onAdvance() {
+            //set the selected state
+            if(gameTypes.getValue()==DataPLaybackEngineGameTypes.OHLC_BASED){
+                DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
+            }
+            if(gameTypes.getValue()==DataPLaybackEngineGameTypes.TICKER_BASED){
+                DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.TICKER_BASED;
+            }
 
             return true;
         }
@@ -238,7 +252,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         public Component getContent() {
             VerticalLayout content = new VerticalLayout();
 
-            InlineDateField datePicker=new InlineDateField();
+            final InlineDateField datePicker=new InlineDateField();
             content.addComponent(datePicker);
             //TODO - set this to the starting/ending date of the data set
             datePicker.setValue(new Date());
@@ -269,7 +283,44 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             dateRangeType.addValueChangeListener(new Property.ValueChangeListener() {
                 @Override
                 public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                    System.out.println(valueChangeEvent.getProperty().getValue());
+                    Set value=(Set)valueChangeEvent.getProperty().getValue();
+                    Date range[]=null;
+
+                    //if it is checked
+                    if(value.contains(1)){
+                        //check the game type and request for date ranges
+                        if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                            range= player.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                                    CompanyStockTransactionsData.DataType.OHLC);
+
+                        }
+                        //else if this is a Ticker data based game
+                        else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                            range= player.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                                    CompanyStockTransactionsData.DataType.TICKER);
+                        }
+
+                    }
+                    else{
+                        //check the game type and request for date ranges
+                        if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                                  range= player.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                                          CompanyStockTransactionsData.DataType.OHLC);
+
+                        }
+                        //else if this is a Ticker data based game
+                        else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                            range= player.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                                    CompanyStockTransactionsData.DataType.TICKER);
+                        }
+
+
+                    }
+                    System.out.println(range);
+                    System.out.println(range[0]+"-->"+range[1]);
+                    datePicker.setRangeStart(range[0]);
+                    datePicker.setRangeEnd(range[1]);
+                    datePicker.setValue(range[0]);
                 }
             });
 
