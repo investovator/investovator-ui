@@ -252,16 +252,20 @@ public class DataPlaybackMainView extends Panel implements Observer {
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
 
-        DataSeries ls = new DataSeries();
-        ls.setName("GOOG");
+        if(DataPlaybackEngineStates.playingSymbols!=null){
+            for(String stock:DataPlaybackEngineStates.playingSymbols){
+                DataSeries ls = new DataSeries();
+                ls.setName(stock);
+                configuration.addSeries(ls);
 
-        configuration.addSeries(ls);
+            }
+        }
+        chart.drawChart(configuration);
 
         //disable trademark
         chart.getConfiguration().disableCredits();
         chart.getConfiguration().getTitle().setText("Stock Closing Prices");
 
-        chart.drawChart(configuration);
         return chart;
     }
 
@@ -457,27 +461,72 @@ public class DataPlaybackMainView extends Panel implements Observer {
         nextDayB.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
 
+                //get the events
                 try {
-                    //TODO - what if there were multiple serieses?
+                    StockEvent[] events= ohlcPLayer.playNextDay();
+                    //iterate every event
+                    for(StockEvent event:events){
+                        //iterate every series in the chart at the moment
+                        for(Series series:ohlcChart.getConfiguration().getSeries()){
+                            DataSeries dSeries=(DataSeries)series;
+                            //if there's a match
+                            if(event.getStockId().equals(dSeries.getName())){
+                                if (ohlcChart.isConnectorEnabled()) {
+                                    getSession().lock();
+                                    try{
+                                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
 
-                    if (series.getData().size() > OHLC_CHART_LENGTH) {
+                                            dSeries.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)), true, true);
 
-                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
-                                getData().get(TradingDataAttribute.PRICE)),true,true);
-                    } else {
-                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
-                                getData().get(TradingDataAttribute.PRICE)));
+                                        } else {
+                                            dSeries.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)));
+
+                                        }
+                                        ohlcChart.setImmediate(true);
+
+                                    } finally {
+                                        getSession().unlock();
+                                    }
+                                }
+
+
+                            }
+
+                        }
+
                     }
-
-                    ohlcChart.setImmediate(true);
 
 
 
                 } catch (GameFinishedException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+
+
+
+//
+//                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
+//
+//                try {
+//                    //TODO - what if there were multiple serieses?
+//
+//                    if (series.getData().size() > OHLC_CHART_LENGTH) {
+//
+//                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
+//                                getData().get(TradingDataAttribute.PRICE)),true,true);
+//                    } else {
+//                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
+//                                getData().get(TradingDataAttribute.PRICE)));
+//                    }
+//
+//                    ohlcChart.setImmediate(true);
+//
+//
+//
+//                } catch (GameFinishedException e) {
+//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                }
 
 
 
