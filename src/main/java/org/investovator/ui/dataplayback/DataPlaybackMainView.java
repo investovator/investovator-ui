@@ -23,21 +23,17 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.DataPlayer;
 import org.investovator.dataplaybackengine.OHLCDataPLayer;
 import org.investovator.dataplaybackengine.RealTimeDataPlayer;
 import org.investovator.dataplaybackengine.events.EventManager;
 import org.investovator.dataplaybackengine.events.StockEvent;
 import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
-import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -56,17 +52,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
     OHLCDataPLayer ohlcPLayer;
     RealTimeDataPlayer realTimePlayer;
 
-    //stocks to playback
-//    String[] stocks;
-
-    //the day the game starts
-//    Date startDate;
-    //the day the game ends
-    Date endingDate;
-    //Date format used in the game
-    String dateFormat= DateUtils.DATE_FORMAT_1;
-
-    //used for counting data iteration number
+    //used for counting data iteration number   TODO -remove
     int timeTracker =0;
 
     //used in ticker data observing
@@ -108,33 +94,19 @@ public class DataPlaybackMainView extends Panel implements Observer {
         topButtonContainer.setComponentAlignment(playGameButton,Alignment.MIDDLE_RIGHT);
         topButtonContainer.setComponentAlignment(pauseGameButton,Alignment.MIDDLE_RIGHT);
         topButtonContainer.setComponentAlignment(stopGameButton,Alignment.MIDDLE_RIGHT);
-//        topButtonContainer.setSpacing(false);
 
         //add the action listeners for buttons
         addGameButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-//                //TODO- fix this static value
-//                String[] stocks=new String[2];
-//                stocks[0]="GOOG";
-//                stocks[1]="APPL";
-//                player=new DataPlayer(stocks);
-//
-//                //add as an observer
-//                player.setObserver(mySelf);
 
-                //test wizard
                  startAddGameWizard();
             }
         });
+
         playGameButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
-                //convert date string to a real date object
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
-                try {
-                    Date eventTime =format.parse(date);
 
                     //if an OHLC based game
                     if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
@@ -159,15 +131,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
 
 
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                timeTracker++;
-
             }
         });
 
-
+          //TODO- implement this??
 //        stopGameButton.addClickListener(new Button.ClickListener() {
 //            @Override
 //            public void buttonClick(Button.ClickEvent clickEvent) {
@@ -184,12 +151,9 @@ public class DataPlaybackMainView extends Panel implements Observer {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
 
-                String date="2012-10-3-19-45-"+Integer.toString(timeTracker);
-                //convert date string to a real date object
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss"); //should be in format year-month-date-24hr-minute-second
-                try {
-                    Date eventTime =format.parse(date);
                     try {
+                        //TODO - what if there were multiple serieses?
+
                         series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
                                 getData().get(TradingDataAttribute.PRICE)));
                     } catch (GameFinishedException e) {
@@ -197,22 +161,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
                     }
 
 
-                    //TODO - implement properly
-//
-//
-//                    if (series.getData().size() > TICKER_CHART_LENGTH) {
-//
-//                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)), true, true);
-//                    } else{
-//                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
-//                    }
-
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                timeTracker++;
 
             }
         });
@@ -226,9 +174,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
         this.setContent(panelContent);
     }
 
-//    public void setStocks(String[] stocks) {
-//        this.stocks = stocks;
-//    }
 
     private Chart buildMainChart(){
         Chart chart = new Chart();
@@ -321,9 +266,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
         UI.getCurrent().addWindow(subWindow);
     }
 
-//    public DataPlayer getDataPlayer(){
-//        return player;
-//    }
 
     //used to setup the game initially(after the wizard)
     public void setUpGame() {
@@ -403,10 +345,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
         else if(arg == EventManager.RealTimePlayerStates.GAME_OVER){
             //TODO - how to handle this?
         }
-
-        //TODO - handle all cases
-
-
 
 
     }
