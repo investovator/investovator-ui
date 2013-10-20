@@ -220,7 +220,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
                     stocksList.add(stock);
                 }
                 DataPlaybackEngineStates.playingSymbols=stocksList.toArray(new String[stocksList.size()]);
-                System.out.println(DataPlaybackEngineStates.playingSymbols[0]);
                 return true;
             }
             else{
