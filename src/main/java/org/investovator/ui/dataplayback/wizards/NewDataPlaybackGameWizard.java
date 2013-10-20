@@ -316,8 +316,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
                     }
-                    System.out.println(range);
-                    System.out.println(range[0]+"-->"+range[1]);
                     datePicker.setRangeStart(range[0]);
                     datePicker.setRangeEnd(range[1]);
                     datePicker.setValue(range[0]);
@@ -326,8 +324,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
 
-//            content.addComponent();
-            //TODO - calculate the date range that has data for those stocks (in the DPE) and show that range
 
 
             return content;

@@ -134,7 +134,8 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 try {
                     Date eventTime =format.parse(date);
 
-                    series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
+                    //TODO - implement properly
+//                    series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
 
 
                 } catch (ParseException e) {
@@ -142,8 +143,9 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 }
                 timeTracker++;
 
+                //TODO - implement properly
                 //start event playing
-                player.runPlayback(1);
+//                player.runPlayback(1);
             }
         });
 
@@ -170,12 +172,15 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 try {
                     Date eventTime =format.parse(date);
 
-                    if (series.getData().size() > TICKER_CHART_LENGTH) {
-
-                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)), true, true);
-                    } else{
-                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
-                    }
+                    //TODO - implement properly
+//
+//
+//                    if (series.getData().size() > TICKER_CHART_LENGTH) {
+//
+//                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)), true, true);
+//                    } else{
+//                        series.add(new DataSeriesItem(eventTime,player.getOHLCPrice("Goog",date)));
+//                    }
 
 
                 } catch (ParseException e) {
@@ -350,14 +355,16 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 try {
                     DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
 
-                    if (series.getData().size() > TICKER_CHART_LENGTH) {
-
-                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()), true, true);
-
-                    } else {
-                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()));
-
-                    }
+                    //TODO - implement properly
+//
+//                    if (series.getData().size() > TICKER_CHART_LENGTH) {
+//
+//                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()), true, true);
+//
+//                    } else {
+//                        series.add(new DataSeriesItem(event.getTime(), event.getPrice()));
+//
+//                    }
                     tickerChart.setImmediate(true);
                 } finally {
                     getSession().unlock();
