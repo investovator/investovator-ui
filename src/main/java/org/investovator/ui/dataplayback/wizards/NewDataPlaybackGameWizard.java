@@ -23,6 +23,7 @@ import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.dataplaybackengine.DataPlayer;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -42,12 +43,15 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     Window window;
     //Parent view class
     DataPlaybackMainView mainView;
+    //to access the data
+    DataPlayer player;
 
 
     public NewDataPlaybackGameWizard(Window window, DataPlaybackMainView mainView) {
 
         this.mainView = mainView;
         this.window = window;
+        this.player=new DataPlayer();
 
         this.addStep(new FirstStep());
         this.addStep(new SecondStep());
@@ -173,14 +177,13 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             selector.select(1);
 
             try {
-                HashMap<String,String> companyList= mainView.getDataPlayer().getStocksList();
+                HashMap<String,String> companyList= player.getStocksList();
                 for(String stock:companyList.keySet()){
                     selector.addItem(stock+" ("+companyList.get(stock)+")");
                 }
             } catch (DataAccessException e) {
                 e.printStackTrace();
             }
-            //TODO - calculate the date range that has data for those stocks (in the DPE) and show that range
 
 
             return content;
@@ -252,6 +255,24 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
                 datePicker.setResolution(Resolution.SECOND);
 
             }
+
+            //select the date range type
+            OptionGroup dateRangeType = new OptionGroup();
+            content.addComponent(dateRangeType);
+            dateRangeType.setMultiSelect(true);
+            dateRangeType.setHtmlContentAllowed(true);
+            dateRangeType.addItem(1);
+            dateRangeType.setItemCaption(1, "<b>Show Common date range to all stocks</b>");
+
+
+            //monitor the selected item
+            dateRangeType.addValueChangeListener(new Property.ValueChangeListener() {
+                @Override
+                public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                    System.out.println(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
 
 
 //            content.addComponent();

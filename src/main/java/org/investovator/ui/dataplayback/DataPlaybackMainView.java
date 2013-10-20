@@ -21,11 +21,8 @@ package org.investovator.ui.dataplayback;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
-import com.vaadin.client.ui.calendar.schedule.DateUtil;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataPlayBackEngine.DataPlayer;
-import org.investovator.dataPlayBackEngine.events.StockEvent;
 import org.investovator.dataplaybackengine.DataPlayer;
 import org.investovator.dataplaybackengine.OHLCDataPLayer;
 import org.investovator.dataplaybackengine.RealTimeDataPlayer;
@@ -57,7 +54,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
     RealTimeDataPlayer realTimePlayer;
 
     //stocks to playback
-    String[] stocks;
+//    String[] stocks;
 
     //the day the game starts
     Date startDate;
@@ -151,12 +148,12 @@ public class DataPlaybackMainView extends Panel implements Observer {
         });
 
 
-        stopGameButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                player.stopPlayback();
-            }
-        });
+//        stopGameButton.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                player.stopPlayback();
+//            }
+//        });
 
 
 
@@ -199,9 +196,9 @@ public class DataPlaybackMainView extends Panel implements Observer {
         this.setContent(panelContent);
     }
 
-    public void setStocks(String[] stocks) {
-        this.stocks = stocks;
-    }
+//    public void setStocks(String[] stocks) {
+//        this.stocks = stocks;
+//    }
 
     private Chart buildMainChart(){
         Chart chart = new Chart();
@@ -294,9 +291,9 @@ public class DataPlaybackMainView extends Panel implements Observer {
         UI.getCurrent().addWindow(subWindow);
     }
 
-    public DataPlayer getDataPlayer(){
-        return player;
-    }
+//    public DataPlayer getDataPlayer(){
+//        return player;
+//    }
 
     //used to setup the game initially(after the wizard)
     public void setUpGame() {
@@ -311,7 +308,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
             attributes[1]=TradingDataAttribute.PRICE;
 
             try {
-                ohlcPLayer=new OHLCDataPLayer(this.stocks,attributes);
+                ohlcPLayer=new OHLCDataPLayer(DataPlaybackEngineStates.playingSymbols,attributes);
                 ohlcPLayer.setStartDate(this.startDate);
             } catch (ParseException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -329,7 +326,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
             attributes[1]=TradingDataAttribute.PRICE;
             attributes[2]=TradingDataAttribute.SHARES;
 
-            realTimePlayer=new RealTimeDataPlayer(this.stocks,this.startDate,attributes);
+            realTimePlayer=new RealTimeDataPlayer(DataPlaybackEngineStates.playingSymbols,this.startDate,attributes);
 
             //set myself as an observer
             realTimePlayer.setObserver(this);
