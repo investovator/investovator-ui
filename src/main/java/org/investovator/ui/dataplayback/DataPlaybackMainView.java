@@ -52,12 +52,11 @@ public class DataPlaybackMainView extends Panel implements Observer {
     OHLCDataPLayer ohlcPLayer;
     RealTimeDataPlayer realTimePlayer;
 
-    //used for counting data iteration number   TODO -remove
-    int timeTracker =0;
-
     //used in ticker data observing
     DataPlaybackMainView mySelf;
 
+    //charts to be shown
+    Chart ohlcChart;
     Chart tickerChart;
 
     public DataPlaybackMainView() {
@@ -66,6 +65,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
         //add the main graph
         final VerticalLayout panelContent = new VerticalLayout();
+//        panelContent.setSizeFull();
 
         HorizontalLayout topBar=new HorizontalLayout();
         HorizontalLayout topButtonContainer=new HorizontalLayout();
@@ -76,8 +76,18 @@ public class DataPlaybackMainView extends Panel implements Observer {
         topButtonContainer.setSizeFull();
 
         panelContent.addComponent(topBar);
-        final Chart ohlcChart=buildMainChart();
-        panelContent.addComponent(ohlcChart);
+
+        HorizontalLayout chartContainer=new HorizontalLayout();
+        chartContainer.setWidth(100,Unit.PERCENTAGE);
+        chartContainer.setHeight(40,Unit.PERCENTAGE);
+
+
+        ohlcChart=buildMainChart();
+        chartContainer.addComponent(ohlcChart);
+
+
+        panelContent.addComponent(chartContainer);
+
 
         //create the buttons
         Button addGameButton=new Button("New Game");
@@ -178,7 +188,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
     private Chart buildMainChart(){
         Chart chart = new Chart();
         chart.setHeight("350px");
-        chart.setWidth("90%");
+        chart.setWidth("100%");
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -212,7 +222,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
     private Chart buildTickerChart(){
         tickerChart = new Chart();
         tickerChart.setHeight("350px");
-        tickerChart.setWidth("90%");
+        tickerChart.setWidth("75%");
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
