@@ -241,12 +241,14 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     class ThirdStep implements WizardStep {
 
         InlineDateField datePicker;
+        OptionGroup dateRangeType;
 
 
 
 
         ThirdStep() {
             datePicker=new InlineDateField();
+            dateRangeType = new OptionGroup();
 
         }
 
@@ -277,7 +279,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             }
 
             //select the date range type
-            OptionGroup dateRangeType = new OptionGroup();
+
             content.addComponent(dateRangeType);
             dateRangeType.setMultiSelect(true);
             dateRangeType.setHtmlContentAllowed(true);
@@ -289,49 +291,16 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             dateRangeType.addValueChangeListener(new Property.ValueChangeListener() {
                 @Override
                 public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                    Set value=(Set)valueChangeEvent.getProperty().getValue();
-                    Date range[]=null;
-
-                    //if it is checked
-                    if(value.contains(1)){
-                        //check the game type and request for date ranges
-                        if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
-                            range= player.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
-                                    CompanyStockTransactionsData.DataType.OHLC);
-
-                        }
-                        //else if this is a Ticker data based game
-                        else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
-                            range= player.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
-                                    CompanyStockTransactionsData.DataType.TICKER);
-                        }
-
-                    }
-                    else{
-                        //check the game type and request for date ranges
-                        if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
-                                  range= player.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
-                                          CompanyStockTransactionsData.DataType.OHLC);
-
-                        }
-                        //else if this is a Ticker data based game
-                        else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
-                            range= player.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
-                                    CompanyStockTransactionsData.DataType.TICKER);
-                        }
+                    setDateRange();
 
 
-                    }
-                    datePicker.setRangeStart(range[0]);
-                    datePicker.setRangeEnd(range[1]);
-                    datePicker.setValue(range[0]);
                 }
             });
 
 
 
 
-
+            setDateRange();
             return content;
         }
 
@@ -350,7 +319,49 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         }
 
 
+
+
+    private void setDateRange(){
+        Date range[]=null;
+
+        //if it is checked
+        if(dateRangeType.getValue().equals(1)){
+            //check the game type and request for date ranges
+            if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                range= player.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                        CompanyStockTransactionsData.DataType.OHLC);
+
+            }
+            //else if this is a Ticker data based game
+            else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                range= player.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                        CompanyStockTransactionsData.DataType.TICKER);
+            }
+
+        }
+        else{
+            //check the game type and request for date ranges
+            if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                range= player.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                        CompanyStockTransactionsData.DataType.OHLC);
+
+            }
+            //else if this is a Ticker data based game
+            else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                range= player.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
+                        CompanyStockTransactionsData.DataType.TICKER);
+            }
+
+
+        }
+        datePicker.setRangeStart(range[0]);
+        datePicker.setRangeEnd(range[1]);
+        datePicker.setValue(range[0]);
     }
+    }
+
+
+
 
 
 
