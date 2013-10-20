@@ -428,8 +428,31 @@ public class DataPlaybackMainView extends Panel implements Observer {
                     //TODO - what if there were multiple serieses?
                     DataSeries series = (DataSeries) ohlcChart.getConfiguration().getSeries().get(0);
                     try {
-                        series.add(new DataSeriesItem(ohlcPLayer.getToday(), ohlcPLayer.startGame()[0].
+                        StockEvent[] events=ohlcPLayer.startGame();
+                        series.add(new DataSeriesItem(ohlcPLayer.getToday(), events[0].
                                 getData().get(TradingDataAttribute.PRICE)));
+                        series = (DataSeries) ohlcChart.getConfiguration().getSeries().get(1);
+                        series.add(new DataSeriesItem(ohlcPLayer.getToday(), events[1].
+                                getData().get(TradingDataAttribute.PRICE)));
+
+                        //update the table
+                        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                                stockPriceTable.getContainerDataSource();
+
+
+                        if (stockPriceTable.isConnectorEnabled()) {
+                            getSession().lock();
+                            try {
+                                beans.removeItem(events[0].getStockId());
+                                beans.addBean(new StockNamePriceBean(events[0].getStockId(),events[0].getData().get(TradingDataAttribute.PRICE)));
+
+                                beans.removeItem(events[1].getStockId());
+                                beans.addBean(new StockNamePriceBean(events[1].getStockId(),events[1].getData().get(TradingDataAttribute.PRICE)));
+
+                            } finally {
+                                getSession().unlock();
+                            }
+                        }
                     } catch (GameAlreadyStartedException e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
@@ -495,6 +518,21 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
                             }
 
+                        }
+
+                        //update the table
+                        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                                stockPriceTable.getContainerDataSource();
+
+
+                        if (stockPriceTable.isConnectorEnabled()) {
+                            getSession().lock();
+                            try {
+                                beans.removeItem(event.getStockId());
+                                beans.addBean(new StockNamePriceBean(event.getStockId(),event.getData().get(TradingDataAttribute.PRICE)));
+                            } finally {
+                                getSession().unlock();
+                            }
                         }
 
                     }
@@ -627,7 +665,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
             if (stockPriceTable.isConnectorEnabled()) {
                 getSession().lock();
                 try {
-//                    beans.getItem(event.getStockId()).getBean().setPrice(event.getData().get(TradingDataAttribute.PRICE));
                     beans.removeItem(event.getStockId());
                     beans.addBean(new StockNamePriceBean(event.getStockId(),event.getData().get(TradingDataAttribute.PRICE)));
                 } finally {
