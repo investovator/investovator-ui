@@ -77,7 +77,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     public void wizardCompleted(WizardCompletedEvent wizardCompletedEvent) {
         Notification.show("Complete");
 
-        mainView.setUpGame();
+        mainView.setUpGame(false);
 
 
         this.window.close();

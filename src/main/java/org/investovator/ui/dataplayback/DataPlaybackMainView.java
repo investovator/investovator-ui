@@ -59,136 +59,182 @@ public class DataPlaybackMainView extends Panel implements Observer {
     Chart ohlcChart;
     Chart tickerChart;
 
+    //to store every component
+    GridLayout content;
+
     public DataPlaybackMainView() {
         //set a link to this class
         mySelf=this;
 
-        //add the main graph
-        final VerticalLayout panelContent = new VerticalLayout();
-//        panelContent.setSizeFull();
+        content = new GridLayout(3,3);
+        content.setSizeFull();
 
-        HorizontalLayout topBar=new HorizontalLayout();
-        HorizontalLayout topButtonContainer=new HorizontalLayout();
-        topButtonContainer.setStyleName("sidebar");
-        topBar.addComponent(topButtonContainer);
-        //to set the alignment of the buttons
-        topBar.setComponentAlignment(topButtonContainer,Alignment.MIDDLE_RIGHT);
-        topButtonContainer.setSizeFull();
-
-        panelContent.addComponent(topBar);
-
-        HorizontalLayout chartContainer=new HorizontalLayout();
-        chartContainer.setWidth(100,Unit.PERCENTAGE);
-        chartContainer.setHeight(40,Unit.PERCENTAGE);
-
-
-        ohlcChart=buildMainChart();
-        chartContainer.addComponent(ohlcChart);
-
-
-        panelContent.addComponent(chartContainer);
-
-
-        //create the buttons
-        Button addGameButton=new Button("New Game");
-        Button playGameButton=new Button("Play Game");
-        Button pauseGameButton=new Button("Pause Game");
-        Button stopGameButton=new Button("Stop Game");
-        topButtonContainer.addComponent(addGameButton);
-        topButtonContainer.addComponent(playGameButton);
-        topButtonContainer.addComponent(pauseGameButton);
-        topButtonContainer.addComponent(stopGameButton);
-
-        //set alignments of the buttons
-        topButtonContainer.setComponentAlignment(addGameButton,Alignment.MIDDLE_RIGHT);
-        topButtonContainer.setComponentAlignment(playGameButton,Alignment.MIDDLE_RIGHT);
-        topButtonContainer.setComponentAlignment(pauseGameButton,Alignment.MIDDLE_RIGHT);
-        topButtonContainer.setComponentAlignment(stopGameButton,Alignment.MIDDLE_RIGHT);
-
-        //add the action listeners for buttons
-        addGameButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-                 startAddGameWizard();
-            }
-        });
-
-        playGameButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-                    //if an OHLC based game
-                    if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
-                        //TODO - what if there were multiple serieses?
-                        DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
-                        try {
-                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.startGame()[0].
-                                    getData().get(TradingDataAttribute.PRICE)));
-                        } catch (GameAlreadyStartedException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
-
-                    }
-                    //if a ticker based game
-                    else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
-                        //TODO - what if there were multiple serieses?
-                        DataSeries series=(DataSeries)tickerChart.getConfiguration().getSeries().get(0);
-                        //TODO - how to set resolution?
-                            realTimePlayer.startPlayback(1);
-
-                    }
+        ////for testing
+        DataPlaybackEngineStates.currentGameMode=DataPLaybackEngineGameTypes.OHLC_BASED;
+        this.setUpGame(true);
 
 
 
-            }
-        });
+        //
+        //
+        ////
 
-          //TODO- implement this??
-//        stopGameButton.addClickListener(new Button.ClickListener() {
+//        HorizontalLayout topBar=new HorizontalLayout();
+//        HorizontalLayout topButtonContainer=new HorizontalLayout();
+//        topButtonContainer.setStyleName("sidebar");
+//        topBar.addComponent(topButtonContainer);
+////        topBar.setSizeFull();
+//        //to set the alignment of the buttons
+//        topBar.setComponentAlignment(topButtonContainer, Alignment.TOP_RIGHT);
+//        topButtonContainer.setSizeFull();
+//
+//        content.addComponent(topBar, 1, 0, 2, 0);
+//        content.setComponentAlignment(topBar, Alignment.TOP_RIGHT);
+//
+//        HorizontalLayout chartContainer=new HorizontalLayout();
+//        chartContainer.setWidth(95,Unit.PERCENTAGE);
+////        chartContainer.setHeight(40,Unit.PERCENTAGE);
+//
+//
+//        ohlcChart=buildMainChart();
+//        tickerChart=buildTickerChart();
+//
+//        chartContainer.addComponent(tickerChart);
+//        chartContainer.setComponentAlignment(tickerChart,Alignment.MIDDLE_CENTER);
+//
+//        Chart t0=QuickTest.getChart();
+//
+//
+//
+//        content.addComponent(chartContainer, 0, 1, 2, 1);
+//        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
+//
+//
+//        //create the buttons
+//        Button addGameButton=new Button("New Game");
+//        Button playGameButton=new Button("Play Game");
+//        Button pauseGameButton=new Button("Pause Game");
+//        Button stopGameButton=new Button("Stop Game");
+//        topButtonContainer.addComponent(addGameButton);
+//        topButtonContainer.addComponent(playGameButton);
+//        topButtonContainer.addComponent(pauseGameButton);
+//        topButtonContainer.addComponent(stopGameButton);
+//
+//        //set alignments of the buttons
+//        topButtonContainer.setComponentAlignment(addGameButton,Alignment.MIDDLE_RIGHT);
+//        topButtonContainer.setComponentAlignment(playGameButton,Alignment.MIDDLE_RIGHT);
+//        topButtonContainer.setComponentAlignment(pauseGameButton,Alignment.MIDDLE_RIGHT);
+//        topButtonContainer.setComponentAlignment(stopGameButton,Alignment.MIDDLE_RIGHT);
+//
+//        //add the action listeners for buttons
+//        addGameButton.addClickListener(new Button.ClickListener() {
 //            @Override
 //            public void buttonClick(Button.ClickEvent clickEvent) {
-//                player.stopPlayback();
+//
+//                 startAddGameWizard();
 //            }
 //        });
-
-
-
-
-        Button nextDayB=new Button("Next day");
-        nextDayB.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
-
-                    try {
-                        //TODO - what if there were multiple serieses?
-
-                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
-                                getData().get(TradingDataAttribute.PRICE)));
-                    } catch (GameFinishedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-
-
-
-            }
-        });
-
-
-        panelContent.addComponent(nextDayB);
-
-        //add ticker chart
-        panelContent.addComponent(buildTickerChart());
-
-        this.setContent(panelContent);
+//
+//        playGameButton.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//
+//                    //if an OHLC based game
+//                    if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+//                        //TODO - what if there were multiple serieses?
+//                        DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
+//                        try {
+//                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.startGame()[0].
+//                                    getData().get(TradingDataAttribute.PRICE)));
+//                        } catch (GameAlreadyStartedException e) {
+//                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                        }
+//
+//                    }
+//                    //if a ticker based game
+//                    else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+//                        //TODO - what if there were multiple serieses?
+//                        DataSeries series=(DataSeries)tickerChart.getConfiguration().getSeries().get(0);
+//                        //TODO - how to set resolution?
+//                            realTimePlayer.startPlayback(1);
+//
+//                    }
+//
+//
+//
+//            }
+//        });
+//
+//          //TODO- implement this??
+////        stopGameButton.addClickListener(new Button.ClickListener() {
+////            @Override
+////            public void buttonClick(Button.ClickEvent clickEvent) {
+////                player.stopPlayback();
+////            }
+////        });
+//
+//
+//
+//
+//        Button nextDayB=new Button("Next day");
+//        nextDayB.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
+//
+//                    try {
+//                        //TODO - what if there were multiple serieses?
+//
+//                        if (series.getData().size() > OHLC_CHART_LENGTH) {
+//
+//                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
+//                                    getData().get(TradingDataAttribute.PRICE)),true,true);
+//                        } else {
+//                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
+//                                    getData().get(TradingDataAttribute.PRICE)));
+//                        }
+//
+//                        ohlcChart.setImmediate(true);
+//
+//
+//
+//                    } catch (GameFinishedException e) {
+//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                    }
+//
+//
+//
+//            }
+//        });
+//
+//        //TODO
+//        content.addComponent(nextDayB, 1, 2);
+//        content.setComponentAlignment(nextDayB, Alignment.MIDDLE_CENTER);
+//
+//
+//        Chart t1=QuickTest.getChart();
+//
+//
+//        //add ticker chart TODO
+////        content.addComponent(t1,0,2);
+////        content.setComponentAlignment(t1,Alignment.MIDDLE_CENTER);
+//
+////        Chart t2=QuickTest.getChart();
+//
+////        content.addComponent(t1,1,2);
+////        content.setComponentAlignment(t1,Alignment.MIDDLE_CENTER);
+////
+////        content.addComponent(t2,2,2);
+////        content.setComponentAlignment(t2,Alignment.MIDDLE_CENTER);
+//
+//        this.setContent(content);
     }
 
 
     private Chart buildMainChart(){
         Chart chart = new Chart();
-        chart.setHeight("350px");
-        chart.setWidth("100%");
+//        chart.setHeight("350px");
+//        chart.setWidth("90%");
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -221,8 +267,9 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
     private Chart buildTickerChart(){
         tickerChart = new Chart();
-        tickerChart.setHeight("350px");
-        tickerChart.setWidth("75%");
+//        tickerChart.setHeight("350px");
+//        tickerChart.setWidth("250px");
+//        tickerChart.setSizeFull();
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -248,7 +295,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
         //disable trademark
         tickerChart.getConfiguration().disableCredits();
 
-        tickerChart.getConfiguration().getTitle().setText("Real-time Stock Prices");
+        tickerChart.getConfiguration().setTitle("Real-time Stock Prices");
 
 
         tickerChart.drawChart(configuration);
@@ -278,9 +325,13 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
 
     //used to setup the game initially(after the wizard)
-    public void setUpGame() {
+    public void setUpGame(boolean initialization) {
+
+        //clear everything
+        content.removeAllComponents();
+
         //if the game type is OHLC
-        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
+        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED && !initialization) {
             //TODO - find a proper place to define attributes
             //define the attributes needed
             TradingDataAttribute attributes[]=new TradingDataAttribute[2];
@@ -297,7 +348,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
             }
         }
         //if the game type is ticker data based
-        else if(DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED){
+        else if(DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED && !initialization){
 
             //TODO - find a proper place to define attributes
             //define the attributes needed
@@ -315,6 +366,146 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
 
         }
+
+        //Top buttons
+        HorizontalLayout topBar=new HorizontalLayout();
+        HorizontalLayout topButtonContainer=new HorizontalLayout();
+        topButtonContainer.setStyleName("sidebar");
+        topBar.addComponent(topButtonContainer);
+//        topBar.setSizeFull();
+        //to set the alignment of the buttons
+        topBar.setComponentAlignment(topButtonContainer, Alignment.TOP_RIGHT);
+        topButtonContainer.setSizeFull();
+
+        content.addComponent(topBar, 1, 0, 2, 0);
+        content.setComponentAlignment(topBar, Alignment.TOP_RIGHT);
+
+        //create the buttons
+        Button addGameButton=new Button("New Game");
+        Button playGameButton=new Button("Play Game");
+        Button pauseGameButton=new Button("Pause Game");
+        Button stopGameButton=new Button("Stop Game");
+        topButtonContainer.addComponent(addGameButton);
+        topButtonContainer.addComponent(playGameButton);
+        topButtonContainer.addComponent(pauseGameButton);
+        topButtonContainer.addComponent(stopGameButton);
+
+        //set alignments of the buttons
+        topButtonContainer.setComponentAlignment(addGameButton,Alignment.MIDDLE_RIGHT);
+        topButtonContainer.setComponentAlignment(playGameButton,Alignment.MIDDLE_RIGHT);
+        topButtonContainer.setComponentAlignment(pauseGameButton,Alignment.MIDDLE_RIGHT);
+        topButtonContainer.setComponentAlignment(stopGameButton,Alignment.MIDDLE_RIGHT);
+
+        //add the action listeners for buttons
+        addGameButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                startAddGameWizard();
+            }
+        });
+
+        playGameButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                //if an OHLC based game
+                if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                    //TODO - what if there were multiple serieses?
+                    DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
+                    try {
+                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.startGame()[0].
+                                getData().get(TradingDataAttribute.PRICE)));
+                    } catch (GameAlreadyStartedException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+
+                }
+                //if a ticker based game
+                else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                    //TODO - what if there were multiple serieses?
+                    DataSeries series=(DataSeries)tickerChart.getConfiguration().getSeries().get(0);
+                    //TODO - how to set resolution?
+                    realTimePlayer.startPlayback(1);
+
+                }
+
+
+
+            }
+        });
+
+        //TODO- implement this??
+//        stopGameButton.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                player.stopPlayback();
+//            }
+//        });
+
+
+
+
+        Button nextDayB=new Button("Next day");
+        nextDayB.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
+
+                try {
+                    //TODO - what if there were multiple serieses?
+
+                    if (series.getData().size() > OHLC_CHART_LENGTH) {
+
+                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
+                                getData().get(TradingDataAttribute.PRICE)),true,true);
+                    } else {
+                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
+                                getData().get(TradingDataAttribute.PRICE)));
+                    }
+
+                    ohlcChart.setImmediate(true);
+
+
+
+                } catch (GameFinishedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
+
+
+            }
+        });
+
+        //TODO
+        content.addComponent(nextDayB, 1, 2);
+        content.setComponentAlignment(nextDayB, Alignment.MIDDLE_CENTER);
+
+        //Main chart
+        HorizontalLayout chartContainer=new HorizontalLayout();
+        chartContainer.setWidth(95,Unit.PERCENTAGE);
+
+        //if the game type is OHLC
+        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
+            ohlcChart=buildMainChart();
+            chartContainer.addComponent(ohlcChart);
+            chartContainer.setComponentAlignment(ohlcChart,Alignment.MIDDLE_CENTER);
+        }
+        //if the game type is ticker data based
+        else if(DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED){
+            tickerChart=buildTickerChart();
+            chartContainer.addComponent(tickerChart);
+            chartContainer.setComponentAlignment(tickerChart,Alignment.MIDDLE_CENTER);
+
+        }
+        content.addComponent(chartContainer, 0, 1, 2, 1);
+        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
+
+
+        this.setContent(content);
+
+
+
 
     }
 
