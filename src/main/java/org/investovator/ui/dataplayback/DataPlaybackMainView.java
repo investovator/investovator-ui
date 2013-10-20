@@ -96,7 +96,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
 ////        chartContainer.setHeight(40,Unit.PERCENTAGE);
 //
 //
-//        ohlcChart=buildMainChart();
+//        ohlcChart=buildOHLCChart();
 //        tickerChart=buildTickerChart();
 //
 //        chartContainer.addComponent(tickerChart);
@@ -231,7 +231,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
     }
 
 
-    private Chart buildMainChart(){
+    private Chart buildOHLCChart(){
         Chart chart = new Chart();
 //        chart.setHeight("350px");
 //        chart.setWidth("90%");
@@ -542,7 +542,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
         //if the game type is OHLC
         if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
-            ohlcChart=buildMainChart();
+            ohlcChart= buildOHLCChart();
             chartContainer.addComponent(ohlcChart);
             chartContainer.setComponentAlignment(ohlcChart,Alignment.MIDDLE_CENTER);
         }
