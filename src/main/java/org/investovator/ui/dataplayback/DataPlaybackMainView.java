@@ -23,7 +23,6 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.OHLCDataPLayer;
@@ -62,6 +61,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
     //charts to be shown
     Chart ohlcChart;
     Chart tickerChart;
+    Chart stockPieChart;
 
     Table stockPriceTable;
 
@@ -516,8 +516,8 @@ public class DataPlaybackMainView extends Panel implements Observer {
 //        content.setComponentAlignment(buySellWindow,Alignment.BOTTOM_CENTER);
 
         //pie-chart
-        Component stockChart=setupPieChart();
-        content.addComponent(stockChart,2,2);
+        stockPieChart =setupPieChart();
+        content.addComponent(stockPieChart,2,2);
 
 
 
@@ -660,14 +660,14 @@ public class DataPlaybackMainView extends Panel implements Observer {
         return table;
     }
 
-    private Component setupPieChart(){
-        VerticalLayout layout=new VerticalLayout();
+    private Chart setupPieChart(){
+//        VerticalLayout layout=new VerticalLayout();
 
         Chart chart = new Chart(ChartType.PIE);
 
         Configuration conf = chart.getConfiguration();
 
-        conf.setTitle("Browser market shares at a specific website, 2010");
+        conf.setTitle("Portfolio Summary");
 
         PlotOptionsPie plotOptions = new PlotOptionsPie();
         plotOptions.setCursor(Cursor.POINTER);
@@ -681,24 +681,30 @@ public class DataPlaybackMainView extends Panel implements Observer {
         conf.setPlotOptions(plotOptions);
 
         DataSeries series = new DataSeries();
-        series.add(new DataSeriesItem("Firefox", 45.0));
-        series.add(new DataSeriesItem("IE", 26.8));
-        DataSeriesItem chrome = new DataSeriesItem("Chrome", 12.8);
-        chrome.setSliced(true);
-        chrome.setSelected(true);
-        series.add(chrome);
-        series.add(new DataSeriesItem("Safari", 8.5));
-        series.add(new DataSeriesItem("Opera", 6.2));
-        series.add(new DataSeriesItem("Others", 0.7));
+        //if the stock items has been set
+        if(DataPlaybackEngineStates.playingSymbols!=null){
+            for(String stock:DataPlaybackEngineStates.playingSymbols){
+                series.add(new DataSeriesItem(stock, 0));
+            }
+        }
+
+//        series.add(new DataSeriesItem("Firefox", 45.0));
+//        series.add(new DataSeriesItem("IE", 26.8));
+//        DataSeriesItem chrome = new DataSeriesItem("Chrome", 12.8);
+//        chrome.setSliced(true);
+//        chrome.setSelected(true);
+//        series.add(chrome);
+//        series.add(new DataSeriesItem("Safari", 8.5));
+//        series.add(new DataSeriesItem("Opera", 6.2));
+//        series.add(new DataSeriesItem("Others", 0.7));
         conf.setSeries(series);
 
         chart.drawChart(conf);
         chart.setWidth("90%");
         chart.setHeight(70,Unit.MM);
 
-        layout.addComponent(chart);
 
-        return layout;
+        return chart;
     }
 
 
@@ -755,31 +761,67 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 }
             }
 
+            //update the pie-chart
+
+            //since we know that there's only one data series
+                DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
+
+                //find the matching Data item
+//            DataSeriesItem item=dSeries.get(event.getStockId());
+//                    if(item.getName().equalsIgnoreCase(event.getStockId())){
+                        if (stockPieChart.isConnectorEnabled()) {
+                            getSession().lock();
+                            try {
+                                //TODO - assumes there's only one stock from each type
+
+                                int total=0;
+                                //get the values from the stock price table
+                                for(String beanId:beans.getItemIds()){
+                                    //add the new price for the updated stock
+                                    if(beanId.equalsIgnoreCase(event.getStockId())){
+                                       total+=event.getData().get(TradingDataAttribute.PRICE);
+
+                                    }
+                                    else{
+                                        total+=beans.getItem(beanId).getBean().getPrice();
+                                    }
+
+
+                                }
+
+                                //remove every stock percentage
+//                                for(DataSeriesItem item:dSeries.getData()){
+//                                    dSeries.remove(item);
+//                                }
+
+                                //add the new percentages
+                                for(String beanId:beans.getItemIds()){
+
+                                    dSeries.add(new DataSeriesItem(beanId,
+                                            ((beans.getItem(beanId).getBean().getPrice())/total)*100));
+
+                                }
+
+
+                                stockPieChart.setImmediate(true);
+
+                                System.out.println(event.getStockId());
+                                System.out.println((event.getData().get(TradingDataAttribute.PRICE))/10);
+                                System.out.println("---------------------");
+
+                            } finally {
+                                getSession().unlock();
+                            }
+                        }
 
 
 
-//            //TODO - only updates for GOOG stocks
-//            if("GOOG".equalsIgnoreCase(event.getStockId())){
-//                if (tickerChart.isConnectorEnabled()) {
-//                    getSession().lock();
-//                    try {
-//                        DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
-//
-//                        if (series.getData().size() > TICKER_CHART_LENGTH) {
-//
-//                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)), true, true);
-//
-//                        } else {
-//                            series.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)));
-//
-//                        }
-//                        tickerChart.setImmediate(true);
-//                    } finally {
-//                        getSession().unlock();
+
 //                    }
-//                }
-//
-//            }
+
+
+
+
 
 
         }
