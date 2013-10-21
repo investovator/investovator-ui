@@ -2,8 +2,11 @@ package org.investovator.ui.agentgaming;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import net.sourceforge.jasa.market.Order;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.jasa.api.JASAFacade;
+import org.investovator.ui.authentication.Authenticator;
 
 /**
  * @author Amila Surendra
@@ -11,10 +14,8 @@ import org.investovator.core.data.exeptions.DataAccessException;
  */
 public class QuoteUI extends VerticalLayout {
 
-
     //External Data
     CompanyData companyData;
-
 
     //Layout Components
     Button tradeButton;
@@ -22,19 +23,21 @@ public class QuoteUI extends VerticalLayout {
     ComboBox sideSelect;
     ComboBox orderTypeSelect;
     ComboBox validitySelect;
-
-
     TextField price;
     TextField stocks;
     Label amount;
 
     //Data Variables
     String selectedStock;
+    boolean isBuy;
+    float orderPrice;
+    int orderStockCount;
 
 
     public QuoteUI(CompanyData companyData) {
         this.companyData = companyData;
         setupUI();
+        JASAFacade.getMarketFacade().AddUserAgent(Authenticator.getInstance().getCurrentUser(),10000000);
     }
 
 
@@ -44,23 +47,24 @@ public class QuoteUI extends VerticalLayout {
         HorizontalLayout sideSelectLayout = new HorizontalLayout();
 
         sideSelect = new ComboBox("Select side");
-        sideSelect.addItem("Buy");
-        sideSelect.addItem("Sell");
-        sideSelect.select("Buy");
+        sideSelect.addItem(OrderSide.BUY);
+        sideSelect.addItem(OrderSide.SELL);
+        sideSelect.select(OrderSide.BUY);
+        isBuy=true;
         sideSelect.setNullSelectionAllowed(false);
 
         orderTypeSelect = new ComboBox("Order Type");
-        orderTypeSelect.addItem("Market Order");
-        orderTypeSelect.addItem("Limit Order");
-        orderTypeSelect.select("Limit Order");
+        orderTypeSelect.addItem(OrderType.MARKET_ORDER);
+        orderTypeSelect.addItem(OrderType.LIMIT_ORDER);
+        orderTypeSelect.select(OrderType.LIMIT_ORDER);
         orderTypeSelect.setNullSelectionAllowed(false);
 
 
         validitySelect = new ComboBox("Order Validity");
-        validitySelect.addItem("End of Day");
-        validitySelect.addItem("Good Till Cancelled");
-        validitySelect.addItem("Custom");
-        validitySelect.select("End of Day");
+        validitySelect.addItem(OrderValidity.DAY_ORDER);
+        validitySelect.addItem(OrderValidity.VALID_UNTIL_CANCEL);
+        validitySelect.addItem(OrderValidity.CUSTOM_ORDER);
+        validitySelect.select(OrderValidity.DAY_ORDER);
         validitySelect.setNullSelectionAllowed(false);
 
         sideSelectLayout.setSpacing(true);
@@ -86,12 +90,17 @@ public class QuoteUI extends VerticalLayout {
 
         price = new TextField("Price");
         price.setImmediate(true);
+        price.addValueChangeListener(priceValueChangedListener);
+        price.setImmediate(true);
 
         amount= new Label();
         amount.setCaption("Amount");
         amount.addStyleName("outlined");
 
         stocks = new TextField("Stocks");
+        stocks.addValueChangeListener(stocksChangedListener);
+        stocks.setImmediate(true);
+
         priceLayout.setSpacing(true);
         priceLayout.addComponent(price);
         priceLayout.addComponent(stocks);
@@ -103,6 +112,7 @@ public class QuoteUI extends VerticalLayout {
         stockSelect.setCaption("Select stock to trade");
         stockSelect.setNullSelectionAllowed(false);
         stockSelect.setWidth("100%");
+        stockSelect.addValueChangeListener(selectSymbolValueChange);
 
         try {
             for (String stock : companyData.getAvailableStockIds()) {
@@ -125,12 +135,34 @@ public class QuoteUI extends VerticalLayout {
 
     }
 
+    private void setAmount(){
+      amount.setValue( Float.toString(orderPrice*orderStockCount));
+    }
+
+
+    Property.ValueChangeListener priceValueChangedListener = new Property.ValueChangeListener() {
+        @Override
+        public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+            final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
+            orderPrice = Float.parseFloat(valueString);
+            setAmount();
+        }
+    };
+
+    Property.ValueChangeListener stocksChangedListener = new Property.ValueChangeListener() {
+        @Override
+        public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+            final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
+            orderStockCount = Integer.parseInt(valueString);
+            setAmount();
+        }
+    };
 
 
     Button.ClickListener tradeButtonClickListener = new Button.ClickListener() {
         @Override
         public void buttonClick(Button.ClickEvent clickEvent) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            JASAFacade.getMarketFacade().putLimitOrder(Authenticator.getInstance().getCurrentUser(), selectedStock, orderStockCount, orderPrice, isBuy);
         }
     };
 
@@ -143,5 +175,68 @@ public class QuoteUI extends VerticalLayout {
         }
     };
 
+    Property.ValueChangeListener sideSelectValueChangeListener = new Property.ValueChangeListener() {
+        @Override
+        public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+            final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
+            if(valueString.equals(OrderSide.BUY)) isBuy = true;
+            else isBuy=false;
+
+        }
+    };
+
+
 
 }
+
+
+enum OrderValidity{
+    DAY_ORDER,
+    VALID_UNTIL_CANCEL,
+    CUSTOM_ORDER;
+
+    @Override
+    public String toString() {
+        switch (this)
+        {
+            case DAY_ORDER: return "End of Day";
+            case VALID_UNTIL_CANCEL: return "Good Till Cancelled" ;
+            case CUSTOM_ORDER: return "Custom";
+        }
+        return null;
+    }
+}
+
+
+enum OrderType{
+    MARKET_ORDER,
+    LIMIT_ORDER;
+
+    @Override
+    public String toString() {
+        switch (this)
+        {
+            case MARKET_ORDER: return "Market Order";
+            case LIMIT_ORDER: return "Limit Order" ;
+        }
+        return null;
+    }
+}
+
+enum OrderSide{
+    BUY,
+    SELL;
+
+    @Override
+    public String toString() {
+        switch (this)
+        {
+            case BUY: return "Buy Order";
+            case SELL: return "Sell Order" ;
+        }
+        return null;    }
+
+
+}
+
+

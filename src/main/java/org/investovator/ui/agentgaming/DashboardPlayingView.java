@@ -22,15 +22,13 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.Configuration;
 import com.vaadin.addon.charts.model.ListSeries;
+import com.vaadin.addon.charts.model.PlotOptionsSpline;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
+import org.investovator.core.data.api.CompanyData;
 import org.investovator.jasa.api.JASAFacade;
 import org.investovator.jasa.api.MarketFacade;
-
-
-import java.util.*;
+import org.investovator.ui.agentgaming.adapters.CompanyDataTestImpl;
 
 /**
  * @author Amila Surendra
@@ -38,22 +36,49 @@ import java.util.*;
  */
 public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
-    GridLayout content;
+
+    //External Data
     ReportHelper reportHelper;
     MarketFacade simulationFacade = JASAFacade.getMarketFacade();
+    CompanyData companyData = new CompanyDataTestImpl();
 
+
+    //Layout Components
+    GridLayout content;
     Table watchListTable;
     Chart currentPriceChart;
     WatchList watchList;
+    QuoteUI quoteUI;
 
     boolean simulationRunning = false;
 
     public DashboardPlayingView() {
 
+        createUI();
+
+        //Reports Config
+        reportHelper = new ReportHelper();
+        watchList = new WatchList(reportHelper);
+        watchList.addStockChangeListener(this);
+
+        //new Thread(watchList).start();
+
+    }
+
+
+    private void createUI(){
+
+
+
         //Setup Layout
         content = new GridLayout();
+        content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         content.setRows(2);
         content.setColumns(2);
+
+
+        //QuoteUI
+        quoteUI = new QuoteUI(companyData);
 
 
         Button test = new Button("Start");
@@ -102,8 +127,10 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         buttons.addComponent(reports);
 
 
+        //Adding to main layout
         content.addComponent(watchListTable);
         content.addComponent(currentPriceChart);
+        content.addComponent(quoteUI);
         content.setComponentAlignment(watchListTable,Alignment.MIDDLE_CENTER);
         content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
         content.addComponent(buttons);
@@ -114,15 +141,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
 
         this.setContent(content);
 
-        //Reports Config
-        reportHelper = new ReportHelper();
-        watchList = new WatchList(reportHelper);
-        watchList.addStockChangeListener(this);
-
-        //new Thread(watchList).start();
-
     }
-
 
     protected Table getTable() {
 
@@ -167,24 +186,15 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         configuration.getChart().setType(ChartType.SPLINE);
         configuration.disableCredits();
 
-
         configuration.setSeries(series);
 
         chart.drawChart(configuration);
+
 
         return chart;
     }
 
 
-    public Component getQuoteUI(){
-
-        VerticalLayout content= new VerticalLayout();
-
-
-
-
-        return content;
-    }
 
 
     @Override
@@ -209,14 +219,15 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         }
 
 
-        /*f (currentPriceChart.isConnectorEnabled()) {
+        if (currentPriceChart.isConnectorEnabled()) {
             getSession().lock();
             try {
+                //if( series.getData().length > 20)  series.addData(stockChanged.getMarketPrice(),true,true);
                 series.addData(stockChanged.getMarketPrice());
             } finally {
                 getSession().unlock();
             }
-        }*/
+        }
 
 
     }
