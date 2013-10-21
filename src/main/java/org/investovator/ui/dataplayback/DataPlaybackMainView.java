@@ -21,6 +21,7 @@ package org.investovator.ui.dataplayback;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
@@ -514,6 +515,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
         content.addComponent(buySellWindow,1,2);
 //        content.setComponentAlignment(buySellWindow,Alignment.BOTTOM_CENTER);
 
+        //pie-chart
+        Component stockChart=setupPieChart();
+        content.addComponent(stockChart,2,2);
+
 
 
         this.setContent(content);
@@ -653,6 +658,47 @@ public class DataPlaybackMainView extends Panel implements Observer {
         Table table=new Table("Stock Prices",beans);
 
         return table;
+    }
+
+    private Component setupPieChart(){
+        VerticalLayout layout=new VerticalLayout();
+
+        Chart chart = new Chart(ChartType.PIE);
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("Browser market shares at a specific website, 2010");
+
+        PlotOptionsPie plotOptions = new PlotOptionsPie();
+        plotOptions.setCursor(Cursor.POINTER);
+        Labels dataLabels = new Labels();
+        dataLabels.setEnabled(true);
+        dataLabels.setColor(new SolidColor(0, 0, 0));
+        dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
+        dataLabels
+                .setFormatter("''+ this.point.name +': '+ this.percentage +' %'");
+        plotOptions.setDataLabels(dataLabels);
+        conf.setPlotOptions(plotOptions);
+
+        DataSeries series = new DataSeries();
+        series.add(new DataSeriesItem("Firefox", 45.0));
+        series.add(new DataSeriesItem("IE", 26.8));
+        DataSeriesItem chrome = new DataSeriesItem("Chrome", 12.8);
+        chrome.setSliced(true);
+        chrome.setSelected(true);
+        series.add(chrome);
+        series.add(new DataSeriesItem("Safari", 8.5));
+        series.add(new DataSeriesItem("Opera", 6.2));
+        series.add(new DataSeriesItem("Others", 0.7));
+        conf.setSeries(series);
+
+        chart.drawChart(conf);
+        chart.setWidth("90%");
+        chart.setHeight(70,Unit.MM);
+
+        layout.addComponent(chart);
+
+        return layout;
     }
 
 
