@@ -444,10 +444,12 @@ public class DataPlaybackMainView extends Panel implements Observer {
                             getSession().lock();
                             try {
                                 beans.removeItem(events[0].getStockId());
-                                beans.addBean(new StockNamePriceBean(events[0].getStockId(),events[0].getData().get(TradingDataAttribute.PRICE)));
+                                beans.addBean(new StockNamePriceBean(events[0].getStockId(),
+                                        events[0].getData().get(TradingDataAttribute.PRICE)));
 
                                 beans.removeItem(events[1].getStockId());
-                                beans.addBean(new StockNamePriceBean(events[1].getStockId(),events[1].getData().get(TradingDataAttribute.PRICE)));
+                                beans.addBean(new StockNamePriceBean(events[1].getStockId(),
+                                        events[1].getData().get(TradingDataAttribute.PRICE)));
 
                             } finally {
                                 getSession().unlock();
@@ -463,7 +465,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
                     //TODO - what if there were multiple serieses?
                     DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
                     //TODO - how to set resolution?
-                    realTimePlayer.startPlayback(1);
+                    realTimePlayer.startPlayback(3);
 
                 }
 
@@ -479,6 +481,84 @@ public class DataPlaybackMainView extends Panel implements Observer {
 //            }
 //        });
 
+
+
+
+        //Main chart
+        HorizontalLayout chartContainer = new HorizontalLayout();
+        chartContainer.setWidth(95, Unit.PERCENTAGE);
+
+        //if the game type is OHLC
+        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
+            ohlcChart = buildOHLCChart();
+            chartContainer.addComponent(ohlcChart);
+            chartContainer.setComponentAlignment(ohlcChart, Alignment.MIDDLE_CENTER);
+        }
+        //if the game type is ticker data based
+        else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED) {
+            tickerChart = buildTickerChart();
+            chartContainer.addComponent(tickerChart);
+            chartContainer.setComponentAlignment(tickerChart, Alignment.MIDDLE_CENTER);
+
+        }
+        content.addComponent(chartContainer, 0, 1, 2, 1);
+        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
+
+        //Stock price table
+        stockPriceTable=setupStockPriceTable();
+        content.addComponent(stockPriceTable,0,2);
+        content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
+
+        //buy-sell window
+        Component buySellWindow=setupBuySellForm();
+        content.addComponent(buySellWindow,1,2);
+//        content.setComponentAlignment(buySellWindow,Alignment.BOTTOM_CENTER);
+
+
+
+        this.setContent(content);
+
+
+    }
+
+    private Component setupBuySellForm(){
+        VerticalLayout formContent=new VerticalLayout();
+
+        FormLayout form=new FormLayout();
+
+        //stocks list
+        ComboBox stocksList=new ComboBox();
+        stocksList.setCaption("Stock");
+        stocksList.setNullSelectionAllowed(false);
+        if(DataPlaybackEngineStates.playingSymbols!=null){
+            for(String stock:DataPlaybackEngineStates.playingSymbols){
+                stocksList.addItem(stock);
+            }
+        }
+        stocksList.setWidth("75%");
+
+        //side
+        NativeSelect orderSide=new NativeSelect();
+        orderSide.setCaption("Side");
+        orderSide.addItem("Buy");
+        orderSide.addItem("Sell");
+        orderSide.setWidth("90%");
+        orderSide.select("Buy");
+        orderSide.setNullSelectionAllowed(false);
+
+        //Quantity
+        TextField quantity=new TextField("Amount");
+        quantity.setWidth("75%");
+
+
+        form.addComponent(stocksList);
+        form.addComponent(orderSide);
+        form.addComponent(quantity);
+
+        formContent.addComponent(form);
+
+        HorizontalLayout buttonsBar=new HorizontalLayout();
+        Button buySellButton=new Button("Buy");
 
         Button nextDayB = new Button("Next day");
         nextDayB.addClickListener(new Button.ClickListener() {
@@ -529,7 +609,8 @@ public class DataPlaybackMainView extends Panel implements Observer {
                             getSession().lock();
                             try {
                                 beans.removeItem(event.getStockId());
-                                beans.addBean(new StockNamePriceBean(event.getStockId(),event.getData().get(TradingDataAttribute.PRICE)));
+                                beans.addBean(new StockNamePriceBean(event.getStockId(),
+                                        event.getData().get(TradingDataAttribute.PRICE)));
                             } finally {
                                 getSession().unlock();
                             }
@@ -542,70 +623,23 @@ public class DataPlaybackMainView extends Panel implements Observer {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 
-
-//
-//                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
-//
-//                try {
-//                    //TODO - what if there were multiple serieses?
-//
-//                    if (series.getData().size() > OHLC_CHART_LENGTH) {
-//
-//                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
-//                                getData().get(TradingDataAttribute.PRICE)),true,true);
-//                    } else {
-//                        series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
-//                                getData().get(TradingDataAttribute.PRICE)));
-//                    }
-//
-//                    ohlcChart.setImmediate(true);
-//
-//
-//
-//                } catch (GameFinishedException e) {
-//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                }
-
-
             }
         });
 
-        content.addComponent(nextDayB, 1, 2);
-        content.setComponentAlignment(nextDayB, Alignment.MIDDLE_CENTER);
+        //only add if it's an OHLC game
+        if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
 
-        //Main chart
-        HorizontalLayout chartContainer = new HorizontalLayout();
-        chartContainer.setWidth(95, Unit.PERCENTAGE);
-
-        //if the game type is OHLC
-        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
-            ohlcChart = buildOHLCChart();
-            chartContainer.addComponent(ohlcChart);
-            chartContainer.setComponentAlignment(ohlcChart, Alignment.MIDDLE_CENTER);
+            buttonsBar.addComponent(nextDayB);
         }
-        //if the game type is ticker data based
-        else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED) {
-            tickerChart = buildTickerChart();
-            chartContainer.addComponent(tickerChart);
-            chartContainer.setComponentAlignment(tickerChart, Alignment.MIDDLE_CENTER);
+        buttonsBar.addComponent(buySellButton);
+        formContent.addComponent(buttonsBar);
+        formContent.setComponentAlignment(buttonsBar,Alignment.BOTTOM_RIGHT);
+        //content.setComponentAlignment(nextDayB, Alignment.MIDDLE_CENTER);
 
-        }
-        content.addComponent(chartContainer, 0, 1, 2, 1);
-        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
-
-        //Stock price table
-        stockPriceTable=(Table)setupStockPriceTable();
-        content.addComponent(stockPriceTable,0,2);
-        content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
-
-
-
-        this.setContent(content);
-
-
+        return formContent;
     }
 
-    public Component setupStockPriceTable(){
+    private Table setupStockPriceTable(){
 
         BeanContainer<String,StockNamePriceBean> beans =
                 new BeanContainer<String,StockNamePriceBean>(StockNamePriceBean.class);
@@ -639,10 +673,12 @@ public class DataPlaybackMainView extends Panel implements Observer {
                         try {
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
-                                dSeries.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)), true, true);
+                                dSeries.add(new DataSeriesItem(event.getTime(),
+                                        event.getData().get(TradingDataAttribute.PRICE)), true, true);
 
                             } else {
-                                dSeries.add(new DataSeriesItem(event.getTime(), event.getData().get(TradingDataAttribute.PRICE)));
+                                dSeries.add(new DataSeriesItem(event.getTime(),
+                                        event.getData().get(TradingDataAttribute.PRICE)));
 
                             }
                             tickerChart.setImmediate(true);
@@ -666,7 +702,8 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 getSession().lock();
                 try {
                     beans.removeItem(event.getStockId());
-                    beans.addBean(new StockNamePriceBean(event.getStockId(),event.getData().get(TradingDataAttribute.PRICE)));
+                    beans.addBean(new StockNamePriceBean(event.getStockId(),
+                            event.getData().get(TradingDataAttribute.PRICE)));
                 } finally {
                     getSession().unlock();
                 }
