@@ -105,8 +105,9 @@ public class ParameterAddView implements WizardStep, Upload.SucceededListener, U
             // Open the file for writing.
             file = new File(filename);
             fos = new FileOutputStream(file);
+            String newParameter = newParamField.getValue();
 
-            addParameter(newParamField.getValue(),file.getAbsolutePath());
+            addParameter(newParameter,file.getAbsolutePath());
             newParamField.setValue("");
 
         } catch (final java.io.FileNotFoundException e) {

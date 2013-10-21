@@ -90,7 +90,6 @@ public class ParameterSelectView implements WizardStep{
             return false;
         }
         else{
-
             return true;
         }
     }

@@ -30,7 +30,7 @@ import org.vaadin.teemu.wizards.WizardStep;
  */
 public class StockSelectView implements WizardStep{
 
-    String selectedStock;
+    String selectedStock = null;
     Select stockSelectList;
     VerticalLayout content;
 
@@ -42,6 +42,7 @@ public class StockSelectView implements WizardStep{
         stockSelectList.addItem("SAMP");
         stockSelectList.addItem("GOOG");
         stockSelectList.addItem("IBM");
+        stockSelectList.setValue("GOOG");
 
         stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -57,7 +58,7 @@ public class StockSelectView implements WizardStep{
 
     @Override
     public String getCaption() {
-        return "Select Stocks";
+        return "Select Stock";
     }
 
     @Override
@@ -67,12 +68,16 @@ public class StockSelectView implements WizardStep{
 
     @Override
     public boolean onAdvance() {
+        if(selectedStock == null)
+        {
+            selectedStock = (String) stockSelectList.getValue();
+        }
         return true;
     }
 
     @Override
     public boolean onBack() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     public String getSelectedStock(){
