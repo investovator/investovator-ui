@@ -794,20 +794,43 @@ public class DataPlaybackMainView extends Panel implements Observer {
 //                                    dSeries.remove(item);
 //                                }
 
+                                System.out.println("+++++++++++++++++++++++++++++++++++");
+
+
+                                int k=0;
+                                float totalPer=0;
                                 //add the new percentages
                                 for(String beanId:beans.getItemIds()){
+                                    if(k==beans.getItemIds().size()-1){
+                                        dSeries.add(new DataSeriesItem(beanId,100-totalPer));
+                                    }
+                                    else{
+                                        dSeries.add(new DataSeriesItem(beanId,
+                                                ((beans.getItem(beanId).getBean().getPrice())/total)*100));
 
-                                    dSeries.add(new DataSeriesItem(beanId,
-                                            ((beans.getItem(beanId).getBean().getPrice())/total)*100));
 
+
+                                        System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
+                                        totalPer+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
+
+                                    }
+
+//                                    dSeries.add(new DataSeriesItem(beanId,
+//                                            ((beans.getItem(beanId).getBean().getPrice())/total)*100));
+//
+//                                    System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
+                                    //k+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
+                                    k++;
                                 }
+                                System.out.println("+++++++++++++++++++++++++++++++++++");
+                                System.out.println(k);
 
 
                                 stockPieChart.setImmediate(true);
 
-                                System.out.println(event.getStockId());
-                                System.out.println((event.getData().get(TradingDataAttribute.PRICE))/10);
-                                System.out.println("---------------------");
+//                                System.out.println(event.getStockId());
+//                                System.out.println((event.getData().get(TradingDataAttribute.PRICE))/10);
+//                                System.out.println("---------------------");
 
                             } finally {
                                 getSession().unlock();
