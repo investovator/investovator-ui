@@ -290,7 +290,11 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             dateRangeType.addValueChangeListener(new Property.ValueChangeListener() {
                 @Override
                 public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                    setDateRange();
+                    try {
+                        setDateRange();
+                    } catch (DataAccessException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
 
 
                 }
@@ -299,7 +303,11 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
             //set selectable date range
-            setDateRange();
+            try {
+                setDateRange();
+            } catch (DataAccessException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             return content;
         }
 
@@ -320,7 +328,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
 
-    private void setDateRange(){
+    private void setDateRange() throws DataAccessException {
         Date range[]=null;
 
         //if it is checked

@@ -37,6 +37,7 @@ import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -347,14 +348,15 @@ public class DataPlaybackMainView extends Panel implements Observer {
         if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED && !initialization) {
             //TODO - find a proper place to define attributes
             //define the attributes needed
-            TradingDataAttribute attributes[] = new TradingDataAttribute[2];
+            ArrayList<TradingDataAttribute> attributes = new ArrayList<TradingDataAttribute>();
 
             //just the closing price is enough for now
-            attributes[0] = TradingDataAttribute.DAY;
-            attributes[1] = TradingDataAttribute.PRICE;
+            attributes.add(TradingDataAttribute.DAY);
+            attributes.add(TradingDataAttribute.PRICE);
 
             try {
-                ohlcPLayer = new OHLCDataPLayer(DataPlaybackEngineStates.playingSymbols, attributes);
+                ohlcPLayer = new OHLCDataPLayer(DataPlaybackEngineStates.playingSymbols,
+                        attributes,TradingDataAttribute.PRICE);
                 ohlcPLayer.setStartDate(DataPlaybackEngineStates.gameStartDate);
             } catch (ParseException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -366,15 +368,15 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
             //TODO - find a proper place to define attributes
             //define the attributes needed
-            TradingDataAttribute attributes[] = new TradingDataAttribute[3];
+            ArrayList<TradingDataAttribute> attributes= new ArrayList<TradingDataAttribute>();
 
             //just the closing price is enough for now
-            attributes[0] = TradingDataAttribute.DAY;
-            attributes[1] = TradingDataAttribute.PRICE;
-            attributes[2] = TradingDataAttribute.SHARES;
+            attributes.add(TradingDataAttribute.DAY);
+            attributes.add(TradingDataAttribute.PRICE);
+            attributes.add(TradingDataAttribute.SHARES);
 
             realTimePlayer = new RealTimeDataPlayer(DataPlaybackEngineStates.playingSymbols,
-                    DataPlaybackEngineStates.gameStartDate, attributes);
+                    DataPlaybackEngineStates.gameStartDate, attributes,TradingDataAttribute.PRICE);
 
             //set myself as an observer
             realTimePlayer.setObserver(this);
