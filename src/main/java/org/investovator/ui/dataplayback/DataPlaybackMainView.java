@@ -22,6 +22,7 @@ package org.investovator.ui.dataplayback;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
@@ -29,8 +30,8 @@ import org.investovator.dataplaybackengine.OHLCDataPLayer;
 import org.investovator.dataplaybackengine.RealTimeDataPlayer;
 import org.investovator.dataplaybackengine.events.EventManager;
 import org.investovator.dataplaybackengine.events.StockEvent;
-import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
-import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
+import org.investovator.dataplaybackengine.exceptions.*;
+import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -431,6 +432,8 @@ public class DataPlaybackMainView extends Panel implements Observer {
                     //TODO - what if there were multiple serieses?
                     DataSeries series = (DataSeries) ohlcChart.getConfiguration().getSeries().get(0);
                     try {
+                        //join the game
+                        ohlcPLayer.joinGame();
                         StockEvent[] events=ohlcPLayer.startGame();
                         series.add(new DataSeriesItem(ohlcPLayer.getToday(), events[0].
                                 getData().get(TradingDataAttribute.PRICE)));
@@ -460,11 +463,18 @@ public class DataPlaybackMainView extends Panel implements Observer {
                         }
                     } catch (GameAlreadyStartedException e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    } catch (UserAlreadyJoinedException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
 
                 }
                 //if a ticker based game
                 else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED) {
+                    try {
+                        realTimePlayer.joinGame();
+                    } catch (UserAlreadyJoinedException e) {
+                        Notification.show(e.getMessage());
+                    }
                     //TODO - what if there were multiple serieses?
                     DataSeries series = (DataSeries) tickerChart.getConfiguration().getSeries().get(0);
                     //TODO - how to set resolution?
@@ -534,7 +544,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
         FormLayout form=new FormLayout();
 
         //stocks list
-        ComboBox stocksList=new ComboBox();
+        final ComboBox stocksList=new ComboBox();
         stocksList.setCaption("Stock");
         stocksList.setNullSelectionAllowed(false);
         if(DataPlaybackEngineStates.playingSymbols!=null){
@@ -545,16 +555,16 @@ public class DataPlaybackMainView extends Panel implements Observer {
         stocksList.setWidth("75%");
 
         //side
-        NativeSelect orderSide=new NativeSelect();
+        final NativeSelect orderSide=new NativeSelect();
         orderSide.setCaption("Side");
-        orderSide.addItem("Buy");
-        orderSide.addItem("Sell");
+        orderSide.addItem(OrderType.BUY);
+        orderSide.addItem(OrderType.SELL);
         orderSide.setWidth("90%");
-        orderSide.select("Buy");
+        orderSide.select(OrderType.BUY);
         orderSide.setNullSelectionAllowed(false);
 
         //Quantity
-        TextField quantity=new TextField("Amount");
+        final TextField quantity=new TextField("Amount");
         quantity.setWidth("75%");
 
 
@@ -565,7 +575,52 @@ public class DataPlaybackMainView extends Panel implements Observer {
         formContent.addComponent(form);
 
         HorizontalLayout buttonsBar=new HorizontalLayout();
-        Button buySellButton=new Button("Buy");
+        final Button buySellButton=new Button("Buy");
+        buySellButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+//                Notification.show(stocksList.getValue().toString() + "--" + orderSide.getValue().toString() + "--" + quantity.getValue().toString());
+//                System.out.println();
+
+                if (DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                    try {
+                        Boolean status=ohlcPLayer.executeOrder(stocksList.getValue().toString(),
+                                Integer.parseInt(quantity.getValue().toString()),((OrderType)orderSide.getValue()));
+                        Notification.show(status.toString());
+                    } catch (InvalidOrderException e) {
+                        Notification.show(e.getMessage());
+                    } catch (UserJoinException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                }
+
+                if (DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                    try {
+                        Boolean status=realTimePlayer.executeOrder(stocksList.getValue().toString(),
+                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
+                        Notification.show(status.toString());
+
+                    } catch (InvalidOrderException e) {
+                        Notification.show(e.getMessage());
+                    } catch (UserJoinException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                }
+
+            }});
+
+        orderSide.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                if(valueChangeEvent.getProperty().getValue()==OrderType.BUY){
+                    buySellButton.setCaption("Buy");
+                }
+                else if(valueChangeEvent.getProperty().getValue()==OrderType.SELL){
+                    buySellButton.setCaption("Sell");
+                }
+            }
+        });
 
         Button nextDayB = new Button("Next day");
         nextDayB.addClickListener(new Button.ClickListener() {
@@ -796,7 +851,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
 //                                    dSeries.remove(item);
 //                                }
 
-                                System.out.println("+++++++++++++++++++++++++++++++++++");
+//                                System.out.println("+++++++++++++++++++++++++++++++++++");
 
 
                                 int k=0;
@@ -812,7 +867,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
 
 
-                                        System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
+//                                        System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
                                         totalPer+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
 
                                     }
@@ -824,8 +879,8 @@ public class DataPlaybackMainView extends Panel implements Observer {
                                     //k+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
                                     k++;
                                 }
-                                System.out.println("+++++++++++++++++++++++++++++++++++");
-                                System.out.println(k);
+//                                System.out.println("+++++++++++++++++++++++++++++++++++");
+//                                System.out.println(k);
 
 
                                 stockPieChart.setImmediate(true);
