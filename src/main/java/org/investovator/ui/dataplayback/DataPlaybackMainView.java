@@ -259,6 +259,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
 
+        configuration.getxAxis().setType(AxisType.DATETIME);
+        configuration.getxAxis().setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
                 DataSeries ls = new DataSeries();
@@ -297,6 +301,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
         plotOptions.setDataLabels(new Labels(true));
         plotOptions.setEnableMouseTracking(false);
         configuration.setPlotOptions(plotOptions);
+
+        configuration.getxAxis().setType(AxisType.DATETIME);
+        configuration.getxAxis().setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
 
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
