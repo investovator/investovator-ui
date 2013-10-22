@@ -562,6 +562,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
         orderSide.setWidth("90%");
         orderSide.select(OrderType.BUY);
         orderSide.setNullSelectionAllowed(false);
+        orderSide.setImmediate(true);
 
         //Quantity
         final TextField quantity=new TextField("Amount");
