@@ -715,6 +715,9 @@ public class DataPlaybackMainView extends Panel implements Observer {
         }
         Table table=new Table("Stock Prices",beans);
 
+        //set the column order
+        table.setVisibleColumns(new Object[]{"stockID", "price"});
+
         return table;
     }
 
