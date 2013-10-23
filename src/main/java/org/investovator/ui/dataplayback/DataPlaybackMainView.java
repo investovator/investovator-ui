@@ -81,160 +81,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
         DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
         this.setUpGame(true);
 
-
-        //
-        //
-        ////
-
-//        HorizontalLayout topBar=new HorizontalLayout();
-//        HorizontalLayout topButtonContainer=new HorizontalLayout();
-//        topButtonContainer.setStyleName("sidebar");
-//        topBar.addComponent(topButtonContainer);
-////        topBar.setSizeFull();
-//        //to set the alignment of the buttons
-//        topBar.setComponentAlignment(topButtonContainer, Alignment.TOP_RIGHT);
-//        topButtonContainer.setSizeFull();
-//
-//        content.addComponent(topBar, 1, 0, 2, 0);
-//        content.setComponentAlignment(topBar, Alignment.TOP_RIGHT);
-//
-//        HorizontalLayout chartContainer=new HorizontalLayout();
-//        chartContainer.setWidth(95,Unit.PERCENTAGE);
-////        chartContainer.setHeight(40,Unit.PERCENTAGE);
-//
-//
-//        ohlcChart=buildOHLCChart();
-//        tickerChart=buildTickerChart();
-//
-//        chartContainer.addComponent(tickerChart);
-//        chartContainer.setComponentAlignment(tickerChart,Alignment.MIDDLE_CENTER);
-//
-//        Chart t0=QuickTest.getChart();
-//
-//
-//
-//        content.addComponent(chartContainer, 0, 1, 2, 1);
-//        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
-//
-//
-//        //create the buttons
-//        Button addGameButton=new Button("New Game");
-//        Button playGameButton=new Button("Play Game");
-//        Button pauseGameButton=new Button("Pause Game");
-//        Button stopGameButton=new Button("Stop Game");
-//        topButtonContainer.addComponent(addGameButton);
-//        topButtonContainer.addComponent(playGameButton);
-//        topButtonContainer.addComponent(pauseGameButton);
-//        topButtonContainer.addComponent(stopGameButton);
-//
-//        //set alignments of the buttons
-//        topButtonContainer.setComponentAlignment(addGameButton,Alignment.MIDDLE_RIGHT);
-//        topButtonContainer.setComponentAlignment(playGameButton,Alignment.MIDDLE_RIGHT);
-//        topButtonContainer.setComponentAlignment(pauseGameButton,Alignment.MIDDLE_RIGHT);
-//        topButtonContainer.setComponentAlignment(stopGameButton,Alignment.MIDDLE_RIGHT);
-//
-//        //add the action listeners for buttons
-//        addGameButton.addClickListener(new Button.ClickListener() {
-//            @Override
-//            public void buttonClick(Button.ClickEvent clickEvent) {
-//
-//                 startAddGameWizard();
-//            }
-//        });
-//
-//        playGameButton.addClickListener(new Button.ClickListener() {
-//            @Override
-//            public void buttonClick(Button.ClickEvent clickEvent) {
-//
-//                    //if an OHLC based game
-//                    if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
-//                        //TODO - what if there were multiple serieses?
-//                        DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
-//                        try {
-//                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.startGame()[0].
-//                                    getData().get(TradingDataAttribute.PRICE)));
-//                        } catch (GameAlreadyStartedException e) {
-//                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                        }
-//
-//                    }
-//                    //if a ticker based game
-//                    else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
-//                        //TODO - what if there were multiple serieses?
-//                        DataSeries series=(DataSeries)tickerChart.getConfiguration().getSeries().get(0);
-//                        //TODO - how to set resolution?
-//                            realTimePlayer.startPlayback(1);
-//
-//                    }
-//
-//
-//
-//            }
-//        });
-//
-//          //TODO- implement this??
-////        stopGameButton.addClickListener(new Button.ClickListener() {
-////            @Override
-////            public void buttonClick(Button.ClickEvent clickEvent) {
-////                player.stopPlayback();
-////            }
-////        });
-//
-//
-//
-//
-//        Button nextDayB=new Button("Next day");
-//        nextDayB.addClickListener(new Button.ClickListener() {
-//            @Override
-//            public void buttonClick(Button.ClickEvent clickEvent) {
-//                DataSeries series=(DataSeries)ohlcChart.getConfiguration().getSeries().get(0);
-//
-//                    try {
-//                        //TODO - what if there were multiple serieses?
-//
-//                        if (series.getData().size() > OHLC_CHART_LENGTH) {
-//
-//                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
-//                                    getData().get(TradingDataAttribute.PRICE)),true,true);
-//                        } else {
-//                            series.add(new DataSeriesItem(ohlcPLayer.getToday(),ohlcPLayer.playNextDay()[0].
-//                                    getData().get(TradingDataAttribute.PRICE)));
-//                        }
-//
-//                        ohlcChart.setImmediate(true);
-//
-//
-//
-//                    } catch (GameFinishedException e) {
-//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                    }
-//
-//
-//
-//            }
-//        });
-//
-//        //TODO
-//        content.addComponent(nextDayB, 1, 2);
-//        content.setComponentAlignment(nextDayB, Alignment.MIDDLE_CENTER);
-//
-//
-//        Chart t1=QuickTest.getChart();
-//
-//
-//        //add ticker chart TODO
-////        content.addComponent(t1,0,2);
-////        content.setComponentAlignment(t1,Alignment.MIDDLE_CENTER);
-//
-////        Chart t2=QuickTest.getChart();
-//
-////        content.addComponent(t1,1,2);
-////        content.setComponentAlignment(t1,Alignment.MIDDLE_CENTER);
-////
-////        content.addComponent(t2,2,2);
-////        content.setComponentAlignment(t2,Alignment.MIDDLE_CENTER);
-//
-//        this.setContent(content);
     }
 
 
@@ -394,6 +240,54 @@ public class DataPlaybackMainView extends Panel implements Observer {
         }
 
         //Top buttons
+        Component topBar=setupTopButtonBar();
+        content.addComponent(topBar, 1, 0, 2, 0);
+        content.setComponentAlignment(topBar, Alignment.TOP_RIGHT);
+
+
+        //Main chart
+        HorizontalLayout chartContainer = new HorizontalLayout();
+        chartContainer.setWidth(95, Unit.PERCENTAGE);
+
+        //if the game type is OHLC
+        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
+            ohlcChart = buildOHLCChart();
+            chartContainer.addComponent(ohlcChart);
+            chartContainer.setComponentAlignment(ohlcChart, Alignment.MIDDLE_CENTER);
+        }
+        //if the game type is ticker data based
+        else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED) {
+            tickerChart = buildTickerChart();
+            chartContainer.addComponent(tickerChart);
+            chartContainer.setComponentAlignment(tickerChart, Alignment.MIDDLE_CENTER);
+
+        }
+        content.addComponent(chartContainer, 0, 1, 2, 1);
+        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
+
+        //Stock price table
+        stockPriceTable=setupStockPriceTable();
+        content.addComponent(stockPriceTable,0,2);
+        content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
+
+        //buy-sell window
+        Component buySellWindow=setupBuySellForm();
+        content.addComponent(buySellWindow,1,2);
+//        content.setComponentAlignment(buySellWindow,Alignment.BOTTOM_CENTER);
+
+        //pie-chart
+        stockPieChart =setupPieChart();
+        content.addComponent(stockPieChart,2,2);
+
+
+
+        this.setContent(content);
+
+
+    }
+
+    private Component setupTopButtonBar(){
+
         HorizontalLayout topBar = new HorizontalLayout();
         HorizontalLayout topButtonContainer = new HorizontalLayout();
         topButtonContainer.setStyleName("sidebar");
@@ -403,8 +297,7 @@ public class DataPlaybackMainView extends Panel implements Observer {
         topBar.setComponentAlignment(topButtonContainer, Alignment.TOP_RIGHT);
         topButtonContainer.setSizeFull();
 
-        content.addComponent(topBar, 1, 0, 2, 0);
-        content.setComponentAlignment(topBar, Alignment.TOP_RIGHT);
+
 
         //create the buttons
         Button addGameButton = new Button("New Game");
@@ -494,55 +387,15 @@ public class DataPlaybackMainView extends Panel implements Observer {
             }
         });
 
-        //TODO- implement this??
-//        stopGameButton.addClickListener(new Button.ClickListener() {
-//            @Override
-//            public void buttonClick(Button.ClickEvent clickEvent) {
-//                player.stopPlayback();
-//            }
-//        });
+//        TODO- implement this??
+        stopGameButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                realTimePlayer.stopPlayback();
+            }
+        });
 
-
-
-
-        //Main chart
-        HorizontalLayout chartContainer = new HorizontalLayout();
-        chartContainer.setWidth(95, Unit.PERCENTAGE);
-
-        //if the game type is OHLC
-        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
-            ohlcChart = buildOHLCChart();
-            chartContainer.addComponent(ohlcChart);
-            chartContainer.setComponentAlignment(ohlcChart, Alignment.MIDDLE_CENTER);
-        }
-        //if the game type is ticker data based
-        else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED) {
-            tickerChart = buildTickerChart();
-            chartContainer.addComponent(tickerChart);
-            chartContainer.setComponentAlignment(tickerChart, Alignment.MIDDLE_CENTER);
-
-        }
-        content.addComponent(chartContainer, 0, 1, 2, 1);
-        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
-
-        //Stock price table
-        stockPriceTable=setupStockPriceTable();
-        content.addComponent(stockPriceTable,0,2);
-        content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
-
-        //buy-sell window
-        Component buySellWindow=setupBuySellForm();
-        content.addComponent(buySellWindow,1,2);
-//        content.setComponentAlignment(buySellWindow,Alignment.BOTTOM_CENTER);
-
-        //pie-chart
-        stockPieChart =setupPieChart();
-        content.addComponent(stockPieChart,2,2);
-
-
-
-        this.setContent(content);
-
+        return topBar;
 
     }
 
@@ -730,7 +583,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
     }
 
     private Chart setupPieChart(){
-//        VerticalLayout layout=new VerticalLayout();
 
         Chart chart = new Chart(ChartType.PIE);
 
@@ -756,16 +608,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 series.add(new DataSeriesItem(stock, 0));
             }
         }
-
-//        series.add(new DataSeriesItem("Firefox", 45.0));
-//        series.add(new DataSeriesItem("IE", 26.8));
-//        DataSeriesItem chrome = new DataSeriesItem("Chrome", 12.8);
-//        chrome.setSliced(true);
-//        chrome.setSelected(true);
-//        series.add(chrome);
-//        series.add(new DataSeriesItem("Safari", 8.5));
-//        series.add(new DataSeriesItem("Opera", 6.2));
-//        series.add(new DataSeriesItem("Others", 0.7));
         conf.setSeries(series);
 
         chart.drawChart(conf);
@@ -861,12 +703,6 @@ public class DataPlaybackMainView extends Panel implements Observer {
 
                 }
 
-                //remove every stock percentage
-//                                for(DataSeriesItem item:dSeries.getData()){
-//                                    dSeries.remove(item);
-//                                }
-
-//                                System.out.println("+++++++++++++++++++++++++++++++++++");
 
 
                 int k=0;
@@ -917,26 +753,11 @@ public class DataPlaybackMainView extends Panel implements Observer {
         if (arg instanceof StockEvent) {
             final StockEvent event = (StockEvent) arg;
 
+            //update the ticker chart
             updateTickerChart(event);
-
 
             //update the table
             updateStockPriceTable(event);
-
-
-
-
-
-
-
-
-//                    }
-
-
-
-
-
-
         }
         //if the game has stopped
         else if (arg == EventManager.RealTimePlayerStates.GAME_OVER) {
