@@ -776,89 +776,92 @@ public class DataPlaybackMainView extends Panel implements Observer {
         return chart;
     }
 
+    private void updateTickerChart(StockEvent event){
 
-    @Override
-    public void update(Observable o, Object arg) {
-        //if this is a stock price update
-        if (arg instanceof StockEvent) {
-            final StockEvent event = (StockEvent) arg;
+        //iterate every series in the chart at the moment
+        for (Series series : tickerChart.getConfiguration().getSeries()) {
+            DataSeries dSeries = (DataSeries) series;
+            //if this series matches the stock events stock
+            if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-            //iterate every series in the chart at the moment
-            for (Series series : tickerChart.getConfiguration().getSeries()) {
-                DataSeries dSeries = (DataSeries) series;
-                //if this series matches the stock events stock
-                if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
+                if (tickerChart.isConnectorEnabled()) {
+                    getSession().lock();
+                    try {
+                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
-                    if (tickerChart.isConnectorEnabled()) {
-                        getSession().lock();
-                        try {
-                            if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
+                            dSeries.add(new DataSeriesItem(event.getTime(),
+                                    event.getData().get(TradingDataAttribute.PRICE)), true, true);
 
-                                dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.PRICE)), true, true);
+                        } else {
+                            dSeries.add(new DataSeriesItem(event.getTime(),
+                                    event.getData().get(TradingDataAttribute.PRICE)));
 
-                            } else {
-                                dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.PRICE)));
-
-                            }
-                            tickerChart.setImmediate(true);
-
-                        } finally {
-                            getSession().unlock();
                         }
+                        tickerChart.setImmediate(true);
+
+                    } finally {
+                        getSession().unlock();
+                    }
+                }
+
+
+            }
+
+        }
+
+    }
+
+    private void updateStockPriceTable(StockEvent event){
+
+        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                stockPriceTable.getContainerDataSource();
+
+
+        if (stockPriceTable.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+                beans.removeItem(event.getStockId());
+                beans.addBean(new StockNamePriceBean(event.getStockId(),
+                        event.getData().get(TradingDataAttribute.PRICE)));
+            } finally {
+                getSession().unlock();
+            }
+        }
+
+        //update the pie-chart
+        updatePieChart(event,beans);
+
+    }
+
+    private void updatePieChart(StockEvent event, BeanContainer<String,StockNamePriceBean> beans){
+
+        //since we know that there's only one data series
+        DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
+
+        //find the matching Data item
+//            DataSeriesItem item=dSeries.get(event.getStockId());
+//                    if(item.getName().equalsIgnoreCase(event.getStockId())){
+        if (stockPieChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+                //TODO - assumes there's only one stock from each type
+
+                int total=0;
+                //get the values from the stock price table
+                for(String beanId:beans.getItemIds()){
+                    //add the new price for the updated stock
+                    if(beanId.equalsIgnoreCase(event.getStockId())){
+                        total+=event.getData().get(TradingDataAttribute.PRICE);
+
+                    }
+                    else{
+                        total+=beans.getItem(beanId).getBean().getPrice();
                     }
 
 
                 }
 
-            }
-
-            //update the table
-            BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
-                    stockPriceTable.getContainerDataSource();
-
-
-            if (stockPriceTable.isConnectorEnabled()) {
-                getSession().lock();
-                try {
-                    beans.removeItem(event.getStockId());
-                    beans.addBean(new StockNamePriceBean(event.getStockId(),
-                            event.getData().get(TradingDataAttribute.PRICE)));
-                } finally {
-                    getSession().unlock();
-                }
-            }
-
-            //update the pie-chart
-
-            //since we know that there's only one data series
-                DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
-
-                //find the matching Data item
-//            DataSeriesItem item=dSeries.get(event.getStockId());
-//                    if(item.getName().equalsIgnoreCase(event.getStockId())){
-                        if (stockPieChart.isConnectorEnabled()) {
-                            getSession().lock();
-                            try {
-                                //TODO - assumes there's only one stock from each type
-
-                                int total=0;
-                                //get the values from the stock price table
-                                for(String beanId:beans.getItemIds()){
-                                    //add the new price for the updated stock
-                                    if(beanId.equalsIgnoreCase(event.getStockId())){
-                                       total+=event.getData().get(TradingDataAttribute.PRICE);
-
-                                    }
-                                    else{
-                                        total+=beans.getItem(beanId).getBean().getPrice();
-                                    }
-
-
-                                }
-
-                                //remove every stock percentage
+                //remove every stock percentage
 //                                for(DataSeriesItem item:dSeries.getData()){
 //                                    dSeries.remove(item);
 //                                }
@@ -866,45 +869,63 @@ public class DataPlaybackMainView extends Panel implements Observer {
 //                                System.out.println("+++++++++++++++++++++++++++++++++++");
 
 
-                                int k=0;
-                                float totalPer=0;
-                                //add the new percentages
-                                for(String beanId:beans.getItemIds()){
-                                    if(k==beans.getItemIds().size()-1){
-                                        dSeries.add(new DataSeriesItem(beanId,100-totalPer));
-                                    }
-                                    else{
-                                        dSeries.add(new DataSeriesItem(beanId,
-                                                ((beans.getItem(beanId).getBean().getPrice())/total)*100));
+                int k=0;
+                float totalPer=0;
+                //add the new percentages
+                for(String beanId:beans.getItemIds()){
+                    if(k==beans.getItemIds().size()-1){
+                        dSeries.add(new DataSeriesItem(beanId,100-totalPer));
+                    }
+                    else{
+                        dSeries.add(new DataSeriesItem(beanId,
+                                ((beans.getItem(beanId).getBean().getPrice())/total)*100));
 
 
 
 //                                        System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
-                                        totalPer+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
+                        totalPer+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
 
-                                    }
+                    }
 
 //                                    dSeries.add(new DataSeriesItem(beanId,
 //                                            ((beans.getItem(beanId).getBean().getPrice())/total)*100));
 //
 //                                    System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
-                                    //k+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
-                                    k++;
-                                }
+                    //k+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
+                    k++;
+                }
 //                                System.out.println("+++++++++++++++++++++++++++++++++++");
 //                                System.out.println(k);
 
 
-                                stockPieChart.setImmediate(true);
+                stockPieChart.setImmediate(true);
 
 //                                System.out.println(event.getStockId());
 //                                System.out.println((event.getData().get(TradingDataAttribute.PRICE))/10);
 //                                System.out.println("---------------------");
 
-                            } finally {
-                                getSession().unlock();
-                            }
-                        }
+            } finally {
+                getSession().unlock();
+            }
+        }
+    }
+
+
+    @Override
+    public void update(Observable o, Object arg) {
+        //if this is a stock price update
+        if (arg instanceof StockEvent) {
+            final StockEvent event = (StockEvent) arg;
+
+            updateTickerChart(event);
+
+
+            //update the table
+            updateStockPriceTable(event);
+
+
+
+
 
 
 
