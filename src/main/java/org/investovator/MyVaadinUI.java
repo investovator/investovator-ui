@@ -53,4 +53,18 @@ public class MyVaadinUI extends UI
 //        main.main(v);
     }
 
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    private String user;
+
+
+
+
+
 }

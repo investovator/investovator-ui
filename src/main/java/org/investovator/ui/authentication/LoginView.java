@@ -34,7 +34,7 @@ import org.investovator.ui.utils.UIConstants;
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
-                            boolean loginStatus = authenticator.authenticate();
+                            boolean loginStatus = authenticator.authenticate(userField.getValue(), pwdField.getValue());
                             if(loginStatus){
                                 getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
                             }
