@@ -3,6 +3,7 @@ package org.investovator.ui.agentgaming;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.LinkedHashMap;
 
@@ -27,8 +28,8 @@ public class AgentDashboard extends BasicDashboard {
     }
 
     @Override
-    public LinkedHashMap<String, Panel> getMenuItems() {
-        LinkedHashMap<String, Panel> menuList = new LinkedHashMap<String, Panel>();
+    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
+        LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
         mainDashView = new DashboardPlayingView();
         menuList.put("my dashboard", mainDashView);
         return menuList;
