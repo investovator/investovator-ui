@@ -20,7 +20,7 @@ package org.investovator.ui.nngaming.config;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Select;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.VerticalLayout;
 import org.vaadin.teemu.wizards.WizardStep;
 
@@ -31,11 +31,11 @@ import org.vaadin.teemu.wizards.WizardStep;
 public class StockSelectView implements WizardStep{
 
     String selectedStock = null;
-    Select stockSelectList;
+    ListSelect stockSelectList;
     VerticalLayout content;
 
     public StockSelectView() {
-        stockSelectList = new Select("Select Stock for Game");
+        stockSelectList = new ListSelect("Select Stock for Game");
 
         stockSelectList.setNullSelectionAllowed(false);
 
