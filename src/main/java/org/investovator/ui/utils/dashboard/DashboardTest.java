@@ -12,6 +12,8 @@ import java.util.LinkedHashMap;
  * @version: ${Revision}
  *
  * Just a test class to test the dashboard inheritance
+ *
+ * TODO - delete this class, this is only a test
  */
 public class DashboardTest extends BasicDashboard {
 
@@ -21,8 +23,6 @@ public class DashboardTest extends BasicDashboard {
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        super.setupUI(viewChangeEvent);
-
         System.out.println("Kewl!");
     }
 

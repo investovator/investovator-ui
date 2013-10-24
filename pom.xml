@@ -6,7 +6,7 @@
     <artifactId>investovator-ui</artifactId>
     <packaging>war</packaging>
     <version>0.1</version>
-    <name>Vaadin Web Application</name>
+    <name>investovator - Front end</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -74,6 +74,15 @@
             <artifactId>vaadin-charts</artifactId>
             <version>1.1.2</version>
         </dependency>
+
+        <!--vaadin wizards plugin-->
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>wizards-for-vaadin</artifactId>
+            <version>1.0.0-beta1</version>
+        </dependency>
+        <!--end of vaadin wizards plugin-->
+
 
         <dependency>
             <groupId>com.vaadin</groupId>
