@@ -2,6 +2,7 @@ package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
+import com.vaadin.ui.Notification;
 import org.investovator.ui.GlobalView;
 import org.investovator.controller.config.ConfigGenerator;
 import org.vaadin.teemu.wizards.Wizard;
@@ -130,6 +131,8 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
         configGenerator.createConfigs();
 
         System.setProperty("jabm.config", mainXmlOutputFile);
+
+        Notification.show("Configuration for agent game created");
      }
 
     @Override
