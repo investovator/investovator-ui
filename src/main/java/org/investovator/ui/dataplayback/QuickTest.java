@@ -25,6 +25,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.LinkedHashMap;
 
@@ -38,15 +39,20 @@ public class QuickTest extends BasicDashboard {
     }
 
     @Override
-    public LinkedHashMap<String, Panel> getMenuItems() {
+    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
 
         VerticalLayout panelContent2 = new VerticalLayout();
         panelContent2.addComponent(getChart());
-        Panel panel=new Panel();
+        DashboardPanel panel=new DashboardPanel() {
+            @Override
+            public void onEnter() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
         panel.setContent(panelContent2);
 
 
-        LinkedHashMap<String,Panel> map=new LinkedHashMap<String, Panel>();
+        LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
         map.put("test",panel);
 
         return map;  //To change body of implemented methods use File | Settings | File Templates.

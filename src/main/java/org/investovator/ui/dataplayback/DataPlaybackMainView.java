@@ -39,6 +39,7 @@ import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ import java.util.Observer;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DataPlaybackMainView extends Panel implements Observer {
+public class DataPlaybackMainView extends DashboardPanel implements Observer {
 
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
@@ -774,5 +775,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
         }
 
 
+    }
+
+    @Override
+    public void onEnter() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
