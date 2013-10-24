@@ -26,9 +26,9 @@ import com.vaadin.addon.charts.model.PlotOptionsSpline;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
+import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.jasa.api.JASAFacade;
 import org.investovator.jasa.api.MarketFacade;
-import org.investovator.ui.agentgaming.adapters.CompanyDataTestImpl;
 
 /**
  * @author Amila Surendra
@@ -40,7 +40,7 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
     //External Data
     ReportHelper reportHelper;
     MarketFacade simulationFacade = JASAFacade.getMarketFacade();
-    CompanyData companyData = new CompanyDataTestImpl();
+    CompanyData companyData = new CompanyDataImpl();
 
 
     //Layout Components

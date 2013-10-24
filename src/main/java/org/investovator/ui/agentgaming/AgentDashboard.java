@@ -24,7 +24,6 @@ public class AgentDashboard extends BasicDashboard {
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        super.setupUI(viewChangeEvent);
     }
 
     @Override
