@@ -2,6 +2,7 @@ package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
+import com.vaadin.ui.Notification;
 import org.investovator.ui.GlobalView;
 import org.investovator.controller.config.ConfigGenerator;
 import org.vaadin.teemu.wizards.Wizard;
@@ -29,6 +30,8 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
     AgentSelectView agentSelect;
     AgentPctView agentPct;
     OtherSimulationSettingsView otherSettings;
+
+    private String mainXmlOutputFile;
 
     public AgentGamingView() {
 
@@ -68,17 +71,20 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
         if (step instanceof AgentSelectView) {
             String outputPath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/config";
+            mainXmlOutputFile = outputPath + "/main.xml" ;
             configGenerator = new ConfigGenerator(stockSelect.getSelectedStocks(), outputPath);
 
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
             String templateFile = basepath + "/WEB-INF/templates/model_template.xml";
             String reportTemplateFile =  basepath + "/WEB-INF/templates/report_template.xml";
             String mainTemplateFile =  basepath + "/WEB-INF/templates/main_template.xml";
+            String beanTemplateFile =  basepath + "/WEB-INF/templates/bean-config-template.xml";
 
 
             configGenerator.setModelTemlpateFile(templateFile);
             configGenerator.setReportTemlpateFile(reportTemplateFile);
             configGenerator.setMainTemplateFile(mainTemplateFile);
+            configGenerator.setSpringBeanConfigTemplate(beanTemplateFile);
 
             String[] availableAgents = configGenerator.getSupportedAgentTypes();
 
@@ -124,6 +130,9 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
         configGenerator.createConfigs();
 
+        System.setProperty("jabm.config", mainXmlOutputFile);
+
+        Notification.show("Configuration for agent game created");
      }
 
     @Override

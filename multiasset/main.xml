@@ -17,7 +17,7 @@
     <import resource="model-ibm.xml"/>
     <import resource="report-ibm.xml"/>
 
-    <bean id="simulationManager" class="org.investovator.multiasset.simulation.HeadlessMultiAssetSimulationManager"
+    <bean id="simulationManager" class="org.investovator.jasa.multiasset.simulation.HeadlessMultiAssetSimulationManager"
           scope="singleton">
         <property name="simulations">
             <list>
