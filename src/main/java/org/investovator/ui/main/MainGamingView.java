@@ -57,6 +57,13 @@ public class MainGamingView extends GlobalView{
                 Notification.show("No deployed game found. Contact Admin", Notification.Type.ERROR_MESSAGE);
 
             }
+            //if a game is running
+            else if(gameState==GameStates.RUNNING){
+                //if it's a data playback
+                if(gameMode==GameModes.PAYBACK_ENG){
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+                }
+            }
         }
 
 
