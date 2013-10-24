@@ -13,6 +13,11 @@ import javax.swing.*;
  */
 public class Authenticator {
 
+    public enum UserType{
+        ADMIN,
+        ORDINARY
+    }
+
     private static Authenticator authenticator;
     private boolean loggedIn;
 
@@ -29,7 +34,7 @@ public class Authenticator {
     }
 
     public boolean isLoggedIn() {
-        return true;
+        return loggedIn;
     }
 
     private void setLoggedIn(boolean loggedIn) {
@@ -37,10 +42,33 @@ public class Authenticator {
     }
 
     public boolean authenticate(String username, String password){
+        boolean success=false;
 
-        ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser(username);
+        if(username.isEmpty()){
+            if(password.isEmpty()){
+                //set the user as a standard user
+                ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("testUser1");
+                success=true;
 
-        setLoggedIn(true);
+            }
+
+//            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("");
+//            success=true;
+
+
+        }
+        //user name for admin
+        else if(username.equalsIgnoreCase("a")){
+
+            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("admin");
+            success=true;
+        }
+
+        if(success){
+
+            setLoggedIn(true);
+        }
+
         return isLoggedIn();
 
     }
@@ -49,6 +77,17 @@ public class Authenticator {
 
         //TODO: implement after getting rajja's user API
         return ((MyVaadinUI)MyVaadinUI.getCurrent()).getUser();
+    }
+
+    public UserType getMyPrivileges(){
+        String user=((MyVaadinUI)MyVaadinUI.getCurrent()).getUser();
+        if(user.equalsIgnoreCase("admin")){
+            return UserType.ADMIN;
+        }
+        else {
+            return UserType.ORDINARY;
+        }
+
     }
 
 }

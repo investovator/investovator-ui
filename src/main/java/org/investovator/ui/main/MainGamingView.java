@@ -4,6 +4,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
+import org.investovator.MyVaadinUI;
 import org.investovator.ui.GlobalView;
 import org.investovator.ui.utils.UIConstants;
 
@@ -62,7 +63,7 @@ public class MainGamingView extends GlobalView{
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        Notification.show("Welcome to Main Gaming Engine");
+        Notification.show(((MyVaadinUI)MyVaadinUI.getCurrent()).getUser());
     }
 
 
