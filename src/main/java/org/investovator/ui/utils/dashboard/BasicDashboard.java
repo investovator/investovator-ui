@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
  * @version: ${Revision}
  *
  *
- * This is a sample template for a dashboard. setUpButtons() is the only method a developer needs to override.
+ * This is a sample template for a dashboard. getMenuItems() is the only method a developer needs to override.
  *
  */
 public abstract class BasicDashboard extends GlobalView {
@@ -30,6 +30,8 @@ public abstract class BasicDashboard extends GlobalView {
     private LinkedHashMap<String, Panel> menuItems;
 
     public BasicDashboard(String name) {
+        super();
+
         this.menu = new CssLayout();
         this.root = new CssLayout();
         this.content = new CssLayout();
@@ -41,10 +43,6 @@ public abstract class BasicDashboard extends GlobalView {
         setUpBasicDashboard(name);
     }
 
-    @Override
-    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        Notification.show("Welcome to Data Playback Engine");
-    }
 
     /**
      * Guidelines - Create your components here. The keys you add to hash map
@@ -112,7 +110,7 @@ public abstract class BasicDashboard extends GlobalView {
                                         new ThemeResource("img/profile-pic.png"));
                                 profilePic.setWidth("34px");
                                 addComponent(profilePic);
-                                Label userName = new Label("User");
+                                Label userName = new Label(authenticator.getCurrentUser());
                                 userName.setSizeUndefined();
                                 addComponent(userName);
 
