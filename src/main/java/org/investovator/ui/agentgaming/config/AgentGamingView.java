@@ -3,8 +3,15 @@ package org.investovator.ui.agentgaming.config;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Window;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.ui.GlobalView;
 import org.investovator.controller.config.ConfigGenerator;
+import org.investovator.ui.dataplayback.util.ProgressWindow;
+import org.investovator.ui.main.MainGamingView;
+import org.investovator.ui.utils.UIConstants;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
@@ -132,8 +139,29 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
         System.setProperty("jabm.config", mainXmlOutputFile);
 
-        Notification.show("Configuration for agent game created");
-     }
+        //Notification.show("Configuration for agent game created");
+
+        ProgressWindow test = new ProgressWindow("Creating Agent Game");
+        GameControllerFacade.getInstance().registerListener(test);
+        getUI().addWindow(test);
+
+        test.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+            }
+        });
+
+
+        try {
+            GameControllerFacade.getInstance().startGame(GameModes.AGENT_GAME,null);
+        } catch (GameProgressingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     @Override
     public void wizardCancelled(WizardCancelledEvent event) {
