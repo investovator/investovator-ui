@@ -44,6 +44,26 @@ public abstract class BasicDashboard extends GlobalView {
     }
 
 
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+
+        if(!authenticator.isLoggedIn()){
+            getUI().getNavigator().navigateTo("");
+        }
+
+        if(menuItems.isEmpty()){
+            setupUI(viewChangeEvent);
+            return;
+        }
+
+        content.removeAllComponents();
+        DashboardPanel addedPanel = menuItems.get(menuItems.keySet().iterator().next());
+        addedPanel.addStyleName("selected");
+        content.addComponent(addedPanel);
+        addedPanel.onEnter();
+    }
+
+
     /**
      * Guidelines - Create your components here. The keys you add to hash map
      * will be used as the text in the menu buttons.
@@ -186,12 +206,17 @@ public abstract class BasicDashboard extends GlobalView {
             });
 
             menu.addComponent(b);
+
+
             //select the first item in the menu initially
             if(menu.getComponentCount()==1){
                 b.addStyleName("selected");
-                content.removeAllComponents();
-                content.addComponent(menuItems.get(b.getCaption().toLowerCase()));
+                //content.removeAllComponents();
+                //DashboardPanel addedPanel =menuItems.get(b.getCaption().toLowerCase());
+                //content.addComponent(addedPanel);
+                //addedPanel.onEnter();
             }
+
         }
 
 
