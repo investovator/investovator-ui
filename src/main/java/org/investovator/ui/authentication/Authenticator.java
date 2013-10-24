@@ -39,4 +39,10 @@ public class Authenticator {
 
     }
 
+    public String getCurrentUser(){
+
+        //TODO: implement after getting rajja's user API
+        return "testUser1";
+    }
+
 }
