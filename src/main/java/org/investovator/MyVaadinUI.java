@@ -1,5 +1,6 @@
 package org.investovator;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -18,6 +19,7 @@ import org.investovator.ui.utils.UIConstants;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("dashboard")
+@PreserveOnRefresh
 @SuppressWarnings("serial")
 @Push
 public class MyVaadinUI extends UI
