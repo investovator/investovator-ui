@@ -12,6 +12,8 @@ import java.util.LinkedHashMap;
  * @version: ${Revision}
  *
  * Just a test class to test the dashboard inheritance
+ *
+ * TODO - delete this class, this is only a test
  */
 public class DashboardTest extends BasicDashboard {
 

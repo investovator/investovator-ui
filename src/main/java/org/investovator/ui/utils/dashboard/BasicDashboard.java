@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
  * @version: ${Revision}
  *
  *
- * This is a sample template for a dashboard. setUpButtons() is the only method a developer needs to override.
+ * This is a sample template for a dashboard. getMenuItems() is the only method a developer needs to override.
  *
  */
 public abstract class BasicDashboard extends GlobalView {
