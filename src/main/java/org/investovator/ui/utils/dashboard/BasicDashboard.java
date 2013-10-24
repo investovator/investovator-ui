@@ -27,7 +27,7 @@ public abstract class BasicDashboard extends GlobalView {
     private CssLayout content;
 
     //used to store the buttons of the menu bar and their respective panels
-    private LinkedHashMap<String, Panel> menuItems;
+    private LinkedHashMap<String, DashboardPanel> menuItems;
 
     public BasicDashboard(String name) {
         super();
@@ -51,7 +51,7 @@ public abstract class BasicDashboard extends GlobalView {
      * Also the icon names for those buttons should be in the form of "icon-<KEY_NAME>"
      * @return
      */
-    public abstract LinkedHashMap<String, Panel> getMenuItems();
+    public abstract LinkedHashMap<String, DashboardPanel> getMenuItems();
 
     /**
      * Draws the basic dashboard components such as menus, backgrounds, buttons
@@ -178,7 +178,9 @@ public abstract class BasicDashboard extends GlobalView {
                     //navigate to the view
 
                     content.removeAllComponents();
-                    content.addComponent(menuItems.get(clickEvent.getButton().getCaption().toLowerCase()));
+                    DashboardPanel addedPanel = menuItems.get(clickEvent.getButton().getCaption().toLowerCase());
+                    content.addComponent(addedPanel);
+                    addedPanel.onEnter();
 
                 }
             });
