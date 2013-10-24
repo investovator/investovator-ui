@@ -1,8 +1,6 @@
 package org.investovator.ui.dataplayback.util;
 
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import org.investovator.controller.utils.events.GameCreationProgressChanged;
 import org.investovator.controller.utils.events.GameEvent;
 import org.investovator.controller.utils.events.GameEventListener;
@@ -19,11 +17,23 @@ public class ProgressWindow extends Window implements GameEventListener {
     public ProgressWindow(String caption) {
         super(caption);
 
+        VerticalLayout content = new VerticalLayout();
+
         progressBar = new ProgressBar(new Float(0.0));
-        progressBar.setWidth("100px");
+        progressBar.setWidth("150px");
         progressBar.setEnabled(true);
         progressBar.setIndeterminate(false);
-        this.setContent(progressBar);
+        progressBar.setStyleName("v-progressbar");
+
+        content.addComponent(progressBar);
+        content.setComponentAlignment(progressBar, Alignment.MIDDLE_CENTER);
+
+
+        this.setContent(content);
+        this.center();
+        this.setResizable(false);
+        this.setModal(true);
+        this.setClosable(false);
     }
 
     @Override
@@ -32,6 +42,7 @@ public class ProgressWindow extends Window implements GameEventListener {
         if (event instanceof GameCreationProgressChanged){
             synchronized (UI.getCurrent()){
                 progressBar.setValue(((GameCreationProgressChanged) event).getProgress());
+                if(((GameCreationProgressChanged) event).getProgress() == 1) this.close();
             }
         }
 
