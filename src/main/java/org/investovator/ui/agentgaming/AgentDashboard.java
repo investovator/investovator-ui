@@ -2,6 +2,11 @@ package org.investovator.ui.agentgaming;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.enums.GameStates;
+import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 
 import java.util.LinkedHashMap;
@@ -24,6 +29,14 @@ public class AgentDashboard extends BasicDashboard {
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        GameControllerFacade instance =   GameControllerFacade.getInstance();
+
+        if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN) getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+
+        if(instance.getCurrentGameMode()!= GameModes.AGENT_GAME || instance.getCurrentGameState()!= GameStates.RUNNING){
+           Notification.show("No Agent Game is Configured");
+           getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+        }
     }
 
     @Override
