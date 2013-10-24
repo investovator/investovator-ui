@@ -19,9 +19,67 @@
 
 package org.investovator.ui.main;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.VerticalLayout;
+import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.UIConstants;
+
 /**
  * @author: ishan
  * @version: ${Revision}
+ *
+ * Responsible for setting up the Admin UI depending up on the games available
+ * and their state
  */
-public class AdminGameConfigLayout {
+public class AdminGameConfigLayout extends VerticalLayout {
+
+    Authenticator authenticator;
+
+    /**
+     * If no argument is passed, that means a game is not running/configured at the moment
+     */
+    public AdminGameConfigLayout() {
+        authenticator=Authenticator.getInstance();
+        init();
+    }
+
+    private void init(){
+        Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                if(authenticator.isLoggedIn()){
+                    getUI().getNavigator().navigateTo(UIConstants.AGENTVIEW);
+                }
+                else {
+                    getUI().getNavigator().navigateTo("");
+                }
+            }
+        });
+        Button dataPlayback = new Button("Data Playback Engine", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                if(authenticator.isLoggedIn()){
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+                }
+                else {
+                    getUI().getNavigator().navigateTo("");
+                }
+            }
+        });
+        Button nnGames = new Button("NN Gaming Engine", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(authenticator.isLoggedIn()){
+                    getUI().getNavigator().navigateTo(UIConstants.NNVIEW);
+                }
+                else {
+                    getUI().getNavigator().navigateTo("");
+                }
+            }
+        });
+        FormLayout layout = new FormLayout(agentGames,dataPlayback,nnGames);
+        this.addComponent(layout);
+    }
 }

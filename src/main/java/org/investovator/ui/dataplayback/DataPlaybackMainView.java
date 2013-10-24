@@ -25,6 +25,9 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.OHLCDataPLayer;
 import org.investovator.dataplaybackengine.RealTimeDataPlayer;
@@ -384,6 +387,12 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 }
 
 
+                //mark the game as started
+                try {
+                    GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
+                } catch (GameProgressingException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
         });
 
