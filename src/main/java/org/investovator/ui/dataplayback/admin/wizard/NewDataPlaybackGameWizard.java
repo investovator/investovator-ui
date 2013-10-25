@@ -22,6 +22,7 @@ package org.investovator.ui.dataplayback.admin.wizard;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
+import net.sourceforge.jabm.gametheory.GameTheoreticSimulationController;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -29,7 +30,6 @@ import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
-import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -136,7 +136,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             gameTypes.setItemCaption(PlayerTypes.REAL_TIME_DATA_PLAYER, "<b>Ticker data based game</b>");
 
             //default item
-            gameTypes.select(DataPLaybackEngineGameTypes.OHLC_BASED);
+            gameTypes.select(PlayerTypes.DAILY_SUMMARY_PLAYER);
 
             //fire value change events immediately
             gameTypes.setImmediate(true);
