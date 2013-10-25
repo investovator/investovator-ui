@@ -86,12 +86,13 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
             String reportTemplateFile =  basepath + "/WEB-INF/templates/report_template.xml";
             String mainTemplateFile =  basepath + "/WEB-INF/templates/main_template.xml";
             String beanTemplateFile =  basepath + "/WEB-INF/templates/bean-config-template.xml";
-
+            String propertiesFile = basepath +  "/WEB-INF/configuration/config.properties";
 
             configGenerator.setModelTemlpateFile(templateFile);
             configGenerator.setReportTemlpateFile(reportTemplateFile);
             configGenerator.setMainTemplateFile(mainTemplateFile);
             configGenerator.setSpringBeanConfigTemplate(beanTemplateFile);
+            configGenerator.setProperties(propertiesFile);
 
             String[] availableAgents = configGenerator.getSupportedAgentTypes();
 
