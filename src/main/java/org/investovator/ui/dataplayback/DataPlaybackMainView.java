@@ -87,7 +87,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
         content.setSizeFull();
 
         ////for testing
-        DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
+//        DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
         try {
             this.setUpGame(true);
         } catch (PlayerStateException e) {
