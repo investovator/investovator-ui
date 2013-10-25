@@ -65,6 +65,9 @@ public class MainGamingView extends GlobalView{
                 if(gameMode==GameModes.PAYBACK_ENG){
                     getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
                 }
+                if ((gameMode==GameModes.AGENT_GAME)){
+                    getUI().getNavigator().navigateTo(UIConstants.AGENT_DASH_VIEW);
+                }
             }
         }
 
@@ -76,6 +79,9 @@ public class MainGamingView extends GlobalView{
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+
+        this.removeAllComponents();
+
         Notification.show(((MyVaadinUI)MyVaadinUI.getCurrent()).getUser());
 
         //if not logged in
