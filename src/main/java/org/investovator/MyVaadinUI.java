@@ -36,6 +36,9 @@ public class MyVaadinUI extends UI
 
     @Override
     protected void init(VaadinRequest request) {
+
+        this.setStyleName("main-view");
+
         getPage().setTitle("investovator | Gaming Framework");
 
         // Create a navigator to control the views
