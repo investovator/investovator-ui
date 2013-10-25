@@ -4,8 +4,12 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.UserDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.vaadin.teemu.wizards.WizardStep;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -21,9 +25,17 @@ public class StockSelectView implements WizardStep {
 
     public StockSelectView() {
         stockSelectList = new TwinColSelect("Select Stocks for Game");
-        stockSelectList.addItem("SAMP");
-        stockSelectList.addItem("GOOG");
-        stockSelectList.addItem("IBM");
+
+        try {
+            Collection<String> availableStocks = new CompanyDataImpl().getAvailableStockIds();
+
+            for(String stockID :availableStocks){
+                stockSelectList.addItem(stockID);
+            }
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
         stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
