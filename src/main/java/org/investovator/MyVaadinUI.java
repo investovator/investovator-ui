@@ -1,6 +1,5 @@
 package org.investovator;
 
-import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -45,7 +44,7 @@ public class MyVaadinUI extends UI
         navigator.addView("", new LoginView());
         navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
         navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
-        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackDashboard());
+        navigator.addView(UIConstants.DATAPLAY_USR_DASH, new DataPlaybackDashboard());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
         navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
 

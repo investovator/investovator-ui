@@ -48,8 +48,8 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
     private void init(){
 
-        GameModes gameMode= GameControllerFacade.getInstance().getCurrentGameMode();
-        GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
+        final GameModes gameMode= GameControllerFacade.getInstance().getCurrentGameMode();
+        final GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
 
         Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
             @Override
@@ -67,12 +67,18 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+                //if there is no game running
+                if(gameState==GameStates.NEW){
+                    //todo-navigate to the game creation wizard
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
                 }
-                else {
-                    getUI().getNavigator().navigateTo("");
+                //if there is a game running
+                else if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
+                    //todo- navigate to the admin game dashboard
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+
                 }
+
             }
         });
 

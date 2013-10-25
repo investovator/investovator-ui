@@ -1,8 +1,6 @@
 package org.investovator.ui.main;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import org.investovator.MyVaadinUI;
 import org.investovator.controller.GameControllerFacade;
@@ -47,7 +45,7 @@ public class MainGamingView extends GlobalView{
 //                //if it's a data playback
 //                if(gameMode==GameModes.PAYBACK_ENG){
 //                    //implement properly
-//                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+//                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
 //                }
 //            }
 
@@ -63,7 +61,7 @@ public class MainGamingView extends GlobalView{
             else if(gameState==GameStates.RUNNING){
                 //if it's a data playback
                 if(gameMode==GameModes.PAYBACK_ENG){
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
                 }
             }
         }
