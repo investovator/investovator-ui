@@ -19,9 +19,11 @@
 
 package org.investovator.ui.main;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.UIConstants;
 
@@ -45,6 +47,10 @@ public class AdminGameConfigLayout extends VerticalLayout {
     }
 
     private void init(){
+
+        GameModes gameMode= GameControllerFacade.getInstance().getCurrentGameMode();
+        GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
+
         Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -56,6 +62,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 }
             }
         });
+
         Button dataPlayback = new Button("Data Playback Engine", new Button.ClickListener() {
 
             @Override
@@ -68,6 +75,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 }
             }
         });
+
         Button nnGames = new Button("NN Gaming Engine", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -79,7 +87,54 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 }
             }
         });
-        FormLayout layout = new FormLayout(agentGames,dataPlayback,nnGames);
-        this.addComponent(layout);
+        Label agentGamesLabel=new Label("Agent based game");
+        Label agentGamesStatusLabel=new Label("Not Running");
+        Label dataPlaybackGamesStatusLabel=new Label("Not Running");
+        Label annGamesStatusLabel=new Label("Not Running");
+        if(gameMode==GameModes.AGENT_GAME && gameState==GameStates.RUNNING){
+            agentGamesStatusLabel.setValue("<b> <p style=\"color:red\">Running<b>");
+            agentGamesStatusLabel.setContentMode(ContentMode.HTML);
+            dataPlaybackGamesStatusLabel.setValue("Not Running");
+            annGamesStatusLabel.setValue("Not Running");
+
+
+
+        }
+
+
+        Label dataPlaybackGamesLabel=new Label("Data Playback based game");
+        if(gameMode==GameModes.PAYBACK_ENG && gameState==GameStates.RUNNING){
+            dataPlaybackGamesStatusLabel.setValue("<b> <p style=\"color:red\">Running<b>");
+            dataPlaybackGamesStatusLabel.setContentMode(ContentMode.HTML);
+            annGamesStatusLabel.setValue("Not Running");
+            agentGamesStatusLabel.setValue("Not Running");
+
+
+        }
+
+
+        Label annGamesLabel=new Label("ANN based game");
+        if(gameMode==GameModes.NN_GAME && gameState==GameStates.RUNNING){
+            annGamesStatusLabel.setValue("<b> <p style=\"color:red\">Running<b>");
+            annGamesStatusLabel.setContentMode(ContentMode.HTML);
+            dataPlaybackGamesStatusLabel.setValue("Not Running");
+            agentGamesStatusLabel.setValue("Not Running");
+
+
+
+        }
+
+        HorizontalLayout agentLayout = new HorizontalLayout(agentGamesLabel,agentGames,agentGamesStatusLabel);
+        agentLayout.setSizeFull();
+        HorizontalLayout dataPlaybackLayout = new HorizontalLayout(dataPlaybackGamesLabel,
+                dataPlayback,dataPlaybackGamesStatusLabel);
+        dataPlaybackLayout.setSizeFull();
+        HorizontalLayout annLayout = new HorizontalLayout(annGamesLabel,nnGames,annGamesStatusLabel);
+        annLayout.setSizeFull();
+
+
+        this.addComponent(agentLayout);
+        this.addComponent(dataPlaybackLayout);
+        this.addComponent(annLayout);
     }
 }

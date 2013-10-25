@@ -38,18 +38,20 @@ public class MainGamingView extends GlobalView{
 
         //if the user is an admin
         if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN){
-            //if no game is running
-            if(gameState==GameStates.NEW){
-                this.addComponent(new AdminGameConfigLayout());
-            }
-            //if a game is running
-            else if(gameState==GameStates.RUNNING){
-                //if it's a data playback
-                if(gameMode==GameModes.PAYBACK_ENG){
-                    //implement properly
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
-                }
-            }
+//            //if no game is running
+//            if(gameState==GameStates.NEW){
+//                this.addComponent(new AdminGameConfigLayout());
+//            }
+//            //if a game is running
+//            else if(gameState==GameStates.RUNNING){
+//                //if it's a data playback
+//                if(gameMode==GameModes.PAYBACK_ENG){
+//                    //implement properly
+//                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+//                }
+//            }
+
+            this.addComponent(new AdminGameConfigLayout());
         }
         else if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ORDINARY){
             //if no game is running
