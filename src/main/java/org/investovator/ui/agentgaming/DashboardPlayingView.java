@@ -29,12 +29,13 @@ import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.jasa.api.JASAFacade;
 import org.investovator.jasa.api.MarketFacade;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 /**
  * @author Amila Surendra
  * @version $Revision
  */
-public class DashboardPlayingView extends Panel implements StockChangedEvent {
+public class DashboardPlayingView extends DashboardPanel implements StockChangedEvent {
 
 
     //External Data
@@ -230,6 +231,11 @@ public class DashboardPlayingView extends Panel implements StockChangedEvent {
         }
 
 
+    }
+
+    @Override
+    public void onEnter() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
 

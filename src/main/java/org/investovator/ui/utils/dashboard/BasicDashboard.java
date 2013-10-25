@@ -27,7 +27,7 @@ public abstract class BasicDashboard extends GlobalView {
     private CssLayout content;
 
     //used to store the buttons of the menu bar and their respective panels
-    private LinkedHashMap<String, Panel> menuItems;
+    private LinkedHashMap<String, DashboardPanel> menuItems;
 
     public BasicDashboard(String name) {
         super();
@@ -44,6 +44,26 @@ public abstract class BasicDashboard extends GlobalView {
     }
 
 
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+
+        if(!authenticator.isLoggedIn()){
+            getUI().getNavigator().navigateTo("");
+        }
+
+        if(menuItems.isEmpty()){
+            setupUI(viewChangeEvent);
+            return;
+        }
+
+        content.removeAllComponents();
+        DashboardPanel addedPanel = menuItems.get(menuItems.keySet().iterator().next());
+        addedPanel.addStyleName("selected");
+        content.addComponent(addedPanel);
+        addedPanel.onEnter();
+    }
+
+
     /**
      * Guidelines - Create your components here. The keys you add to hash map
      * will be used as the text in the menu buttons.
@@ -51,7 +71,7 @@ public abstract class BasicDashboard extends GlobalView {
      * Also the icon names for those buttons should be in the form of "icon-<KEY_NAME>"
      * @return
      */
-    public abstract LinkedHashMap<String, Panel> getMenuItems();
+    public abstract LinkedHashMap<String, DashboardPanel> getMenuItems();
 
     /**
      * Draws the basic dashboard components such as menus, backgrounds, buttons
@@ -178,18 +198,25 @@ public abstract class BasicDashboard extends GlobalView {
                     //navigate to the view
 
                     content.removeAllComponents();
-                    content.addComponent(menuItems.get(clickEvent.getButton().getCaption().toLowerCase()));
+                    DashboardPanel addedPanel = menuItems.get(clickEvent.getButton().getCaption().toLowerCase());
+                    content.addComponent(addedPanel);
+                    addedPanel.onEnter();
 
                 }
             });
 
             menu.addComponent(b);
+
+
             //select the first item in the menu initially
             if(menu.getComponentCount()==1){
                 b.addStyleName("selected");
-                content.removeAllComponents();
-                content.addComponent(menuItems.get(b.getCaption().toLowerCase()));
+                //content.removeAllComponents();
+                //DashboardPanel addedPanel =menuItems.get(b.getCaption().toLowerCase());
+                //content.addComponent(addedPanel);
+                //addedPanel.onEnter();
             }
+
         }
 
 
