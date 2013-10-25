@@ -23,10 +23,15 @@ import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import net.sourceforge.jabm.gametheory.GameTheoreticSimulationController;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
+import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
@@ -94,6 +99,31 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.currentGameMode,
                 DataPlaybackEngineStates.playingSymbols,DataPlaybackEngineStates.gameStartDate,attributes,
                 TradingDataAttribute.PRICE);
+
+        //start the game now
+        if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            try {
+                DataPlayerFacade.getInstance().getRealTimeDataPlayer().startPlayback(3);
+                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
+            } catch (PlayerStateException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (GameProgressingException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        else {
+            try {
+                DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
+                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
+
+            } catch (GameAlreadyStartedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (PlayerStateException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (GameProgressingException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
 
         this.window.close();
     }
