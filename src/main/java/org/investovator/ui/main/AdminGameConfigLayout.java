@@ -70,11 +70,11 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 //if there is no game running
                 if(gameState==GameStates.NEW){
                     //todo-navigate to the game creation wizard
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                    getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
                 }
                 //if there is a game running
                 else if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
-                    //todo- navigate to the admin game dashboard
+                    //todo - load the proper dash board for admin
                     getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
 
                 }
