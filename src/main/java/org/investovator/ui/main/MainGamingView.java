@@ -5,12 +5,17 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import org.investovator.MyVaadinUI;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.GlobalView;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.UIConstants;
 
 /**
  *
  * @author: Hasala Surasinghe
+ * @author : ishan
  * @version: ${Revision}
  *
  */
@@ -19,51 +24,68 @@ import org.investovator.ui.utils.UIConstants;
 public class MainGamingView extends GlobalView{
 
     public MainGamingView(){
-        init();
     }
 
-    private void init(){
-        Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo(UIConstants.AGENTVIEW);
-                }
-                else {
-                    getUI().getNavigator().navigateTo("");
-                }
-            }
-        });
-        Button dataPlayback = new Button("Data Playback Engine", new Button.ClickListener() {
+    /**
+     * Loads the necessary content to the main view up on the conditions
+     */
+    private void setWindowContent(){
 
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if(authenticator.isLoggedIn()){
+        GameModes gameMode=GameControllerFacade.getInstance().getCurrentGameMode();
+        GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
+
+
+
+        //if the user is an admin
+        if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN){
+//            //if no game is running
+//            if(gameState==GameStates.NEW){
+//                this.addComponent(new AdminGameConfigLayout());
+//            }
+//            //if a game is running
+//            else if(gameState==GameStates.RUNNING){
+//                //if it's a data playback
+//                if(gameMode==GameModes.PAYBACK_ENG){
+//                    //implement properly
+//                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+//                }
+//            }
+
+            this.addComponent(new AdminGameConfigLayout());
+        }
+        else if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ORDINARY){
+            //if no game is running
+            if(gameState==GameStates.NEW){
+                Notification.show("No deployed game found. Contact Admin", Notification.Type.ERROR_MESSAGE);
+
+            }
+            //if a game is running
+            else if(gameState==GameStates.RUNNING){
+                //if it's a data playback
+                if(gameMode==GameModes.PAYBACK_ENG){
                     getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
                 }
-                else {
-                    getUI().getNavigator().navigateTo("");
-                }
             }
-        });
-        Button nnGames = new Button("NN Gaming Engine", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo(UIConstants.NNVIEW);
-                }
-                else {
-                    getUI().getNavigator().navigateTo("");
-                }
-            }
-        });
-        FormLayout layout = new FormLayout(agentGames,dataPlayback,nnGames);
-        addComponent(layout);
+        }
+
+
+
     }
+
+
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         Notification.show(((MyVaadinUI)MyVaadinUI.getCurrent()).getUser());
+
+        //if not logged in
+        if(!Authenticator.getInstance().isLoggedIn()){
+            ((MyVaadinUI)MyVaadinUI.getCurrent()).getNavigator().navigateTo("");
+        } else{
+            setWindowContent();
+
+        }
+
     }
 
 

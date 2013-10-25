@@ -1,5 +1,6 @@
 package org.investovator;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -18,6 +19,7 @@ import org.investovator.ui.utils.UIConstants;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("dashboard")
+//@PreserveOnRefresh
 @SuppressWarnings("serial")
 @Push
 public class MyVaadinUI extends UI
@@ -29,6 +31,7 @@ public class MyVaadinUI extends UI
     }
 
     private Navigator navigator;
+    private static String userName="userName";
 
 
     @Override
@@ -54,14 +57,14 @@ public class MyVaadinUI extends UI
     }
 
     public String getUser() {
-        return user;
+        return (String)getSession().getAttribute(userName);
     }
 
     public void setUser(String user) {
-        this.user = user;
+        getSession().setAttribute(userName,user);
     }
 
-    private String user;
+//    private String user;
 
 
 

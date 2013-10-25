@@ -5,11 +5,12 @@ import org.investovator.MyVaadinUI;
 import javax.swing.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: hasala
- * Date: 10/4/13
- * Time: 4:43 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author: Hasala Surasinghe
+ * @author : ishan
+ * @author : amila
+ * @version: ${Revision}
+ *
  */
 public class Authenticator {
 
@@ -80,7 +81,7 @@ public class Authenticator {
     }
 
     public UserType getMyPrivileges(){
-        String user=((MyVaadinUI)MyVaadinUI.getCurrent()).getUser();
+        String user=getCurrentUser();
         if(user.equalsIgnoreCase("admin")){
             return UserType.ADMIN;
         }
