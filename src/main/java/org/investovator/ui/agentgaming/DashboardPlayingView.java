@@ -27,9 +27,14 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.UserDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.jasa.api.JASAFacade;
 import org.investovator.jasa.api.MarketFacade;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+
+import java.util.Collection;
 
 /**
  * @author Amila Surendra
@@ -179,10 +184,12 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     protected Chart getChart() {
 
         final Chart chart = new Chart();
-        chart.setHeight("450px");
+        chart.setHeight("350px");
         chart.setWidth("90%");
+        chart.setCaption("Watchlist Summary");
 
         final Configuration configuration = new Configuration();
+        configuration.setTitle("Last Traded Price");
 
         configuration.getChart().setType(ChartType.SPLINE);
         configuration.disableCredits();
@@ -220,14 +227,9 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         }
 
 
-        if (currentPriceChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
-                //if( series.getData().length > 20)  series.addData(stockChanged.getMarketPrice(),true,true);
-                series.addData(stockChanged.getMarketPrice());
-            } finally {
-                getSession().unlock();
-            }
+        if (currentPriceChart.isConnectorEnabled()) synchronized (UI.getCurrent()){
+             //if( series.getData().length > 20)  series.addData(stockChanged.getMarketPrice(),true,true);
+             series.addData(stockChanged.getMarketPrice());
         }
 
 
@@ -238,9 +240,11 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         reportHelper.initReports();
         simulationRunning = true;
 
-        simulationFacade.addListener("GOOG",watchList);
-        simulationFacade.addListener("IBM",watchList);
-        simulationFacade.addListener("SAMP",watchList);
+        Collection<String> availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
+        for(String stock : availableStocks){
+            simulationFacade.addListener(stock,watchList);
+        }
+
     }
 }
 
