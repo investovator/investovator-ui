@@ -30,8 +30,7 @@ import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.events.EventManager;
-import org.investovator.dataplaybackengine.events.StockEvent;
+import org.investovator.dataplaybackengine.events.*;
 import org.investovator.dataplaybackengine.exceptions.*;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
@@ -53,7 +52,7 @@ import java.util.Observer;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DataPlaybackMainView extends DashboardPanel implements Observer {
+public class DataPlaybackMainView extends DashboardPanel implements PlaybackEventListener {
 
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
@@ -356,7 +355,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
                     try {
                         //join the game
                         ohlcPLayer.joinGame();
-                        StockEvent[] events=ohlcPLayer.startGame();
+                        StockUpdateEvent[] events=ohlcPLayer.startGame();
                         series.add(new DataSeriesItem(ohlcPLayer.getToday(), events[0].
                                 getData().get(TradingDataAttribute.PRICE)));
                         series = (DataSeries) ohlcChart.getConfiguration().getSeries().get(1);
@@ -518,9 +517,9 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
 
                 //get the events
                 try {
-                    StockEvent[] events = ohlcPLayer.playNextDay();
+                    StockUpdateEvent[] events = ohlcPLayer.playNextDay();
                     //iterate every event
-                    for (StockEvent event : events) {
+                    for (StockUpdateEvent event : events) {
                         //iterate every series in the chart at the moment
                         for (Series series : ohlcChart.getConfiguration().getSeries()) {
                             DataSeries dSeries = (DataSeries) series;
@@ -645,7 +644,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
         return chart;
     }
 
-    private void updateTickerChart(StockEvent event){
+    private void updateTickerChart(StockUpdateEvent event){
 
         //iterate every series in the chart at the moment
         for (Series series : tickerChart.getConfiguration().getSeries()) {
@@ -680,7 +679,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
 
     }
 
-    private void updateStockPriceTable(StockEvent event){
+    private void updateStockPriceTable(StockUpdateEvent event){
 
         BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                 stockPriceTable.getContainerDataSource();
@@ -702,7 +701,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
 
     }
 
-    private void updatePieChart(StockEvent event, BeanContainer<String,StockNamePriceBean> beans){
+    private void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans){
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
@@ -774,11 +773,17 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
     }
 
 
+
     @Override
-    public void update(Observable o, Object arg) {
-        //if this is a stock price update
-        if (arg instanceof StockEvent) {
-            final StockEvent event = (StockEvent) arg;
+    public void onEnter() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void eventOccurred(PlaybackEvent arg) {
+//if this is a stock price update
+        if (arg instanceof StockUpdateEvent) {
+            final StockUpdateEvent event = (StockUpdateEvent) arg;
 
             //update the ticker chart
             updateTickerChart(event);
@@ -787,15 +792,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
             updateStockPriceTable(event);
         }
         //if the game has stopped
-        else if (arg == EventManager.RealTimePlayerStates.GAME_OVER) {
+        else if (arg instanceof PlaybackFinishedEvent) {
             //TODO - how to handle this?
-        }
-
-
-    }
-
-    @Override
-    public void onEnter() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+        }    }
 }

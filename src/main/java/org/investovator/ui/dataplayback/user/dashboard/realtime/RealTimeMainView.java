@@ -26,8 +26,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.events.EventManager;
-import org.investovator.dataplaybackengine.events.StockEvent;
+import org.investovator.dataplaybackengine.events.*;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
@@ -45,7 +44,7 @@ import java.util.Observer;
  * @author: ishan
  * @version: ${Revision}
  */
-public class RealTimeMainView extends BasicMainView implements Observer{
+public class RealTimeMainView extends BasicMainView implements PlaybackEventListener{
 
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
@@ -169,26 +168,8 @@ public class RealTimeMainView extends BasicMainView implements Observer{
         }
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        System.out.println("Event");
-        //if this is a stock price update
-        if (arg instanceof StockEvent) {
-            final StockEvent event = (StockEvent) arg;
 
-            //update the ticker chart
-            updateTickerChart(event);
-
-            //update the table
-            updateStockPriceTable(event);
-        }
-        //if the game has stopped
-        else if (arg == EventManager.RealTimePlayerStates.GAME_OVER) {
-            //TODO - how to handle this?
-        }
-    }
-
-    private void updateTickerChart(StockEvent event){
+    private void updateTickerChart(StockUpdateEvent event){
 
         //iterate every series in the chart at the moment
         for (Series series : mainChart.getConfiguration().getSeries()) {
@@ -223,7 +204,7 @@ public class RealTimeMainView extends BasicMainView implements Observer{
 
     }
 
-    private void updateStockPriceTable(StockEvent event){
+    private void updateStockPriceTable(StockUpdateEvent event){
 
         BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                 stockPriceTable.getContainerDataSource();
@@ -245,7 +226,7 @@ public class RealTimeMainView extends BasicMainView implements Observer{
 
     }
 
-    private void updatePieChart(StockEvent event, BeanContainer<String,StockNamePriceBean> beans){
+    private void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans){
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
@@ -317,4 +298,22 @@ public class RealTimeMainView extends BasicMainView implements Observer{
     }
 
 
+    @Override
+    public void eventOccurred(PlaybackEvent arg) {
+//        System.out.println("Event");
+        //if this is a stock price update
+        if (arg instanceof StockUpdateEvent) {
+            final StockUpdateEvent event = (StockUpdateEvent) arg;
+
+            //update the ticker chart
+            updateTickerChart(event);
+
+            //update the table
+            updateStockPriceTable(event);
+        }
+        //if the game has stopped
+        else if (arg instanceof PlaybackFinishedEvent) {
+            //TODO - how to handle this?
+        }
+    }
 }
