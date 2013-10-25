@@ -29,16 +29,20 @@ import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.OHLCDataPLayer;
-import org.investovator.dataplaybackengine.RealTimeDataPlayer;
+import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.events.EventManager;
 import org.investovator.dataplaybackengine.events.StockEvent;
 import org.investovator.dataplaybackengine.exceptions.*;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.dataplaybackengine.player.DataPlayer;
+import org.investovator.dataplaybackengine.player.OHLCDataPLayer;
+import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
-import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.text.ParseException;
@@ -61,6 +65,8 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
     OHLCDataPLayer ohlcPLayer;
     RealTimeDataPlayer realTimePlayer;
 
+    DataPlayerFacade playerFacade;
+
     //used in ticker data observing
     DataPlaybackMainView mySelf;
 
@@ -82,8 +88,13 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
         content.setSizeFull();
 
         ////for testing
-        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
-        this.setUpGame(true);
+        DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
+        try {
+            this.setUpGame(true);
+        } catch (PlayerStateException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        this.playerFacade=DataPlayerFacade.getInstance();
 
     }
 
@@ -183,7 +194,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
         subWindow.setContent(subContent);
 
         // Put some components in it
-        subContent.addComponent(new NewDataPlaybackGameWizard(subWindow, this));
+        subContent.addComponent(new NewDataPlaybackGameWizard(subWindow));
 
         // set window characteristics
         subWindow.center();
@@ -198,13 +209,13 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
 
 
     //used to setup the game initially(after the wizard)
-    public void setUpGame(boolean initialization) {
+    public void setUpGame(boolean initialization) throws PlayerStateException {
 
         //clear everything
         content.removeAllComponents();
 
         //if the game type is OHLC
-        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED && !initialization) {
+        if (DataPlaybackEngineStates.currentGameMode == PlayerTypes.DAILY_SUMMARY_PLAYER && !initialization) {
             //TODO - find a proper place to define attributes
             //define the attributes needed
             ArrayList<TradingDataAttribute> attributes = new ArrayList<TradingDataAttribute>();
@@ -214,15 +225,20 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
             attributes.add(TradingDataAttribute.PRICE);
 
             try {
-                ohlcPLayer = new OHLCDataPLayer(DataPlaybackEngineStates.playingSymbols,
-                        attributes,TradingDataAttribute.PRICE);
-                ohlcPLayer.setStartDate(DataPlaybackEngineStates.gameStartDate);
-            } catch (ParseException e) {
+                playerFacade.createPlayer(PlayerTypes.DAILY_SUMMARY_PLAYER,DataPlaybackEngineStates.playingSymbols,
+                        DataPlaybackEngineStates.gameStartDate,attributes,TradingDataAttribute.PRICE);
+                ohlcPLayer = playerFacade.getDailySummaryDataPLayer();
+//                ohlcPLayer.setStartDate(DataPlaybackEngineStates.gameStartDate);
+            }
+//            catch (ParseException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+            catch (PlayerStateException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
         //if the game type is ticker data based
-        else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED &&
+        else if (DataPlaybackEngineStates.currentGameMode == PlayerTypes.REAL_TIME_DATA_PLAYER &&
                 !initialization) {
 
             //TODO - find a proper place to define attributes
@@ -234,8 +250,10 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
             attributes.add(TradingDataAttribute.PRICE);
             attributes.add(TradingDataAttribute.SHARES);
 
-            realTimePlayer = new RealTimeDataPlayer(DataPlaybackEngineStates.playingSymbols,
+            playerFacade.createPlayer(PlayerTypes.REAL_TIME_DATA_PLAYER,DataPlaybackEngineStates.playingSymbols,
                     DataPlaybackEngineStates.gameStartDate, attributes,TradingDataAttribute.PRICE);
+
+            realTimePlayer = playerFacade.getRealTimeDataPlayer();
 
             //set myself as an observer
             realTimePlayer.setObserver(this);
@@ -254,13 +272,13 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
         chartContainer.setWidth(95, Unit.PERCENTAGE);
 
         //if the game type is OHLC
-        if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
+        if (DataPlaybackEngineStates.currentGameMode == PlayerTypes.DAILY_SUMMARY_PLAYER) {
             ohlcChart = buildOHLCChart();
             chartContainer.addComponent(ohlcChart);
             chartContainer.setComponentAlignment(ohlcChart, Alignment.MIDDLE_CENTER);
         }
         //if the game type is ticker data based
-        else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED) {
+        else if (DataPlaybackEngineStates.currentGameMode == PlayerTypes.REAL_TIME_DATA_PLAYER) {
             tickerChart = buildTickerChart();
             chartContainer.addComponent(tickerChart);
             chartContainer.setComponentAlignment(tickerChart, Alignment.MIDDLE_CENTER);
@@ -333,7 +351,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                 //if an OHLC based game
-                if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.OHLC_BASED) {
+                if (DataPlaybackEngineStates.currentGameMode == PlayerTypes.DAILY_SUMMARY_PLAYER) {
                     //TODO - what if there were multiple serieses?
                     DataSeries series = (DataSeries) ohlcChart.getConfiguration().getSeries().get(0);
                     try {
@@ -374,7 +392,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
 
                 }
                 //if a ticker based game
-                else if (DataPlaybackEngineStates.currentGameMode == DataPLaybackEngineGameTypes.TICKER_BASED) {
+                else if (DataPlaybackEngineStates.currentGameMode == PlayerTypes.REAL_TIME_DATA_PLAYER) {
                     try {
                         realTimePlayer.joinGame();
                     } catch (UserAlreadyJoinedException e) {
@@ -455,7 +473,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
 //                Notification.show(stocksList.getValue().toString() + "--" + orderSide.getValue().toString() + "--" + quantity.getValue().toString());
 //                System.out.println();
 
-                if (DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
                     try {
                         Boolean status=ohlcPLayer.executeOrder(stocksList.getValue().toString(),
                                 Integer.parseInt(quantity.getValue().toString()),((OrderType)orderSide.getValue()));
@@ -467,7 +485,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
                     }
                 }
 
-                if (DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
                     try {
                         Boolean status=realTimePlayer.executeOrder(stocksList.getValue().toString(),
                                 Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
@@ -561,7 +579,7 @@ public class DataPlaybackMainView extends DashboardPanel implements Observer {
         });
 
         //only add if it's an OHLC game
-        if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.OHLC_BASED){
+        if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
 
             buttonsBar.addComponent(nextDayB);
         }

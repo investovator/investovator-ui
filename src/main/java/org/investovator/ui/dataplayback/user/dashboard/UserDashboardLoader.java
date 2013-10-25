@@ -22,6 +22,7 @@ package org.investovator.ui.dataplayback.user.dashboard;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.DataPlaybackMainView;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -45,12 +46,12 @@ public class UserDashboardLoader extends BasicDashboard {
         LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
 
         //if this is a daily summary data game
-        if(DataPlaybackEngineStates.currentGameMode== DataPLaybackEngineGameTypes.OHLC_BASED){
+        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
             //todo - load DAilySummaryMainView
             map.put("main view", new DataPlaybackMainView());
         }
         //if this is a real time data game
-        else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
+        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
 
         }
 

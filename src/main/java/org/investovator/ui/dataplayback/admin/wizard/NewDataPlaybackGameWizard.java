@@ -51,7 +51,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 //    DataPlayer player;
 
 
-    public NewDataPlaybackGameWizard(Window window, DataPlaybackMainView mainView) {
+    public NewDataPlaybackGameWizard(Window window) {
 
 //        this.mainView = mainView;
         this.window = window;
