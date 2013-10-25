@@ -11,4 +11,5 @@ public class UIConstants {
     public static final String AGENTVIEW = "agentView";
     public static final String DATAPLAYVIEW = "dataPlaybackDashboard";
     public static final String NNVIEW = "nnView";
+    public static final String NNGAMINGVIEW = "nnGaming";
 }

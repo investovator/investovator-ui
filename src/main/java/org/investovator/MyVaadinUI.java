@@ -11,6 +11,7 @@ import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.dataplayback.DataPlaybackDashboard;
 import org.investovator.ui.main.MainGamingView;
+import org.investovator.ui.nngaming.NNGamingDashBoard;
 import org.investovator.ui.nngaming.config.NNGamingView;
 import org.investovator.ui.utils.UIConstants;
 
@@ -43,6 +44,7 @@ public class MyVaadinUI extends UI
         navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
         navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackDashboard());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
+        navigator.addView(UIConstants.NNGAMINGVIEW, new NNGamingDashBoard());
 
         //test JASA code
 //        Main main=new Main();

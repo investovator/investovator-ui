@@ -22,7 +22,12 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.vaadin.teemu.wizards.WizardStep;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author: Hasala Surasinghe
@@ -30,19 +35,36 @@ import org.vaadin.teemu.wizards.WizardStep;
  */
 public class StockSelectView implements WizardStep{
 
-    String selectedStock = null;
+    private String selectedStock = null;
+    private CompanyDataImpl companyData;
+    private ArrayList<String> stockIDList;
+
     ListSelect stockSelectList;
     VerticalLayout content;
 
     public StockSelectView() {
+
+        companyData = new CompanyDataImpl();
+
+        try {
+            stockIDList = companyData.getAvailableStockIds();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
         stockSelectList = new ListSelect("Select Stock for Game");
 
         stockSelectList.setNullSelectionAllowed(false);
 
-        stockSelectList.addItem("SAMP");
-        stockSelectList.addItem("GOOG");
-        stockSelectList.addItem("IBM");
-        stockSelectList.setValue("GOOG");
+
+        for (Iterator<String> iterator = stockIDList.iterator(); iterator.hasNext(); ) {
+
+            String next = iterator.next();
+            stockSelectList.addItem(next);
+
+        }
+
+        stockSelectList.setValue(stockIDList.get(0));
 
         stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
