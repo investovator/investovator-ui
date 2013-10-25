@@ -38,27 +38,23 @@ import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 /**
  * @author: ishan
  * @version: ${Revision}
  */
-public class DailySummaryMainView extends DashboardPanel {
+public class DailySummaryMainView extends BasicMainView {
 
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
 
-    private OHLCDataPLayer ohlcPLayer;
-    private DataPlayerFacade playerFacade;
+//    private OHLCDataPLayer ohlcPLayer;
+//    private DataPlayerFacade playerFacade;
 
     //used in ticker data observing
     DailySummaryMainView mySelf;
 
-    //charts to be shown
-    Chart ohlcChart;
-    Chart stockPieChart;
-
-    Table stockPriceTable;
 
     //to store every component
     GridLayout content;
@@ -72,59 +68,8 @@ public class DailySummaryMainView extends DashboardPanel {
 
     }
 
-    @Override
-    public void onEnter() {
-        Notification.show("DailySummaryMainView");
 
-        //get the player
-        try {
-            this.ohlcPLayer=DataPlayerFacade.getInstance().getDailySummaryDataPLayer();
-            setupPanel();
-        } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-
-    }
-
-    public void setupPanel(){
-        //clear everything
-        content.removeAllComponents();
-
-        //Main chart
-        HorizontalLayout chartContainer = new HorizontalLayout();
-        chartContainer.setWidth(95, Unit.PERCENTAGE);
-        ohlcChart = buildMainChart();
-        chartContainer.addComponent(ohlcChart);
-        chartContainer.setComponentAlignment(ohlcChart, Alignment.MIDDLE_CENTER);
-
-        content.addComponent(chartContainer, 0, 1, 2, 1);
-        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
-
-        //Stock price table
-        stockPriceTable=setupStockPriceTable();
-        content.addComponent(stockPriceTable,0,2);
-        content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
-
-        //buy-sell window
-        Component buySellWindow=setupBuySellForm();
-        content.addComponent(buySellWindow,1,2);
-
-        //pie-chart
-        stockPieChart =setupPieChart();
-        content.addComponent(stockPieChart,2,2);
-
-
-
-        this.setContent(content);
-
-
-
-
-
-    }
-
-    private Chart buildMainChart(){
+    public Chart buildMainChart(){
 
         Chart chart = new Chart();
 //        chart.setHeight("350px");
@@ -155,6 +100,7 @@ public class DailySummaryMainView extends DashboardPanel {
                 DataSeries ls = new DataSeries();
                 ls.setName(stock);
                 configuration.addSeries(ls);
+                System.out.println(stock);
 
             }
         }
@@ -168,59 +114,9 @@ public class DailySummaryMainView extends DashboardPanel {
 
     }
 
-    private Table setupStockPriceTable(){
-
-        BeanContainer<String,StockNamePriceBean> beans =
-                new BeanContainer<String,StockNamePriceBean>(StockNamePriceBean.class);
-        beans.setBeanIdProperty("stockID");
-        //if the game is initialized
-        if(DataPlaybackEngineStates.playingSymbols!=null){
-            for(String stock:DataPlaybackEngineStates.playingSymbols){
-                beans.addBean(new StockNamePriceBean(stock,0));
-            }
-        }
-        Table table=new Table("Stock Prices",beans);
-
-        //set the column order
-        table.setVisibleColumns(new Object[]{"stockID", "price"});
-
-        return table;
-    }
-
-    private Component setupBuySellForm(){
-        VerticalLayout formContent=new VerticalLayout();
-
-        FormLayout form=new FormLayout();
-
-        //stocks list
-        final ComboBox stocksList=new ComboBox();
-        stocksList.setCaption("Stock");
-        stocksList.setNullSelectionAllowed(false);
-            for(String stock:DataPlaybackEngineStates.playingSymbols){
-                stocksList.addItem(stock);
-            }
-        stocksList.setWidth("75%");
-
-        //side
-        final NativeSelect orderSide=new NativeSelect();
-        orderSide.setCaption("Side");
-        orderSide.addItem(OrderType.BUY);
-        orderSide.addItem(OrderType.SELL);
-        orderSide.setWidth("90%");
-        orderSide.select(OrderType.BUY);
-        orderSide.setNullSelectionAllowed(false);
-        orderSide.setImmediate(true);
-
-        //Quantity
-        final TextField quantity=new TextField("Amount");
-        quantity.setWidth("75%");
-
-
-        form.addComponent(stocksList);
-        form.addComponent(orderSide);
-        form.addComponent(quantity);
-
-        formContent.addComponent(form);
+    @Override
+    public HorizontalLayout getBuySellForumButtons(final ComboBox stocksList,
+                                                   final TextField quantity,final NativeSelect orderSide) {
 
         HorizontalLayout buttonsBar=new HorizontalLayout();
         final Button buySellButton=new Button("Buy");
@@ -231,17 +127,20 @@ public class DailySummaryMainView extends DashboardPanel {
 //                Notification.show(stocksList.getValue().toString() + "--" + orderSide.getValue().toString() + "--" + quantity.getValue().toString());
 //                System.out.println();
 
-                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
+//                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                     try {
-                        Boolean status=ohlcPLayer.executeOrder(stocksList.getValue().toString(),
-                                Integer.parseInt(quantity.getValue().toString()),((OrderType)orderSide.getValue()));
+                        Boolean status=DataPlayerFacade.getInstance().
+                                getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
+                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
                         Notification.show(status.toString());
                     } catch (InvalidOrderException e) {
                         Notification.show(e.getMessage());
                     } catch (UserJoinException e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    } catch (PlayerStateException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
-                }
+//                }
 
 //                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
 //                    try {
@@ -270,6 +169,8 @@ public class DailySummaryMainView extends DashboardPanel {
             }
         });
 
+        //TODO-load this only if this is a multiplayer game
+
         Button nextDayB = new Button("Next day");
         nextDayB.addClickListener(new Button.ClickListener() {
             @Override
@@ -277,15 +178,15 @@ public class DailySummaryMainView extends DashboardPanel {
 
                 //get the events
                 try {
-                    StockEvent[] events = ohlcPLayer.playNextDay();
+                    StockEvent[] events = DataPlayerFacade.getInstance().getDailySummaryDataPLayer().playNextDay();
                     //iterate every event
                     for (StockEvent event : events) {
                         //iterate every series in the chart at the moment
-                        for (Series series : ohlcChart.getConfiguration().getSeries()) {
+                        for (Series series : mainChart.getConfiguration().getSeries()) {
                             DataSeries dSeries = (DataSeries) series;
                             //if there's a match
                             if (event.getStockId().equals(dSeries.getName())) {
-                                if (ohlcChart.isConnectorEnabled()) {
+                                if (mainChart.isConnectorEnabled()) {
                                     getSession().lock();
                                     try {
                                         if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
@@ -298,7 +199,7 @@ public class DailySummaryMainView extends DashboardPanel {
                                                     event.getData().get(TradingDataAttribute.PRICE)));
 
                                         }
-                                        ohlcChart.setImmediate(true);
+                                        mainChart.setImmediate(true);
 
                                     } finally {
                                         getSession().unlock();
@@ -331,55 +232,24 @@ public class DailySummaryMainView extends DashboardPanel {
 
                 } catch (GameFinishedException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (PlayerStateException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 
             }
         });
 
 
-            buttonsBar.addComponent(nextDayB);
+        buttonsBar.addComponent(nextDayB);
 
         buttonsBar.addComponent(buySellButton);
-        formContent.addComponent(buttonsBar);
-        formContent.setComponentAlignment(buttonsBar,Alignment.BOTTOM_RIGHT);
-        //content.setComponentAlignment(nextDayB, Alignment.MIDDLE_CENTER);
 
-        return formContent;
+        return buttonsBar;
     }
 
-    private Chart setupPieChart(){
-
-        Chart chart = new Chart(ChartType.PIE);
-
-        Configuration conf = chart.getConfiguration();
-
-        conf.setTitle("Portfolio Summary");
-
-        PlotOptionsPie plotOptions = new PlotOptionsPie();
-        plotOptions.setCursor(Cursor.POINTER);
-        Labels dataLabels = new Labels();
-        dataLabels.setEnabled(true);
-        dataLabels.setColor(new SolidColor(0, 0, 0));
-        dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
-        dataLabels
-                .setFormatter("''+ this.point.name +': '+ this.percentage +' %'");
-        plotOptions.setDataLabels(dataLabels);
-        conf.setPlotOptions(plotOptions);
-
-        DataSeries series = new DataSeries();
-        //if the stock items has been set
-        if(DataPlaybackEngineStates.playingSymbols!=null){
-            for(String stock:DataPlaybackEngineStates.playingSymbols){
-                series.add(new DataSeriesItem(stock, 0));
-            }
-        }
-        conf.setSeries(series);
-
-        chart.drawChart(conf);
-        chart.setWidth("90%");
-        chart.setHeight(70,Unit.MM);
-
-
-        return chart;
+    @Override
+    public void onEnterMainView() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
+
 }
