@@ -134,7 +134,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         content.addComponent(quoteUI);
         content.setComponentAlignment(watchListTable,Alignment.MIDDLE_CENTER);
         content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
-        content.addComponent(buttons);
+        //content.addComponent(buttons);
 
         content.setSizeFull();
 
@@ -235,7 +235,12 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
     @Override
     public void onEnter() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        reportHelper.initReports();
+        simulationRunning = true;
+
+        simulationFacade.addListener("GOOG",watchList);
+        simulationFacade.addListener("IBM",watchList);
+        simulationFacade.addListener("SAMP",watchList);
     }
 }
 
