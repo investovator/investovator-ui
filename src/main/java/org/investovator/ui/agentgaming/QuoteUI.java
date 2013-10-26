@@ -37,7 +37,7 @@ public class QuoteUI extends VerticalLayout {
     public QuoteUI(CompanyData companyData) {
         this.companyData = companyData;
         setupUI();
-        JASAFacade.getMarketFacade().AddUserAgent(Authenticator.getInstance().getCurrentUser(),10000000);
+        JASAFacade.getMarketFacade().AddUserAgent("testUser1",10000000);
     }
 
 

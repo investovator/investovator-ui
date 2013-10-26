@@ -18,7 +18,7 @@
     </bean>
 
 
-    <bean id="exchange" class="org.investovator.exchange.Exchange" scope="singleton">
+    <bean id="exchange" class="org.investovator.jasa.exchange.Exchange" scope="singleton">
         <property name="stocks">
             <list>
                 <stocks/>   <!--Auto Fill-->
