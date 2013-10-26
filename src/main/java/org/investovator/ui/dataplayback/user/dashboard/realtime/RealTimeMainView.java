@@ -111,7 +111,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
                     Boolean status= DataPlayerFacade.getInstance().
-                            getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
+                            getRealTimeDataPlayer().executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
                     Notification.show(status.toString());
                 } catch (InvalidOrderException e) {
