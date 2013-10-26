@@ -19,6 +19,8 @@
 
 package org.investovator.ui.dataplayback.util;
 
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+
 import java.util.Date;
 
 /**
@@ -26,7 +28,7 @@ import java.util.Date;
  * @version: ${Revision}
  */
 public class DataPlaybackEngineStates {
-    public static DataPLaybackEngineGameTypes currentGameMode;
+    public static PlayerTypes currentGameMode;
 
     //stores the stock symbols up on which the game is played
     public static String[] playingSymbols;

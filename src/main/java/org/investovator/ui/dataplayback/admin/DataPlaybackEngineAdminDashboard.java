@@ -17,9 +17,11 @@
  */
 
 
-package org.investovator.ui.dataplayback.util;
+package org.investovator.ui.dataplayback.admin;
 
-public enum DataPLaybackEngineGameTypes {
-    OHLC_BASED,
-    TICKER_BASED,
+/**
+ * @author: ishan
+ * @version: ${Revision}
+ */
+public class DataPlaybackEngineAdminDashboard {
 }

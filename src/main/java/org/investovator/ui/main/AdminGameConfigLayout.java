@@ -25,6 +25,7 @@ import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.utils.UIConstants;
 
 /**
@@ -48,8 +49,8 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
     private void init(){
 
-        GameModes gameMode= GameControllerFacade.getInstance().getCurrentGameMode();
-        GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
+        final GameModes gameMode= GameControllerFacade.getInstance().getCurrentGameMode();
+        final GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
 
         Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
             @Override
@@ -67,12 +68,20 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAYVIEW);
+                //if there is no game running
+                if(gameState==GameStates.NEW){
+                    //todo-navigate to the game creation wizard
+//                    getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+                    startDailySummaryAddGameWizard();
+
                 }
-                else {
-                    getUI().getNavigator().navigateTo("");
+                //if there is a game running
+                else if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
+                    //todo - load the proper dash board for admin
+                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+
                 }
+
             }
         });
 
@@ -136,5 +145,27 @@ public class AdminGameConfigLayout extends VerticalLayout {
         this.addComponent(agentLayout);
         this.addComponent(dataPlaybackLayout);
         this.addComponent(annLayout);
+    }
+
+
+    private void startDailySummaryAddGameWizard() {
+        // Create a sub-window and set the content
+        Window subWindow = new Window("Create New Game");
+        VerticalLayout subContent = new VerticalLayout();
+        subContent.setMargin(true);
+        subWindow.setContent(subContent);
+
+        // Put some components in it
+        subContent.addComponent(new NewDataPlaybackGameWizard(subWindow));
+
+        // set window characteristics
+        subWindow.center();
+        subWindow.setClosable(false);
+        subWindow.setDraggable(false);
+        subWindow.setResizable(false);
+        subWindow.setModal(true);
+
+        // Add it to the root component
+        UI.getCurrent().addWindow(subWindow);
     }
 }

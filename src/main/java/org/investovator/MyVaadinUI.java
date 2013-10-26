@@ -1,6 +1,5 @@
 package org.investovator;
 
-import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -11,7 +10,8 @@ import com.vaadin.ui.UI;
 import org.investovator.ui.agentgaming.AgentDashboard;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.LoginView;
-import org.investovator.ui.dataplayback.DataPlaybackDashboard;
+import org.investovator.ui.dataplayback.admin.dashboard.AdminDashboardLoader;
+import org.investovator.ui.dataplayback.user.dashboard.UserDashboardLoader;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingDashBoard;
 import org.investovator.ui.nngaming.config.NNGamingView;
@@ -49,7 +49,8 @@ public class MyVaadinUI extends UI
         navigator.addView("", new LoginView());
         navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
         navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
-        navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackDashboard());
+        navigator.addView(UIConstants.DATAPLAY_USR_DASH, new UserDashboardLoader());
+        navigator.addView(UIConstants.DATA_PLAYBACK_ADMIN_DASH,new AdminDashboardLoader());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
         navigator.addView(UIConstants.NNGAMINGVIEW, new NNGamingDashBoard());
         navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
