@@ -23,6 +23,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.LinkedHashMap;
 
@@ -42,8 +43,8 @@ public class NNGamingDashBoard extends BasicDashboard{
     }
 
     @Override
-    public LinkedHashMap<String, Panel> getMenuItems() {
-        LinkedHashMap<String,Panel> map=new LinkedHashMap<String, Panel>();
+    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
+        LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
 
         //map.put("main view", new DataPlaybackMainView());
 
@@ -53,7 +54,12 @@ public class NNGamingDashBoard extends BasicDashboard{
         VerticalLayout panelContent2 = new VerticalLayout();
         panelContent2.addComponent(new Button("Test 2"));
 
-        Panel panel2 = new Panel();
+        DashboardPanel panel2 = new DashboardPanel() {
+            @Override
+            public void onEnter() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
         panel2.setContent(panelContent2);
         map.put("test 2", panel2);
          /*
