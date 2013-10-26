@@ -18,9 +18,48 @@
 
 package org.investovator.ui.nngaming;
 
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import org.investovator.ui.utils.dashboard.BasicDashboard;
+
+import java.util.LinkedHashMap;
+
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class NNGamingDashBoard {
+public class NNGamingDashBoard extends BasicDashboard{
+
+    public NNGamingDashBoard() {
+        super("<span><center>investovator</center></span> Stock Market");
+    }
+
+    @Override
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public LinkedHashMap<String, Panel> getMenuItems() {
+        LinkedHashMap<String,Panel> map=new LinkedHashMap<String, Panel>();
+
+        //map.put("main view", new DataPlaybackMainView());
+
+        /*
+        Example Button 2
+         */
+        VerticalLayout panelContent2 = new VerticalLayout();
+        panelContent2.addComponent(new Button("Test 2"));
+
+        Panel panel2 = new Panel();
+        panel2.setContent(panelContent2);
+        map.put("test 2", panel2);
+         /*
+        End of Example Button 2
+         */
+
+        return map;
+    }
 }

@@ -20,6 +20,7 @@ package org.investovator.ui.nngaming.config;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.vaadin.teemu.wizards.WizardStep;
 
 import java.util.Iterator;
@@ -42,12 +43,12 @@ public class ParameterSelectView implements WizardStep{
         addNewParamStatus = false;
 
         parameterSelectList = new TwinColSelect("Select Input Parameters for Game");
-        parameterSelectList.addItem("High Price");
-        parameterSelectList.addItem("Low Price");
-        parameterSelectList.addItem("Closing Price");
-        parameterSelectList.addItem("No of Trades");
-        parameterSelectList.addItem("No of Shares");
-        parameterSelectList.addItem("Turnover");
+        parameterSelectList.addItem(TradingDataAttribute.HIGH_PRICE);
+        parameterSelectList.addItem(TradingDataAttribute.LOW_PRICE);
+        parameterSelectList.addItem(TradingDataAttribute.CLOSING_PRICE);
+        parameterSelectList.addItem(TradingDataAttribute.TRADES);
+        parameterSelectList.addItem(TradingDataAttribute.SHARES);
+        parameterSelectList.addItem(TradingDataAttribute.TURNOVER);
 
         parameterSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
