@@ -27,7 +27,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.events.StockEvent;
+import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
@@ -178,9 +178,9 @@ public class DailySummaryMainView extends BasicMainView {
 
                 //get the events
                 try {
-                    StockEvent[] events = DataPlayerFacade.getInstance().getDailySummaryDataPLayer().playNextDay();
+                    StockUpdateEvent[] events = DataPlayerFacade.getInstance().getDailySummaryDataPLayer().playNextDay();
                     //iterate every event
-                    for (StockEvent event : events) {
+                    for (StockUpdateEvent event : events) {
                         //iterate every series in the chart at the moment
                         for (Series series : mainChart.getConfiguration().getSeries()) {
                             DataSeries dSeries = (DataSeries) series;
