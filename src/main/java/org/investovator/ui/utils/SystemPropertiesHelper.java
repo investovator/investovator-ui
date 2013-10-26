@@ -35,12 +35,29 @@ public class SystemPropertiesHelper implements
             String realPath = context.getRealPath(value);
             System.out.println("Setting : " + param + " --> " + realPath);
             System.setProperty(param, realPath);
-
-
         }
 
         System.setProperty("DATA_FOL", context.getRealPath("data"));
+
+        System.setProperty("org.investovator.core.data.cassandra.url", "localhost:9171" );
+        System.setProperty("org.investovator.core.data.cassandra.username", "admin" );
+        System.setProperty("org.investovator.core.data.cassandra.password", "admin" );
+
+
+        System.setProperty("org.investovator.core.data.mysql.url", "localhost:3306" );
+        System.setProperty("org.investovator.core.data.mysql.username", "root" );
+        System.setProperty("org.investovator.core.data.mysql.password", "root" );
+        System.setProperty("org.investovator.core.data.mysql.database", "investovator_data" );
+        System.setProperty("org.investovator.core.data.mysql.driverclassname", "com.mysql.jdbc.Driver" );
+
+
+        String realPath = context.getRealPath("/WEB-INF/configuration/investovator.sql");
+        System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
+        System.out.println("SQL Path : " + realPath);
+
     }
+
+
 
     public void contextDestroyed(ServletContextEvent event) {
     }
