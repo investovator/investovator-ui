@@ -114,13 +114,7 @@ public class QuoteUI extends VerticalLayout {
         stockSelect.setWidth("100%");
         stockSelect.addValueChangeListener(selectSymbolValueChange);
 
-        try {
-            for (String stock : companyData.getAvailableStockIds()) {
-                stockSelect.addItem(stock);
-            }
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
+
 
 
         this.addComponent(stockSelect);
@@ -132,6 +126,18 @@ public class QuoteUI extends VerticalLayout {
         this.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         this.setWidth("90%");
         this.setMargin(true);
+
+    }
+
+    public void update(){
+
+        try {
+            for (String stock : companyData.getAvailableStockIds()) {
+                stockSelect.addItem(stock);
+            }
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
     }
 
