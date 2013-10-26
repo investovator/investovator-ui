@@ -27,8 +27,8 @@ public class DashboardTest extends BasicDashboard {
     }
 
     @Override
-    public LinkedHashMap<String, Panel> getMenuItems() {
-        LinkedHashMap<String, Panel> menu=new LinkedHashMap<String, Panel>();
+    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
+        LinkedHashMap<String, DashboardPanel> menu=new LinkedHashMap<String, DashboardPanel>();
 
         /*
         Example Button 1
@@ -42,7 +42,12 @@ public class DashboardTest extends BasicDashboard {
         panelContent.addComponent(but);
         panelContent.addComponent(new Button("Another button!"));
 
-        Panel panel = new Panel();
+        DashboardPanel panel = new DashboardPanel() {
+            @Override
+            public void onEnter() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
         panel.setSizeFull();
 
         //add everything to a panel
@@ -60,7 +65,12 @@ public class DashboardTest extends BasicDashboard {
         VerticalLayout panelContent2 = new VerticalLayout();
         panelContent2.addComponent(new Button("Test 2"));
 
-        Panel panel2 = new Panel();
+        DashboardPanel panel2 = new DashboardPanel() {
+            @Override
+            public void onEnter() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
         panel2.setContent(panelContent2);
         menu.put("test 2", panel2);
          /*

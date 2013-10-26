@@ -1,13 +1,23 @@
 package org.investovator.ui.authentication;
 
+import org.investovator.MyVaadinUI;
+
+import javax.swing.*;
+
 /**
- * Created with IntelliJ IDEA.
- * User: hasala
- * Date: 10/4/13
- * Time: 4:43 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author: Hasala Surasinghe
+ * @author : ishan
+ * @author : amila
+ * @version: ${Revision}
+ *
  */
 public class Authenticator {
+
+    public enum UserType{
+        ADMIN,
+        ORDINARY
+    }
 
     private static Authenticator authenticator;
     private boolean loggedIn;
@@ -25,16 +35,41 @@ public class Authenticator {
     }
 
     public boolean isLoggedIn() {
-        return true;
+        return loggedIn;
     }
 
     private void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
     }
 
-    public boolean authenticate(){
+    public boolean authenticate(String username, String password){
+        boolean success=false;
 
-        setLoggedIn(true);
+        if(username.isEmpty()){
+            if(password.isEmpty()){
+                //set the user as a standard user
+                ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("testUser1");
+                success=true;
+
+            }
+
+//            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("");
+//            success=true;
+
+
+        }
+        //user name for admin
+        else if(username.equalsIgnoreCase("a")){
+
+            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("admin");
+            success=true;
+        }
+
+        if(success){
+
+            setLoggedIn(true);
+        }
+
         return isLoggedIn();
 
     }
@@ -42,7 +77,18 @@ public class Authenticator {
     public String getCurrentUser(){
 
         //TODO: implement after getting rajja's user API
-        return "testUser1";
+        return ((MyVaadinUI)MyVaadinUI.getCurrent()).getUser();
+    }
+
+    public UserType getMyPrivileges(){
+        String user=getCurrentUser();
+        if(user.equalsIgnoreCase("admin")){
+            return UserType.ADMIN;
+        }
+        else {
+            return UserType.ORDINARY;
+        }
+
     }
 
 }

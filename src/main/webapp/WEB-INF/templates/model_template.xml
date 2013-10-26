@@ -54,10 +54,9 @@
                 <bean class="net.sourceforge.jabm.agent.AgentList">
                     <constructor-arg>
                         <list>
-                            <ref bean="linearCombinationTraders$stockID"/>
-                            <ref bean="noiseTraders$stockID"/>
-                            <ref bean="fundamentalistTraders$stockID"/>
-                            <ref bean="chartistTraders$stockID"/>
+                            <agent-list>
+                                <!--Auto fill-->
+                            </agent-list>
                         </list>
                     </constructor-arg>
                 </bean>

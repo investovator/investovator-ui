@@ -8,7 +8,7 @@
         <!--Auto Fill Imports-->
     </file-imports>
 
-    <bean id="simulationManager" class="org.investovator.multiasset.simulation.MultiAssetSimulationManager"
+    <bean id="simulationManager" class="org.investovator.jasa.multiasset.simulation.HeadlessMultiAssetSimulationManager"
           scope="singleton">
         <property name="simulations">
             <list>
@@ -27,8 +27,24 @@
     </bean>
 
 
+    <!--Define Beans here that should be one for simulation-->
+
     <bean id="fileNamePrefix" class="net.sourceforge.jabm.util.MutableStringWrapper"
           scope="singleton">
         <constructor-arg value="data/" />
+    </bean>
+
+
+    <!--Hv to ask rajja whether this needed only one :(:)-->
+    <bean id="prng" class="cern.jet.random.engine.MersenneTwister64" scope="prototype">
+        <constructor-arg>
+            <bean class="java.util.Date"/>
+        </constructor-arg>
+    </bean>
+
+
+    <!-- Transaction prices are set to the price of the ask -->
+    <bean id="stockMarketTimePriorityPricingPolicy" scope="simulation"
+          class="net.sourceforge.jasa.market.rules.StockMarketTimePriorityPricingPolicy">
     </bean>
 </beans>

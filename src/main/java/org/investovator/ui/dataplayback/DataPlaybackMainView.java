@@ -25,6 +25,9 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.OHLCDataPLayer;
 import org.investovator.dataplaybackengine.RealTimeDataPlayer;
@@ -36,6 +39,7 @@ import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPLaybackEngineGameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.dataplayback.wizards.NewDataPlaybackGameWizard;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -46,7 +50,7 @@ import java.util.Observer;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DataPlaybackMainView extends Panel implements Observer {
+public class DataPlaybackMainView extends DashboardPanel implements Observer {
 
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
@@ -384,6 +388,12 @@ public class DataPlaybackMainView extends Panel implements Observer {
                 }
 
 
+                //mark the game as started
+                try {
+                    GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
+                } catch (GameProgressingException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
         });
 
@@ -765,5 +775,10 @@ public class DataPlaybackMainView extends Panel implements Observer {
         }
 
 
+    }
+
+    @Override
+    public void onEnter() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

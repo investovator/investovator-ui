@@ -1,5 +1,6 @@
 package org.investovator;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -7,6 +8,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
+import org.investovator.ui.agentgaming.AgentDashboard;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.dataplayback.DataPlaybackDashboard;
@@ -18,6 +20,7 @@ import org.investovator.ui.utils.UIConstants;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("dashboard")
+//@PreserveOnRefresh
 @SuppressWarnings("serial")
 @Push
 public class MyVaadinUI extends UI
@@ -29,10 +32,14 @@ public class MyVaadinUI extends UI
     }
 
     private Navigator navigator;
+    private static String userName="userName";
 
 
     @Override
     protected void init(VaadinRequest request) {
+
+        this.setStyleName("main-view");
+
         getPage().setTitle("investovator | Gaming Framework");
 
         // Create a navigator to control the views
@@ -45,6 +52,7 @@ public class MyVaadinUI extends UI
         navigator.addView(UIConstants.DATAPLAYVIEW, new DataPlaybackDashboard());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
         navigator.addView(UIConstants.NNGAMINGVIEW, new NNGamingDashBoard());
+        navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
 
         //test JASA code
 //        Main main=new Main();
@@ -52,5 +60,19 @@ public class MyVaadinUI extends UI
 //        v[0]="d";
 //        main.main(v);
     }
+
+    public String getUser() {
+        return (String)getSession().getAttribute(userName);
+    }
+
+    public void setUser(String user) {
+        getSession().setAttribute(userName,user);
+    }
+
+//    private String user;
+
+
+
+
 
 }

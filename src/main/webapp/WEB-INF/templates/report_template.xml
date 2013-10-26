@@ -6,7 +6,7 @@
         <report name="Price Time Series">
             <bean-name>gbmPriceProcess$stockID</bean-name>
             <bean-name>gbmPriceTimeSeriesReport$stockID</bean-name>
-            <bean-name>priceTimeSeriesChart$stockID</bean-name>
+            <bean-name>currentPriceReportVariables$stockID</bean-name>
         </report>
     </reports>
 

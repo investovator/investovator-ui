@@ -15,6 +15,7 @@ public abstract class GlobalView extends VerticalLayout implements View
 
     protected GlobalView() {
         authenticator = Authenticator.getInstance();
+        this.setStyleName("main-view");
     }
 
     @Override
