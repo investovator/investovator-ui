@@ -159,8 +159,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     @Override
     public void onEnterMainView() {
         try {
-            DataPlayerFacade.getInstance().getRealTimeDataPlayer().joinGame();
-            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
+            DataPlayerFacade.getInstance().getRealTimeDataPlayer().joinGame(this);
+//            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
