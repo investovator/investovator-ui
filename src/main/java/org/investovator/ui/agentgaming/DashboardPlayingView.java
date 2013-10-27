@@ -68,11 +68,6 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         //new Thread(watchList).start();
 
-        try {
-            companyData =  new CompanyDataImpl();
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -242,6 +237,12 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
     @Override
     public void onEnter() {
+
+        try {
+            companyData =  new CompanyDataImpl();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
         quoteUI.update();
 
