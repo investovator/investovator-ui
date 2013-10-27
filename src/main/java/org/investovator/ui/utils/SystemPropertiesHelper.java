@@ -1,7 +1,16 @@
 package org.investovator.ui.utils;
 
+import org.investovator.core.data.api.CompanyData;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
+import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
+import org.investovator.core.data.api.utils.StockTradingData;
+import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.core.data.rssexplorer.RSSManager;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import java.io.File;
 import java.util.Enumeration;
 
 /**
@@ -35,11 +44,53 @@ public class SystemPropertiesHelper implements
             String realPath = context.getRealPath(value);
             System.out.println("Setting : " + param + " --> " + realPath);
             System.setProperty(param, realPath);
-
-
         }
 
         System.setProperty("DATA_FOL", context.getRealPath("data"));
+
+        System.setProperty("org.investovator.core.data.cassandra.url", "localhost:9160" );
+        System.setProperty("org.investovator.core.data.cassandra.username", "admin" );
+        System.setProperty("org.investovator.core.data.cassandra.password", "admin" );
+
+
+        System.setProperty("org.investovator.core.data.mysql.url", "localhost:3306" );
+        System.setProperty("org.investovator.core.data.mysql.username", "root" );
+        System.setProperty("org.investovator.core.data.mysql.password", "root" );
+        System.setProperty("org.investovator.core.data.mysql.database", "investovator_data" );
+        System.setProperty("org.investovator.core.data.mysql.driverclassname", "com.mysql.jdbc.Driver" );
+
+
+        String realPath = context.getRealPath("/WEB-INF/configuration/investovator.sql");
+        System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
+        System.out.println("SQL Path : " + realPath);
+
+        //clearOldData();
+
+        //UnComment this
+        //addTestConfig();
+
+    }
+
+
+    private void clearOldData(){
+        CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+        try {
+            historyData.clearAllTradingData(CompanyStockTransactionsData.DataType.OHLC);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addTestConfig(){
+
+        CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+        try {
+            String filePath = context.getRealPath("/WEB-INF/testdata/sampath.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",new File(filePath));
+            new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public void contextDestroyed(ServletContextEvent event) {

@@ -44,7 +44,7 @@ public class StockSelectView implements WizardStep{
 
     public StockSelectView() {
 
-        companyData = new CompanyDataImpl();
+        /*companyData = new CompanyDataImpl();
 
         try {
             stockIDList = companyData.getAvailableStockIds();
@@ -75,7 +75,7 @@ public class StockSelectView implements WizardStep{
         });
 
         content = new VerticalLayout();
-        content.addComponent(stockSelectList);
+        content.addComponent(stockSelectList);*/
     }
 
     @Override
