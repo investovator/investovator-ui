@@ -24,6 +24,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.events.*;
@@ -110,7 +111,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
-                    Boolean status= DataPlayerFacade.getInstance().
+                    Boolean status= new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                             getRealTimeDataPlayer().executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
                     Notification.show(status.toString());
@@ -160,6 +161,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void onEnterMainView() {
         try {
             DataPlayerFacade.getInstance().getRealTimeDataPlayer().joinGame(this);
+//            System.out.println("ui join -->"+this.toString());
 //            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
