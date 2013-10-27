@@ -1,7 +1,16 @@
 package org.investovator.ui.utils;
 
+import org.investovator.core.data.api.CompanyData;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
+import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
+import org.investovator.core.data.api.utils.StockTradingData;
+import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.core.data.rssexplorer.RSSManager;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import java.io.File;
 import java.util.Enumeration;
 
 /**
@@ -39,7 +48,7 @@ public class SystemPropertiesHelper implements
 
         System.setProperty("DATA_FOL", context.getRealPath("data"));
 
-        System.setProperty("org.investovator.core.data.cassandra.url", "localhost:9171" );
+        System.setProperty("org.investovator.core.data.cassandra.url", "localhost:9160" );
         System.setProperty("org.investovator.core.data.cassandra.username", "admin" );
         System.setProperty("org.investovator.core.data.cassandra.password", "admin" );
 
@@ -55,9 +64,32 @@ public class SystemPropertiesHelper implements
         System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
         System.out.println("SQL Path : " + realPath);
 
+        //clearOldData();
+        addTestConfig();
+
     }
 
 
+    private void clearOldData(){
+        CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+        try {
+            historyData.clearAllTradingData(CompanyStockTransactionsData.DataType.OHLC);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addTestConfig(){
+
+        CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+        try {
+            String filePath = context.getRealPath("/WEB-INF/testdata/sampath.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",new File(filePath));
+            new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void contextDestroyed(ServletContextEvent event) {
     }
