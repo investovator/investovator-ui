@@ -24,6 +24,10 @@ import com.vaadin.ui.*;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
+import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.utils.UIConstants;
@@ -175,7 +179,13 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 @Override
                 protected void handleFile(File file, String s, String s2, long l) {
 
-                    //file.renameTo(new File("/home/amila/"+s) );
+                    CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+                    try {
+                        historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",file);
+                        new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
+                    } catch (DataAccessException e) {
+                        e.printStackTrace();
+                    }
 
                     synchronized (UI.getCurrent()){
                         content.addComponent(new Label(s));
