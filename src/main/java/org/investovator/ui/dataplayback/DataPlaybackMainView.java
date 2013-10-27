@@ -35,7 +35,7 @@ import org.investovator.dataplaybackengine.exceptions.*;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DataPlayer;
-import org.investovator.dataplaybackengine.player.OHLCDataPLayer;
+import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
@@ -60,7 +60,7 @@ public class DataPlaybackMainView extends DashboardPanel implements PlaybackEven
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
 
-    OHLCDataPLayer ohlcPLayer;
+    DailySummaryDataPLayer ohlcPLayer;
     RealTimeDataPlayer realTimePlayer;
 
     DataPlayerFacade playerFacade;
@@ -224,7 +224,7 @@ public class DataPlaybackMainView extends DashboardPanel implements PlaybackEven
 
             try {
                 playerFacade.createPlayer(PlayerTypes.DAILY_SUMMARY_PLAYER,DataPlaybackEngineStates.playingSymbols,
-                        DataPlaybackEngineStates.gameStartDate,attributes,TradingDataAttribute.PRICE);
+                        DataPlaybackEngineStates.gameStartDate,attributes,TradingDataAttribute.PRICE,true);
                 ohlcPLayer = playerFacade.getDailySummaryDataPLayer();
 //                ohlcPLayer.setStartDate(DataPlaybackEngineStates.gameStartDate);
             }
@@ -249,12 +249,16 @@ public class DataPlaybackMainView extends DashboardPanel implements PlaybackEven
             attributes.add(TradingDataAttribute.SHARES);
 
             playerFacade.createPlayer(PlayerTypes.REAL_TIME_DATA_PLAYER,DataPlaybackEngineStates.playingSymbols,
-                    DataPlaybackEngineStates.gameStartDate, attributes,TradingDataAttribute.PRICE);
+                    DataPlaybackEngineStates.gameStartDate, attributes,TradingDataAttribute.PRICE,true);
 
             realTimePlayer = playerFacade.getRealTimeDataPlayer();
 
             //set myself as an observer
-            realTimePlayer.setObserver(this);
+            try {
+                realTimePlayer.joinGame(this);
+            } catch (UserAlreadyJoinedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
 
 
         }
@@ -354,7 +358,7 @@ public class DataPlaybackMainView extends DashboardPanel implements PlaybackEven
                     DataSeries series = (DataSeries) ohlcChart.getConfiguration().getSeries().get(0);
                     try {
                         //join the game
-                        ohlcPLayer.joinGame();
+                        ohlcPLayer.joinSingleplayerGame();
                         StockUpdateEvent[] events=ohlcPLayer.startGame();
                         series.add(new DataSeriesItem(ohlcPLayer.getToday(), events[0].
                                 getData().get(TradingDataAttribute.PRICE)));
@@ -392,7 +396,7 @@ public class DataPlaybackMainView extends DashboardPanel implements PlaybackEven
                 //if a ticker based game
                 else if (DataPlaybackEngineStates.currentGameMode == PlayerTypes.REAL_TIME_DATA_PLAYER) {
                     try {
-                        realTimePlayer.joinGame();
+                        realTimePlayer.joinGame(null);
                     } catch (UserAlreadyJoinedException e) {
                         Notification.show(e.getMessage());
                     }

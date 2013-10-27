@@ -98,7 +98,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         //initialize the necessary player
         DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.currentGameMode,
                 DataPlaybackEngineStates.playingSymbols,DataPlaybackEngineStates.gameStartDate,attributes,
-                TradingDataAttribute.PRICE);
+                TradingDataAttribute.PRICE,true);
 
         //start the game now
         if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){

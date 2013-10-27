@@ -21,7 +21,6 @@ package org.investovator.ui.dataplayback.user.dashboard.dailysummary;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
-import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
@@ -33,11 +32,8 @@ import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
-import org.investovator.dataplaybackengine.player.OHLCDataPLayer;
-import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
-import org.investovator.ui.utils.dashboard.DashboardPanel;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 /**
