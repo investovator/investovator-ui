@@ -69,7 +69,6 @@ public class ReportHelper {
         }
 
         reports = simulationFacade.getReports();
-        //currentPriceReports.put("GOOG", getCurrentPriceReport("GOOG"));
 
         try {
             Collection<String> stocks =  companyData.getAvailableStockIds();

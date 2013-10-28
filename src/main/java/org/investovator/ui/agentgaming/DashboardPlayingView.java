@@ -27,6 +27,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.jasa.api.JASAFacade;
@@ -47,6 +48,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     ReportHelper reportHelper;
     MarketFacade simulationFacade = JASAFacade.getMarketFacade();
     CompanyData companyData = null;
+    UserData userData;
 
     //Layout Components
     GridLayout content;
@@ -54,6 +56,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     Chart currentPriceChart;
     WatchList watchList;
     QuoteUI quoteUI;
+    PortfolioSummary portfolioSummary;
 
     boolean simulationRunning = false;
 
@@ -74,8 +77,6 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
     private void createUI(){
 
-
-
         //Setup Layout
         content = new GridLayout();
         content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
@@ -83,60 +84,25 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         content.setColumns(2);
 
 
+        //Portfolio Summary
+        portfolioSummary = new PortfolioSummary();
+
+
         //QuoteUI
         quoteUI = new QuoteUI(companyData);
 
-
-        Button test = new Button("Start");
-        Button stop = new Button("Stop");
-        Button reports = new Button("Init Reports");
-
-        reports.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                reportHelper.initReports();
-                simulationRunning = true;
-
-                simulationFacade.addListener("GOOG",watchList);
-                simulationFacade.addListener("IBM",watchList);
-                simulationFacade.addListener("SAMP",watchList);
-
-            }
-        });
-
-        test.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                //testing
-                simulationFacade = JASAFacade.getMarketFacade();
-                simulationFacade.startSimulation();
-                simulationRunning = true;
-
-            }
-        });
-
-
-        stop.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                simulationFacade.terminateSimulation();
-            }
-        });
 
 
         watchListTable = getTable();
         currentPriceChart = getChart();
 
-        VerticalLayout buttons = new VerticalLayout();
-        buttons.addComponent(test);
-        buttons.addComponent(stop);
-        buttons.addComponent(reports);
 
 
         //Adding to main layout
         content.addComponent(watchListTable);
         content.addComponent(currentPriceChart);
         content.addComponent(quoteUI);
+        content.addComponent(portfolioSummary);
         content.setComponentAlignment(watchListTable,Alignment.MIDDLE_CENTER);
         content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
         //content.addComponent(buttons);
@@ -238,6 +204,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     @Override
     public void onEnter() {
 
+
         try {
             companyData =  new CompanyDataImpl();
         } catch (DataAccessException e) {
@@ -245,6 +212,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         }
 
         quoteUI.update();
+        portfolioSummary.update();
 
         reportHelper.initReports();
         simulationRunning = true;
@@ -254,10 +222,18 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
             availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
             for(String stock : availableStocks){
                 simulationFacade.addListener(stock,watchList);
+                simulationFacade.addListener(stock, AgentUIUpdater.getInstance());
+
             }
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
+
+
+        //Subscribe to listeners
+        AgentUIUpdater.getInstance().addListener(portfolioSummary);
+
+
     }
 }
 
