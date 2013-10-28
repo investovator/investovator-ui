@@ -44,6 +44,26 @@ public class StockSelectView implements WizardStep{
 
     public StockSelectView() {
 
+        stockSelectList = new ListSelect("Select Stock for Game");
+
+        stockSelectList.setNullSelectionAllowed(false);
+
+        stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+
+                selectedStock = (String) valueChangeEvent.getProperty().getValue();
+            }
+        });
+
+        content = new VerticalLayout();
+        content.addComponent(stockSelectList);
+    }
+
+    public void update(){
+
+        stockSelectList.removeAllItems();
+
         try {
             companyData = new CompanyDataImpl();
         } catch (DataAccessException e) {
@@ -56,11 +76,6 @@ public class StockSelectView implements WizardStep{
             e.printStackTrace();
         }
 
-        stockSelectList = new ListSelect("Select Stock for Game");
-
-        stockSelectList.setNullSelectionAllowed(false);
-
-
         for (Iterator<String> iterator = stockIDList.iterator(); iterator.hasNext(); ) {
 
             String next = iterator.next();
@@ -69,17 +84,6 @@ public class StockSelectView implements WizardStep{
         }
 
         stockSelectList.setValue(stockIDList.get(0));
-
-        stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-
-                selectedStock = (String) valueChangeEvent.getProperty().getValue();
-            }
-        });
-
-        content = new VerticalLayout();
-        content.addComponent(stockSelectList);
     }
 
     @Override

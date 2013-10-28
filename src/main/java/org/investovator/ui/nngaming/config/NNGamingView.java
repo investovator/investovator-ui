@@ -61,6 +61,7 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
+        stockSelect.update();
 
     }
 
