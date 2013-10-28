@@ -38,6 +38,8 @@ import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -160,7 +162,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     @Override
     public void onEnterMainView() {
         try {
-            DataPlayerFacade.getInstance().getRealTimeDataPlayer().joinGame(this);
+            new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getRealTimeDataPlayer().joinGame(this);
 //            System.out.println("ui join -->"+this.toString());
 //            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
@@ -263,16 +265,44 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 //add the new percentages
                 for(String beanId:beans.getItemIds()){
                     if(k==beans.getItemIds().size()-1){
-                        dSeries.add(new DataSeriesItem(beanId,100-totalPer));
+
+                        float value = 100-totalPer;
+
+                        NumberFormat nf = new DecimalFormat();
+                        nf.setMaximumFractionDigits(1);
+                        nf.setMinimumFractionDigits(1);
+                        String formattedNum = nf.format(value);
+                        System.out.println(Float.parseFloat(formattedNum));
+
+                        dSeries.remove(dSeries.get(beanId));
+
+                        dSeries.add(new DataSeriesItem(beanId,Float.parseFloat(formattedNum)));
+                        dSeries.update(dSeries.get(beanId));
+//                        System.out.println(100-totalPer);
                     }
                     else{
+
+                        float value = ((beans.getItem(beanId).getBean().getPrice())/total)*100;
+
+//                        System.out.println("before - "+value);
+
+                        NumberFormat nf = new DecimalFormat();
+                        nf.setMaximumFractionDigits(1);
+                        nf.setMinimumFractionDigits(1);
+                        String formattedNum = nf.format(value);
+                        System.out.println(Float.parseFloat(formattedNum));
+
+                        dSeries.remove(dSeries.get(beanId));
+
                         dSeries.add(new DataSeriesItem(beanId,
-                                ((beans.getItem(beanId).getBean().getPrice())/total)*100));
+                                Float.parseFloat(formattedNum)));
 
 
 
 //                                        System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
                         totalPer+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
+                        dSeries.update(dSeries.get(beanId));
+
 
                     }
 
@@ -283,11 +313,15 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     //k+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
                     k++;
                 }
+
+                System.out.println("================");
+
 //                                System.out.println("+++++++++++++++++++++++++++++++++++");
 //                                System.out.println(k);
 
 
                 stockPieChart.setImmediate(true);
+                stockPieChart.drawChart();
 
 //                                System.out.println(event.getStockId());
 //                                System.out.println((event.getData().get(TradingDataAttribute.PRICE))/10);
