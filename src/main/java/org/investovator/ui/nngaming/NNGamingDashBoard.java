@@ -19,7 +19,9 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
@@ -49,7 +51,7 @@ public class NNGamingDashBoard extends BasicDashboard{
 
         if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN) getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
 
-        if(instance.getCurrentGameMode()!= GameModes.AGENT_GAME || instance.getCurrentGameState()!= GameStates.RUNNING){
+        if(instance.getCurrentGameMode()!= GameModes.NN_GAME || instance.getCurrentGameState()!= GameStates.RUNNING){
             Notification.show("No Neural Network Game is Configured");
             getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
         }
@@ -60,6 +62,20 @@ public class NNGamingDashBoard extends BasicDashboard{
         LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
         mainDashView = new DashboardPlayingView();
         menuList.put("my dashboard", mainDashView);
+
+        VerticalLayout panelContent2 = new VerticalLayout();
+        panelContent2.addComponent(new Button("Test 2"));
+
+        DashboardPanel panel2 = new DashboardPanel() {
+            @Override
+            public void onEnter() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
+        panel2.setContent(panelContent2);
+        menuList.put("test 2", panel2);
+
+
         return menuList;
     }
 }

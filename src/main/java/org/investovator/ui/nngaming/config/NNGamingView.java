@@ -102,7 +102,7 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
 
         nnManager.createNeuralNetwork();*/
 
-        getUI().getNavigator().navigateTo(UIConstants.NNGAMINGVIEW);
+        getUI().getNavigator().navigateTo(UIConstants.NN_DASH_VIEW);
 
     }
 

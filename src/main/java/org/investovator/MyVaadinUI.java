@@ -7,8 +7,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
-import org.apache.commons.configuration.ConfigurationException;
-import org.investovator.core.commons.configuration.ConfigLoader;
 import org.investovator.ui.agentgaming.AgentDashboard;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.LoginView;
@@ -17,7 +15,6 @@ import org.investovator.ui.dataplayback.user.dashboard.UserDashboardLoader;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingDashBoard;
 import org.investovator.ui.nngaming.config.NNGamingView;
-import org.investovator.ui.utils.ConfigHelper;
 import org.investovator.ui.utils.UIConstants;
 
 import javax.servlet.annotation.WebServlet;
@@ -67,7 +64,7 @@ public class MyVaadinUI extends UI
         navigator.addView(UIConstants.DATAPLAY_USR_DASH, new UserDashboardLoader());
         navigator.addView(UIConstants.DATA_PLAYBACK_ADMIN_DASH,new AdminDashboardLoader());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
-        navigator.addView(UIConstants.NNGAMINGVIEW, new NNGamingDashBoard());
+        navigator.addView(UIConstants.NN_DASH_VIEW, new NNGamingDashBoard());
         navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
 
         //test JASA code
