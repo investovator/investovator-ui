@@ -1,5 +1,7 @@
 package org.investovator.ui.utils;
 
+import org.investovator.core.commons.utils.Portfolio;
+import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.data.api.*;
 import org.investovator.core.data.api.utils.StockTradingData;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -89,9 +91,15 @@ public class SystemPropertiesHelper implements
             e.printStackTrace();
         }
 
+
+
         try {
             UserData userData =  new UserDataImpl();
             userData.addToWatchList("testUser1", "SAMP");
+
+            Portfolio portfolio = new PortfolioImpl("testUser1", 1000000, 0);
+            userData.updateUserPortfolio("testUser1",portfolio);
+
 
         } catch (DataAccessException e) {
             e.printStackTrace();
