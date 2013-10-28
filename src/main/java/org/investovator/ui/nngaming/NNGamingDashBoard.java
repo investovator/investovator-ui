@@ -19,8 +19,12 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Notification;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.enums.GameStates;
+import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -32,39 +36,30 @@ import java.util.LinkedHashMap;
  */
 public class NNGamingDashBoard extends BasicDashboard{
 
+    DashboardPlayingView mainDashView;
+
     public NNGamingDashBoard() {
-        super("<span><center>investovator</center></span> Stock Market");
+        super("<span><center>investovator</center></span>Dashboard");
     }
+
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GameControllerFacade instance =   GameControllerFacade.getInstance();
+
+        if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN) getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+
+        if(instance.getCurrentGameMode()!= GameModes.AGENT_GAME || instance.getCurrentGameState()!= GameStates.RUNNING){
+            Notification.show("No Neural Network Game is Configured");
+            getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+        }
     }
 
     @Override
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
-        LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
-
-        //map.put("main view", new DataPlaybackMainView());
-
-        /*
-        Example Button 2
-         */
-        VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
-
-        DashboardPanel panel2 = new DashboardPanel() {
-            @Override
-            public void onEnter() {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
-        panel2.setContent(panelContent2);
-        map.put("test 2", panel2);
-         /*
-        End of Example Button 2
-         */
-
-        return map;
+        LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
+        mainDashView = new DashboardPlayingView();
+        menuList.put("my dashboard", mainDashView);
+        return menuList;
     }
 }
