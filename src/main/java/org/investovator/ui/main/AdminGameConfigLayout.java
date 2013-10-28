@@ -24,9 +24,16 @@ import com.vaadin.ui.*;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
+import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.utils.UIConstants;
+import org.vaadin.easyuploads.MultiFileUpload;
+
+import java.io.File;
 
 /**
  * @author: ishan
@@ -145,6 +152,64 @@ public class AdminGameConfigLayout extends VerticalLayout {
         this.addComponent(agentLayout);
         this.addComponent(dataPlaybackLayout);
         this.addComponent(annLayout);
+
+
+
+        //Configuration Popup
+        Button setConfig = new Button("Config");
+
+        setConfig.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                getUI().addWindow(new UploadWindow("Select Data Files"));
+            }
+        });
+
+        this.addComponent(setConfig);
+    }
+
+    private class UploadWindow extends Window {
+
+        private UploadWindow(String caption) {
+            super(caption);
+
+            final VerticalLayout content = new VerticalLayout();
+
+            MultiFileUpload uploder = new MultiFileUpload() {
+                @Override
+                protected void handleFile(File file, String s, String s2, long l) {
+
+                    CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+                    try {
+                        historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",file);
+                        new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
+                    } catch (DataAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                    synchronized (UI.getCurrent()){
+                        content.addComponent(new Label(s));
+                    }
+
+                }
+
+                @Override
+                protected boolean supportsFileDrops(){
+                    return false;
+                }
+
+
+            };
+
+            uploder.setUploadButtonCaption("Choose Files");
+            uploder.setImmediate(true);
+
+            content.addComponent(uploder);
+
+            this.setContent(content);
+            this.setResizable(false);
+            this.center();
+        }
     }
 
 

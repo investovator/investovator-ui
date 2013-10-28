@@ -26,16 +26,6 @@ public class StockSelectView implements WizardStep {
     public StockSelectView() {
         stockSelectList = new TwinColSelect("Select Stocks for Game");
 
-        try {
-            Collection<String> availableStocks = new CompanyDataImpl().getAvailableStockIds();
-
-            for(String stockID :availableStocks){
-                stockSelectList.addItem(stockID);
-            }
-
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
 
         stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -60,6 +50,21 @@ public class StockSelectView implements WizardStep {
 
         content = new VerticalLayout();
         content.addComponent(stockSelectList);
+    }
+
+    public void update(){
+        stockSelectList.removeAllItems();
+
+        try {
+            Collection<String> availableStocks = new CompanyDataImpl().getAvailableStockIds();
+
+            for(String stockID :availableStocks){
+                stockSelectList.addItem(stockID);
+            }
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

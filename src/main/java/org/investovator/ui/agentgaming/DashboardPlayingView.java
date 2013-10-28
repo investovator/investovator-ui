@@ -46,8 +46,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     //External Data
     ReportHelper reportHelper;
     MarketFacade simulationFacade = JASAFacade.getMarketFacade();
-    CompanyData companyData = new CompanyDataImpl();
-
+    CompanyData companyData = null;
 
     //Layout Components
     GridLayout content;
@@ -68,6 +67,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         watchList.addStockChangeListener(this);
 
         //new Thread(watchList).start();
+
 
     }
 
@@ -237,14 +237,27 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
     @Override
     public void onEnter() {
+
+        try {
+            companyData =  new CompanyDataImpl();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
+        quoteUI.update();
+
         reportHelper.initReports();
         simulationRunning = true;
 
-        Collection<String> availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
-        for(String stock : availableStocks){
-            simulationFacade.addListener(stock,watchList);
+        Collection<String> availableStocks = null;
+        try {
+            availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
+            for(String stock : availableStocks){
+                simulationFacade.addListener(stock,watchList);
+            }
+        } catch (DataAccessException e) {
+            e.printStackTrace();
         }
-
     }
 }
 

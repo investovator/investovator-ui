@@ -66,8 +66,31 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+         stockSelect.update();
+    }
 
+    boolean configSet=false;
 
+    private void setConfigGeneratorProp(){
+
+        String outputPath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/config";
+        mainXmlOutputFile = outputPath + "/main.xml" ;
+        configGenerator = new ConfigGenerator(stockSelect.getSelectedStocks(), outputPath);
+
+        String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+        String templateFile = basepath + "/WEB-INF/templates/model_template.xml";
+        String reportTemplateFile =  basepath + "/WEB-INF/templates/report_template.xml";
+        String mainTemplateFile =  basepath + "/WEB-INF/templates/main_template.xml";
+        String beanTemplateFile =  basepath + "/WEB-INF/templates/bean-config-template.xml";
+        String propertiesFile = basepath +  "/WEB-INF/configuration/config.properties";
+
+        configGenerator.setModelTemlpateFile(templateFile);
+        configGenerator.setReportTemlpateFile(reportTemplateFile);
+        configGenerator.setMainTemplateFile(mainTemplateFile);
+        configGenerator.setSpringBeanConfigTemplate(beanTemplateFile);
+        configGenerator.setProperties(propertiesFile);
+
+        configSet=true;
     }
 
 
@@ -77,22 +100,8 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
         WizardStep step = event.getActivatedStep();
 
         if (step instanceof AgentSelectView) {
-            String outputPath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/config";
-            mainXmlOutputFile = outputPath + "/main.xml" ;
-            configGenerator = new ConfigGenerator(stockSelect.getSelectedStocks(), outputPath);
 
-            String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-            String templateFile = basepath + "/WEB-INF/templates/model_template.xml";
-            String reportTemplateFile =  basepath + "/WEB-INF/templates/report_template.xml";
-            String mainTemplateFile =  basepath + "/WEB-INF/templates/main_template.xml";
-            String beanTemplateFile =  basepath + "/WEB-INF/templates/bean-config-template.xml";
-            String propertiesFile = basepath +  "/WEB-INF/configuration/config.properties";
-
-            configGenerator.setModelTemlpateFile(templateFile);
-            configGenerator.setReportTemlpateFile(reportTemplateFile);
-            configGenerator.setMainTemplateFile(mainTemplateFile);
-            configGenerator.setSpringBeanConfigTemplate(beanTemplateFile);
-            configGenerator.setProperties(propertiesFile);
+            if (!configSet) setConfigGeneratorProp();
 
             String[] availableAgents = configGenerator.getSupportedAgentTypes();
 
@@ -103,8 +112,6 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
             ((AgentPctView) step).setAgents(agentSelect.getSelectedAgents());
         }
-
-
     }
 
     @Override
