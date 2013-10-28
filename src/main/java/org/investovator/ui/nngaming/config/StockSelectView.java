@@ -44,7 +44,11 @@ public class StockSelectView implements WizardStep{
 
     public StockSelectView() {
 
-        companyData = new CompanyDataImpl();
+        try {
+            companyData = new CompanyDataImpl();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
         try {
             stockIDList = companyData.getAvailableStockIds();
