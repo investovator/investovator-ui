@@ -21,8 +21,13 @@ package org.investovator.ui.dataplayback.admin.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.dataplaybackengine.DataPlayerFacade;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
+import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
@@ -42,21 +47,27 @@ public class AdminDashboardLoader extends BasicDashboard{
     @Override
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
         LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
+        try{
+        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+            if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
+                Notification.show("Not implemented-load admin summary view");
 
-//        //if this is a daily summary data game
-//        if(DataPlaybackEngineStates.currentGameMode== DataPLaybackEngineGameTypes.OHLC_BASED){
-//            //todo - Load a summary view for the admin
-//            map.put("main view", new DataPlaybackMainView());
-//        }
-//        //if this is a real time data game
-//        else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
-//
-//        }
-
-        //todo - if multiplayer && (REAL time || Daily Summary) - load the admin dashboard
-
-        //todo- else if single player && dailsy summary
-        map.put("main view", new DailySummarySinglePlayerMainView());
+            }
+//            else{
+//                map.put("main view", new RealTimeMainView());
+//            }
+        }
+        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+            if(DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
+                Notification.show("Not implemented-load admin summary view");
+            }
+//            else{
+//                map.put("main view", new DailySummarySinglePlayerMainView());
+//            }
+        }
+        }catch (PlayerStateException ex){
+            ex.printStackTrace();
+        }
 
 
         VerticalLayout panelContent2 = new VerticalLayout();

@@ -92,9 +92,12 @@ public class AdminGameConfigLayout extends VerticalLayout {
                         try {
                             //if the game is multi player
                             if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
-                                //todo - load the summary view
+                                //todo - load the summary view --  from DATA_PLAYBACK_ADMIN_DASH?
+                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+
                             }
                             else{
+                                //loads single player real time data playback view
                                 getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
                             }
                         } catch (PlayerStateException e) {
@@ -103,17 +106,18 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
                     }
                     else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
-//                        try {
+                        try {
                             //if this is a multiplayer game
-//                            if (DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
+                            if (DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
                                 getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
-//                            }
-//                            else{
-//                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
-//                            }
-//                        } catch (PlayerStateException e) {
-//                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                        }
+                            }
+                            else{
+                                //loads single player daily summary data playback view
+                                getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                            }
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
                     }
 //                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
 
