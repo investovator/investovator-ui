@@ -35,6 +35,8 @@ public class DataPlaybackEngineStates {
 
     //stores the game start date
     public static Date gameStartDate;
+
+    public static boolean isMultiplayer;
 }
 
 
