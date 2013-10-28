@@ -26,7 +26,6 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
@@ -41,7 +40,7 @@ import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DailySummaryMainView extends BasicMainView {
+public class DailySummarySinglePlayerMainView extends BasicMainView {
 
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
@@ -50,13 +49,13 @@ public class DailySummaryMainView extends BasicMainView {
 //    private DataPlayerFacade playerFacade;
 
     //used in ticker data observing
-    DailySummaryMainView mySelf;
+    DailySummarySinglePlayerMainView mySelf;
 
 
     //to store every component
     GridLayout content;
 
-    public DailySummaryMainView() {
+    public DailySummarySinglePlayerMainView() {
         //set a link to this class
         mySelf = this;
 

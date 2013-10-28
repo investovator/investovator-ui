@@ -22,7 +22,7 @@ package org.investovator.ui.dataplayback.admin.dashboard;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
-import org.investovator.ui.dataplayback.DataPlaybackMainView;
+import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
@@ -45,13 +45,19 @@ public class AdminDashboardLoader extends BasicDashboard{
 
 //        //if this is a daily summary data game
 //        if(DataPlaybackEngineStates.currentGameMode== DataPLaybackEngineGameTypes.OHLC_BASED){
-//            //todo - load DAilySummaryMainView
-            map.put("main view", new DataPlaybackMainView());
+//            //todo - Load a summary view for the admin
+//            map.put("main view", new DataPlaybackMainView());
 //        }
 //        //if this is a real time data game
 //        else if(DataPlaybackEngineStates.currentGameMode==DataPLaybackEngineGameTypes.TICKER_BASED){
 //
 //        }
+
+        //todo - if multiplayer && (REAL time || Daily Summary) - load the admin dashboard
+
+        //todo- else if single player && dailsy summary
+        map.put("main view", new DailySummarySinglePlayerMainView());
+
 
         VerticalLayout panelContent2 = new VerticalLayout();
         panelContent2.addComponent(new Button("Test 2"));

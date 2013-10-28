@@ -172,6 +172,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
