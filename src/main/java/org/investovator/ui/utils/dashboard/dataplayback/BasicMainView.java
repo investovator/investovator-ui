@@ -116,6 +116,9 @@ public abstract class BasicMainView extends DashboardPanel {
 
         //set the column order
         table.setVisibleColumns(new Object[]{"stockID", "price"});
+        table.setColumnHeader("stockID","Symbols");
+        table.setColumnHeader("price","Price");
+
 
         return table;
     }
