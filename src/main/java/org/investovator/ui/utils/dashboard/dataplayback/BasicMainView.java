@@ -198,10 +198,11 @@ public abstract class BasicMainView extends DashboardPanel {
         conf.setSeries(series);
 
         conf.disableCredits();
-        //turn off animation
-        conf.getChart().setAnimation(false);
+
 
         chart.drawChart(conf);
+        //turn off animation
+        conf.getChart().setAnimation(false);
         chart.setWidth("90%");
         chart.setHeight(65,Unit.MM);
 
