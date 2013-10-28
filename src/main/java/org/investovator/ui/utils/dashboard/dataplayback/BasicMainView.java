@@ -116,6 +116,9 @@ public abstract class BasicMainView extends DashboardPanel {
 
         //set the column order
         table.setVisibleColumns(new Object[]{"stockID", "price"});
+        table.setColumnHeader("stockID","Symbols");
+        table.setColumnHeader("price","Price");
+
 
         return table;
     }
@@ -155,16 +158,6 @@ public abstract class BasicMainView extends DashboardPanel {
 
         formContent.addComponent(form);
 
-
-
-
-
-
-
-
-
-
-
         HorizontalLayout bBar=getBuySellForumButtons(stocksList,quantity,orderSide);
         formContent.addComponent(bBar);
         formContent.setComponentAlignment(bBar,Alignment.BOTTOM_RIGHT);
@@ -183,6 +176,9 @@ public abstract class BasicMainView extends DashboardPanel {
 
         PlotOptionsPie plotOptions = new PlotOptionsPie();
         plotOptions.setCursor(Cursor.POINTER);
+        plotOptions.setShowInLegend(true);
+        plotOptions.setSize("90%");
+
         Labels dataLabels = new Labels();
         dataLabels.setEnabled(true);
         dataLabels.setColor(new SolidColor(0, 0, 0));
@@ -196,14 +192,19 @@ public abstract class BasicMainView extends DashboardPanel {
         //if the stock items has been set
         if(DataPlaybackEngineStates.playingSymbols!=null){
             for(String stock:DataPlaybackEngineStates.playingSymbols){
-                series.add(new DataSeriesItem(stock, 0));
+                series.add(new DataSeriesItem(stock, 50));
             }
         }
         conf.setSeries(series);
 
+        conf.disableCredits();
+
+
         chart.drawChart(conf);
+        //turn off animation
+        conf.getChart().setAnimation(false);
         chart.setWidth("90%");
-        chart.setHeight(70,Unit.MM);
+        chart.setHeight(65,Unit.MM);
 
 
         return chart;

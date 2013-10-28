@@ -24,6 +24,10 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
+import org.investovator.core.commons.utils.Portfolio;
+import org.investovator.core.commons.utils.PortfolioImpl;
+import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.events.*;
@@ -37,6 +41,8 @@ import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -110,7 +116,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
-                    Boolean status= DataPlayerFacade.getInstance().
+                    Boolean status= new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                             getRealTimeDataPlayer().executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
                     Notification.show(status.toString());
@@ -159,8 +165,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     @Override
     public void onEnterMainView() {
         try {
-            DataPlayerFacade.getInstance().getRealTimeDataPlayer().joinGame();
-            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
+            new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getRealTimeDataPlayer().joinGame(this);
+//            System.out.println("ui join -->"+this.toString());
+//            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
@@ -169,7 +176,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     }
 
 
-    private void updateTickerChart(StockUpdateEvent event){
+    private void updateTickerChart(StockUpdateEvent event)  {
 
         //iterate every series in the chart at the moment
         for (Series series : mainChart.getConfiguration().getSeries()) {
@@ -222,11 +229,20 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         }
 
         //update the pie-chart
-        updatePieChart(event,beans);
+        try {
+            updatePieChart(event,beans);
+        } catch (PlayerStateException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
     }
 
-    private void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans){
+    private void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
+
+        Portfolio portfolio=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
+                getRealTimeDataPlayer().getMyPortfolio();
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
@@ -237,59 +253,31 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         if (stockPieChart.isConnectorEnabled()) {
             getSession().lock();
             try {
-                //TODO - assumes there's only one stock from each type
 
-                int total=0;
-                //get the values from the stock price table
-                for(String beanId:beans.getItemIds()){
-                    //add the new price for the updated stock
-                    if(beanId.equalsIgnoreCase(event.getStockId())){
-                        total+=event.getData().get(TradingDataAttribute.PRICE);
+                //if this is an update for a stock that the user has already bought
+                if(portfolio.getShares().containsKey(event.getStockId())){
+                    //if it is already in the chart
+                    if(dSeries.get(event.getStockId())!=null){
+                        //remove it
+                        dSeries.remove(dSeries.get(event.getStockId()));
+
 
                     }
-                    else{
-                        total+=beans.getItem(beanId).getBean().getPrice();
-                    }
+                    //
+                    float price =event.getData().get(TradingDataAttribute.PRICE);
+                    double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
 
+                    //update the chart
+                    dSeries.add(new DataSeriesItem(event.getStockId(),price*quantity));
+                    dSeries.update(dSeries.get(event.getStockId()));
 
                 }
 
 
-
-                int k=0;
-                float totalPer=0;
-                //add the new percentages
-                for(String beanId:beans.getItemIds()){
-                    if(k==beans.getItemIds().size()-1){
-                        dSeries.add(new DataSeriesItem(beanId,100-totalPer));
-                    }
-                    else{
-                        dSeries.add(new DataSeriesItem(beanId,
-                                ((beans.getItem(beanId).getBean().getPrice())/total)*100));
-
-
-
-//                                        System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
-                        totalPer+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
-
-                    }
-
-//                                    dSeries.add(new DataSeriesItem(beanId,
-//                                            ((beans.getItem(beanId).getBean().getPrice())/total)*100));
-//
-//                                    System.out.println(beanId+"-->"+((beans.getItem(beanId).getBean().getPrice())/total)*100);
-                    //k+=((beans.getItem(beanId).getBean().getPrice())/total)*100;
-                    k++;
-                }
-//                                System.out.println("+++++++++++++++++++++++++++++++++++");
-//                                System.out.println(k);
 
 
                 stockPieChart.setImmediate(true);
-
-//                                System.out.println(event.getStockId());
-//                                System.out.println((event.getData().get(TradingDataAttribute.PRICE))/10);
-//                                System.out.println("---------------------");
+                stockPieChart.drawChart();
 
             } finally {
                 getSession().unlock();
