@@ -53,6 +53,7 @@ public class QuoteUI extends VerticalLayout {
         sideSelect.select(OrderSide.BUY);
         isBuy=true;
         sideSelect.setNullSelectionAllowed(false);
+        sideSelect.addValueChangeListener(sideSelectValueChangeListener);
 
         orderTypeSelect = new ComboBox("Order Type");
         orderTypeSelect.addItem(OrderType.MARKET_ORDER);
@@ -73,6 +74,7 @@ public class QuoteUI extends VerticalLayout {
         sideSelectLayout.addComponent(sideSelect);
         sideSelectLayout.addComponent(orderTypeSelect);
         sideSelectLayout.addComponent(validitySelect);
+
 
         //Trade Button
         tradeButton = new Button("Place Order");

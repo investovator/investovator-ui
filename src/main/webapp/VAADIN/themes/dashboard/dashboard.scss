@@ -701,4 +701,28 @@
 		}
 	}
 
+
+
+  /*Edits*/
+
+  .login-view {
+    background-image: url(img/main_back.jpg);
+    background-size: cover;
+  }
+
+  .login-label {
+    font-size: 64px;
+    line-height: normal;
+    background-color: darkgray;
+    text-align: center;
+    box-shadow: 0 0 6px black;
+  }
+
+
+  .login-area {
+    border-radius: 10px;
+    background-color: darkgrey;
+    box-shadow: 0 0 6px black;
+  }
+
 }
