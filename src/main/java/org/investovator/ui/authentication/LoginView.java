@@ -23,10 +23,25 @@ import org.investovator.ui.utils.UIConstants;
         }
 
         private void init(){
+
+            final Label investovatorMain = new Label("investovator");
+            investovatorMain.setStyleName("login-label");
+
+            setStyleName("login-view");
+            setSizeFull();
+
+            addComponent(investovatorMain);
+            setComponentAlignment(investovatorMain,Alignment.MIDDLE_CENTER);
+
+
             final Label userName = new Label("User Name");
             final Label password = new Label("Password");
             final com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
             final PasswordField pwdField = new PasswordField();
+
+            userField.setWidth("95%");
+            pwdField.setWidth("95%");
+
 
             FormLayout layout = new FormLayout();
 
@@ -44,7 +59,13 @@ import org.investovator.ui.utils.UIConstants;
                         }
                     });
             layout.addComponents(userName,userField,password,pwdField,loginButton);
+            layout.setComponentAlignment(loginButton,Alignment.MIDDLE_CENTER);
+
+            layout.setWidth("300px");
+            layout.setStyleName("login-area");
+
             addComponent(layout);
+            setComponentAlignment(layout, Alignment.TOP_CENTER);
 
         }
 
