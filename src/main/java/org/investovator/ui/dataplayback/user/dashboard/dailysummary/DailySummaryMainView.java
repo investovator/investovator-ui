@@ -21,10 +21,10 @@ package org.investovator.ui.dataplayback.user.dashboard.dailysummary;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
-import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
@@ -33,11 +33,8 @@ import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
-import org.investovator.dataplaybackengine.player.OHLCDataPLayer;
-import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
-import org.investovator.ui.utils.dashboard.DashboardPanel;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 /**
@@ -129,7 +126,7 @@ public class DailySummaryMainView extends BasicMainView {
 
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                     try {
-                        Boolean status=DataPlayerFacade.getInstance().
+                        Boolean status=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                                 getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
                                 Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
                         Notification.show(status.toString());
@@ -178,7 +175,8 @@ public class DailySummaryMainView extends BasicMainView {
 
                 //get the events
                 try {
-                    StockUpdateEvent[] events = DataPlayerFacade.getInstance().getDailySummaryDataPLayer().playNextDay();
+                    StockUpdateEvent[] events = new DataPlaybackGameFacade().getDataPlayerFacade().
+                            getDailySummaryDataPLayer().playNextDay();
                     //iterate every event
                     for (StockUpdateEvent event : events) {
                         //iterate every series in the chart at the moment
