@@ -252,12 +252,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
 
-        //find the matching Data item
-//            DataSeriesItem item=dSeries.get(event.getStockId());
-//                    if(item.getName().equalsIgnoreCase(event.getStockId())){
-        if (stockPieChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
+
 
                 //if this is an update for a stock that the user has already bought
                 if(portfolio.getShares().containsKey(event.getStockId())){
@@ -280,7 +275,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
 
 
-
+        if (stockPieChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
 

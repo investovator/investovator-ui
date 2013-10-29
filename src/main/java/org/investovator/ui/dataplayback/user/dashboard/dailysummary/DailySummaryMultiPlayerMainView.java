@@ -119,9 +119,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         //find the matching Data item
 //            DataSeriesItem item=dSeries.get(event.getStockId());
 //                    if(item.getName().equalsIgnoreCase(event.getStockId())){
-        if (stockPieChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
+
 
                 //if this is an update for a stock that the user has already bought
                 if(portfolio.getShares().containsKey(event.getStockId())){
@@ -144,7 +142,9 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
 
 
-
+        if (stockPieChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
 
