@@ -30,6 +30,7 @@ import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
+import javax.xml.crypto.Data;
 import java.util.LinkedHashMap;
 
 /**
@@ -48,8 +49,15 @@ public class UserDashboardLoader extends BasicDashboard {
 
         //if this is a daily summary data game
         if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
-            //todo - load the multiplayer mainview
-            map.put("main view", new DailySummaryMultiPlayerMainView());
+            //if this is a multiplayer game
+            if(DataPlaybackEngineStates.isMultiplayer){
+                map.put("main view", new DailySummaryMultiPlayerMainView());
+
+            }
+            else{
+                map.put("main view", new DailySummarySinglePlayerMainView());
+
+            }
         }
         //if this is a real time data game
         else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){

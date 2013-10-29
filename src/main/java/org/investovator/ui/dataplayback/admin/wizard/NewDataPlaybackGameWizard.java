@@ -112,13 +112,28 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         }
         else {
             try {
-                DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startMultiplayerGame(3);
+                //if this is a multiplayer game
+                if(DataPlaybackEngineStates.isMultiplayer==true){
+
+                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startMultiplayerGame(3);
+                }
+                else{
+                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
+
+                }
                 GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
 
             }  catch (PlayerStateException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+
             } catch (GameProgressingException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+
+            } catch (GameAlreadyStartedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
         }
 

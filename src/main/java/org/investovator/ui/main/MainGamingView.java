@@ -59,7 +59,7 @@ public class MainGamingView extends GlobalView{
             }
             //if a game is running
             else if(gameState==GameStates.RUNNING){
-                //if it's a data playback
+                //if it's a data playback  and it supports multiplayer
                 if(gameMode==GameModes.PAYBACK_ENG){
                     getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
                 }

@@ -71,6 +71,6 @@ import org.investovator.ui.utils.UIConstants;
 
         @Override
         public void enter(ViewChangeListener.ViewChangeEvent event) {
-            Notification.show("Welcome to Investovator");
+//            Notification.show("Welcome to Investovator");
         }
     }
