@@ -29,6 +29,7 @@ import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
+import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
@@ -246,7 +247,18 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
     @Override
     public void onEnterMainView() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //join the game
+        try {
+            new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
+                    joinSingleplayerGame();
+        } catch (UserAlreadyJoinedException e) {
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (PlayerStateException e) {
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
 }
