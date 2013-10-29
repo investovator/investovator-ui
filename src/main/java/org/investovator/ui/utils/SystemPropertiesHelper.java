@@ -1,9 +1,6 @@
 package org.investovator.ui.utils;
 
-import org.investovator.core.data.api.CompanyData;
-import org.investovator.core.data.api.CompanyDataImpl;
-import org.investovator.core.data.api.CompanyStockTransactionsData;
-import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
+import org.investovator.core.data.api.*;
 import org.investovator.core.data.api.utils.StockTradingData;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.core.data.rssexplorer.RSSManager;
@@ -91,6 +88,16 @@ public class SystemPropertiesHelper implements
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
+
+        try {
+            UserData userData =  new UserDataImpl();
+            userData.addToWatchList("testUser1", "SAMP");
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public void contextDestroyed(ServletContextEvent event) {

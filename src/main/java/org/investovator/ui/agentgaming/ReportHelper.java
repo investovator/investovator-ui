@@ -21,9 +21,13 @@ package org.investovator.ui.agentgaming;
 import net.sourceforge.jabm.report.Report;
 import net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess;
 import net.sourceforge.jasa.report.CurrentPriceReportVariables;
+import org.investovator.core.data.api.CompanyData;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.jasa.api.JASAFacade;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,6 +46,8 @@ public class ReportHelper {
 
     HashMap<String,CurrentPriceReportVariables> currentPriceReports = new HashMap<String, CurrentPriceReportVariables>();
 
+    CompanyData companyData;
+
 
     private MarketFacade simulationFacade = JASAFacade.getMarketFacade();
 
@@ -56,8 +62,24 @@ public class ReportHelper {
 
     public void initReports(){
 
+        try {
+            companyData = new CompanyDataImpl();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
         reports = simulationFacade.getReports();
-        currentPriceReports.put("GOOG", getCurrentPriceReport("GOOG"));
+        //currentPriceReports.put("GOOG", getCurrentPriceReport("GOOG"));
+
+        try {
+            Collection<String> stocks =  companyData.getAvailableStockIds();
+            for(String stock : stocks){
+                currentPriceReports.put(stock, getCurrentPriceReport(stock));
+            }
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
         reportsReady = true;
 
     }
