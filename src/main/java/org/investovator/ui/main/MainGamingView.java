@@ -8,6 +8,7 @@ import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.GlobalView;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.UIConstants;
 
 /**
@@ -60,8 +61,14 @@ public class MainGamingView extends GlobalView{
             //if a game is running
             else if(gameState==GameStates.RUNNING){
                 //if it's a data playback  and it supports multiplayer
-                if(gameMode==GameModes.PAYBACK_ENG){
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                if(gameMode==GameModes.PAYBACK_ENG ){
+                    if(DataPlaybackEngineStates.isMultiplayer){
+
+                        getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                    }
+                    else{
+                        Notification.show("Not a multiplayer game", Notification.Type.ERROR_MESSAGE);
+                    }
                 }
                 if ((gameMode==GameModes.AGENT_GAME)){
                     getUI().getNavigator().navigateTo(UIConstants.AGENT_DASH_VIEW);
