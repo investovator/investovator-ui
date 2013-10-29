@@ -39,14 +39,14 @@ import java.util.ArrayList;
  * @author Amila Surendra
  * @version $Revision
  */
-public class AgentUIUpdater implements EventListener{
+public class AgentUIUpdater implements EventListener {
 
     private ArrayList<GameEventListener> listeners;
     private UserData userData;
 
     private static AgentUIUpdater instance;
 
-    private AgentUIUpdater(){
+    private AgentUIUpdater() {
         listeners = new ArrayList<GameEventListener>();
 
         try {
@@ -58,22 +58,21 @@ public class AgentUIUpdater implements EventListener{
 
 
     public static AgentUIUpdater getInstance() {
-        if(instance == null){
-            synchronized(AgentUIUpdater.class){
-                if(instance == null)
+        if (instance == null) {
+            synchronized (AgentUIUpdater.class) {
+                if (instance == null)
                     instance = new AgentUIUpdater();
             }
         }
         return instance;
     }
 
-    public void addListener(GameEventListener listener){
+    public void addListener(GameEventListener listener) {
         this.listeners.add(listener);
     }
 
-    private void notifyListeners(GameEvent event)
-    {
-        for(GameEventListener listener : listeners){
+    private void notifyListeners(GameEvent event) {
+        for (GameEventListener listener : listeners) {
             listener.eventOccurred(event);
         }
     }
@@ -81,25 +80,31 @@ public class AgentUIUpdater implements EventListener{
     @Override
     public void eventOccurred(SimEvent simEvent) {
         //To change body of implemented methods use File | Settings | File Templates.
+        updatePortfolio(simEvent);
 
-        if (simEvent instanceof TransactionExecutedEvent){
+    }
 
-            TransactionExecutedEvent transactionEvent = (TransactionExecutedEvent)simEvent;
+
+    private void updatePortfolio(SimEvent simEvent) {
+
+        if (simEvent instanceof TransactionExecutedEvent) {
+
+            TransactionExecutedEvent transactionEvent = (TransactionExecutedEvent) simEvent;
 
             Order ask = ((TransactionExecutedEvent) simEvent).getAsk();
-            Order bid =  ((TransactionExecutedEvent) simEvent).getBid();
+            Order bid = ((TransactionExecutedEvent) simEvent).getBid();
 
             TradingAgent buyer = bid.getAgent();
             TradingAgent seller = ask.getAgent();
 
-            if(buyer instanceof HollowTradingAgent){
+            if (buyer instanceof HollowTradingAgent) {
 
                 String buyingUser = ((HollowTradingAgent) buyer).getUserName();
 
                 try {
                     Portfolio buyerPortfolio = userData.getUserPortfolio(buyingUser);
                     String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
-                    buyerPortfolio.boughtShares(stockID,transactionEvent.getQuantity(),(float)transactionEvent.getPrice());
+                    buyerPortfolio.boughtShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
 
                     userData.updateUserPortfolio(buyingUser, buyerPortfolio);
                     notifyListeners(new PortfolioChangedEvent(buyerPortfolio));
@@ -107,38 +112,58 @@ public class AgentUIUpdater implements EventListener{
                 } catch (DataAccessException e) {
                     e.printStackTrace();
                 }
+            }
 
 
+            if (seller instanceof HollowTradingAgent) {
+
+                String sellingUser = ((HollowTradingAgent) seller).getUserName();
+
+                try {
+                    Portfolio sellerPortfolio = userData.getUserPortfolio(sellingUser);
+                    String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
+                    sellerPortfolio.soldShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
+
+                    userData.updateUserPortfolio(sellingUser, sellerPortfolio);
+                    notifyListeners(new PortfolioChangedEvent(sellerPortfolio));
+
+                } catch (DataAccessException e) {
+                    e.printStackTrace();
+                }
             }
 
         }
 
 
-        if (simEvent instanceof OrderPlacedEvent){
+        if (simEvent instanceof OrderPlacedEvent) {
 
-            Order order =   ((OrderPlacedEvent) simEvent).getOrder();
-            TradingAgent agent =  order.getAgent();
+            Order order = ((OrderPlacedEvent) simEvent).getOrder();
+            TradingAgent agent = order.getAgent();
 
-            if(agent instanceof HollowTradingAgent){
+            if (agent instanceof HollowTradingAgent) {
 
-                if(((OrderPlacedEvent) simEvent).getOrder().isBid()){
-                    String buyingUser = ((HollowTradingAgent) agent).getUserName();
-                    try {
-                        Portfolio buyerPortfolio = userData.getUserPortfolio(buyingUser);
-                        buyerPortfolio.setCashBalance( buyerPortfolio.getCashBalance() - order.getPrice() );
-                        buyerPortfolio.setBlockedCash(buyerPortfolio.getBlockedCash() + order.getPrice());
-                        userData.updateUserPortfolio(buyingUser,buyerPortfolio);
-                        notifyListeners(new PortfolioChangedEvent(buyerPortfolio));
-                    } catch (DataAccessException e) {
-                        e.printStackTrace();
+                String user = ((HollowTradingAgent) agent).getUserName();
+                Portfolio portfolio = null;
+
+                try {
+                    portfolio = userData.getUserPortfolio(user);
+
+                    if (((OrderPlacedEvent) simEvent).getOrder().isBid()) {
+                        portfolio.setCashBalance(portfolio.getCashBalance() - order.getPrice()*order.getQuantity());
+                        portfolio.setBlockedCash(portfolio.getBlockedCash() + order.getPrice()*order.getQuantity());
+                    } else {
+
                     }
 
-                } else{
+                    userData.updateUserPortfolio(user, portfolio);
+                    notifyListeners(new PortfolioChangedEvent(portfolio));
 
+                } catch (DataAccessException e) {
+                    e.printStackTrace();
                 }
-
-
             }
         }
+
+
     }
 }
