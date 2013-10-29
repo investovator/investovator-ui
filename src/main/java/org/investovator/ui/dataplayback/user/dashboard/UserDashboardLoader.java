@@ -23,6 +23,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryMultiPlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -48,7 +49,7 @@ public class UserDashboardLoader extends BasicDashboard {
         //if this is a daily summary data game
         if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
             //todo - load the multiplayer mainview
-            map.put("main view", new DailySummarySinglePlayerMainView());
+            map.put("main view", new DailySummaryMultiPlayerMainView());
         }
         //if this is a real time data game
         else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){

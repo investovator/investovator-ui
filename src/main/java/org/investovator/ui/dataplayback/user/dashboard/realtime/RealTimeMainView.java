@@ -241,7 +241,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     }
 
-    private void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
+    public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                 getRealTimeDataPlayer().getMyPortfolio();

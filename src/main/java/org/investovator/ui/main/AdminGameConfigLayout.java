@@ -119,7 +119,6 @@ public class AdminGameConfigLayout extends VerticalLayout {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
                     }
-//                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
 
                 }
 

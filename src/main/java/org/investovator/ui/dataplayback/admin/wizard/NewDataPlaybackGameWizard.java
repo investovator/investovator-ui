@@ -34,7 +34,6 @@ import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedExceptio
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
-import org.investovator.ui.dataplayback.DataPlaybackMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -113,12 +112,10 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         }
         else {
             try {
-                DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
+                DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startMultiplayerGame(3);
                 GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
 
-            } catch (GameAlreadyStartedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (PlayerStateException e) {
+            }  catch (PlayerStateException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (GameProgressingException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
