@@ -36,6 +36,7 @@ import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -97,7 +98,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     public void onEnterMainView() {
         try {
             new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
-                    joinMultiplayerGame(this);
+                    joinMultiplayerGame(this, Authenticator.getInstance().getCurrentUser());
 //            System.out.println("ui join -->"+this.toString());
 //            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
@@ -110,7 +111,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                getDailySummaryDataPLayer().getMyPortfolio();
+                getDailySummaryDataPLayer().getMyPortfolio(Authenticator.getInstance().getCurrentUser());
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
@@ -169,7 +170,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 try {
                     Boolean status= new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                             getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
-                            Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
+                            Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
+                            Authenticator.getInstance().getCurrentUser());
                     Notification.show(status.toString());
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());

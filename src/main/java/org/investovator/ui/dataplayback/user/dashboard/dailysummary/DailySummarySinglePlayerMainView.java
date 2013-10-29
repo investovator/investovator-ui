@@ -33,6 +33,7 @@ import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
@@ -128,7 +129,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                     try {
                         Boolean status=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                                 getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
-                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
+                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
+                                Authenticator.getInstance().getCurrentUser());
                         Notification.show(status.toString());
                     } catch (InvalidOrderException e) {
                         Notification.show(e.getMessage());
@@ -250,7 +252,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
         //join the game
         try {
             new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
-                    joinSingleplayerGame();
+                    joinSingleplayerGame(Authenticator.getInstance().getCurrentUser());
         } catch (UserAlreadyJoinedException e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
