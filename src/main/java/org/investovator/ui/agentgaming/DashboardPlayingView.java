@@ -65,7 +65,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         createUI();
 
         //Reports Config
-        reportHelper = new ReportHelper();
+        reportHelper = ReportHelper.getInstance();
         watchList = new WatchList(reportHelper);
         watchList.addStockChangeListener(this);
 

@@ -26,19 +26,19 @@ import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.jasa.api.JASAFacade;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.investovator.jasa.api.JASAFacade;
 import org.investovator.jasa.api.MarketFacade;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author Amila Surendra
  * @version $Revision
  */
 public class ReportHelper {
+
+    static ReportHelper instance;
 
     int lastIndex = 0;
     boolean reportsReady = false;
@@ -52,9 +52,13 @@ public class ReportHelper {
     private MarketFacade simulationFacade = JASAFacade.getMarketFacade();
 
 
+    public static ReportHelper getInstance(){
+        if(instance == null) instance=new ReportHelper();
+        return instance;
+    }
 
 
-    public ReportHelper() {
+    private ReportHelper() {
         //Add Current Time Reports
 
     }
@@ -162,6 +166,23 @@ public class ReportHelper {
     public StockItemBean getStockUpdates(String stockID){
 
        return  null;
+    }
+
+
+    public TimeSeriesNode[] getTimeSeriesReport(String stockId, String report){
+
+        throw new NotImplementedException();
+
+    }
+
+
+    //Should get from config
+    static Date startDate = new Date();
+
+    //Should goto JASA
+    private Date getDate(int tickCount){
+        return new Date(startDate.getTime() + tickCount);
+
     }
 
 }
