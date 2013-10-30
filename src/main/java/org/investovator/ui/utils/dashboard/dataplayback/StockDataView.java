@@ -32,16 +32,19 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
+import org.investovator.core.data.api.utils.StockTradingData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.dataplaybackengine.data.BogusHistoryDataGenerator;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
+import java.util.List;
 
 /**
  * Should show a view like http://demo.vaadin.com/charts/#ForumTrends
@@ -129,7 +132,7 @@ public class StockDataView extends DashboardPanel {
 
         // Set the date range
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.WEEK_OF_MONTH, -1);
+        cal.add(Calendar.MONTH, -2);
         timeline.setVisibleDateRange(cal.getTime(), new Date());
 
 
@@ -161,25 +164,66 @@ public class StockDataView extends DashboardPanel {
                 java.util.Date.class, null);
 
 
-        // Add some random data to the container
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1);
-        Date today = new Date();
-        Random generator = new Random();
+//        // Add some random data to the container
+//        Calendar cal = Calendar.getInstance();
+//        cal.add(Calendar.MONTH, -1);
+//        Date today = new Date();
+//        Random generator = new Random();
+//
+//        while(cal.getTime().before(today)){
+//            // Create  a point in time
+//            Item item = container.addItem(cal.getTime());
+//
+//            // Set the timestamp property
+//            item.getItemProperty(Timeline.PropertyId.TIMESTAMP)
+//                    .setValue(cal.getTime());
+//
+//            // Set the value property
+//            item.getItemProperty(Timeline.PropertyId.VALUE)
+//                    .setValue(generator.nextFloat());
+//
+//            cal.add(Calendar.DAY_OF_MONTH, 1);
+//        }
 
-        while(cal.getTime().before(today)){
-            // Create  a point in time
-            Item item = container.addItem(cal.getTime());
+        //my data test
 
-            // Set the timestamp property
-            item.getItemProperty(Timeline.PropertyId.TIMESTAMP)
-                    .setValue(cal.getTime());
+        //define the attributes needed
+        ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
 
-            // Set the value property
-            item.getItemProperty(Timeline.PropertyId.VALUE)
-                    .setValue(generator.nextFloat());
+        //just the closing price is enough for now
+        attributes.add(TradingDataAttribute.DAY);
+        attributes.add(TradingDataAttribute.PRICE);
 
-            cal.add(Calendar.DAY_OF_MONTH, 1);
+        try {
+            StockTradingData stockTradingData= new BogusHistoryDataGenerator().
+                    getTradingData(CompanyStockTransactionsData.DataType.OHLC,
+                            "APPL", DateUtils.decrementTimeByDays(30, new Date()), new Date(), 100, attributes);
+            //add the data
+            //sort first
+            Collection<Date> unsorted = stockTradingData.getTradingData().keySet();
+            List<Date> list=new ArrayList<Date>(unsorted);
+            Collections.sort(list);
+
+            for(Date date:list){
+                // Create  a point in time
+                Item item = container.addItem(date);
+
+                // Set the timestamp property
+                item.getItemProperty(Timeline.PropertyId.TIMESTAMP)
+                        .setValue(date);
+
+
+                // Set the value property
+                item.getItemProperty(Timeline.PropertyId.VALUE)
+                        .setValue(Float.parseFloat(stockTradingData.getTradingData().get(date).
+                                get(TradingDataAttribute.PRICE)));
+
+
+
+
+            }
+        } catch (DataAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         return container;
