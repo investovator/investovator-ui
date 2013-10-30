@@ -29,6 +29,7 @@ import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.dataplayback.StockDataView;
 
 import javax.xml.crypto.Data;
 import java.util.LinkedHashMap;
@@ -75,8 +76,10 @@ public class UserDashboardLoader extends BasicDashboard {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
         };
+
+
         panel2.setContent(panelContent2);
-        map.put("test 2", panel2);
+        map.put("stocks", new StockDataView());
 
         return map;
 
