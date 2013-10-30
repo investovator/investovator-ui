@@ -34,7 +34,6 @@ import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedExceptio
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
-import org.investovator.ui.dataplayback.DataPlaybackMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -98,7 +97,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         //initialize the necessary player
         DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.currentGameMode,
                 DataPlaybackEngineStates.playingSymbols,DataPlaybackEngineStates.gameStartDate,attributes,
-                TradingDataAttribute.PRICE,true);
+                TradingDataAttribute.PRICE,DataPlaybackEngineStates.isMultiplayer);
 
         //start the game now
         if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
@@ -113,15 +112,28 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         }
         else {
             try {
-                DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
+                //if this is a multiplayer game
+                if(DataPlaybackEngineStates.isMultiplayer==true){
+
+                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startMultiplayerGame(3);
+                }
+                else{
+                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
+
+                }
                 GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
+
+            }  catch (PlayerStateException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+
+            } catch (GameProgressingException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
 
             } catch (GameAlreadyStartedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (PlayerStateException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (GameProgressingException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
         }
 
@@ -139,14 +151,16 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     class FirstStep implements WizardStep {
 
         OptionGroup gameTypes;
+        OptionGroup multiplayer;
 
         FirstStep() {
             gameTypes= new OptionGroup();
+            multiplayer=new OptionGroup();
         }
 
         @Override
         public String getCaption() {
-            return "Decide the Game type";
+            return "Basic Game Options";
         }
 
         @Override
@@ -170,6 +184,14 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
             //fire value change events immediately
             gameTypes.setImmediate(true);
+
+            content.addComponent(multiplayer);
+            multiplayer.setMultiSelect(true);
+            multiplayer.setHtmlContentAllowed(true);
+            multiplayer.addItem(1);
+            multiplayer.setItemCaption(1,"Let others connect to the game");
+
+
 
 //            //monitor the selected item
 //            gameTypes.addValueChangeListener(new Property.ValueChangeListener() {
@@ -198,6 +220,17 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             if(gameTypes.getValue()==PlayerTypes.REAL_TIME_DATA_PLAYER){
                 DataPlaybackEngineStates.currentGameMode = PlayerTypes.REAL_TIME_DATA_PLAYER;
             }
+
+            //set multiplayer or not
+            if(((Set)multiplayer.getValue()).contains(1)){
+                DataPlaybackEngineStates.isMultiplayer=true;
+
+            }
+            else{
+                DataPlaybackEngineStates.isMultiplayer=false;
+            }
+
+
 
             return true;
         }

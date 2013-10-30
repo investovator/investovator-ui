@@ -28,8 +28,12 @@ import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.dataplaybackengine.DataPlayerFacade;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
+import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.UIConstants;
 import org.vaadin.easyuploads.MultiFileUpload;
 
@@ -84,8 +88,37 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 }
                 //if there is a game running
                 else if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
-                    //todo - load the proper dash board for admin
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                        try {
+                            //if the game is multi player
+                            if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
+                                //todo - load the summary view --  from DATA_PLAYBACK_ADMIN_DASH?
+                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+
+                            }
+                            else{
+                                //loads single player real time data playback view
+                                getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                            }
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+
+                    }
+                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                        try {
+                            //if this is a multiplayer game
+                            if (DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
+                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+                            }
+                            else{
+                                //loads single player daily summary data playback view
+                                getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                            }
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
 
                 }
 

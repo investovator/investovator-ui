@@ -26,13 +26,14 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
+import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
@@ -41,7 +42,7 @@ import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DailySummaryMainView extends BasicMainView {
+public class DailySummarySinglePlayerMainView extends BasicMainView {
 
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
@@ -50,13 +51,13 @@ public class DailySummaryMainView extends BasicMainView {
 //    private DataPlayerFacade playerFacade;
 
     //used in ticker data observing
-    DailySummaryMainView mySelf;
+    DailySummarySinglePlayerMainView mySelf;
 
 
     //to store every component
     GridLayout content;
 
-    public DailySummaryMainView() {
+    public DailySummarySinglePlayerMainView() {
         //set a link to this class
         mySelf = this;
 
@@ -128,7 +129,8 @@ public class DailySummaryMainView extends BasicMainView {
                     try {
                         Boolean status=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                                 getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
-                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
+                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
+                                Authenticator.getInstance().getCurrentUser());
                         Notification.show(status.toString());
                     } catch (InvalidOrderException e) {
                         Notification.show(e.getMessage());
@@ -247,7 +249,18 @@ public class DailySummaryMainView extends BasicMainView {
 
     @Override
     public void onEnterMainView() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //join the game
+        try {
+            new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
+                    joinSingleplayerGame(Authenticator.getInstance().getCurrentUser());
+        } catch (UserAlreadyJoinedException e) {
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (PlayerStateException e) {
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
 }
