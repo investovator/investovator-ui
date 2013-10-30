@@ -269,7 +269,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                     //update the chart
                     dSeries.add(new DataSeriesItem(event.getStockId(),price*quantity));
-                    dSeries.update(dSeries.get(event.getStockId()));
 
                 }
 
@@ -278,6 +277,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         if (stockPieChart.isConnectorEnabled()) {
             getSession().lock();
             try {
+                dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
 

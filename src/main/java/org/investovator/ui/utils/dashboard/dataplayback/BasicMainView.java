@@ -180,7 +180,7 @@ public abstract class BasicMainView extends DashboardPanel {
         plotOptions.setSize("90%");
 
         Labels dataLabels = new Labels();
-        dataLabels.setEnabled(true);
+        dataLabels.setEnabled(false);
         dataLabels.setColor(new SolidColor(0, 0, 0));
         dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
         dataLabels
