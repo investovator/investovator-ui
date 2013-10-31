@@ -24,26 +24,22 @@ package org.investovator.ui.utils.dashboard.dataplayback;
  * @version: ${Revision}
  */
 
-import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.timeline.Timeline;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.VerticalLayout;
-import org.investovator.core.data.api.CompanyStockTransactionsData;
+import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.StockTradingData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.dataplaybackengine.data.BogusHistoryDataGenerator;
-import org.investovator.dataplaybackengine.market.OrderType;
-import org.investovator.dataplaybackengine.utils.DateUtils;
+import org.investovator.core.data.exeptions.DataNotFoundException;
+import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.awt.*;
 import java.util.*;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -56,6 +52,10 @@ public class StockDataView extends DashboardPanel {
     //charts to be shown
     protected Timeline mainChart;
 
+    //
+    private ComboBox stocksList;
+    private NativeSelect dataItems;
+
     public StockDataView( ) {
         this.content = new VerticalLayout();
         content.setSizeFull();
@@ -67,8 +67,10 @@ public class StockDataView extends DashboardPanel {
         content.removeAllComponents();
 
         content.addComponent(setUpTopBar());
-        content.addComponent(setUpChart());
+        mainChart=setUpChart();
+        content.addComponent(mainChart);
 
+//        this.setSizeFull();
         this.setContent(content);
     }
 
@@ -77,8 +79,9 @@ public class StockDataView extends DashboardPanel {
 //        components.setSizeFull();
 
         //create the stocks drop down list
-        final ComboBox stocksList=new ComboBox();
+         stocksList=new ComboBox();
         components.addComponent(stocksList);
+        stocksList.setImmediate(true);
 
         stocksList.setCaption("Stock");
         stocksList.setNullSelectionAllowed(false);
@@ -87,8 +90,16 @@ public class StockDataView extends DashboardPanel {
         }
         stocksList.select(stocksList.getItemIds().toArray()[0]);
 
+        stocksList.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                updateChart();
+
+            }
+        });
+
         //Data items list
-        final NativeSelect dataItems=new NativeSelect();
+        dataItems=new NativeSelect();
         components.addComponent(dataItems);
         dataItems.setCaption("Data: ");
 //        dataItems.addItem(OrderType.BUY);
@@ -106,10 +117,11 @@ public class StockDataView extends DashboardPanel {
     }
 
     private Timeline setUpChart(){
-        Timeline timeline=new Timeline("Stock Data");
+        Timeline timeline=new Timeline();
 
-        timeline.setSizeFull();
-        timeline.setHeight(8,Unit.CM);
+//        timeline.setSizeFull();
+//        timeline.setHeight(100,Unit.CM);
+        timeline.setWidth(100,Unit.PERCENTAGE);
         timeline.setId("timeline");
         timeline.setUniformBarThicknessEnabled(true);
 
@@ -118,10 +130,13 @@ public class StockDataView extends DashboardPanel {
         //disable bar chart
         timeline.setChartModeVisible(Timeline.ChartMode.BAR,false);
 
+        //hide zoom levels
+        timeline.setZoomLevelsVisible(false);
+
 
         IndexedContainer data;
         data = createIndexedContainer();
-
+//
         // Add data sources
 //        timeline.addGraphDataSource(data);
         timeline.addGraphDataSource(data,Timeline.PropertyId.TIMESTAMP,Timeline.PropertyId.VALUE);
@@ -129,18 +144,23 @@ public class StockDataView extends DashboardPanel {
         timeline.setGraphOutlineColor(data, new Color(0x00, 0xb4, 0xf0));
         timeline.setGraphFillColor(data, null);
         timeline.setVerticalAxisLegendUnit(data, "Price");
-
+//
+//
         // Set the date range
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MONTH, -2);
-        timeline.setVisibleDateRange(cal.getTime(), new Date());
+        timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate, new Date());
 
 
-         timeline.setSizeFull();
+//         timeline.setSizeFull();
 
         return timeline;
     }
 
+    /**
+     * Override this to set the viewable data in the graphs
+     * @return
+     */
     public TradingDataAttribute[] setSelectableAttributes(){
         ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
 
@@ -164,40 +184,19 @@ public class StockDataView extends DashboardPanel {
                 java.util.Date.class, null);
 
 
-//        // Add some random data to the container
-//        Calendar cal = Calendar.getInstance();
-//        cal.add(Calendar.MONTH, -1);
-//        Date today = new Date();
-//        Random generator = new Random();
-//
-//        while(cal.getTime().before(today)){
-//            // Create  a point in time
-//            Item item = container.addItem(cal.getTime());
-//
-//            // Set the timestamp property
-//            item.getItemProperty(Timeline.PropertyId.TIMESTAMP)
-//                    .setValue(cal.getTime());
-//
-//            // Set the value property
-//            item.getItemProperty(Timeline.PropertyId.VALUE)
-//                    .setValue(generator.nextFloat());
-//
-//            cal.add(Calendar.DAY_OF_MONTH, 1);
-//        }
-
-        //my data test
 
         //define the attributes needed
         ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
 
+
         //just the closing price is enough for now
-        attributes.add(TradingDataAttribute.DAY);
-        attributes.add(TradingDataAttribute.PRICE);
+        attributes.add((TradingDataAttribute)dataItems.getValue());
 
         try {
-            StockTradingData stockTradingData= new BogusHistoryDataGenerator().
-                    getTradingData(CompanyStockTransactionsData.DataType.OHLC,
-                            "APPL", DateUtils.decrementTimeByDays(30, new Date()), new Date(), 100, attributes);
+            StockTradingData stockTradingData= DataPlayerFacade.getInstance().getDataUpToToday(
+                    stocksList.getValue().toString(),DataPlaybackEngineStates.gameStartDate,
+                    attributes);
+
             //add the data
             //sort first
             Collection<Date> unsorted = stockTradingData.getTradingData().keySet();
@@ -223,10 +222,34 @@ public class StockDataView extends DashboardPanel {
 
             }
         } catch (DataAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (DataNotFoundException e) {
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
         return container;
+    }
+
+    public  void updateChart(){
+
+        mainChart.removeAllGraphDataSources();
+
+        //recreate a data source
+        IndexedContainer data;
+        data = createIndexedContainer();
+//
+        // Add data sources
+        mainChart.addGraphDataSource(data,Timeline.PropertyId.TIMESTAMP,Timeline.PropertyId.VALUE);
+        mainChart.setGraphCaption(data, "Stock");
+        mainChart.setGraphOutlineColor(data, new Color(0x00, 0xb4, 0xf0));
+        mainChart.setGraphFillColor(data, null);
+        mainChart.setVerticalAxisLegendUnit(data, "Price");
+
+        mainChart.setImmediate(true);
+
+
     }
 
 }
