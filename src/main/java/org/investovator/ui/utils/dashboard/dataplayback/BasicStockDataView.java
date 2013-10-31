@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Should show a view like http://demo.vaadin.com/charts/#ForumTrends
  */
-public class StockDataView extends DashboardPanel {
+public abstract class BasicStockDataView extends DashboardPanel {
 
     VerticalLayout content;
 
@@ -57,7 +57,7 @@ public class StockDataView extends DashboardPanel {
     private ComboBox stocksList;
     private NativeSelect dataItems;
 
-    public StockDataView( ) {
+    public BasicStockDataView() {
         this.content = new VerticalLayout();
         content.setSizeFull();
     }
@@ -171,16 +171,7 @@ public class StockDataView extends DashboardPanel {
      * Override this to set the viewable data in the graphs
      * @return
      */
-    public TradingDataAttribute[] setSelectableAttributes(){
-        ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
-
-        attributes.add(TradingDataAttribute.PRICE);
-        attributes.add(TradingDataAttribute.CLOSING_PRICE);
-
-
-        return attributes.toArray(new TradingDataAttribute[attributes.size()]);
-    }
-
+    public abstract TradingDataAttribute[] setSelectableAttributes();
     /**
      * Creates an indexed container with two properties: value and timestamp.
      *

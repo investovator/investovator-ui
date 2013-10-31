@@ -20,18 +20,17 @@
 package org.investovator.ui.dataplayback.user.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.VerticalLayout;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryMultiPlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
+import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryStockDataView;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
+import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeStockDataView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
-import org.investovator.ui.utils.dashboard.dataplayback.StockDataView;
+import org.investovator.ui.utils.dashboard.dataplayback.BasicStockDataView;
 
-import javax.xml.crypto.Data;
 import java.util.LinkedHashMap;
 
 /**
@@ -53,33 +52,24 @@ public class UserDashboardLoader extends BasicDashboard {
             //if this is a multiplayer game
             if(DataPlaybackEngineStates.isMultiplayer){
                 map.put("main view", new DailySummaryMultiPlayerMainView());
+                map.put("stocks", new DailySummaryStockDataView());
+
 
             }
             else{
                 map.put("main view", new DailySummarySinglePlayerMainView());
+                map.put("stocks", new DailySummaryStockDataView());
+
 
             }
         }
         //if this is a real time data game
         else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
             map.put("main view", new RealTimeMainView());
+            map.put("stocks", new RealTimeStockDataView());
 
 
         }
-
-        VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
-
-        DashboardPanel panel2 = new DashboardPanel() {
-            @Override
-            public void onEnter() {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
-
-
-        panel2.setContent(panelContent2);
-        map.put("stocks", new StockDataView());
 
         return map;
 
