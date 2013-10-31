@@ -30,8 +30,8 @@ import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.jasa.api.JASAFacade;
-import org.investovator.jasa.api.MarketFacade;
+import org.investovator.agentsimulation.api.JASAFacade;
+import org.investovator.agentsimulation.api.MarketFacade;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 

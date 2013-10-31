@@ -24,15 +24,15 @@ import net.sourceforge.jasa.report.CurrentPriceReportVariables;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.jasa.api.JASAFacade;
+import org.investovator.agentsimulation.api.JASAFacade;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.investovator.jasa.api.JASAFacade;
-import org.investovator.jasa.api.MarketFacade;
+import org.investovator.agentsimulation.api.JASAFacade;
+import org.investovator.agentsimulation.api.MarketFacade;
 
 /**
  * @author Amila Surendra
