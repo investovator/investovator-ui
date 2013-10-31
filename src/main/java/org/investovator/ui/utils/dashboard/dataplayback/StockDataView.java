@@ -34,12 +34,13 @@ import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.core.data.exeptions.DataNotFoundException;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.awt.*;
 import java.util.*;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -102,15 +103,20 @@ public class StockDataView extends DashboardPanel {
         dataItems=new NativeSelect();
         components.addComponent(dataItems);
         dataItems.setCaption("Data: ");
-//        dataItems.addItem(OrderType.BUY);
-//        dataItems.addItem(OrderType.SELL);
 
         for(TradingDataAttribute attr:setSelectableAttributes()){
             dataItems.addItem(attr);
         }
-//        dataItems.setWidth("90%");
         dataItems.setNullSelectionAllowed(false);
         dataItems.select(dataItems.getItemIds().toArray()[0]);
+        dataItems.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                updateChart();
+
+            }
+        });
+
         dataItems.setImmediate(true);
 
         return components;
@@ -138,18 +144,22 @@ public class StockDataView extends DashboardPanel {
         data = createIndexedContainer();
 //
         // Add data sources
-//        timeline.addGraphDataSource(data);
         timeline.addGraphDataSource(data,Timeline.PropertyId.TIMESTAMP,Timeline.PropertyId.VALUE);
         timeline.setGraphCaption(data, "Stock");
         timeline.setGraphOutlineColor(data, new Color(0x00, 0xb4, 0xf0));
         timeline.setGraphFillColor(data, null);
-        timeline.setVerticalAxisLegendUnit(data, "Price");
-//
-//
+//        timeline.setVerticalAxisLegendUnit(data, "Price");
+
         // Set the date range
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -2);
-        timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate, new Date());
+        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
+            timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
+                    DateUtils.incrementTimeByDays(5,DataPlaybackEngineStates.gameStartDate));
+
+        }
+        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
+                    DateUtils.incrementTimeBySeconds(60, DataPlaybackEngineStates.gameStartDate));
+        }
 
 
 //         timeline.setSizeFull();
@@ -215,7 +225,7 @@ public class StockDataView extends DashboardPanel {
                 // Set the value property
                 item.getItemProperty(Timeline.PropertyId.VALUE)
                         .setValue(Float.parseFloat(stockTradingData.getTradingData().get(date).
-                                get(TradingDataAttribute.PRICE)));
+                                get(dataItems.getValue())));
 
 
 
