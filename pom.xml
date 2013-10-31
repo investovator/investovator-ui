@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vaadin.version>7.1.2</vaadin.version>
-        <jasa.version>1.2_01investovatorv0.2</jasa.version>
+        <agentsimualtion.version>0.2</agentsimualtion.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     </properties>
     <repositories>
@@ -46,8 +46,8 @@
         <!-- JASA related -->
         <dependency>
             <groupId>org.investovator</groupId>
-            <artifactId>jasa</artifactId>
-            <version>${jasa.version}</version>
+            <artifactId>investovator-agentsimualtion</artifactId>
+            <version>${agentsimualtion.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.jabm</groupId>
