@@ -35,7 +35,6 @@ public class MyVaadinUI extends UI
     }
 
     private Navigator navigator;
-    private static String userName="userName";
 
 
     /*static{
@@ -76,18 +75,6 @@ public class MyVaadinUI extends UI
 //        v[0]="d";
 //        main.main(v);
     }
-
-    public String getUser() {
-        return (String)getSession().getAttribute(userName);
-    }
-
-    public void setUser(String user) {
-        getSession().setAttribute(userName,user);
-    }
-
-//    private String user;
-
-
 
 
 
