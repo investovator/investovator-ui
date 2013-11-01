@@ -33,6 +33,7 @@ import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -47,8 +48,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
 
-//    private OHLCDataPLayer ohlcPLayer;
-//    private DataPlayerFacade playerFacade;
+    private String userName;
+
+    private DailySummaryDataPLayer player;
+
 
     //used in ticker data observing
     DailySummarySinglePlayerMainView mySelf;
@@ -127,16 +130,13 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                     try {
-                        Boolean status=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                                getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
+                        Boolean status=player.executeOrder(stocksList.getValue().toString(),
                                 Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
                                 Authenticator.getInstance().getCurrentUser());
                         Notification.show(status.toString());
                     } catch (InvalidOrderException e) {
                         Notification.show(e.getMessage());
                     } catch (UserJoinException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    } catch (PlayerStateException e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
 //                }
@@ -177,8 +177,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
                 //get the events
                 try {
-                    StockUpdateEvent[] events = new DataPlaybackGameFacade().getDataPlayerFacade().
-                            getDailySummaryDataPLayer().playNextDay();
+                    StockUpdateEvent[] events = player.playNextDay();
                     //iterate every event
                     for (StockUpdateEvent event : events) {
                         //iterate every series in the chart at the moment
@@ -232,8 +231,6 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
                 } catch (GameFinishedException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (PlayerStateException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 
             }
@@ -251,8 +248,12 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
     public void onEnterMainView() {
         //join the game
         try {
-            new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
-                    joinSingleplayerGame(Authenticator.getInstance().getCurrentUser());
+            this.userName=Authenticator.getInstance().getCurrentUser();
+            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
+            //join the game if the user has not already done so
+            if(!this.player.hasUserJoined(this.userName)){
+                this.player.joinSingleplayerGame(this.userName);
+            }
         } catch (UserAlreadyJoinedException e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
