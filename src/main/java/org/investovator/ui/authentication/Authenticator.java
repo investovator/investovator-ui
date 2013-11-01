@@ -23,11 +23,11 @@ public class Authenticator {
     private static Authenticator authenticator;
 
     private static String userName="userName";
+    private static String isLoggedIn="loggedIn";
 
-    private boolean loggedIn;
 
     private Authenticator(){
-        loggedIn = false;
+        setLoggedIn(false);
     }
 
     public static synchronized Authenticator getInstance()
@@ -39,11 +39,7 @@ public class Authenticator {
     }
 
     public boolean isLoggedIn() {
-        return loggedIn;
-    }
-
-    private void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
+        return (boolean)VaadinSession.getCurrent().getAttribute(isLoggedIn);
     }
 
     public boolean authenticate(String username, String password){
@@ -92,6 +88,11 @@ public class Authenticator {
 
     public void setUser(String user) {
         VaadinSession.getCurrent().setAttribute(userName,user);
+    }
+
+    public void setLoggedIn(boolean loggedInStatus){
+        VaadinSession.getCurrent().setAttribute(isLoggedIn,loggedInStatus);
+
     }
 
 }
