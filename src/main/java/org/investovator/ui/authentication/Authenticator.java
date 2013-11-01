@@ -80,7 +80,13 @@ public class Authenticator {
     public String getCurrentUser(){
 
         //TODO: implement after getting rajja's user API
-        return (String)VaadinSession.getCurrent().getAttribute(userName).toString();
+        if((VaadinSession.getCurrent().getAttribute(userName))!=null){
+            return VaadinSession.getCurrent().getAttribute(userName).toString();
+
+        }
+        else{
+            return "";
+        }
     }
 
     public UserType getMyPrivileges(){
