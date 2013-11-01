@@ -26,12 +26,12 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.commons.utils.Portfolio;
-import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.events.*;
-import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
+import org.investovator.dataplaybackengine.events.PlaybackEvent;
+import org.investovator.dataplaybackengine.events.PlaybackEventListener;
+import org.investovator.dataplaybackengine.events.PlaybackFinishedEvent;
+import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
@@ -42,11 +42,6 @@ import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Observable;
-import java.util.Observer;
-
 /**
  * @author: ishan
  * @version: ${Revision}
@@ -55,6 +50,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
+
+    private String userName;
+
 
 
     @Override
@@ -120,7 +118,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     Boolean status= new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                             getRealTimeDataPlayer().executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
-                            Authenticator.getInstance().getCurrentUser());
+                            userName);
                     Notification.show(status.toString());
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());
@@ -167,8 +165,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     @Override
     public void onEnterMainView() {
         try {
+            this.userName=Authenticator.getInstance().getCurrentUser();
+
             new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getRealTimeDataPlayer().joinGame(this,
-                    Authenticator.getInstance().getCurrentUser());
+                    this.userName);
 //            System.out.println("ui join -->"+this.toString());
 //            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
@@ -247,7 +247,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                getRealTimeDataPlayer().getMyPortfolio(Authenticator.getInstance().getCurrentUser());
+                getRealTimeDataPlayer().getMyPortfolio(this.userName);
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);

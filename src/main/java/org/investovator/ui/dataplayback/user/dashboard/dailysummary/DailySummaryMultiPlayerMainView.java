@@ -102,8 +102,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             this.userName=Authenticator.getInstance().getCurrentUser();
             new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
                     joinMultiplayerGame(this, this.userName);
-//            System.out.println("ui join -->"+this.toString());
-//            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
