@@ -37,6 +37,8 @@ import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
+import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -52,6 +54,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     private static int TICKER_CHART_LENGTH = 10;
 
     private String userName;
+
+    private RealTimeDataPlayer player;
 
 
 
@@ -115,16 +119,13 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
-                    Boolean status= new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                            getRealTimeDataPlayer().executeOrder(stocksList.getValue().toString(),
+                    Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
                             userName);
                     Notification.show(status.toString());
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());
                 } catch (UserJoinException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (PlayerStateException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 //                }
@@ -166,9 +167,12 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void onEnterMainView() {
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
+            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getRealTimeDataPlayer();
+            //join the game if the user has not already done so
+            if(!this.player.hasUserJoined(this.userName)){
+                this.player.joinGame(this,this.userName);
+            }
 
-            new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getRealTimeDataPlayer().joinGame(this,
-                    this.userName);
 //            System.out.println("ui join -->"+this.toString());
 //            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
@@ -246,8 +250,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
 
-        Portfolio portfolio=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                getRealTimeDataPlayer().getMyPortfolio(this.userName);
+        Portfolio portfolio=this.player.getMyPortfolio(this.userName);
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
