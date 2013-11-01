@@ -50,6 +50,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
 
+    private String userName;
+
     @Override
     public Chart buildMainChart() {
         Chart chart = new Chart();
@@ -97,8 +99,9 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     @Override
     public void onEnterMainView() {
         try {
+            this.userName=Authenticator.getInstance().getCurrentUser();
             new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
-                    joinMultiplayerGame(this, Authenticator.getInstance().getCurrentUser());
+                    joinMultiplayerGame(this, this.userName);
 //            System.out.println("ui join -->"+this.toString());
 //            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
@@ -111,7 +114,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                getDailySummaryDataPLayer().getMyPortfolio(Authenticator.getInstance().getCurrentUser());
+                getDailySummaryDataPLayer().getMyPortfolio(this.userName);
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
@@ -171,7 +174,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                     Boolean status= new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
                             getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
-                            Authenticator.getInstance().getCurrentUser());
+                            userName);
                     Notification.show(status.toString());
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());
