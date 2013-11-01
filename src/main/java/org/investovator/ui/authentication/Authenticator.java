@@ -39,7 +39,15 @@ public class Authenticator {
     }
 
     public boolean isLoggedIn() {
-        return (boolean)VaadinSession.getCurrent().getAttribute(isLoggedIn);
+        if(VaadinSession.getCurrent().getAttribute(isLoggedIn)!=null){
+            boolean status= (boolean)VaadinSession.getCurrent().getAttribute(isLoggedIn);
+            if(status){
+
+                return true;
+            }
+        }
+            return false;
+
     }
 
     public boolean authenticate(String username, String password){
