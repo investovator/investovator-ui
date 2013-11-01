@@ -66,34 +66,38 @@ public abstract class BasicMainView extends DashboardPanel {
 
     public void setupPanel(){
         //clear everything
-        content.removeAllComponents();
+//        content.removeAllComponents();
 
-        //Main chart
-        HorizontalLayout chartContainer = new HorizontalLayout();
-        chartContainer.setWidth(95, Unit.PERCENTAGE);
-        mainChart = buildMainChart();
-        chartContainer.addComponent(mainChart);
-        chartContainer.setComponentAlignment(mainChart, Alignment.MIDDLE_CENTER);
+        //add components only if components have not already been added
+        if(content.getComponentCount()==0){
 
-        content.addComponent(chartContainer, 0, 1, 2, 1);
-        content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
+            //Main chart
+            HorizontalLayout chartContainer = new HorizontalLayout();
+            chartContainer.setWidth(95, Unit.PERCENTAGE);
+            mainChart = buildMainChart();
+            chartContainer.addComponent(mainChart);
+            chartContainer.setComponentAlignment(mainChart, Alignment.MIDDLE_CENTER);
 
-        //Stock price table
-        stockPriceTable=setupStockPriceTable();
-        content.addComponent(stockPriceTable,0,2);
-        content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
+            content.addComponent(chartContainer, 0, 1, 2, 1);
+            content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
 
-        //buy-sell window
-        Component buySellWindow=setupBuySellForm();
-        content.addComponent(buySellWindow,1,2);
+            //Stock price table
+            stockPriceTable=setupStockPriceTable();
+            content.addComponent(stockPriceTable,0,2);
+            content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
 
-        //pie-chart
-        stockPieChart =setupPieChart();
-        content.addComponent(stockPieChart,2,2);
+            //buy-sell window
+            Component buySellWindow=setupBuySellForm();
+            content.addComponent(buySellWindow,1,2);
+
+            //pie-chart
+            stockPieChart =setupPieChart();
+            content.addComponent(stockPieChart,2,2);
 
 
 
-        this.setContent(content);
+            this.setContent(content);
+        }
 
 
 
