@@ -87,12 +87,12 @@ public class MainGamingView extends GlobalView{
 
         this.removeAllComponents();
 
-        Notification.show(Authenticator.getInstance().getCurrentUser());
 
         //if not logged in
         if(!Authenticator.getInstance().isLoggedIn()){
             ((MyVaadinUI)MyVaadinUI.getCurrent()).getNavigator().navigateTo("");
         } else{
+            Notification.show(Authenticator.getInstance().getCurrentUser());
             setWindowContent();
 
         }
