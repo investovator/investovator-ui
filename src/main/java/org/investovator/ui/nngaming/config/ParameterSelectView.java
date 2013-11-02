@@ -43,18 +43,18 @@ public class ParameterSelectView implements WizardStep{
         addNewParamStatus = false;
 
         parameterSelectList = new TwinColSelect("Select Input Parameters for Game");
-        parameterSelectList.addItem(TradingDataAttribute.HIGH_PRICE);
-        parameterSelectList.addItem(TradingDataAttribute.LOW_PRICE);
-        parameterSelectList.addItem(TradingDataAttribute.CLOSING_PRICE);
-        parameterSelectList.addItem(TradingDataAttribute.TRADES);
-        parameterSelectList.addItem(TradingDataAttribute.SHARES);
-        parameterSelectList.addItem(TradingDataAttribute.TURNOVER);
+        parameterSelectList.addItem(TradingDataAttribute.HIGH_PRICE.toString());
+        parameterSelectList.addItem(TradingDataAttribute.LOW_PRICE.toString());
+        parameterSelectList.addItem(TradingDataAttribute.CLOSING_PRICE.toString());
+        parameterSelectList.addItem(TradingDataAttribute.SHARES.toString());
+        parameterSelectList.addItem(TradingDataAttribute.TRADES.toString());
+        parameterSelectList.addItem(TradingDataAttribute.TURNOVER.toString());
 
         parameterSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
 
-                Set<String> results = (Set) valueChangeEvent.getProperty().getValue();
+                Set<String> results = (Set<String>) valueChangeEvent.getProperty().getValue();
 
                 selectedParameters = new String[results.size()];
 

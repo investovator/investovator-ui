@@ -86,7 +86,7 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
     @Override
     public void wizardCompleted(WizardCompletedEvent event) {
 
-/*        NNManager nnManager;
+        /*NNManager nnManager;
 
         HashMap<String, String> newParameters = parameterAdd.getAddedParameterList();
         String stockID = stockSelect.getSelectedStock();
@@ -100,6 +100,11 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
             nnManager = new NNManager(newParameters,selectedParams,stockID);
         }
 
+        nnManager.createNeuralNetwork();*/
+
+        /*ArrayList<TradingDataAttribute> selectedParams = new ArrayList<TradingDataAttribute>();
+
+        NNManager nnManager = new NNManager(selectedParams,"SAMP");
         nnManager.createNeuralNetwork();*/
 
         getUI().getNavigator().navigateTo(UIConstants.NN_DASH_VIEW);
