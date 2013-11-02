@@ -204,8 +204,9 @@ public class ReportHelper {
 
         for(Number index : reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".t")) {
              TimeSeriesNode tmp = new TimeSeriesNode();
-             tmp.setDate(getDate((int)index));
-             tmp.setValue((double)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".price").get((int)index));
+             tmp.setDate(getDate((int)index -1));
+             tmp.setValue((double)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".price").get((int)index - 1 ));
+            data.add(tmp);
         }
 
         return data;

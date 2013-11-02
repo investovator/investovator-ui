@@ -22,7 +22,7 @@ public class ReportsView extends DashboardPanel {
     TimeSeriesChart chart;
     String reportType = null;
 
-    public ReportsView(){
+    public ReportsView() {
 
         reportType = "time.current";
 
@@ -31,6 +31,7 @@ public class ReportsView extends DashboardPanel {
 
         chart = new TimeSeriesChart(reportType);
         layout.addComponent(chart);
+        this.setContent(layout);
     }
 
     @Override
@@ -41,12 +42,10 @@ public class ReportsView extends DashboardPanel {
     }
 
 
-
-
 }
 
 
-class TimeSeriesChart extends Chart{
+class TimeSeriesChart extends Chart {
 
     private HashMap<String, DataSeries> series;
     private List<String> stocks;
@@ -57,7 +56,7 @@ class TimeSeriesChart extends Chart{
         return chartVariable;
     }
 
-    public TimeSeriesChart(String chartVariable){
+    public TimeSeriesChart(String chartVariable) {
 
         this.chartVariable = chartVariable;
 
@@ -66,40 +65,56 @@ class TimeSeriesChart extends Chart{
         stocks.add("SAMP");
 
         Configuration configuration = new Configuration();
-        configuration.getChart().setType(ChartType.SPLINE);
+        configuration.getChart().setType(ChartType.LINE);
 
 
         configuration.getxAxis().setType(AxisType.DATETIME);
+
+        PlotOptionsLine plotOptionsLine = new PlotOptionsLine();
+        plotOptionsLine.setMarker(new Marker(false));
+        plotOptionsLine.setShadow(false);
+        plotOptionsLine.setAnimation(false);
+        configuration.setPlotOptions(plotOptionsLine);
 
 
         drawChart(configuration);
 
     }
 
-    public void update(){
+    public void update() {
 
-        for(String stock : stocks){
+        for (String stock : stocks) {
 
             DataSeries dataSeries = null;
 
-            if(!series.containsKey(stock)){
+            if (!series.containsKey(stock)) {
+                DataSeries tmp = new DataSeries();
+                series.put(stock, tmp);
+                getConfiguration().addSeries(tmp);
+            }
 
-                dataSeries = new DataSeries();
-                series.put(stock, dataSeries);
+            dataSeries = series.get(stock);
 
-                this.getConfiguration().addSeries(dataSeries);
+            ArrayList<TimeSeriesNode> data = ReportHelper.getInstance().getTimeSeriesReport("SAMP", chartVariable, 50);
 
-                ArrayList<TimeSeriesNode> data = ReportHelper.getInstance().getTimeSeriesReport("SAMP", chartVariable, 50);
+            dataSeries.clear();
 
+            synchronized (UI.getCurrent()) {
 
-                synchronized (UI.getCurrent()){
-
-                    for(TimeSeriesNode node : data){
-                        dataSeries.add(new DataSeriesItem(node.getDate(),node.getValue()));
-                    }
+                for (TimeSeriesNode node : data) {
+                    dataSeries.add(new DataSeriesItem(node.getDate(), node.getValue()));
                 }
 
             }
+
+
+                /*getConfiguration().getSeries().clear();
+
+                synchronized (UI.getCurrent()){
+                    getConfiguration().addSeries(series.values().iterator().next());
+                }*/
+
+
         }
 
     }
