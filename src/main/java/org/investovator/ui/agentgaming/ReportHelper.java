@@ -19,20 +19,20 @@
 package org.investovator.ui.agentgaming;
 
 import net.sourceforge.jabm.report.Report;
+import net.sourceforge.jabm.report.SimEventReport;
 import net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess;
 import net.sourceforge.jasa.report.CurrentPriceReportVariables;
+import net.sourceforge.jasa.report.timeseries.CurrentPriceReportTimeseriesVariables;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.agentsimulation.api.JASAFacade;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.agentsimulation.api.MarketFacade;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author Amila Surendra
@@ -50,7 +50,16 @@ public class ReportHelper {
 
 
     private MarketFacade simulationFacade = JASAFacade.getMarketFacade();
+    private static ReportHelper instance;
 
+
+    private String GBM;
+
+
+    public static ReportHelper getInstance(){
+        if(instance == null) instance=new ReportHelper();
+        return instance;
+    }
 
 
 
@@ -97,6 +106,21 @@ public class ReportHelper {
         }
 
         return currentPriceReport;
+    }
+
+
+    private HashMap<String,CurrentPriceReportTimeseriesVariables> getTimeSeriesReports(String stockID){
+        ArrayList<Report> allReports = reports.get(stockID);
+        HashMap<String,CurrentPriceReportTimeseriesVariables> reports = new HashMap<String, CurrentPriceReportTimeseriesVariables>();
+
+        for (int i = 0; i < allReports.size(); i++) {
+            Report tmp = allReports.get(i);
+
+            if(tmp instanceof CurrentPriceReportTimeseriesVariables){
+                reports.put(tmp.getName(),(CurrentPriceReportTimeseriesVariables)tmp);
+            }
+        }
+        return reports;
     }
 
 
@@ -163,6 +187,40 @@ public class ReportHelper {
 
        return  null;
     }
+
+
+    /**
+     *
+     * @param stockId symbol of the stock
+     * @param report report type
+     * @param maxRecords number of records to return. if maxRecords is 0 all records are returned.
+     * @return
+     */
+    public ArrayList<TimeSeriesNode> getTimeSeriesReport(String stockId, String report, int maxRecords){
+
+        ArrayList<TimeSeriesNode> data = new ArrayList<TimeSeriesNode>();
+
+        CurrentPriceReportTimeseriesVariables reportVar =  getTimeSeriesReports(stockId).get(report);
+
+        for(Number index : reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".t")) {
+             TimeSeriesNode tmp = new TimeSeriesNode();
+             tmp.setDate(getDate((int)index));
+             tmp.setValue((double)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".price").get((int)index));
+        }
+
+        return data;
+    }
+
+
+    //TODO:Should get from config
+    static Date startDate = new Date();
+
+
+    //TODO:Should goto JASA
+    private Date getDate(int tickCount){
+        return new Date(startDate.getTime() + tickCount);
+    }
+
 
 }
 
