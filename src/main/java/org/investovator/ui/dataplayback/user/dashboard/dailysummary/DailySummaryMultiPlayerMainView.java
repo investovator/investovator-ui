@@ -28,19 +28,17 @@ import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.events.PlaybackEvent;
-import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
+import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
-import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 /**
  * @author: ishan
@@ -49,6 +47,10 @@ import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
+
+    private String userName;
+
+    private DailySummaryDataPLayer player;
 
     @Override
     public Chart buildMainChart() {
@@ -97,10 +99,12 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     @Override
     public void onEnterMainView() {
         try {
-            new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().getDailySummaryDataPLayer().
-                    joinMultiplayerGame(this, Authenticator.getInstance().getCurrentUser());
-//            System.out.println("ui join -->"+this.toString());
-//            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
+            this.userName=Authenticator.getInstance().getCurrentUser();
+            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
+            //join the game if the user has not already done so
+            if(!this.player.hasUserJoined(this.userName)){
+                this.player.joinMultiplayerGame(this,this.userName);
+            }
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
@@ -110,8 +114,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
     public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
 
-        Portfolio portfolio=new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                getDailySummaryDataPLayer().getMyPortfolio(Authenticator.getInstance().getCurrentUser());
+        Portfolio portfolio=this.player.getMyPortfolio(this.userName);
 
         //since we know that there's only one data series
         DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
@@ -168,16 +171,13 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
-                    Boolean status= new DataPlaybackGameFacade().getDataPlayerFacade().getInstance().
-                            getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
+                    Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
-                            Authenticator.getInstance().getCurrentUser());
+                            userName);
                     Notification.show(status.toString());
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());
                 } catch (UserJoinException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (PlayerStateException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 //                }

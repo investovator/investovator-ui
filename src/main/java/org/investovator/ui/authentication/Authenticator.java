@@ -1,5 +1,6 @@
 package org.investovator.ui.authentication;
 
+import com.vaadin.server.VaadinSession;
 import org.investovator.MyVaadinUI;
 
 import javax.swing.*;
@@ -20,6 +21,9 @@ public class Authenticator {
     }
 
     private static Authenticator authenticator;
+
+    private static String userName="userName";
+
     private boolean loggedIn;
 
     private Authenticator(){
@@ -48,20 +52,15 @@ public class Authenticator {
         if(username.isEmpty()){
             if(password.isEmpty()){
                 //set the user as a standard user
-                ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("testUser1");
+                setUser("testUser1");
                 success=true;
 
             }
 
-//            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("");
-//            success=true;
-
-
         }
         //user name for admin
         else if(username.equalsIgnoreCase("a")){
-
-            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("admin");
+            setUser("admin");
             success=true;
         }
 
@@ -77,7 +76,7 @@ public class Authenticator {
     public String getCurrentUser(){
 
         //TODO: implement after getting rajja's user API
-        return ((MyVaadinUI)MyVaadinUI.getCurrent()).getUser();
+        return (String)VaadinSession.getCurrent().getAttribute(userName).toString();
     }
 
     public UserType getMyPrivileges(){
@@ -89,6 +88,10 @@ public class Authenticator {
             return UserType.ORDINARY;
         }
 
+    }
+
+    public void setUser(String user) {
+        VaadinSession.getCurrent().setAttribute(userName,user);
     }
 
 }
