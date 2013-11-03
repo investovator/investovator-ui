@@ -3,6 +3,7 @@ package org.investovator.ui.agentgaming.config;
 import com.vaadin.data.Property;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinService;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
@@ -29,6 +30,7 @@ public class AgentSelectView implements WizardStep {
     public AgentSelectView() {
 
         content = new VerticalLayout();
+        content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
 
         agentSelectList = new TwinColSelect("Select Agents for Game");

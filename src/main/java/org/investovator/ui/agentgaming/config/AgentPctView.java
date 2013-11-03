@@ -1,9 +1,6 @@
 package org.investovator.ui.agentgaming.config;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.vaadin.teemu.wizards.WizardStep;
 
 import java.util.HashMap;
@@ -20,6 +17,7 @@ public class AgentPctView implements WizardStep {
 
     public AgentPctView() {
         content = new VerticalLayout();
+        content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
         agentPctForm = new FormLayout();
         content.addComponent(agentPctForm);

@@ -1,9 +1,6 @@
 package org.investovator.ui.agentgaming.config;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.vaadin.teemu.wizards.WizardStep;
 
 /**
@@ -25,6 +22,7 @@ public class OtherSimulationSettingsView implements WizardStep {
 
     public OtherSimulationSettingsView() {
         content = new VerticalLayout();
+        content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         settingsForm = new FormLayout();
         content.addComponent(settingsForm);
 
