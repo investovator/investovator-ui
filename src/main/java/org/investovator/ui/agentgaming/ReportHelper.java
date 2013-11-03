@@ -23,6 +23,7 @@ import net.sourceforge.jabm.report.SimEventReport;
 import net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess;
 import net.sourceforge.jasa.report.CurrentPriceReportVariables;
 import net.sourceforge.jasa.report.timeseries.CurrentPriceReportTimeseriesVariables;
+import net.sourceforge.jasa.report.timeseries.PriceReportTimeseriesVariables;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -109,15 +110,15 @@ public class ReportHelper {
     }
 
 
-    private HashMap<String,CurrentPriceReportTimeseriesVariables> getTimeSeriesReports(String stockID){
+    private HashMap<String,PriceReportTimeseriesVariables> getTimeSeriesReports(String stockID){
         ArrayList<Report> allReports = reports.get(stockID);
-        HashMap<String,CurrentPriceReportTimeseriesVariables> reports = new HashMap<String, CurrentPriceReportTimeseriesVariables>();
+        HashMap<String,PriceReportTimeseriesVariables> reports = new HashMap<String, PriceReportTimeseriesVariables>();
 
         for (int i = 0; i < allReports.size(); i++) {
             Report tmp = allReports.get(i);
 
-            if(tmp instanceof CurrentPriceReportTimeseriesVariables){
-                reports.put(tmp.getName(),(CurrentPriceReportTimeseriesVariables)tmp);
+            if(tmp instanceof PriceReportTimeseriesVariables){
+                reports.put(tmp.getName(),(PriceReportTimeseriesVariables)tmp);
             }
         }
         return reports;
@@ -200,7 +201,7 @@ public class ReportHelper {
 
         ArrayList<TimeSeriesNode> data = new ArrayList<TimeSeriesNode>();
 
-        CurrentPriceReportTimeseriesVariables reportVar =  getTimeSeriesReports(stockId).get(report);
+        PriceReportTimeseriesVariables reportVar =  getTimeSeriesReports(stockId).get(report);
 
         for (int index = 0; index < reportVar.getTimeseriesVariableBindings().get(reportVar.getName() + ".t").size(); index++) {
             TimeSeriesNode tmp = new TimeSeriesNode();
