@@ -31,6 +31,7 @@ import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -67,7 +68,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo(UIConstants.AGENTVIEW);
+                    startAgentCreateWizard();
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -263,7 +264,44 @@ public class AdminGameConfigLayout extends VerticalLayout {
         subWindow.setResizable(false);
         subWindow.setModal(true);
 
+        subWindow.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                //getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                getUI().getPage().reload();
+            }
+        });
+
         // Add it to the root component
         UI.getCurrent().addWindow(subWindow);
+    }
+
+
+    private void startAgentCreateWizard(){
+
+        // Create a sub-window and set the content
+        AgentGamingView subWindow = new AgentGamingView();
+        subWindow.update();
+
+        // set window characteristics
+        subWindow.setHeight("60%");
+        subWindow.setWidth("50%");
+        subWindow.center();
+        subWindow.setClosable(false);
+        subWindow.setDraggable(false);
+        subWindow.setResizable(false);
+        subWindow.setModal(true);
+
+        subWindow.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                //getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                getUI().getPage().reload();
+            }
+        });
+
+        // Add it to the root component
+        UI.getCurrent().addWindow(subWindow);
+
     }
 }

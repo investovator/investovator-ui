@@ -63,7 +63,6 @@ public class MyVaadinUI extends UI
         // Create and register the views
         navigator.addView("", new LoginView());
         navigator.addView(UIConstants.MAINVIEW, new AgentConfigDashboard());
-        navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
         navigator.addView(UIConstants.DATAPLAY_USR_DASH, new UserDashboardLoader());
         navigator.addView(UIConstants.DATA_PLAYBACK_ADMIN_DASH,new AdminDashboardLoader());
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
