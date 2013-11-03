@@ -2,6 +2,7 @@ package org.investovator.ui.main;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 import org.investovator.MyVaadinUI;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
@@ -10,6 +11,7 @@ import org.investovator.ui.GlobalView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.UIConstants;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 /**
  *
@@ -20,9 +22,12 @@ import org.investovator.ui.utils.UIConstants;
  */
 @SuppressWarnings("serial")
 
-public class MainGamingView extends GlobalView{
+public class MainGamingView extends DashboardPanel{
+
+    VerticalLayout content = new VerticalLayout();
 
     public MainGamingView(){
+        this.setContent(content);
     }
 
     /**
@@ -50,7 +55,7 @@ public class MainGamingView extends GlobalView{
 //                }
 //            }
 
-            this.addComponent(new AdminGameConfigLayout());
+            content.addComponent(new AdminGameConfigLayout());
         }
         else if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ORDINARY){
             //if no game is running
@@ -81,11 +86,10 @@ public class MainGamingView extends GlobalView{
     }
 
 
-
     @Override
-    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+    public void onEnter() {
 
-        this.removeAllComponents();
+        content.removeAllComponents();
 
 
         //if not logged in
@@ -96,8 +100,5 @@ public class MainGamingView extends GlobalView{
             setWindowContent();
 
         }
-
     }
-
-
 }
