@@ -20,17 +20,23 @@ public class ReportsView extends DashboardPanel {
 
     GridLayout layout;
     TimeSeriesChart chart;
-    String reportType = null;
+    TimeSeriesChart chart2;
 
     public ReportsView() {
 
-        reportType = "time.current";
-
         layout = new GridLayout();
         layout.setColumns(2);
+        layout.setSizeFull();
+        layout.setMargin(true);
+        layout.setSpacing(true);
 
-        chart = new TimeSeriesChart(reportType);
+        chart = new TimeSeriesChart("market price");
         layout.addComponent(chart);
+
+
+        chart2 = new TimeSeriesChart("market spread");
+        layout.addComponent(chart2);
+
         this.setContent(layout);
     }
 
@@ -38,6 +44,7 @@ public class ReportsView extends DashboardPanel {
     public void onEnter() {
 
         chart.update();
+        chart2.update();
 
     }
 
@@ -66,6 +73,7 @@ class TimeSeriesChart extends Chart {
 
         Configuration configuration = new Configuration();
         configuration.getChart().setType(ChartType.LINE);
+        configuration.setTitle(chartVariable);
 
 
         configuration.getxAxis().setType(AxisType.DATETIME);
