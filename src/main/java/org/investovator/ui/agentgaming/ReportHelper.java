@@ -19,10 +19,7 @@
 package org.investovator.ui.agentgaming;
 
 import net.sourceforge.jabm.report.Report;
-import net.sourceforge.jabm.report.SimEventReport;
-import net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess;
 import net.sourceforge.jasa.report.CurrentPriceReportVariables;
-import net.sourceforge.jasa.report.timeseries.CurrentPriceReportTimeseriesVariables;
 import net.sourceforge.jasa.report.timeseries.PriceReportTimeseriesVariables;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
