@@ -22,6 +22,7 @@ package org.investovator.ui.main;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.core.data.api.CompanyDataImpl;
@@ -82,8 +83,6 @@ public class AdminGameConfigLayout extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 //if there is no game running
                 if(gameState==GameStates.NEW){
-                    //todo-navigate to the game creation wizard
-//                    getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
                     startDailySummaryAddGameWizard();
 
                 }
@@ -174,10 +173,47 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
         }
 
+        //add a stop button for DPE
+        Button stopDpeButton=new Button("Stop DPE",new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
+                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                        try {
+                            DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopPlayback();
+                            GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+
+                    }
+                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                        try {
+                            DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopPlayback();
+                            GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
+
+                }
+
+
+            }
+        });
+
         HorizontalLayout agentLayout = new HorizontalLayout(agentGamesLabel,agentGames,agentGamesStatusLabel);
         agentLayout.setSizeFull();
-        HorizontalLayout dataPlaybackLayout = new HorizontalLayout(dataPlaybackGamesLabel,
-                dataPlayback,dataPlaybackGamesStatusLabel);
+        HorizontalLayout dataPlaybackLayout;
+        if(GameControllerFacade.getInstance().getCurrentGameState()==GameStates.RUNNING){
+            dataPlaybackLayout=new HorizontalLayout(dataPlaybackGamesLabel,
+                    dataPlayback,stopDpeButton,dataPlaybackGamesStatusLabel);
+        }
+        else{
+            dataPlaybackLayout= new HorizontalLayout(dataPlaybackGamesLabel,
+                    dataPlayback,dataPlaybackGamesStatusLabel);
+        }
+
         dataPlaybackLayout.setSizeFull();
         HorizontalLayout annLayout = new HorizontalLayout(annGamesLabel,nnGames,annGamesStatusLabel);
         annLayout.setSizeFull();

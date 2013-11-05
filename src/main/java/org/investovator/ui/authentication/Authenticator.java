@@ -23,11 +23,11 @@ public class Authenticator {
     private static Authenticator authenticator;
 
     private static String userName="userName";
+    private static String isLoggedIn="loggedIn";
 
-    private boolean loggedIn;
 
     private Authenticator(){
-        loggedIn = false;
+        setLoggedIn(false);
     }
 
     public static synchronized Authenticator getInstance()
@@ -39,11 +39,15 @@ public class Authenticator {
     }
 
     public boolean isLoggedIn() {
-        return loggedIn;
-    }
+        if(VaadinSession.getCurrent().getAttribute(isLoggedIn)!=null){
+            boolean status= (boolean)VaadinSession.getCurrent().getAttribute(isLoggedIn);
+            if(status){
 
-    private void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
+                return true;
+            }
+        }
+            return false;
+
     }
 
     public boolean authenticate(String username, String password){
@@ -76,7 +80,13 @@ public class Authenticator {
     public String getCurrentUser(){
 
         //TODO: implement after getting rajja's user API
-        return (String)VaadinSession.getCurrent().getAttribute(userName).toString();
+        if((VaadinSession.getCurrent().getAttribute(userName))!=null){
+            return VaadinSession.getCurrent().getAttribute(userName).toString();
+
+        }
+        else{
+            return "";
+        }
     }
 
     public UserType getMyPrivileges(){
@@ -92,6 +102,11 @@ public class Authenticator {
 
     public void setUser(String user) {
         VaadinSession.getCurrent().setAttribute(userName,user);
+    }
+
+    public void setLoggedIn(boolean loggedInStatus){
+        VaadinSession.getCurrent().setAttribute(isLoggedIn,loggedInStatus);
+
     }
 
 }

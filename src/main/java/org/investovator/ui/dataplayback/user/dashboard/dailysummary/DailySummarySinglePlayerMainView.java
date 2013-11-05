@@ -39,6 +39,8 @@ import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
+import java.util.Date;
+
 /**
  * @author: ishan
  * @version: ${Revision}
@@ -100,9 +102,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
                 DataSeries ls = new DataSeries();
                 ls.setName(stock);
+//                ls.add(new DataSeriesItem(new Date(),100));
                 configuration.addSeries(ls);
-                System.out.println(stock);
-
             }
         }
         chart.drawChart(configuration);
