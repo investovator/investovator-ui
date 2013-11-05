@@ -171,6 +171,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             //add the game types
 
             content.addComponent(gameTypes);
+            //content.setComponentAlignment(gameTypes,Alignment.MIDDLE_CENTER);
             gameTypes.setMultiSelect(false);
             gameTypes.setHtmlContentAllowed(true);
             gameTypes.addItem(PlayerTypes.DAILY_SUMMARY_PLAYER);
@@ -261,8 +262,10 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             VerticalLayout content = new VerticalLayout();
 
             content.addComponent(selector);
+            content.setComponentAlignment(selector,Alignment.MIDDLE_CENTER);
 
             selector.setRows(6);
+            selector.setWidth(90,Unit.PERCENTAGE);
             selector.setMultiSelect(true);
             selector.setImmediate(true);
             selector.setLeftColumnCaption("Available securities");
@@ -339,7 +342,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             VerticalLayout content = new VerticalLayout();
 
             content.addComponent(datePicker);
-            //TODO - set this to the starting/ending date of the data set
+            content.setComponentAlignment(datePicker,Alignment.MIDDLE_CENTER);
             datePicker.setValue(new Date());
             datePicker.setImmediate(true);
             datePicker.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -358,6 +361,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             //select the date range type
 
             content.addComponent(dateRangeType);
+            content.setComponentAlignment(dateRangeType,Alignment.MIDDLE_CENTER);
             dateRangeType.setMultiSelect(true);
             dateRangeType.setHtmlContentAllowed(true);
             dateRangeType.addItem(1);
