@@ -56,7 +56,7 @@ public abstract class BasicMainView extends DashboardPanel {
         //set a link to this class
 //        mySelf = this;
 
-        content = new GridLayout(3, 3);
+        content = new GridLayout(4, 3);
         content.setSizeFull();
     }
 
@@ -82,7 +82,7 @@ public abstract class BasicMainView extends DashboardPanel {
             chartContainer.addComponent(mainChart);
             chartContainer.setComponentAlignment(mainChart, Alignment.MIDDLE_CENTER);
 
-            content.addComponent(chartContainer, 0, 0, 2, 0);
+            content.addComponent(chartContainer, 0, 0, 3, 0);
             content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
 
             //Quantity chart
@@ -95,7 +95,7 @@ public abstract class BasicMainView extends DashboardPanel {
             quantityChartContainer.addComponent(quantityChart);
             quantityChartContainer.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
 
-            content.addComponent(quantityChartContainer, 0, 1, 2, 1);
+            content.addComponent(quantityChartContainer, 0, 1, 3, 1);
             content.setComponentAlignment(quantityChartContainer, Alignment.MIDDLE_CENTER);
 
             //Stock price table
@@ -124,11 +124,19 @@ public abstract class BasicMainView extends DashboardPanel {
             buySellWindowContainer.setComponentAlignment(buySellWindow,Alignment.MIDDLE_CENTER);
             content.addComponent(buySellWindowContainer, 1, 2);
 
+            //portfolio data
+            GridLayout portfolioContainer = new GridLayout(2,2);
+            //add a caption to the table
+            Label portfolioCaption=new Label("My Portfolio");
+            portfolioContainer.addComponent(portfolioCaption,0,0,1,0);
+            portfolioContainer.setComponentAlignment(portfolioCaption,Alignment.MIDDLE_CENTER);
             //pie-chart
             stockPieChart =setupPieChart();
-            content.addComponent(stockPieChart,2,2);
-
-
+            portfolioContainer.addComponent(stockPieChart,1,1);
+            //portfolio table
+            Component portfolioTable=setupStockPriceTable();
+            portfolioContainer.addComponent(portfolioTable,0,1);
+            content.addComponent(portfolioContainer,2,2,3,2);
 
             this.setContent(content);
         }
@@ -174,21 +182,22 @@ public abstract class BasicMainView extends DashboardPanel {
         for(String stock:DataPlaybackEngineStates.playingSymbols){
             stocksList.addItem(stock);
         }
-        stocksList.setWidth("75%");
+        //stocksList.setWidth("75%");
 
         //side
         final NativeSelect orderSide=new NativeSelect();
         orderSide.setCaption("Side");
         orderSide.addItem(OrderType.BUY);
         orderSide.addItem(OrderType.SELL);
-        orderSide.setWidth("90%");
+        //orderSide.setWidth("90%");
+        orderSide.setSizeFull();
         orderSide.select(OrderType.BUY);
         orderSide.setNullSelectionAllowed(false);
         orderSide.setImmediate(true);
 
         //Quantity
         final TextField quantity=new TextField("Amount");
-        quantity.setWidth("75%");
+        //quantity.setWidth("75%");
 
 
         form.addComponent(stocksList);
@@ -242,7 +251,7 @@ public abstract class BasicMainView extends DashboardPanel {
         chart.drawChart(conf);
         //turn off animation
         conf.getChart().setAnimation(false);
-        chart.setWidth("90%");
+//        chart.setWidth("90%");
         chart.setHeight(65,Unit.MM);
 
 

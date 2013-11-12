@@ -29,6 +29,7 @@ public class StockNamePriceBean implements Serializable {
 
     String stockID;
     float price;
+    boolean priceIncreased=false;
 
     public StockNamePriceBean(String stockID, float price) {
         this.stockID = stockID;
@@ -49,5 +50,13 @@ public class StockNamePriceBean implements Serializable {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public boolean isPriceIncreased() {
+        return priceIncreased;
+    }
+
+    public void setPriceIncreased(boolean priceIncreased) {
+        this.priceIncreased = priceIncreased;
     }
 }
