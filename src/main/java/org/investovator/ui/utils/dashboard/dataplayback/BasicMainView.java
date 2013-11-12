@@ -75,6 +75,7 @@ public abstract class BasicMainView extends DashboardPanel {
             //Main chart
             HorizontalLayout chartContainer = new HorizontalLayout();
             chartContainer.setWidth(95, Unit.PERCENTAGE);
+            chartContainer.setMargin(true);
 //            chartContainer.setHeight(30,Unit.PERCENTAGE);
             mainChart = buildMainChart();
             chartContainer.addComponent(mainChart);
@@ -86,6 +87,7 @@ public abstract class BasicMainView extends DashboardPanel {
             //Quantity chart
             HorizontalLayout quantityChartContainer = new HorizontalLayout();
             quantityChartContainer.setWidth(95, Unit.PERCENTAGE);
+            quantityChartContainer.setMargin(true);
 //            quantityChartContainer.setHeight(30,Unit.PERCENTAGE);
             quantityChart = buildQuantityChart();
             quantityChartContainer.addComponent(quantityChart);
