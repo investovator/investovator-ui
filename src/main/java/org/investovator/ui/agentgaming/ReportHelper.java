@@ -53,6 +53,9 @@ public class ReportHelper {
 
     private String GBM;
 
+    //TODO:Should get from config
+    static Date startDate;
+
 
     public static ReportHelper getInstance(){
         if(instance == null) instance=new ReportHelper();
@@ -61,9 +64,9 @@ public class ReportHelper {
 
 
 
-    public ReportHelper() {
+    private ReportHelper() {
         //Add Current Time Reports
-
+        startDate = new Date();
     }
 
 
@@ -202,7 +205,7 @@ public class ReportHelper {
 
         for (int index = 0; index < reportVar.getTimeseriesVariableBindings().get(reportVar.getName() + ".t").size(); index++) {
             TimeSeriesNode tmp = new TimeSeriesNode();
-            tmp.setDate(getDate(index));
+            tmp.setDate(getDate((int)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".t").get(index)));
             tmp.setValue((double)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".price").get(index));
             data.add(tmp);
         }
@@ -211,12 +214,11 @@ public class ReportHelper {
     }
 
 
-    //TODO:Should get from config
-    static Date startDate = new Date();
+
 
 
     //TODO:Should goto JASA
-    private Date getDate(int tickCount){
+    public Date getDate(int tickCount){
         return new Date(startDate.getTime() + tickCount);
     }
 
