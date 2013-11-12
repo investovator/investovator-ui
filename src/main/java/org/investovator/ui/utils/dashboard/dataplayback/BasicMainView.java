@@ -49,6 +49,7 @@ public abstract class BasicMainView extends DashboardPanel {
     protected Chart quantityChart;
 
     protected Table stockPriceTable;
+    protected Table portfolioTable;
 
     //to store every component
     GridLayout content;
@@ -137,7 +138,7 @@ public abstract class BasicMainView extends DashboardPanel {
             portfolioContainer.addComponent(stockPieChart,1,1);
             portfolioContainer.setComponentAlignment(stockPieChart,Alignment.TOP_RIGHT);
             //portfolio table
-            Component portfolioTable=setupPortfolioTable();
+            portfolioTable=setupPortfolioTable();
             portfolioContainer.addComponent(portfolioTable,0,1);
             content.addComponent(portfolioContainer,2,2,3,2);
 
@@ -182,10 +183,11 @@ public abstract class BasicMainView extends DashboardPanel {
         table.setCaption(null);
 
         //set the column order
-        table.setVisibleColumns(new Object[]{"stockID", "numOfStocks","averageCost"});
+        table.setVisibleColumns(new Object[]{"stockID", "numOfStocks","averageCost","totCost"});
         table.setColumnHeader("stockID","Symbols");
         table.setColumnHeader("numOfStocks","Quantity");
         table.setColumnHeader("averageCost","Avg. Cost");
+        table.setColumnHeader("totCost","Tot. Cost");
 
         return table;
     }

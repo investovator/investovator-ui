@@ -25,13 +25,15 @@ package org.investovator.ui.dataplayback.beans;
  */
 public class PortfolioBean {
     String stockID;
-    float AverageCost;
+    double AverageCost;
     int numOfStocks;
+    double totCost;
 
-    public PortfolioBean(String stockID, float averageCost, int numOfStocks) {
+    public PortfolioBean(String stockID, double averageCost, int numOfStocks) {
         this.stockID = stockID;
         AverageCost = averageCost;
         this.numOfStocks = numOfStocks;
+        this.totCost=averageCost*numOfStocks;
     }
 
     public String getStockID() {
@@ -42,11 +44,11 @@ public class PortfolioBean {
         this.stockID = stockID;
     }
 
-    public float getAverageCost() {
+    public double getAverageCost() {
         return AverageCost;
     }
 
-    public void setAverageCost(float averageCost) {
+    public void setAverageCost(double averageCost) {
         AverageCost = averageCost;
     }
 
@@ -56,5 +58,13 @@ public class PortfolioBean {
 
     public void setNumOfStocks(int numOfStocks) {
         this.numOfStocks = numOfStocks;
+    }
+
+    public double getTotCost() {
+        return totCost;
+    }
+
+    public void setTotCost(double totCost) {
+        this.totCost = totCost;
     }
 }
