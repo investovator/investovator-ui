@@ -19,6 +19,7 @@
 package org.investovator.ui.agentgaming;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author Amila Surendra
@@ -32,6 +33,7 @@ public class StockItemBean implements Serializable {
     private float lastAsk;
     private float bestBid;
     private float bestAsk;
+    private Date timeStamp;
 
     public StockItemBean() {
     }
@@ -82,5 +84,13 @@ public class StockItemBean implements Serializable {
 
     public void setLastAsk(float lastAsk) {
         this.lastAsk = lastAsk;
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }
