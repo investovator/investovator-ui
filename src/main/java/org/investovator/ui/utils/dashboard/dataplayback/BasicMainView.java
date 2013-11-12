@@ -24,6 +24,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
@@ -87,7 +88,8 @@ public abstract class BasicMainView extends DashboardPanel {
             //Quantity chart
             HorizontalLayout quantityChartContainer = new HorizontalLayout();
             quantityChartContainer.setWidth(95, Unit.PERCENTAGE);
-            quantityChartContainer.setMargin(true);
+//            quantityChartContainer.setMargin(true);
+            quantityChartContainer.setMargin(new MarginInfo(false,true,true,true));
 //            quantityChartContainer.setHeight(30,Unit.PERCENTAGE);
             quantityChart = buildQuantityChart();
             quantityChartContainer.addComponent(quantityChart);
@@ -98,7 +100,7 @@ public abstract class BasicMainView extends DashboardPanel {
 
             //Stock price table
             stockPriceTable=setupStockPriceTable();
-            content.addComponent(stockPriceTable,0,2);
+            content.addComponent(stockPriceTable, 0, 2);
             content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
 
             //buy-sell window

@@ -332,11 +332,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.SHARES)), true, true);
+                                    event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
 
                         } else {
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.SHARES)));
+                                    event.getData().get(TradingDataAttribute.SHARES)/100));
 
                         }
 
@@ -366,12 +366,13 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         YAxis y = new YAxis();
         y.setMin(0);
+//        y.setMinRange(500);
         y.setTitle("Quantity");
         conf.addyAxis(y);
 
 
         Tooltip tooltip = new Tooltip();
-        tooltip.setFormatter("this.x +': '+ this.y +''");
+        tooltip.setFormatter("'this.y'");
         conf.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
