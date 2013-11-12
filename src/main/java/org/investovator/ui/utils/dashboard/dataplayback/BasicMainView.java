@@ -120,13 +120,14 @@ public abstract class BasicMainView extends DashboardPanel {
             buySellWindowContainer.setComponentAlignment(buySellWindowCaption,Alignment.MIDDLE_CENTER);
             Component buySellWindow=setupBuySellForm();
             buySellWindowContainer.addComponent(buySellWindow,0,1);
-            buySellWindowContainer.setMargin(new MarginInfo(false,true,true,true));
+            buySellWindowContainer.setMargin(new MarginInfo(false,false,true,false));
 
             buySellWindowContainer.setComponentAlignment(buySellWindow,Alignment.MIDDLE_CENTER);
             content.addComponent(buySellWindowContainer, 1, 2);
 
             //portfolio data
             GridLayout portfolioContainer = new GridLayout(2,2);
+            portfolioContainer.setMargin(new MarginInfo(false,true,true,true));
             //add a caption to the table
             Label portfolioCaption=new Label("My Portfolio");
             portfolioContainer.addComponent(portfolioCaption,0,0,1,0);
@@ -134,6 +135,7 @@ public abstract class BasicMainView extends DashboardPanel {
             //pie-chart
             stockPieChart =setupPieChart();
             portfolioContainer.addComponent(stockPieChart,1,1);
+            portfolioContainer.setComponentAlignment(stockPieChart,Alignment.TOP_RIGHT);
             //portfolio table
             Component portfolioTable=setupPortfolioTable();
             portfolioContainer.addComponent(portfolioTable,0,1);
@@ -175,13 +177,6 @@ public abstract class BasicMainView extends DashboardPanel {
         BeanContainer<String,PortfolioBean> beans =
                 new BeanContainer<String,PortfolioBean>(PortfolioBean.class);
         beans.setBeanIdProperty("stockID");
-
-//        //if the game is initialized
-//        if(DataPlaybackEngineStates.playingSymbols!=null){
-//            for(String stock:DataPlaybackEngineStates.playingSymbols){
-//                beans.addBean(new StockNamePriceBean(stock,0));
-//            }
-//        }
 
         Table table=new Table("Stock Prices",beans);
         table.setCaption(null);
@@ -250,7 +245,7 @@ public abstract class BasicMainView extends DashboardPanel {
         PlotOptionsPie plotOptions = new PlotOptionsPie();
         plotOptions.setCursor(Cursor.POINTER);
         plotOptions.setShowInLegend(true);
-        plotOptions.setSize("90%");
+        plotOptions.setSize("120%");
 
         Labels dataLabels = new Labels();
         dataLabels.setEnabled(false);
@@ -276,7 +271,7 @@ public abstract class BasicMainView extends DashboardPanel {
         chart.drawChart(conf);
         //turn off animation
         conf.getChart().setAnimation(false);
-//        chart.setWidth("90%");
+        chart.setWidth(100,Unit.MM);
         chart.setHeight(65,Unit.MM);
 
 
