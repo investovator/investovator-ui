@@ -39,6 +39,7 @@ import org.investovator.dataplaybackengine.exceptions.player.PlayerStateExceptio
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
+import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -95,6 +96,14 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
                 DataSeries ls = new DataSeries();
                 ls.setName(stock);
+
+                //add dummy points to fill it up
+                for(int counter=1;counter<=TICKER_CHART_LENGTH;counter++){
+                    ls.add(new DataSeriesItem
+                            (DateUtils.decrementTimeBySeconds((TICKER_CHART_LENGTH-counter),
+                                    DataPlaybackEngineStates.gameStartDate),0));
+                }
+
                 configuration.addSeries(ls);
 
             }
@@ -441,6 +450,14 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 DataSeries ls = new DataSeries();
                 ls.setName(stock);
                 ls.setPlotOptions(plot);
+
+                //add dummy points to fill it up
+                for(int counter=1;counter<=TICKER_CHART_LENGTH;counter++){
+                    ls.add(new DataSeriesItem
+                            (DateUtils.decrementTimeBySeconds((TICKER_CHART_LENGTH-counter),
+                                    DataPlaybackEngineStates.gameStartDate),0));
+                }
+
                 conf.addSeries(ls);
 
 
