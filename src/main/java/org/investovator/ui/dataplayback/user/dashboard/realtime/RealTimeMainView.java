@@ -89,6 +89,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         configuration.getxAxis().setDateTimeLabelFormats(
                 new DateTimeLabelFormats("%e. %b", "%b"));
 
+        configuration.getyAxis().setTitle("Price");
+
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
                 DataSeries ls = new DataSeries();
@@ -303,6 +305,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //update the ticker chart
             updateTickerChart(event);
 
+            //update quantity chart
+            updateQuantityChart(event);
+
             //update the table
             updateStockPriceTable(event);
         }
@@ -310,5 +315,101 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         else if (arg instanceof PlaybackFinishedEvent) {
             //TODO - how to handle this?
         }
+    }
+
+
+    private void updateQuantityChart(StockUpdateEvent event)  {
+
+        //iterate every series in the chart at the moment
+        for (Series series : quantityChart.getConfiguration().getSeries()) {
+            DataSeries dSeries = (DataSeries) series;
+            //if this series matches the stock events stock
+            if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
+
+                if (mainChart.isConnectorEnabled()) {
+                    getSession().lock();
+                    try {
+                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
+
+                            dSeries.add(new DataSeriesItem(event.getTime(),
+                                    event.getData().get(TradingDataAttribute.SHARES)), true, true);
+
+                        } else {
+                            dSeries.add(new DataSeriesItem(event.getTime(),
+                                    event.getData().get(TradingDataAttribute.SHARES)));
+
+                        }
+
+                    } finally {
+                        getSession().unlock();
+                    }
+                }
+
+
+            }
+
+        }
+
+    }
+
+
+    public Chart buildQuantityChart(){
+        Chart chart = new Chart(ChartType.COLUMN);
+        chart.setHeight(40,Unit.MM);
+
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle("Quantity");
+
+        XAxis x = new XAxis();
+        x.setType(AxisType.DATETIME);
+//        x.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+//                "Sep", "Oct", "Nov", "Dec");
+        conf.addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setMin(0);
+        y.setTitle("Quantity");
+        conf.addyAxis(y);
+
+//        Legend legend = new Legend();
+//        legend.setLayout(LayoutDirection.VERTICAL);
+//        legend.setBackgroundColor("#FFFFFF");
+//        legend.setHorizontalAlign(HorizontalAlign.LEFT);
+//        legend.setVerticalAlign(VerticalAlign.TOP);
+//        legend.setX(100);
+//        legend.setY(70);
+//        legend.setFloating(true);
+//        legend.setShadow(true);
+//        conf.setLegend(legend);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.x +': '+ this.y +''");
+        conf.setTooltip(tooltip);
+
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
+
+        if (DataPlaybackEngineStates.playingSymbols != null) {
+            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+                DataSeries ls = new DataSeries();
+                ls.setName(stock);
+                conf.addSeries(ls);
+
+            }
+        }
+
+//        conf.addSeries(new ListSeries("Tokyo", 49.9, 71.5, 106.4, 129.2, 144.0,
+//                176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4));
+//        conf.addSeries(new ListSeries("New York", 83.6, 78.8, 98.5, 93.4,
+//                106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3));
+//        conf.addSeries(new ListSeries("London", 48.9, 38.8, 39.3, 41.4, 47.0,
+//                48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2));
+//        conf.addSeries(new ListSeries("Berlin", 42.4, 33.2, 34.5, 39.7, 52.6,
+//                75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1));
+
+        chart.drawChart(conf);
+        chart.setImmediate(true);
+        return chart;
     }
 }
