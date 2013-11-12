@@ -64,7 +64,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     @Override
     public Chart buildMainChart() {
         Chart chart = new Chart();
-        chart.setHeight(60,Unit.MM);
+        chart.setHeight(70,Unit.MM);
 //        chart.setWidth("250px");
 //        chart.setSizeFull();
 
@@ -445,7 +445,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     public Chart buildQuantityChart(){
         Chart chart = new Chart(ChartType.COLUMN);
-        chart.setHeight(40,Unit.MM);
+        chart.setHeight(43,Unit.MM);
 
         Configuration conf = chart.getConfiguration();
         conf.setTitle("Quantity");

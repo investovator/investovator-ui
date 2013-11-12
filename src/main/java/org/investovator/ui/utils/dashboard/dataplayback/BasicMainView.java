@@ -274,7 +274,7 @@ public abstract class BasicMainView extends DashboardPanel {
         //turn off animation
         conf.getChart().setAnimation(false);
         chart.setWidth(115,Unit.MM);
-        chart.setHeight(65,Unit.MM);
+        chart.setHeight(55,Unit.MM);
 
 
         return chart;
