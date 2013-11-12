@@ -32,6 +32,7 @@ import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
@@ -102,11 +103,11 @@ public abstract class BasicMainView extends DashboardPanel {
             GridLayout stockPriceTableContainer = new GridLayout(1,2);
             //add a caption to the table
             Label tableCaption=new Label("Stock Price Table");
-            stockPriceTableContainer.addComponent(tableCaption,0,0);
+            stockPriceTableContainer.addComponent(tableCaption, 0, 0);
             stockPriceTableContainer.setComponentAlignment(tableCaption,Alignment.MIDDLE_RIGHT);
             stockPriceTable=setupStockPriceTable();
-            stockPriceTableContainer.addComponent(stockPriceTable,0,1);
-            stockPriceTableContainer.setMargin(new MarginInfo(false,true,true,true));
+            stockPriceTableContainer.addComponent(stockPriceTable, 0, 1);
+            stockPriceTableContainer.setMargin(new MarginInfo(false, true, true, true));
 
             stockPriceTableContainer.setComponentAlignment(stockPriceTable,Alignment.MIDDLE_CENTER);
             content.addComponent(stockPriceTableContainer, 0, 2);
@@ -134,7 +135,7 @@ public abstract class BasicMainView extends DashboardPanel {
             stockPieChart =setupPieChart();
             portfolioContainer.addComponent(stockPieChart,1,1);
             //portfolio table
-            Component portfolioTable=setupStockPriceTable();
+            Component portfolioTable=setupPortfolioTable();
             portfolioContainer.addComponent(portfolioTable,0,1);
             content.addComponent(portfolioContainer,2,2,3,2);
 
@@ -166,6 +167,30 @@ public abstract class BasicMainView extends DashboardPanel {
         table.setColumnHeader("stockID","Symbols");
         table.setColumnHeader("price","Price");
 
+
+        return table;
+    }
+
+    private Table setupPortfolioTable(){
+        BeanContainer<String,PortfolioBean> beans =
+                new BeanContainer<String,PortfolioBean>(PortfolioBean.class);
+        beans.setBeanIdProperty("stockID");
+
+//        //if the game is initialized
+//        if(DataPlaybackEngineStates.playingSymbols!=null){
+//            for(String stock:DataPlaybackEngineStates.playingSymbols){
+//                beans.addBean(new StockNamePriceBean(stock,0));
+//            }
+//        }
+
+        Table table=new Table("Stock Prices",beans);
+        table.setCaption(null);
+
+        //set the column order
+        table.setVisibleColumns(new Object[]{"stockID", "numOfStocks","averageCost"});
+        table.setColumnHeader("stockID","Symbols");
+        table.setColumnHeader("numOfStocks","Quantity");
+        table.setColumnHeader("averageCost","Avg. Cost");
 
         return table;
     }
