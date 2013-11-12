@@ -71,6 +71,8 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         //new Thread(watchList).start();
 
+        //Subscribe to listeners
+        AgentUIUpdater.getInstance().addListener(portfolioSummary);
 
     }
 
@@ -172,7 +174,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
 
     @Override
-    public void onStockChange(StockItemBean stockChanged) {
+    public void onStockChange(final StockItemBean stockChanged) {
         //To change body of implemented methods use File | Settings | File Templates.
 
         if(!simulationRunning) return;
@@ -193,9 +195,14 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         }
 
 
-        if (currentPriceChart.isConnectorEnabled()) synchronized (UI.getCurrent()){
+        if (currentPriceChart.isConnectorEnabled()) {
              //if( series.getData().length > 20)  series.addData(stockChanged.getMarketPrice(),true,true);
-             series.addData(stockChanged.getMarketPrice());
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    series.addData(stockChanged.getMarketPrice());
+                }
+            });
         }
 
 
@@ -230,8 +237,6 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         }
 
 
-        //Subscribe to listeners
-        AgentUIUpdater.getInstance().addListener(portfolioSummary);
 
 
     }
