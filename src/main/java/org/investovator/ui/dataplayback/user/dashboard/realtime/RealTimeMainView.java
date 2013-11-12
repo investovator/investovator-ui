@@ -443,6 +443,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         PlotOptionsColumn plot = new PlotOptionsColumn();
         plot.setPointPadding(0);
         plot.setBorderWidth(0);
+        //set the widht of the columns
         plot.setPointWidth(15);
 
         if (DataPlaybackEngineStates.playingSymbols != null) {

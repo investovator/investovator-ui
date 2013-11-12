@@ -99,13 +99,30 @@ public abstract class BasicMainView extends DashboardPanel {
             content.setComponentAlignment(quantityChartContainer, Alignment.MIDDLE_CENTER);
 
             //Stock price table
+            GridLayout stockPriceTableContainer = new GridLayout(1,2);
+            //add a caption to the table
+            Label tableCaption=new Label("Stock Price Table");
+            stockPriceTableContainer.addComponent(tableCaption,0,0);
+            stockPriceTableContainer.setComponentAlignment(tableCaption,Alignment.MIDDLE_RIGHT);
             stockPriceTable=setupStockPriceTable();
-            content.addComponent(stockPriceTable, 0, 2);
-            content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
+            stockPriceTableContainer.addComponent(stockPriceTable,0,1);
+            stockPriceTableContainer.setMargin(new MarginInfo(false,true,true,true));
+
+            stockPriceTableContainer.setComponentAlignment(stockPriceTable,Alignment.MIDDLE_CENTER);
+            content.addComponent(stockPriceTableContainer, 0, 2);
 
             //buy-sell window
+            GridLayout buySellWindowContainer = new GridLayout(1,2);
+            //add a caption to the table
+            Label buySellWindowCaption=new Label("Buy/Sell Stocks");
+            buySellWindowContainer.addComponent(buySellWindowCaption,0,0);
+            buySellWindowContainer.setComponentAlignment(buySellWindowCaption,Alignment.MIDDLE_CENTER);
             Component buySellWindow=setupBuySellForm();
-            content.addComponent(buySellWindow,1,2);
+            buySellWindowContainer.addComponent(buySellWindow,0,1);
+            buySellWindowContainer.setMargin(new MarginInfo(false,true,true,true));
+
+            buySellWindowContainer.setComponentAlignment(buySellWindow,Alignment.MIDDLE_CENTER);
+            content.addComponent(buySellWindowContainer, 1, 2);
 
             //pie-chart
             stockPieChart =setupPieChart();
@@ -134,6 +151,7 @@ public abstract class BasicMainView extends DashboardPanel {
             }
         }
         Table table=new Table("Stock Prices",beans);
+        table.setCaption(null);
 
         //set the column order
         table.setVisibleColumns(new Object[]{"stockID", "price"});
