@@ -387,14 +387,17 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         conf.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
-        plot.setPointPadding(0.2);
+        plot.setPointPadding(0);
         plot.setBorderWidth(0);
+        plot.setPointWidth(15);
 
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
                 DataSeries ls = new DataSeries();
                 ls.setName(stock);
+                ls.setPlotOptions(plot);
                 conf.addSeries(ls);
+
 
             }
         }
