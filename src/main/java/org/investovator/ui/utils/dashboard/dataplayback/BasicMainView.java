@@ -44,6 +44,7 @@ public abstract class BasicMainView extends DashboardPanel {
     //charts to be shown
     protected Chart mainChart;
     protected Chart stockPieChart;
+    protected Chart quantityChart;
 
     protected Table stockPriceTable;
 
@@ -74,12 +75,24 @@ public abstract class BasicMainView extends DashboardPanel {
             //Main chart
             HorizontalLayout chartContainer = new HorizontalLayout();
             chartContainer.setWidth(95, Unit.PERCENTAGE);
+//            chartContainer.setHeight(30,Unit.PERCENTAGE);
             mainChart = buildMainChart();
             chartContainer.addComponent(mainChart);
             chartContainer.setComponentAlignment(mainChart, Alignment.MIDDLE_CENTER);
 
-            content.addComponent(chartContainer, 0, 1, 2, 1);
+            content.addComponent(chartContainer, 0, 0, 2, 0);
             content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
+
+//            //Quantity chart
+//            HorizontalLayout quantityChartContainer = new HorizontalLayout();
+//            quantityChartContainer.setWidth(95, Unit.PERCENTAGE);
+////            quantityChartContainer.setHeight(30,Unit.PERCENTAGE);
+//            quantityChart = buildQuantityChart();
+//            quantityChartContainer.addComponent(quantityChart);
+//            quantityChartContainer.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
+//
+//            content.addComponent(quantityChartContainer, 0, 1, 2, 1);
+//            content.setComponentAlignment(quantityChartContainer, Alignment.MIDDLE_CENTER);
 
             //Stock price table
             stockPriceTable=setupStockPriceTable();
@@ -223,5 +236,56 @@ public abstract class BasicMainView extends DashboardPanel {
      * override this to call the onEnter method of the DashboardPanel
      */
     abstract public void onEnterMainView();
+
+    public Chart buildQuantityChart(){
+        Chart chart = new Chart(ChartType.COLUMN);
+        chart.setHeight(40,Unit.MM);
+
+        Configuration conf = chart.getConfiguration();
+
+        //conf.setTitle("Total fruit consumtion, grouped by gender");
+        //conf.setSubTitle("Source: WorldClimate.com");
+
+        XAxis x = new XAxis();
+        x.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+                "Sep", "Oct", "Nov", "Dec");
+        conf.addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setMin(0);
+        y.setTitle("Quantity");
+        conf.addyAxis(y);
+
+        Legend legend = new Legend();
+        legend.setLayout(LayoutDirection.VERTICAL);
+        legend.setBackgroundColor("#FFFFFF");
+        legend.setHorizontalAlign(HorizontalAlign.LEFT);
+        legend.setVerticalAlign(VerticalAlign.TOP);
+        legend.setX(100);
+        legend.setY(70);
+        legend.setFloating(true);
+        legend.setShadow(true);
+        conf.setLegend(legend);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.x +': '+ this.y +' mm'");
+        conf.setTooltip(tooltip);
+
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
+
+        conf.addSeries(new ListSeries("Tokyo", 49.9, 71.5, 106.4, 129.2, 144.0,
+                176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4));
+//        conf.addSeries(new ListSeries("New York", 83.6, 78.8, 98.5, 93.4,
+//                106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3));
+//        conf.addSeries(new ListSeries("London", 48.9, 38.8, 39.3, 41.4, 47.0,
+//                48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2));
+//        conf.addSeries(new ListSeries("Berlin", 42.4, 33.2, 34.5, 39.7, 52.6,
+//                75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1));
+
+        chart.drawChart(conf);
+        return chart;
+    }
 
 }

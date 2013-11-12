@@ -62,7 +62,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     @Override
     public Chart buildMainChart() {
         Chart chart = new Chart();
-//        chart.setHeight("350px");
+        chart.setHeight(60,Unit.MM);
 //        chart.setWidth("250px");
 //        chart.setSizeFull();
 
@@ -75,7 +75,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         Configuration configuration = new Configuration();
         configuration.setTooltip(tooltip);
-        configuration.getChart().setType(ChartType.SPLINE);
+        configuration.getChart().setType(ChartType.LINE);
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setDataLabels(new Labels(true));
