@@ -330,19 +330,13 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                 //if this is an update for a stock that the user has already bought
                 if(portfolio.getShares().containsKey(event.getStockId())){
-                    //if it is already in the chart
-                    if(dSeries.get(event.getStockId())!=null){
-                        //remove it
-                        dSeries.remove(dSeries.get(event.getStockId()));
-
-
-                    }
-                    //
                     float price =event.getData().get(TradingDataAttribute.PRICE);
                     double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
 
                     //update the chart
-                    dSeries.add(new DataSeriesItem(event.getStockId(),price*quantity));
+                    DataSeriesItem item=dSeries.get(event.getStockId());
+                    item.setY(price*quantity);
+                    dSeries.update(item);
 
                 }
 
