@@ -53,7 +53,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     //Layout Components
     GridLayout content;
     Table watchListTable;
-    Chart currentPriceChart;
+    MultiStockChart currentPriceChart;
     WatchList watchList;
     QuoteUI quoteUI;
     PortfolioSummary portfolioSummary;
@@ -96,7 +96,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
 
         watchListTable = getTable();
-        currentPriceChart = getChart();
+        currentPriceChart = new MultiStockChart();
 
 
 
@@ -145,34 +145,6 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
     final ListSeries series = new ListSeries(0);
 
-
-
-
-
-    protected Chart getChart() {
-
-        final Chart chart = new Chart();
-        chart.setHeight("350px");
-        chart.setWidth("90%");
-        chart.setCaption("Watchlist Summary");
-
-        final Configuration configuration = new Configuration();
-        configuration.setTitle("Last Traded Price");
-
-        configuration.getChart().setType(ChartType.SPLINE);
-        configuration.disableCredits();
-
-        configuration.setSeries(series);
-
-        chart.drawChart(configuration);
-
-
-        return chart;
-    }
-
-
-
-
     @Override
     public void onStockChange(final StockItemBean stockChanged) {
         //To change body of implemented methods use File | Settings | File Templates.
@@ -196,13 +168,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
 
         if (currentPriceChart.isConnectorEnabled()) {
-             //if( series.getData().length > 20)  series.addData(stockChanged.getMarketPrice(),true,true);
-            UI.getCurrent().access(new Runnable() {
-                @Override
-                public void run() {
-                    series.addData(stockChanged.getMarketPrice());
-                }
-            });
+            currentPriceChart.insertDataPoint(stockChanged.getStockID(),stockChanged.getTimeStamp(), stockChanged.getMarketPrice());
         }
 
 
@@ -211,6 +177,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     @Override
     public void onEnter() {
 
+        createUI();
 
         try {
             companyData =  new CompanyDataImpl();
@@ -230,13 +197,12 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
             for(String stock : availableStocks){
                 simulationFacade.addListener(stock,watchList);
                 simulationFacade.addListener(stock, AgentUIUpdater.getInstance());
+                currentPriceChart.addStock(stock, reportHelper.getTimeSeriesReport(stock,"market price",50));
 
             }
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
-
-
 
 
     }
