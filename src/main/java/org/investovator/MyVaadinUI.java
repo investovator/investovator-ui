@@ -6,6 +6,7 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.UI;
 import org.apache.commons.configuration.ConfigurationException;
 import org.investovator.core.commons.configuration.ConfigLoader;
@@ -26,7 +27,7 @@ import javax.servlet.annotation.WebServlet;
 @Theme("dashboard")
 //@PreserveOnRefresh
 @SuppressWarnings("serial")
-@Push
+@Push(PushMode.MANUAL)
 public class MyVaadinUI extends UI
 {
 

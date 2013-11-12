@@ -190,17 +190,36 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     }
 
 
-    private void updateTickerChart(StockUpdateEvent event)  {
+    private void updateTickerChart(final StockUpdateEvent event)  {
 
         //iterate every series in the chart at the moment
         for (Series series : mainChart.getConfiguration().getSeries()) {
-            DataSeries dSeries = (DataSeries) series;
+            final DataSeries dSeries = (DataSeries) series;
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-                if (mainChart.isConnectorEnabled()) {
-                    getSession().lock();
-                    try {
+//                if (mainChart.isConnectorEnabled()) {
+//                    getSession().lock();
+//                    try {
+//                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
+//
+//                            dSeries.add(new DataSeriesItem(event.getTime(),
+//                                    event.getData().get(TradingDataAttribute.PRICE)), true, true);
+//
+//                        } else {
+//                            dSeries.add(new DataSeriesItem(event.getTime(),
+//                                    event.getData().get(TradingDataAttribute.PRICE)));
+//
+//                        }
+//
+//                    } finally {
+//                        getSession().unlock();
+//                    }
+//                }
+
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),
@@ -212,10 +231,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                         }
 
-                    } finally {
-                        getSession().unlock();
                     }
-                }
+                });
 
 
             }
@@ -224,22 +241,31 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     }
 
-    private void updateStockPriceTable(StockUpdateEvent event){
+    private void updateStockPriceTable(final StockUpdateEvent event){
 
-        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+        final BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                 stockPriceTable.getContainerDataSource();
 
 
-        if (stockPriceTable.isConnectorEnabled()) {
-            getSession().lock();
-            try {
+//        if (stockPriceTable.isConnectorEnabled()) {
+//            getSession().lock();
+//            try {
+//                beans.removeItem(event.getStockId());
+//                beans.addBean(new StockNamePriceBean(event.getStockId(),
+//                        event.getData().get(TradingDataAttribute.PRICE)));
+//            } finally {
+//                getSession().unlock();
+//            }
+//        }
+
+        UI.getCurrent().access(new Runnable() {
+            @Override
+            public void run() {
                 beans.removeItem(event.getStockId());
                 beans.addBean(new StockNamePriceBean(event.getStockId(),
                         event.getData().get(TradingDataAttribute.PRICE)));
-            } finally {
-                getSession().unlock();
             }
-        }
+        });
 
         //update the pie-chart
         try {
@@ -252,12 +278,13 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     }
 
-    public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
+    public void updatePieChart(final StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans)
+            throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=this.player.getMyPortfolio(this.userName);
 
         //since we know that there's only one data series
-        DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
+        final DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
 
 
 
@@ -280,18 +307,30 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 }
 
 
+//
+//        if (stockPieChart.isConnectorEnabled()) {
+//            getSession().lock();
+//            try {
+//                dSeries.update(dSeries.get(event.getStockId()));
+//                stockPieChart.setImmediate(true);
+//                stockPieChart.drawChart();
+//
+//            } finally {
+//                getSession().unlock();
+//            }
+//        }
 
-        if (stockPieChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
+        UI.getCurrent().access(new Runnable() {
+            @Override
+            public void run() {
                 dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
-
-            } finally {
-                getSession().unlock();
+                //UI.getCurrent().push();
+                //System.out.println("pushed");
+                getUI().push();
             }
-        }
+        });
     }
 
 
@@ -318,32 +357,49 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     }
 
 
-    private void updateQuantityChart(StockUpdateEvent event)  {
+    private void updateQuantityChart(final StockUpdateEvent event)  {
 
         //iterate every series in the chart at the moment
         for (Series series : quantityChart.getConfiguration().getSeries()) {
-            DataSeries dSeries = (DataSeries) series;
+            final DataSeries dSeries = (DataSeries) series;
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-                if (mainChart.isConnectorEnabled()) {
-                    getSession().lock();
-                    try {
-                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
+//                if (mainChart.isConnectorEnabled()) {
+//                    getSession().lock();
+//                    try {
+//                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
+//
+//                            dSeries.add(new DataSeriesItem(event.getTime(),
+//                                    event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
+//
+//                        } else {
+//                            dSeries.add(new DataSeriesItem(event.getTime(),
+//                                    event.getData().get(TradingDataAttribute.SHARES)/100));
+//
+//                        }
+//
+//                    } finally {
+//                        getSession().unlock();
+//                    }
+//                }
 
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
 
-                        } else {
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.SHARES)/100));
+                            if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
-                        }
+                                dSeries.add(new DataSeriesItem(event.getTime(),
+                                        event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
 
-                    } finally {
-                        getSession().unlock();
+                            } else {
+                                dSeries.add(new DataSeriesItem(event.getTime(),
+                                        event.getData().get(TradingDataAttribute.SHARES)/100));
+
+                            }
                     }
-                }
+                });
 
 
             }
@@ -372,7 +428,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
 
         Tooltip tooltip = new Tooltip();
-        tooltip.setFormatter("'this.y'");
+        tooltip.setFormatter("this.y+' sold'");
         conf.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();

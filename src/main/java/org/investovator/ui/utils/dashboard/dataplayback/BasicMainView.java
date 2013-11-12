@@ -193,7 +193,7 @@ public abstract class BasicMainView extends DashboardPanel {
 
         Configuration conf = chart.getConfiguration();
 
-        conf.setTitle("Portfolio Summary");
+        conf.getTitle().setText(null);
 
         PlotOptionsPie plotOptions = new PlotOptionsPie();
         plotOptions.setCursor(Cursor.POINTER);
