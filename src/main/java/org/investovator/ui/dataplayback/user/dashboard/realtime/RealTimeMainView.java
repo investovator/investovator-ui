@@ -80,6 +80,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setDataLabels(new Labels(true));
         plotOptions.setEnableMouseTracking(false);
+        //performance related
+        plotOptions.setShadow(false);
+
         configuration.setPlotOptions(plotOptions);
 
         configuration.getxAxis().setType(AxisType.DATETIME);
@@ -95,7 +98,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             }
         }
 
-
+        chart.setImmediate(true);
         chart.drawChart(configuration);
         //disable trademark
         chart.getConfiguration().disableCredits();
@@ -206,7 +209,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                                     event.getData().get(TradingDataAttribute.PRICE)));
 
                         }
-                        mainChart.setImmediate(true);
 
                     } finally {
                         getSession().unlock();
