@@ -130,7 +130,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if(authenticator.isLoggedIn()){
-                    startNNAdminView();
+                    startNNCreateWizard();
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -342,7 +342,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
     }
 
-    private void startNNAdminView() {
+    private void startNNCreateWizard() {
         NNGamingView subWindow = new NNGamingView("Create New Game");
 
         // set window characteristics

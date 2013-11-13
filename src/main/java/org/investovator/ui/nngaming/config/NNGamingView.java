@@ -22,9 +22,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.investovator.ann.config.ConfigReceiver;
 import org.investovator.ann.neuralnet.NNManager;
+import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.ui.utils.ConfigHelper;
-import org.investovator.ui.utils.UIConstants;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
@@ -121,12 +123,22 @@ public class NNGamingView extends Window implements WizardProgressListener{
         NNManager nnManager = new NNManager(inputParam,"SAMP");
         nnManager.createNeuralNetwork();
 
-        getUI().getNavigator().navigateTo(UIConstants.NN_DASH_VIEW);
+        try {
+            GameControllerFacade.getInstance().startGame(GameModes.NN_GAME,null);
+        } catch (GameProgressingException e) {
+            e.printStackTrace();
+        }
+
+        closeWindow();
 
     }
 
     @Override
     public void wizardCancelled(WizardCancelledEvent event) {
+        this.close();
+    }
+
+    private void closeWindow(){
         this.close();
     }
 }

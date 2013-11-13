@@ -76,6 +76,9 @@ public class MainGamingView extends DashboardPanel{
                 if ((gameMode==GameModes.AGENT_GAME)){
                     getUI().getNavigator().navigateTo(UIConstants.AGENT_DASH_VIEW);
                 }
+                if((gameMode==GameModes.NN_GAME)) {
+                    getUI().getNavigator().navigateTo(UIConstants.NN_DASH_VIEW);
+                }
             }
         }
 
