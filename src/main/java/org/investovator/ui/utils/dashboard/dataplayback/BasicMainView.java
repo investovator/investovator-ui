@@ -24,6 +24,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
@@ -31,6 +32,7 @@ import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
@@ -44,8 +46,10 @@ public abstract class BasicMainView extends DashboardPanel {
     //charts to be shown
     protected Chart mainChart;
     protected Chart stockPieChart;
+    protected Chart quantityChart;
 
     protected Table stockPriceTable;
+    protected Table portfolioTable;
 
     //to store every component
     GridLayout content;
@@ -54,7 +58,7 @@ public abstract class BasicMainView extends DashboardPanel {
         //set a link to this class
 //        mySelf = this;
 
-        content = new GridLayout(3, 3);
+        content = new GridLayout(4, 3);
         content.setSizeFull();
     }
 
@@ -74,27 +78,69 @@ public abstract class BasicMainView extends DashboardPanel {
             //Main chart
             HorizontalLayout chartContainer = new HorizontalLayout();
             chartContainer.setWidth(95, Unit.PERCENTAGE);
+            chartContainer.setMargin(true);
+//            chartContainer.setHeight(30,Unit.PERCENTAGE);
             mainChart = buildMainChart();
             chartContainer.addComponent(mainChart);
             chartContainer.setComponentAlignment(mainChart, Alignment.MIDDLE_CENTER);
 
-            content.addComponent(chartContainer, 0, 1, 2, 1);
+            content.addComponent(chartContainer, 0, 0, 3, 0);
             content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
 
+            //Quantity chart
+            HorizontalLayout quantityChartContainer = new HorizontalLayout();
+            quantityChartContainer.setWidth(95, Unit.PERCENTAGE);
+//            quantityChartContainer.setMargin(true);
+            quantityChartContainer.setMargin(new MarginInfo(false,true,true,true));
+//            quantityChartContainer.setHeight(30,Unit.PERCENTAGE);
+            quantityChart = buildQuantityChart();
+            quantityChartContainer.addComponent(quantityChart);
+            quantityChartContainer.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
+
+            content.addComponent(quantityChartContainer, 0, 1, 3, 1);
+            content.setComponentAlignment(quantityChartContainer, Alignment.MIDDLE_CENTER);
+
             //Stock price table
+            GridLayout stockPriceTableContainer = new GridLayout(1,2);
+            //add a caption to the table
+            Label tableCaption=new Label("Stock Price Table");
+            stockPriceTableContainer.addComponent(tableCaption, 0, 0);
+            stockPriceTableContainer.setComponentAlignment(tableCaption,Alignment.MIDDLE_RIGHT);
             stockPriceTable=setupStockPriceTable();
-            content.addComponent(stockPriceTable,0,2);
-            content.setComponentAlignment(stockPriceTable,Alignment.BOTTOM_LEFT);
+            stockPriceTableContainer.addComponent(stockPriceTable, 0, 1);
+            stockPriceTableContainer.setMargin(new MarginInfo(false, true, true, true));
+
+            stockPriceTableContainer.setComponentAlignment(stockPriceTable,Alignment.MIDDLE_CENTER);
+            content.addComponent(stockPriceTableContainer, 0, 2);
 
             //buy-sell window
+            GridLayout buySellWindowContainer = new GridLayout(1,2);
+            //add a caption to the table
+            Label buySellWindowCaption=new Label("Buy/Sell Stocks");
+            buySellWindowContainer.addComponent(buySellWindowCaption,0,0);
+            buySellWindowContainer.setComponentAlignment(buySellWindowCaption,Alignment.MIDDLE_CENTER);
             Component buySellWindow=setupBuySellForm();
-            content.addComponent(buySellWindow,1,2);
+            buySellWindowContainer.addComponent(buySellWindow,0,1);
+            buySellWindowContainer.setMargin(new MarginInfo(false,false,true,false));
 
+            buySellWindowContainer.setComponentAlignment(buySellWindow,Alignment.MIDDLE_CENTER);
+            content.addComponent(buySellWindowContainer, 1, 2);
+
+            //portfolio data
+            GridLayout portfolioContainer = new GridLayout(2,2);
+            portfolioContainer.setMargin(new MarginInfo(false,true,true,true));
+            //add a caption to the table
+            Label portfolioCaption=new Label("My Portfolio");
+            portfolioContainer.addComponent(portfolioCaption,0,0,1,0);
+            portfolioContainer.setComponentAlignment(portfolioCaption,Alignment.MIDDLE_CENTER);
             //pie-chart
             stockPieChart =setupPieChart();
-            content.addComponent(stockPieChart,2,2);
-
-
+            portfolioContainer.addComponent(stockPieChart,1,1);
+            portfolioContainer.setComponentAlignment(stockPieChart,Alignment.TOP_RIGHT);
+            //portfolio table
+            portfolioTable=setupPortfolioTable();
+            portfolioContainer.addComponent(portfolioTable,0,1);
+            content.addComponent(portfolioContainer,2,2,3,2);
 
             this.setContent(content);
         }
@@ -117,12 +163,31 @@ public abstract class BasicMainView extends DashboardPanel {
             }
         }
         Table table=new Table("Stock Prices",beans);
+        table.setCaption(null);
 
         //set the column order
         table.setVisibleColumns(new Object[]{"stockID", "price"});
         table.setColumnHeader("stockID","Symbols");
         table.setColumnHeader("price","Price");
 
+
+        return table;
+    }
+
+    private Table setupPortfolioTable(){
+        BeanContainer<String,PortfolioBean> beans =
+                new BeanContainer<String,PortfolioBean>(PortfolioBean.class);
+        beans.setBeanIdProperty("stockID");
+
+        Table table=new Table("Stock Prices",beans);
+        table.setCaption(null);
+
+        //set the column order
+        table.setVisibleColumns(new Object[]{"stockID", "numOfStocks","averageCost","totCost"});
+        table.setColumnHeader("stockID","Symbols");
+        table.setColumnHeader("numOfStocks","Quantity");
+        table.setColumnHeader("averageCost","Avg. Cost");
+        table.setColumnHeader("totCost","Tot. Cost");
 
         return table;
     }
@@ -139,21 +204,22 @@ public abstract class BasicMainView extends DashboardPanel {
         for(String stock:DataPlaybackEngineStates.playingSymbols){
             stocksList.addItem(stock);
         }
-        stocksList.setWidth("75%");
+        //stocksList.setWidth("75%");
 
         //side
         final NativeSelect orderSide=new NativeSelect();
         orderSide.setCaption("Side");
         orderSide.addItem(OrderType.BUY);
         orderSide.addItem(OrderType.SELL);
-        orderSide.setWidth("90%");
+        //orderSide.setWidth("90%");
+        orderSide.setSizeFull();
         orderSide.select(OrderType.BUY);
         orderSide.setNullSelectionAllowed(false);
         orderSide.setImmediate(true);
 
         //Quantity
         final TextField quantity=new TextField("Amount");
-        quantity.setWidth("75%");
+        //quantity.setWidth("75%");
 
 
         form.addComponent(stocksList);
@@ -176,12 +242,12 @@ public abstract class BasicMainView extends DashboardPanel {
 
         Configuration conf = chart.getConfiguration();
 
-        conf.setTitle("Portfolio Summary");
+        conf.getTitle().setText(null);
 
         PlotOptionsPie plotOptions = new PlotOptionsPie();
         plotOptions.setCursor(Cursor.POINTER);
         plotOptions.setShowInLegend(true);
-        plotOptions.setSize("90%");
+        plotOptions.setSize("120%");
 
         Labels dataLabels = new Labels();
         dataLabels.setEnabled(false);
@@ -207,8 +273,8 @@ public abstract class BasicMainView extends DashboardPanel {
         chart.drawChart(conf);
         //turn off animation
         conf.getChart().setAnimation(false);
-        chart.setWidth("90%");
-        chart.setHeight(65,Unit.MM);
+        chart.setWidth(115,Unit.MM);
+        chart.setHeight(55,Unit.MM);
 
 
         return chart;
@@ -223,5 +289,57 @@ public abstract class BasicMainView extends DashboardPanel {
      * override this to call the onEnter method of the DashboardPanel
      */
     abstract public void onEnterMainView();
+
+    abstract public Chart buildQuantityChart();
+//    {
+//        Chart chart = new Chart(ChartType.COLUMN);
+//        chart.setHeight(40,Unit.MM);
+//
+//        Configuration conf = chart.getConfiguration();
+//
+//        //conf.setTitle("Total fruit consumtion, grouped by gender");
+//        //conf.setSubTitle("Source: WorldClimate.com");
+//
+//        XAxis x = new XAxis();
+//        x.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+//                "Sep", "Oct", "Nov", "Dec");
+//        conf.addxAxis(x);
+//
+//        YAxis y = new YAxis();
+//        y.setMin(0);
+//        y.setTitle("Quantity");
+//        conf.addyAxis(y);
+//
+//        Legend legend = new Legend();
+//        legend.setLayout(LayoutDirection.VERTICAL);
+//        legend.setBackgroundColor("#FFFFFF");
+//        legend.setHorizontalAlign(HorizontalAlign.LEFT);
+//        legend.setVerticalAlign(VerticalAlign.TOP);
+//        legend.setX(100);
+//        legend.setY(70);
+//        legend.setFloating(true);
+//        legend.setShadow(true);
+//        conf.setLegend(legend);
+//
+//        Tooltip tooltip = new Tooltip();
+//        tooltip.setFormatter("this.x +': '+ this.y +' mm'");
+//        conf.setTooltip(tooltip);
+//
+//        PlotOptionsColumn plot = new PlotOptionsColumn();
+//        plot.setPointPadding(0.2);
+//        plot.setBorderWidth(0);
+//
+//        conf.addSeries(new ListSeries("Tokyo", 49.9, 71.5, 106.4, 129.2, 144.0,
+//                176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4));
+////        conf.addSeries(new ListSeries("New York", 83.6, 78.8, 98.5, 93.4,
+////                106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3));
+////        conf.addSeries(new ListSeries("London", 48.9, 38.8, 39.3, 41.4, 47.0,
+////                48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2));
+////        conf.addSeries(new ListSeries("Berlin", 42.4, 33.2, 34.5, 39.7, 52.6,
+////                75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1));
+//
+//        chart.drawChart(conf);
+//        return chart;
+//    }
 
 }
