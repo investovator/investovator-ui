@@ -64,10 +64,6 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
 
         createStocksTable();
 
-
-        this.setCaption("Portfolio Summary");
-
-
         VerticalLayout portSummary = new VerticalLayout();
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
@@ -152,8 +148,6 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
     }
 
     private void createStocksTable(){
-
-        //stocksSummaryTable.setColumnHeaders(new String[]{"Stock","Shares","Average"});
 
         BeanContainer<String, StockSummary> myStocks = new BeanContainer<String, StockSummary>(StockSummary.class);
         myStocks.setBeanIdProperty("stockID");

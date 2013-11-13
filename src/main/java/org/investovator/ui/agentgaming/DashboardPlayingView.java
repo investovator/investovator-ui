@@ -51,7 +51,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     UserData userData;
 
     //Layout Components
-    GridLayout content;
+    VerticalLayout content;
     Table watchListTable;
     MultiStockChart currentPriceChart;
     WatchList watchList;
@@ -80,20 +80,30 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     private void createUI(){
 
         //Setup Layout
-        content = new GridLayout();
+        content = new VerticalLayout();
         content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        content.setRows(2);
-        content.setColumns(2);
 
+        HorizontalLayout row1 = new HorizontalLayout();
+        HorizontalLayout row2 = new HorizontalLayout();
+
+        row1.setWidth("100%");
+        row2.setWidth("100%");
+
+        row1.setHeight("400px");
+
+
+
+        content.addComponent(row1);
+        content.addComponent(row2);
+
+        content.setExpandRatio(row1, 1);
+        content.setExpandRatio(row2, 1);
 
         //Portfolio Summary
         portfolioSummary = new PortfolioSummary();
 
-
         //QuoteUI
         quoteUI = new QuoteUI(companyData);
-
-
 
         watchListTable = getTable();
         currentPriceChart = new MultiStockChart();
@@ -101,15 +111,14 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
 
         //Adding to main layout
-        content.addComponent(watchListTable);
-        content.addComponent(currentPriceChart);
-        content.addComponent(quoteUI);
-        content.addComponent(portfolioSummary);
-        content.setComponentAlignment(watchListTable,Alignment.MIDDLE_CENTER);
-        content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
+        row1.addComponent(watchListTable);
+        row1.addComponent(currentPriceChart);
+        row2.addComponent(quoteUI);
+        row2.addComponent(portfolioSummary);
         //content.addComponent(buttons);
 
         content.setSizeFull();
+
 
         this.setSizeFull();
 
@@ -132,7 +141,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         Table table = new Table("Watch List", watchList);
 
-        table.setSizeFull();
+        //table.setSizeFull();
         table.setWidth("90%");
         table.setSelectable(true);
         table.setImmediate(true);
