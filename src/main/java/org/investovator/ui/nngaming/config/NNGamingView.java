@@ -18,12 +18,12 @@
 
 package org.investovator.ui.nngaming.config;
 
-import com.vaadin.server.VaadinService;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.investovator.ann.config.ConfigReceiver;
 import org.investovator.ann.neuralnet.NNManager;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.ui.utils.ConfigHelper;
 import org.investovator.ui.utils.UIConstants;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -90,7 +90,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
     public void wizardCompleted(WizardCompletedEvent event) {
 
         ConfigReceiver configReceiver = new ConfigReceiver();
-        String path = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath()+"/WEB-INF";
+        String path = ConfigHelper.getBasepath();
         configReceiver.setBasePath(path);
 
 
