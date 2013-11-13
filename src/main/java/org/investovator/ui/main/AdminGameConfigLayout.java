@@ -346,6 +346,8 @@ public class AdminGameConfigLayout extends VerticalLayout {
         NNGamingView subWindow = new NNGamingView("Create New Game");
 
         // set window characteristics
+        subWindow.setHeight("55%");
+        subWindow.setWidth("50%");
         subWindow.center();
         subWindow.setClosable(false);
         subWindow.setDraggable(false);
