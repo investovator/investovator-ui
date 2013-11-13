@@ -134,7 +134,7 @@ public class AgentGamingView extends Window implements WizardProgressListener {
         }
 
         //Other agent Properties
-        configGenerator.setInitialPrice(100);  //Should get this from history data.
+        configGenerator.setInitialPrice(500);  //Should get this from history data.
         configGenerator.setNoOfDays(otherSettings.getNumberOfDays());
         configGenerator.setSpeedFactor(otherSettings.getSpeedFactor());
 
