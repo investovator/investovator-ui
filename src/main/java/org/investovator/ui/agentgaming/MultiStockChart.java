@@ -35,7 +35,7 @@ public class MultiStockChart extends Chart{
     private HashMap<String, DataSeries> series = new HashMap<>();
 
     public MultiStockChart(){
-        setHeight("350px");
+        setHeight("300px");
         setWidth("90%");
         setCaption("Watchlist Summary");
 

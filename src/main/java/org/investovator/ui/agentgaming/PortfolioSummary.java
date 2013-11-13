@@ -56,6 +56,11 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
 
     public void setupUI(){
 
+        this.setWidth("100%");
+        this.setCaption("Portfolio Summary");
+        addStyleName("center-caption");
+
+
         accountBalance=new Label();
         accountBalance.setCaption("Cash Balance");
 
@@ -67,8 +72,11 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         VerticalLayout portSummary = new VerticalLayout();
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
+
         this.addComponent(portSummary);
         this.addComponent(stocksSummaryTable);
+        this.setExpandRatio(portSummary,1);
+        this.setExpandRatio(stocksSummaryTable,1);
     }
 
 

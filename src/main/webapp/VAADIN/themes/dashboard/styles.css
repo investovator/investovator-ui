@@ -6144,3 +6144,11 @@ body .dashboard.v-app .v-app-loading {
 	background-color: darkgrey;
 	box-shadow: 0 0 6px black;
 }
+
+
+.dashboard .v-caption-center-caption{
+    text-align: center;
+    font-weight: bolder;
+    margin: 10px 5px 5px 5px;
+    border-image:radial-gradient(circle, grey 10%, transparent 90%) 0 1 1;
+}

@@ -81,23 +81,29 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         //Setup Layout
         content = new VerticalLayout();
-        content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        content.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        content.setSpacing(true);
 
         HorizontalLayout row1 = new HorizontalLayout();
         HorizontalLayout row2 = new HorizontalLayout();
 
+        row1.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        row2.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+
         row1.setWidth("100%");
         row2.setWidth("100%");
 
-        row1.setHeight("400px");
+
+        row1.setHeight("60%");
+        row1.setHeight("35%");
 
 
 
         content.addComponent(row1);
         content.addComponent(row2);
 
-        content.setExpandRatio(row1, 1);
-        content.setExpandRatio(row2, 1);
+        content.setExpandRatio(row1, 55);
+        content.setExpandRatio(row2, 45);
 
         //Portfolio Summary
         portfolioSummary = new PortfolioSummary();
@@ -108,14 +114,16 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         watchListTable = getTable();
         currentPriceChart = new MultiStockChart();
 
-
-
         //Adding to main layout
         row1.addComponent(watchListTable);
         row1.addComponent(currentPriceChart);
         row2.addComponent(quoteUI);
         row2.addComponent(portfolioSummary);
-        //content.addComponent(buttons);
+        row2.setComponentAlignment(portfolioSummary,Alignment.TOP_CENTER);
+
+        watchListTable.addStyleName("center-caption");
+        quoteUI.addStyleName("center-caption");
+        currentPriceChart.addStyleName("center-caption");
 
         content.setSizeFull();
 
@@ -143,6 +151,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         //table.setSizeFull();
         table.setWidth("90%");
+        table.setHeight("100%");
         table.setSelectable(true);
         table.setImmediate(true);
 
