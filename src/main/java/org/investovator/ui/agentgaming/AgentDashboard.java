@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 public class AgentDashboard extends BasicDashboard {
 
     DashboardPlayingView mainDashView;
+    ReportsView reportView;
 
     public AgentDashboard() {
         super("<span><center>investovator</center></span>Dashboard");
@@ -44,7 +45,10 @@ public class AgentDashboard extends BasicDashboard {
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
         LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
         mainDashView = new DashboardPlayingView();
+        reportView = new ReportsView();
         menuList.put("my dashboard", mainDashView);
+        menuList.put("market reports", reportView);
+
         return menuList;
     }
 }

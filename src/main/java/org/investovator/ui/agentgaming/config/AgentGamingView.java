@@ -2,8 +2,7 @@ package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
@@ -26,7 +25,7 @@ import java.util.Iterator;
  */
 
 @SuppressWarnings("serial")
-public class AgentGamingView extends GlobalView implements WizardProgressListener {
+public class AgentGamingView extends Window implements WizardProgressListener {
 
 
     ConfigGenerator configGenerator;
@@ -42,11 +41,9 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
 
     public AgentGamingView() {
 
-        super();
-
-
-        agentWiz.setWidth(50, Unit.PERCENTAGE);
         agentWiz.getCancelButton().setVisible(false);
+        agentWiz.setWidth("90%");
+        agentWiz.setHeight("90%");
 
         stockSelect = new StockSelectView();
         agentSelect = new AgentSelectView();
@@ -59,13 +56,12 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
         agentWiz.addStep(otherSettings);
 
         agentWiz.addListener(this);
-        this.addComponent(agentWiz);
 
+        this.setContent(agentWiz);
     }
 
 
-    @Override
-    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+    public void update() {
          stockSelect.update();
     }
 
@@ -156,7 +152,7 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
         test.addCloseListener(new Window.CloseListener() {
             @Override
             public void windowClose(Window.CloseEvent closeEvent) {
-                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                closeWindow();
             }
         });
 
@@ -170,6 +166,9 @@ public class AgentGamingView extends GlobalView implements WizardProgressListene
     }
 
 
+    private void closeWindow(){
+        this.close();
+    }
 
     @Override
     public void wizardCancelled(WizardCancelledEvent event) {

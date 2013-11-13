@@ -19,21 +19,21 @@
 
 package org.investovator.ui.dataplayback.beans;
 
-import java.io.Serializable;
-
 /**
  * @author: ishan
  * @version: ${Revision}
  */
-public class StockNamePriceBean implements Serializable {
-
+public class PortfolioBean {
     String stockID;
-    float price;
-    boolean priceIncreased=false;
+    double AverageCost;
+    int numOfStocks;
+    double totCost;
 
-    public StockNamePriceBean(String stockID, float price) {
+    public PortfolioBean(String stockID, double averageCost, int numOfStocks) {
         this.stockID = stockID;
-        this.price = price;
+        AverageCost = averageCost;
+        this.numOfStocks = numOfStocks;
+        this.totCost=averageCost*numOfStocks;
     }
 
     public String getStockID() {
@@ -44,19 +44,27 @@ public class StockNamePriceBean implements Serializable {
         this.stockID = stockID;
     }
 
-    public float getPrice() {
-        return price;
+    public double getAverageCost() {
+        return AverageCost;
     }
 
-    public void setPrice(float price) {
-        this.price = price;
+    public void setAverageCost(double averageCost) {
+        AverageCost = averageCost;
     }
 
-    public boolean isPriceIncreased() {
-        return priceIncreased;
+    public int getNumOfStocks() {
+        return numOfStocks;
     }
 
-    public void setPriceIncreased(boolean priceIncreased) {
-        this.priceIncreased = priceIncreased;
+    public void setNumOfStocks(int numOfStocks) {
+        this.numOfStocks = numOfStocks;
+    }
+
+    public double getTotCost() {
+        return totCost;
+    }
+
+    public void setTotCost(double totCost) {
+        this.totCost = totCost;
     }
 }

@@ -103,8 +103,7 @@ public class WatchList implements Runnable, EventListener{
             stockItemBean.setLastAsk(125.4f);
             stockItemBean.setLastBid(100);
             stockItemBean.setMarketPrice((float)((TransactionExecutedEvent) simEvent).getPrice());
-
-
+            stockItemBean.setTimeStamp(ReportHelper.getInstance().getDate(((TransactionExecutedEvent) simEvent).getTime()));
 
             notifyListeners(stockItemBean);
 

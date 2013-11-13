@@ -1,5 +1,6 @@
 package org.investovator.ui.authentication;
 
+import com.vaadin.server.VaadinSession;
 import org.investovator.MyVaadinUI;
 
 import javax.swing.*;
@@ -20,10 +21,13 @@ public class Authenticator {
     }
 
     private static Authenticator authenticator;
-    private boolean loggedIn;
+
+    private static String userName="userName";
+    private static String isLoggedIn="loggedIn";
+
 
     private Authenticator(){
-        loggedIn = false;
+        setLoggedIn(false);
     }
 
     public static synchronized Authenticator getInstance()
@@ -35,11 +39,15 @@ public class Authenticator {
     }
 
     public boolean isLoggedIn() {
-        return loggedIn;
-    }
+        if(VaadinSession.getCurrent().getAttribute(isLoggedIn)!=null){
+            boolean status= (boolean)VaadinSession.getCurrent().getAttribute(isLoggedIn);
+            if(status){
 
-    private void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
+                return true;
+            }
+        }
+            return false;
+
     }
 
     public boolean authenticate(String username, String password){
@@ -48,20 +56,15 @@ public class Authenticator {
         if(username.isEmpty()){
             if(password.isEmpty()){
                 //set the user as a standard user
-                ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("testUser1");
+                setUser("testUser1");
                 success=true;
 
             }
 
-//            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("");
-//            success=true;
-
-
         }
         //user name for admin
         else if(username.equalsIgnoreCase("a")){
-
-            ((MyVaadinUI)MyVaadinUI.getCurrent()).setUser("admin");
+            setUser("admin");
             success=true;
         }
 
@@ -77,7 +80,13 @@ public class Authenticator {
     public String getCurrentUser(){
 
         //TODO: implement after getting rajja's user API
-        return ((MyVaadinUI)MyVaadinUI.getCurrent()).getUser();
+        if((VaadinSession.getCurrent().getAttribute(userName))!=null){
+            return VaadinSession.getCurrent().getAttribute(userName).toString();
+
+        }
+        else{
+            return "";
+        }
     }
 
     public UserType getMyPrivileges(){
@@ -88,6 +97,15 @@ public class Authenticator {
         else {
             return UserType.ORDINARY;
         }
+
+    }
+
+    public void setUser(String user) {
+        VaadinSession.getCurrent().setAttribute(userName,user);
+    }
+
+    public void setLoggedIn(boolean loggedInStatus){
+        VaadinSession.getCurrent().setAttribute(isLoggedIn,loggedInStatus);
 
     }
 

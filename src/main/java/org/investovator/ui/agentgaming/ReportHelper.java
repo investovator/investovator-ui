@@ -19,16 +19,18 @@
 package org.investovator.ui.agentgaming;
 
 import net.sourceforge.jabm.report.Report;
-import net.sourceforge.jasa.agent.valuation.GeometricBrownianMotionPriceProcess;
 import net.sourceforge.jasa.report.CurrentPriceReportVariables;
-import org.investovator.jasa.api.JASAFacade;
+import net.sourceforge.jasa.report.timeseries.PriceReportTimeseriesVariables;
+import org.investovator.core.data.api.CompanyData;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.agentsimulation.api.JASAFacade;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import org.investovator.jasa.api.JASAFacade;
-import org.investovator.jasa.api.MarketFacade;
+import org.investovator.agentsimulation.api.JASAFacade;
+import org.investovator.agentsimulation.api.MarketFacade;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author Amila Surendra
@@ -42,22 +44,51 @@ public class ReportHelper {
 
     HashMap<String,CurrentPriceReportVariables> currentPriceReports = new HashMap<String, CurrentPriceReportVariables>();
 
+    CompanyData companyData;
+
 
     private MarketFacade simulationFacade = JASAFacade.getMarketFacade();
+    private static ReportHelper instance;
+
+
+    private String GBM;
+
+    //TODO:Should get from config
+    static Date startDate;
+
+
+    public static ReportHelper getInstance(){
+        if(instance == null) instance=new ReportHelper();
+        return instance;
+    }
 
 
 
-
-    public ReportHelper() {
+    private ReportHelper() {
         //Add Current Time Reports
-
+        startDate = new Date();
     }
 
 
     public void initReports(){
 
+        try {
+            companyData = new CompanyDataImpl();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
         reports = simulationFacade.getReports();
-        currentPriceReports.put("GOOG", getCurrentPriceReport("GOOG"));
+
+        try {
+            Collection<String> stocks =  companyData.getAvailableStockIds();
+            for(String stock : stocks){
+                currentPriceReports.put(stock, getCurrentPriceReport(stock));
+            }
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
         reportsReady = true;
 
     }
@@ -76,6 +107,21 @@ public class ReportHelper {
         }
 
         return currentPriceReport;
+    }
+
+
+    private HashMap<String,PriceReportTimeseriesVariables> getTimeSeriesReports(String stockID){
+        ArrayList<Report> allReports = reports.get(stockID);
+        HashMap<String,PriceReportTimeseriesVariables> reports = new HashMap<String, PriceReportTimeseriesVariables>();
+
+        for (int i = 0; i < allReports.size(); i++) {
+            Report tmp = allReports.get(i);
+
+            if(tmp instanceof PriceReportTimeseriesVariables){
+                reports.put(tmp.getName(),(PriceReportTimeseriesVariables)tmp);
+            }
+        }
+        return reports;
     }
 
 
@@ -142,6 +188,40 @@ public class ReportHelper {
 
        return  null;
     }
+
+
+    /**
+     *
+     * @param stockId symbol of the stock
+     * @param report report type
+     * @param maxRecords number of records to return. if maxRecords is 0 all records are returned.
+     * @return
+     */
+    public ArrayList<TimeSeriesNode> getTimeSeriesReport(String stockId, String report, int maxRecords){
+
+        ArrayList<TimeSeriesNode> data = new ArrayList<TimeSeriesNode>();
+
+        PriceReportTimeseriesVariables reportVar =  getTimeSeriesReports(stockId).get(report);
+
+        for (int index = 0; index < reportVar.getTimeseriesVariableBindings().get(reportVar.getName() + ".t").size(); index++) {
+            TimeSeriesNode tmp = new TimeSeriesNode();
+            tmp.setDate(getDate((int)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".t").get(index)));
+            tmp.setValue((double)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".price").get(index));
+            data.add(tmp);
+        }
+
+        return data;
+    }
+
+
+
+
+
+    //TODO:Should goto JASA
+    public Date getDate(int tickCount){
+        return new Date(startDate.getTime() + tickCount);
+    }
+
 
 }
 

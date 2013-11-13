@@ -6,12 +6,14 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.UI;
 import org.investovator.ui.agentgaming.AgentDashboard;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.dataplayback.admin.dashboard.AdminDashboardLoader;
 import org.investovator.ui.dataplayback.user.dashboard.UserDashboardLoader;
+import org.investovator.ui.main.AgentConfigDashboard;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingDashBoard;
 import org.investovator.ui.utils.UIConstants;
@@ -21,7 +23,7 @@ import javax.servlet.annotation.WebServlet;
 @Theme("dashboard")
 //@PreserveOnRefresh
 @SuppressWarnings("serial")
-@Push
+@Push(PushMode.MANUAL)
 public class MyVaadinUI extends UI
 {
 
@@ -31,7 +33,6 @@ public class MyVaadinUI extends UI
     }
 
     private Navigator navigator;
-    private static String userName="userName";
 
 
     /*static{
@@ -58,8 +59,7 @@ public class MyVaadinUI extends UI
 
         // Create and register the views
         navigator.addView("", new LoginView());
-        navigator.addView(UIConstants.MAINVIEW, new MainGamingView());
-        navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
+        navigator.addView(UIConstants.MAINVIEW, new AgentConfigDashboard());
         navigator.addView(UIConstants.DATAPLAY_USR_DASH, new UserDashboardLoader());
         navigator.addView(UIConstants.DATA_PLAYBACK_ADMIN_DASH,new AdminDashboardLoader());
         navigator.addView(UIConstants.NN_DASH_VIEW, new NNGamingDashBoard());
@@ -71,18 +71,6 @@ public class MyVaadinUI extends UI
 //        v[0]="d";
 //        main.main(v);
     }
-
-    public String getUser() {
-        return (String)getSession().getAttribute(userName);
-    }
-
-    public void setUser(String user) {
-        getSession().setAttribute(userName,user);
-    }
-
-//    private String user;
-
-
 
 
 

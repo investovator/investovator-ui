@@ -1,6 +1,7 @@
 package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.data.Property;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
@@ -50,6 +51,7 @@ public class StockSelectView implements WizardStep {
 
         content = new VerticalLayout();
         content.addComponent(stockSelectList);
+        content.setComponentAlignment(stockSelectList, Alignment.MIDDLE_CENTER);
     }
 
     public void update(){

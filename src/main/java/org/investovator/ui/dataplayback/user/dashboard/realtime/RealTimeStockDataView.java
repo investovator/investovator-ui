@@ -17,46 +17,25 @@
  */
 
 
-package org.investovator.ui.dataplayback.beans;
+package org.investovator.ui.dataplayback.user.dashboard.realtime;
 
-import java.io.Serializable;
+import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.ui.utils.dashboard.dataplayback.BasicStockDataView;
+
+import java.util.ArrayList;
 
 /**
  * @author: ishan
  * @version: ${Revision}
  */
-public class StockNamePriceBean implements Serializable {
+public class RealTimeStockDataView extends BasicStockDataView {
 
-    String stockID;
-    float price;
-    boolean priceIncreased=false;
+    @Override
+    public TradingDataAttribute[] setSelectableAttributes(){
+        ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
 
-    public StockNamePriceBean(String stockID, float price) {
-        this.stockID = stockID;
-        this.price = price;
-    }
+        attributes.add(TradingDataAttribute.PRICE);
 
-    public String getStockID() {
-        return stockID;
-    }
-
-    public void setStockID(String stockID) {
-        this.stockID = stockID;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public boolean isPriceIncreased() {
-        return priceIncreased;
-    }
-
-    public void setPriceIncreased(boolean priceIncreased) {
-        this.priceIncreased = priceIncreased;
+        return attributes.toArray(new TradingDataAttribute[attributes.size()]);
     }
 }

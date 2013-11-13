@@ -25,6 +25,9 @@ public abstract class BasicDashboard extends GlobalView {
     private CssLayout root;
     //contains the content in the right pane
     private CssLayout content;
+    //dashboards name
+    private String dashboardName;
+
 
     //used to store the buttons of the menu bar and their respective panels
     private LinkedHashMap<String, DashboardPanel> menuItems;
@@ -40,7 +43,8 @@ public abstract class BasicDashboard extends GlobalView {
         //to make the dashboard take up the whole space of the browser
         this.setSizeFull();
 
-        setUpBasicDashboard(name);
+        this.dashboardName=name;
+
     }
 
 
@@ -57,6 +61,7 @@ public abstract class BasicDashboard extends GlobalView {
         }
 
         content.removeAllComponents();
+        setUpBasicDashboard(dashboardName);
         DashboardPanel addedPanel = menuItems.get(menuItems.keySet().iterator().next());
         addedPanel.addStyleName("selected");
         content.addComponent(addedPanel);

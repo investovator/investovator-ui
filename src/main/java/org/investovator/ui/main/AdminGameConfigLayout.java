@@ -22,15 +22,21 @@ package org.investovator.ui.main;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.dataplaybackengine.DataPlayerFacade;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.nngaming.config.NNGamingView;
+import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.UIConstants;
 import org.vaadin.easyuploads.MultiFileUpload;
 
@@ -64,7 +70,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo(UIConstants.AGENTVIEW);
+                    startAgentCreateWizard();
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -78,15 +84,42 @@ public class AdminGameConfigLayout extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 //if there is no game running
                 if(gameState==GameStates.NEW){
-                    //todo-navigate to the game creation wizard
-//                    getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
                     startDailySummaryAddGameWizard();
 
                 }
                 //if there is a game running
                 else if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
-                    //todo - load the proper dash board for admin
-                    getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                        try {
+                            //if the game is multi player
+                            if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
+                                //todo - load the summary view --  from DATA_PLAYBACK_ADMIN_DASH?
+                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+
+                            }
+                            else{
+                                //loads single player real time data playback view
+                                getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                            }
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+
+                    }
+                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                        try {
+                            //if this is a multiplayer game
+                            if (DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
+                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+                            }
+                            else{
+                                //loads single player daily summary data playback view
+                                getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
+                            }
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
 
                 }
 
@@ -141,10 +174,47 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
         }
 
+        //add a stop button for DPE
+        Button stopDpeButton=new Button("Stop DPE",new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
+                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                        try {
+                            DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopPlayback();
+                            GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+
+                    }
+                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                        try {
+                            DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopPlayback();
+                            GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
+                        } catch (PlayerStateException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
+
+                }
+
+
+            }
+        });
+
         HorizontalLayout agentLayout = new HorizontalLayout(agentGamesLabel,agentGames,agentGamesStatusLabel);
         agentLayout.setSizeFull();
-        HorizontalLayout dataPlaybackLayout = new HorizontalLayout(dataPlaybackGamesLabel,
-                dataPlayback,dataPlaybackGamesStatusLabel);
+        HorizontalLayout dataPlaybackLayout;
+        if(GameControllerFacade.getInstance().getCurrentGameState()==GameStates.RUNNING){
+            dataPlaybackLayout=new HorizontalLayout(dataPlaybackGamesLabel,
+                    dataPlayback,stopDpeButton,dataPlaybackGamesStatusLabel);
+        }
+        else{
+            dataPlaybackLayout= new HorizontalLayout(dataPlaybackGamesLabel,
+                    dataPlayback,dataPlaybackGamesStatusLabel);
+        }
+
         dataPlaybackLayout.setSizeFull();
         HorizontalLayout annLayout = new HorizontalLayout(annGamesLabel,nnGames,annGamesStatusLabel);
         annLayout.setSizeFull();
@@ -231,8 +301,45 @@ public class AdminGameConfigLayout extends VerticalLayout {
         subWindow.setResizable(false);
         subWindow.setModal(true);
 
+        subWindow.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                //getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                getUI().getPage().reload();
+            }
+        });
+
         // Add it to the root component
         UI.getCurrent().addWindow(subWindow);
+    }
+
+
+    private void startAgentCreateWizard(){
+
+        // Create a sub-window and set the content
+        AgentGamingView subWindow = new AgentGamingView();
+        subWindow.update();
+
+        // set window characteristics
+        subWindow.setHeight("60%");
+        subWindow.setWidth("50%");
+        subWindow.center();
+        subWindow.setClosable(false);
+        subWindow.setDraggable(false);
+        subWindow.setResizable(false);
+        subWindow.setModal(true);
+
+        subWindow.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                //getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                getUI().getPage().reload();
+            }
+        });
+
+        // Add it to the root component
+        UI.getCurrent().addWindow(subWindow);
+
     }
 
     private void startNNAdminView() {

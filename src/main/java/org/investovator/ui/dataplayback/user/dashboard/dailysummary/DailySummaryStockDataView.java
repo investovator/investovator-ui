@@ -17,46 +17,28 @@
  */
 
 
-package org.investovator.ui.dataplayback.beans;
+package org.investovator.ui.dataplayback.user.dashboard.dailysummary;
 
-import java.io.Serializable;
+import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.ui.utils.dashboard.dataplayback.BasicStockDataView;
+
+import java.util.ArrayList;
 
 /**
  * @author: ishan
  * @version: ${Revision}
  */
-public class StockNamePriceBean implements Serializable {
+public class DailySummaryStockDataView extends BasicStockDataView {
+    @Override
+    public TradingDataAttribute[] setSelectableAttributes(){
+        ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
 
-    String stockID;
-    float price;
-    boolean priceIncreased=false;
+        attributes.add(TradingDataAttribute.DATE_HIGH);
+        attributes.add(TradingDataAttribute.DATE_LOW);
+        attributes.add(TradingDataAttribute.CLOSING_PRICE);
 
-    public StockNamePriceBean(String stockID, float price) {
-        this.stockID = stockID;
-        this.price = price;
-    }
 
-    public String getStockID() {
-        return stockID;
-    }
 
-    public void setStockID(String stockID) {
-        this.stockID = stockID;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public boolean isPriceIncreased() {
-        return priceIncreased;
-    }
-
-    public void setPriceIncreased(boolean priceIncreased) {
-        this.priceIncreased = priceIncreased;
+        return attributes.toArray(new TradingDataAttribute[attributes.size()]);
     }
 }

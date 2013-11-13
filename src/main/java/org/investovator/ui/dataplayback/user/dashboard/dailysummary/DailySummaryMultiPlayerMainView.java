@@ -21,56 +21,39 @@ package org.investovator.ui.dataplayback.user.dashboard.dailysummary;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
-import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
+import org.investovator.core.commons.utils.Portfolio;
+import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
-import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
+import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
-import org.investovator.dataplaybackengine.player.OHLCDataPLayer;
-import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
+import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
-import org.investovator.ui.utils.dashboard.DashboardPanel;
-import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 /**
  * @author: ishan
  * @version: ${Revision}
  */
-public class DailySummaryMainView extends BasicMainView {
-
+public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
 
-//    private OHLCDataPLayer ohlcPLayer;
-//    private DataPlayerFacade playerFacade;
+    private String userName;
 
-    //used in ticker data observing
-    DailySummaryMainView mySelf;
+    private DailySummaryDataPLayer player;
 
-
-    //to store every component
-    GridLayout content;
-
-    public DailySummaryMainView() {
-        //set a link to this class
-        mySelf = this;
-
-        content = new GridLayout(3, 3);
-        content.setSizeFull();
-
-    }
-
-
-    public Chart buildMainChart(){
-
+    @Override
+    public Chart buildMainChart() {
         Chart chart = new Chart();
 //        chart.setHeight("350px");
 //        chart.setWidth("90%");
@@ -108,16 +91,75 @@ public class DailySummaryMainView extends BasicMainView {
 
         //disable trademark
         chart.getConfiguration().disableCredits();
-        chart.getConfiguration().getTitle().setText("Stock Closing Prices");
+        chart.getConfiguration().getTitle().setText("Stock Prices");
 
         return chart;
+    }
 
+    @Override
+    public void onEnterMainView() {
+        try {
+            this.userName=Authenticator.getInstance().getCurrentUser();
+            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
+            //join the game if the user has not already done so
+            if(!this.player.hasUserJoined(this.userName)){
+                this.player.joinMultiplayerGame(this,this.userName);
+            }
+        } catch (UserAlreadyJoinedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (PlayerStateException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
+
+        Portfolio portfolio=this.player.getMyPortfolio(this.userName);
+
+        //since we know that there's only one data series
+        DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
+
+        //find the matching Data item
+//            DataSeriesItem item=dSeries.get(event.getStockId());
+//                    if(item.getName().equalsIgnoreCase(event.getStockId())){
+
+
+                //if this is an update for a stock that the user has already bought
+                if(portfolio.getShares().containsKey(event.getStockId())){
+                    //if it is already in the chart
+                    if(dSeries.get(event.getStockId())!=null){
+                        //remove it
+                        dSeries.remove(dSeries.get(event.getStockId()));
+
+
+                    }
+                    //
+                    float price =event.getData().get(TradingDataAttribute.PRICE);
+                    double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
+
+                    //update the chart
+                    dSeries.add(new DataSeriesItem(event.getStockId(),price*quantity));
+                    dSeries.update(dSeries.get(event.getStockId()));
+
+                }
+
+
+
+        if (stockPieChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+                stockPieChart.setImmediate(true);
+                stockPieChart.drawChart();
+
+            } finally {
+                getSession().unlock();
+            }
+        }
     }
 
     @Override
     public HorizontalLayout getBuySellForumButtons(final ComboBox stocksList,
                                                    final TextField quantity,final NativeSelect orderSide) {
-
         HorizontalLayout buttonsBar=new HorizontalLayout();
         final Button buySellButton=new Button("Buy");
         buySellButton.addClickListener(new Button.ClickListener() {
@@ -128,18 +170,16 @@ public class DailySummaryMainView extends BasicMainView {
 //                System.out.println();
 
 //                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
-                    try {
-                        Boolean status=DataPlayerFacade.getInstance().
-                                getDailySummaryDataPLayer().executeOrder(stocksList.getValue().toString(),
-                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
-                        Notification.show(status.toString());
-                    } catch (InvalidOrderException e) {
-                        Notification.show(e.getMessage());
-                    } catch (UserJoinException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    } catch (PlayerStateException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
+                try {
+                    Boolean status= player.executeOrder(stocksList.getValue().toString(),
+                            Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
+                            userName);
+                    Notification.show(status.toString());
+                } catch (InvalidOrderException e) {
+                    Notification.show(e.getMessage());
+                } catch (UserJoinException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
 //                }
 
 //                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
@@ -169,87 +209,11 @@ public class DailySummaryMainView extends BasicMainView {
             }
         });
 
-        //TODO-load this only if this is a multiplayer game
-
-        Button nextDayB = new Button("Next day");
-        nextDayB.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-                //get the events
-                try {
-                    StockUpdateEvent[] events = DataPlayerFacade.getInstance().getDailySummaryDataPLayer().playNextDay();
-                    //iterate every event
-                    for (StockUpdateEvent event : events) {
-                        //iterate every series in the chart at the moment
-                        for (Series series : mainChart.getConfiguration().getSeries()) {
-                            DataSeries dSeries = (DataSeries) series;
-                            //if there's a match
-                            if (event.getStockId().equals(dSeries.getName())) {
-                                if (mainChart.isConnectorEnabled()) {
-                                    getSession().lock();
-                                    try {
-                                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
-
-                                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                                    event.getData().get(TradingDataAttribute.PRICE)), true, true);
-
-                                        } else {
-                                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                                    event.getData().get(TradingDataAttribute.PRICE)));
-
-                                        }
-                                        mainChart.setImmediate(true);
-
-                                    } finally {
-                                        getSession().unlock();
-                                    }
-                                }
-
-
-                            }
-
-                        }
-
-                        //update the table
-                        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
-                                stockPriceTable.getContainerDataSource();
-
-
-                        if (stockPriceTable.isConnectorEnabled()) {
-                            getSession().lock();
-                            try {
-                                beans.removeItem(event.getStockId());
-                                beans.addBean(new StockNamePriceBean(event.getStockId(),
-                                        event.getData().get(TradingDataAttribute.PRICE)));
-                            } finally {
-                                getSession().unlock();
-                            }
-                        }
-
-                    }
-
-
-                } catch (GameFinishedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (PlayerStateException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-
-            }
-        });
-
-
-        buttonsBar.addComponent(nextDayB);
 
         buttonsBar.addComponent(buySellButton);
 
         return buttonsBar;
     }
 
-    @Override
-    public void onEnterMainView() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 
 }

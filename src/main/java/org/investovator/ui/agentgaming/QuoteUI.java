@@ -6,7 +6,7 @@ import net.sourceforge.jasa.market.Order;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.jasa.api.JASAFacade;
+import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.ui.authentication.Authenticator;
 
 /**
@@ -53,6 +53,7 @@ public class QuoteUI extends VerticalLayout {
         sideSelect.select(OrderSide.BUY);
         isBuy=true;
         sideSelect.setNullSelectionAllowed(false);
+        sideSelect.addValueChangeListener(sideSelectValueChangeListener);
 
         orderTypeSelect = new ComboBox("Order Type");
         orderTypeSelect.addItem(OrderType.MARKET_ORDER);
@@ -73,6 +74,7 @@ public class QuoteUI extends VerticalLayout {
         sideSelectLayout.addComponent(sideSelect);
         sideSelectLayout.addComponent(orderTypeSelect);
         sideSelectLayout.addComponent(validitySelect);
+
 
         //Trade Button
         tradeButton = new Button("Place Order");

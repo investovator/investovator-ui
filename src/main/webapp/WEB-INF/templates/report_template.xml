@@ -7,6 +7,8 @@
             <bean-name>gbmPriceProcess$stockID</bean-name>
             <bean-name>gbmPriceTimeSeriesReport$stockID</bean-name>
             <bean-name>currentPriceReportVariables$stockID</bean-name>
+            <bean-name>currentPriceTimeSeriesReportVariables$stockID</bean-name>
+            <bean-name>spreadTimeSeriesReportVariables$stockID</bean-name>
         </report>
     </reports>
 
@@ -16,6 +18,15 @@
     </essential-reports>
 
     <dependencies>
+
+        <!--Added for investovator timeline-->
+        <bean id="currentPriceTimeSeriesReportVariables$stockID" class="net.sourceforge.jasa.report.timeseries.CurrentPriceReportTimeseriesVariables">
+        </bean>
+
+        <bean id="spreadTimeSeriesReportVariables$stockID" class="net.sourceforge.jasa.report.timeseries.SpreadReportTimeseriesVariables">
+        </bean>
+        <!--Added for investovator timeline-->
+
 
         <!-- A graphical display of the current state of the order book -->
         <bean id="orderBookView$stockID" class="net.sourceforge.jasa.view.OrderBookView">
