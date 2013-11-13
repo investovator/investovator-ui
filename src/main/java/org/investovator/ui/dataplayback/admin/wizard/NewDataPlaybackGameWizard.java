@@ -23,6 +23,7 @@ import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import net.sourceforge.jabm.gametheory.GameTheoreticSimulationController;
+import org.apache.commons.lang.time.DateUtils;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
@@ -40,6 +41,7 @@ import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
 import java.util.*;
+import java.util.Calendar;
 
 /**
  * @author: ishan
@@ -331,6 +333,9 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             datePicker=new InlineDateField();
             dateRangeType = new OptionGroup();
 
+            //set timezone to GMT
+//            datePicker.setTimeZone(TimeZone.getTimeZone("GMT"));
+
         }
 
         @Override
@@ -396,8 +401,14 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public boolean onAdvance() {
+            if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                //get only the date(ignore time)
+                DataPlaybackEngineStates.gameStartDate= DateUtils.truncate(datePicker.getValue(), Calendar.DATE);
+            }
+            else{
+                DataPlaybackEngineStates.gameStartDate= datePicker.getValue();
 
-            DataPlaybackEngineStates.gameStartDate=datePicker.getValue();
+            }
 
                 return true;
 
