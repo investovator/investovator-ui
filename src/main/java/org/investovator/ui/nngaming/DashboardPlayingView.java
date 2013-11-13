@@ -18,18 +18,16 @@
 
 package org.investovator.ui.nngaming;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Configuration;
 import com.vaadin.addon.charts.model.ListSeries;
 import com.vaadin.ui.*;
-import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.ann.nngaming.NNGamingFacade;
+import org.investovator.ann.nngaming.util.GameTypes;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.agentgaming.QuoteUI;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -41,51 +39,54 @@ public class DashboardPlayingView extends DashboardPanel {
 
     //Layout Components
     GridLayout content;
-    Table watchListTable;
-    Chart currentPriceChart;
+    GridLayout orderBookContent;
+    GridLayout footerContent;
+    Table orderBookSell;
+    Table orderBookBuy;
+    Component currentPriceChart;
     QuoteUI quoteUI;
-
-    CompanyDataImpl companyData;
+    NNGamingFacade nnGamingFacade;
 
     boolean simulationRunning = false;
 
     public DashboardPlayingView() {
 
         createUI();
+        nnGamingFacade = new NNGamingFacade(GameTypes.TRADING_GAME);
 
-        try {
-            companyData = new CompanyDataImpl();
-        } catch (DataAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
     }
 
 
     private void createUI(){
 
-
-
         //Setup Layout
         content = new GridLayout();
         content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         content.setRows(2);
-        content.setColumns(2);
+        content.setColumns(1);
+
+        footerContent = new GridLayout();
+        footerContent.setRows(1);
+        footerContent.setColumns(2);
+        footerContent.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
+        orderBookContent = new GridLayout();
+        orderBookContent.setRows(1);
+        orderBookContent.setColumns(2);
+        orderBookContent.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
 
-        //QuoteUI
-      //  quoteUI = new QuoteUI(companyData);
-
-
-        Button test = new Button("Start");
+        Button start = new Button("Start");
         Button stop = new Button("Stop");
 
 
-        test.addClickListener(new Button.ClickListener() {
+        start.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                //testing
 
+                System.out.println("Started");
                 simulationRunning = true;
+                updateTable();
 
             }
         });
@@ -95,28 +96,35 @@ public class DashboardPlayingView extends DashboardPanel {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-               // simulationFacade.terminateSimulation();
+                System.out.println("Terminated");
+                simulationRunning = false;
             }
         });
 
 
-        watchListTable = getTable();
+        orderBookSell = getTable(OrderSide.SELL);
+        orderBookBuy = getTable(OrderSide.BUY);
         currentPriceChart = getChart();
-        quoteUI = new QuoteUI(companyData);
+        quoteUI = new QuoteUI();
+
+        orderBookContent.addComponent(orderBookSell);
+        orderBookContent.addComponent(orderBookBuy);
+
+        footerContent.addComponent(orderBookContent);
+        footerContent.addComponent(quoteUI);
 
         VerticalLayout buttons = new VerticalLayout();
-        buttons.addComponent(test);
+        buttons.addComponent(start);
         buttons.addComponent(stop);
 
-
-
         //Adding to main layout
-        content.addComponent(watchListTable);
         content.addComponent(currentPriceChart);
-        content.addComponent(quoteUI);
-        content.setComponentAlignment(watchListTable,Alignment.MIDDLE_CENTER);
+        content.addComponent(footerContent);
         content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
+        content.setComponentAlignment(footerContent, Alignment.MIDDLE_CENTER);
+
         //content.addComponent(buttons);
+       // content.setComponentAlignment(buttons,Alignment.MIDDLE_CENTER);
 
         content.setSizeFull();
 
@@ -126,39 +134,36 @@ public class DashboardPlayingView extends DashboardPanel {
 
     }
 
-    protected Table getTable() {
-
-        /*BeanContainer<String, StockItemBean> watchList = new BeanContainer<String, StockItemBean>(StockItemBean.class);
-        watchList.setBeanIdProperty("stockID");
-
-        StockItemBean stockItemBean = new StockItemBean();
-        stockItemBean.setStockID("GOOG");
-        stockItemBean.setLastAsk(125.4f);
-        stockItemBean.setLastBid(100);
-        stockItemBean.setMarketPrice(102.5f);*/
+    protected Table getTable(OrderSide orderSide) {
 
         Table table = new Table();
 
-        table.setSizeFull();
-        table.setWidth("90%");
+        table.setHeight("100%");
+        table.setWidth("45%");
         table.setSelectable(true);
         table.setImmediate(true);
 
-        //table.setVisibleColumns(new String[]{"stockID","bestBid","bestAsk","marketPrice"});
+        if(orderSide == OrderSide.SELL){
+            table.addContainerProperty("Sell Orders", Float.class, null);
+            table.addContainerProperty("Order Count", Integer.class, null);
+        }
+        else{
+            table.addContainerProperty("Buy Orders",  Float.class, null);
+            table.addContainerProperty("Order Count", Integer.class, null);
+        }
+
 
         return table;
     }
 
 
-    final ListSeries series = new ListSeries(0);
+        ListSeries series = new ListSeries("Traded Price",3,456,6,6,3,2,4,4);
 
 
 
+    protected Component getChart() {
 
-
-    protected Chart getChart() {
-
-        final Chart chart = new Chart();
+        /*final Chart chart = new Chart();
         chart.setHeight("350px");
         chart.setWidth("90%");
         chart.setCaption("Share Price Summary");
@@ -166,17 +171,53 @@ public class DashboardPlayingView extends DashboardPanel {
         final Configuration configuration = new Configuration();
         configuration.setTitle("Last Traded Price");
 
-        configuration.getChart().setType(ChartType.SPLINE);
+        configuration.getChart().setType(ChartType.LINE);
         configuration.disableCredits();
+
+        //series.addData(2,true,true);
 
         configuration.setSeries(series);
 
         chart.drawChart(configuration);
 
 
-        return chart;
+        return chart;*/
+
+        MasterDetailChart chart = new MasterDetailChart();
+        return chart.getChart();
     }
 
+    private void updateTable(){
+
+        //todo
+        ArrayList<Float> values;
+        values = nnGamingFacade.getGeneratedOrders(2,3,"SAMP",1);
+
+        for(int i = 0; i < 3; i++){
+
+            if(i < 2)
+            orderBookSell.addItem(new Object[]{values.get(i),new Integer(100)},i) ;
+            orderBookBuy.addItem(new Object[]{values.get(i + 2), new Integer(50)},i);
+
+        }
+
+        orderBookBuy.setPageLength(0);
+        orderBookSell.setPageLength(0);
+
+        /*NNGamingFacade nnGamingFacade = new NNGamingFacade(GameTypes.TRADING_GAME);
+        ArrayList<Float> orders;
+
+        orders = nnGamingFacade.getGeneratedOrders(4,2,"SAMP",4);
+
+        for(int i = 0;i < orders.size();i++){
+
+            System.out.println(orders.get(i));
+
+        }*/
+
+
+
+    }
 
     @Override
     public void onEnter() {
@@ -184,6 +225,8 @@ public class DashboardPlayingView extends DashboardPanel {
 
 
         quoteUI.update();
+
+        //updateTable();  //set system property values and check todo
 
         simulationRunning = true;
 

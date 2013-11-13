@@ -20,6 +20,7 @@ package org.investovator.ui.nngaming.config;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
+import org.vaadin.easyuploads.UploadField;
 import org.vaadin.teemu.wizards.WizardStep;
 
 import java.io.File;
@@ -35,7 +36,7 @@ public class ParameterAddView implements WizardStep, Upload.SucceededListener, U
 
     HashMap<String, String> newParameters;
 
-    Upload upload;
+    UploadField upload;
     Label newParam;
     Label dataSet;
     TextField newParamField;
@@ -48,17 +49,25 @@ public class ParameterAddView implements WizardStep, Upload.SucceededListener, U
 
         newParameters = new HashMap();
 
-        upload = new Upload();
+        upload = new UploadField();
         newParam = new Label("Specify New Parameter");
         dataSet = new Label("Specify Data Set");
         newParamField = new TextField();
 
-        upload.setButtonCaption("Add Parameter");
-        upload.addSucceededListener(this);
+        upload.setButtonCaption("Choose Files");
+        /*upload.addSucceededListener(this);
         upload.setReceiver(this);
+        upload.*/
+
+        Button addParam = new Button("Add Parameter");
+        addParam.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                System.out.println(upload.isValid());
+            }
+        });
 
         formContent = new FormLayout();
-        formContent.addComponents(newParam, newParamField, dataSet, upload);
+        formContent.addComponents(newParam, newParamField, dataSet, upload,addParam);
         content = new VerticalLayout();
         content.addComponent(formContent);
     }

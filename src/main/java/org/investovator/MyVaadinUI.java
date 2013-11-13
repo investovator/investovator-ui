@@ -14,7 +14,6 @@ import org.investovator.ui.dataplayback.admin.dashboard.AdminDashboardLoader;
 import org.investovator.ui.dataplayback.user.dashboard.UserDashboardLoader;
 import org.investovator.ui.main.MainGamingView;
 import org.investovator.ui.nngaming.NNGamingDashBoard;
-import org.investovator.ui.nngaming.config.NNGamingView;
 import org.investovator.ui.utils.UIConstants;
 
 import javax.servlet.annotation.WebServlet;
@@ -63,7 +62,6 @@ public class MyVaadinUI extends UI
         navigator.addView(UIConstants.AGENTVIEW, new AgentGamingView());
         navigator.addView(UIConstants.DATAPLAY_USR_DASH, new UserDashboardLoader());
         navigator.addView(UIConstants.DATA_PLAYBACK_ADMIN_DASH,new AdminDashboardLoader());
-        navigator.addView(UIConstants.NNVIEW, new NNGamingView());
         navigator.addView(UIConstants.NN_DASH_VIEW, new NNGamingDashBoard());
         navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
 

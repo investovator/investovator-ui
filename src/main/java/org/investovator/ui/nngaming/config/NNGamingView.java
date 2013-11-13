@@ -18,18 +18,24 @@
 
 package org.investovator.ui.nngaming.config;
 
-import com.vaadin.navigator.ViewChangeListener;
-import org.investovator.ui.GlobalView;
+import com.vaadin.server.VaadinService;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import org.investovator.ann.config.ConfigReceiver;
+import org.investovator.ann.neuralnet.NNManager;
+import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.ui.utils.UIConstants;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
+import java.util.ArrayList;
+
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class NNGamingView extends GlobalView implements WizardProgressListener{
+public class NNGamingView extends Window implements WizardProgressListener{
 
     Wizard nnWiz = new Wizard();
 
@@ -37,12 +43,11 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
     ParameterSelectView parameterSelect;
     ParameterAddView parameterAdd;
 
-    public NNGamingView() {
+    public NNGamingView(String caption) {
 
-        super();
+        super(caption);
 
         nnWiz.setWidth(50, Unit.PERCENTAGE);
-        nnWiz.getCancelButton().setVisible(false);
 
         stockSelect = new StockSelectView();
         parameterSelect = new ParameterSelectView();
@@ -52,16 +57,14 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
         nnWiz.addStep(parameterSelect);
         nnWiz.addStep(parameterAdd);
 
-        nnWiz.addListener(this);
-        this.addComponent(nnWiz);
-
-    }
-
-
-    @Override
-    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-
         stockSelect.update();
+
+        nnWiz.addListener(this);
+        nnWiz.setSizeFull();
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true);
+        layout.addComponent(nnWiz);
+        setContent(layout);
 
     }
 
@@ -86,6 +89,11 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
     @Override
     public void wizardCompleted(WizardCompletedEvent event) {
 
+        ConfigReceiver configReceiver = new ConfigReceiver();
+        String path = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath()+"/WEB-INF";
+        configReceiver.setBasePath(path);
+
+
         /*NNManager nnManager;
 
         HashMap<String, String> newParameters = parameterAdd.getAddedParameterList();
@@ -102,10 +110,16 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
 
         nnManager.createNeuralNetwork();*/
 
-        /*ArrayList<TradingDataAttribute> selectedParams = new ArrayList<TradingDataAttribute>();
+        ArrayList<TradingDataAttribute> inputParam = new ArrayList<TradingDataAttribute>();
+        inputParam.add(TradingDataAttribute.HIGH_PRICE);
+        inputParam.add(TradingDataAttribute.LOW_PRICE);
+        inputParam.add(TradingDataAttribute.CLOSING_PRICE);
+        inputParam.add(TradingDataAttribute.SHARES);
+        inputParam.add(TradingDataAttribute.TRADES);
+        inputParam.add(TradingDataAttribute.TURNOVER);
 
-        NNManager nnManager = new NNManager(selectedParams,"SAMP");
-        nnManager.createNeuralNetwork();*/
+        NNManager nnManager = new NNManager(inputParam,"SAMP");
+        nnManager.createNeuralNetwork();
 
         getUI().getNavigator().navigateTo(UIConstants.NN_DASH_VIEW);
 
@@ -113,6 +127,6 @@ public class NNGamingView extends GlobalView implements WizardProgressListener{
 
     @Override
     public void wizardCancelled(WizardCancelledEvent event) {
-
+        this.close();
     }
 }

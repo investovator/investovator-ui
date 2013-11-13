@@ -30,6 +30,7 @@ import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
+import org.investovator.ui.nngaming.config.NNGamingView;
 import org.investovator.ui.utils.UIConstants;
 import org.vaadin.easyuploads.MultiFileUpload;
 
@@ -96,7 +97,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if(authenticator.isLoggedIn()){
-                    getUI().getNavigator().navigateTo(UIConstants.NNVIEW);
+                    startNNAdminView();
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -232,5 +233,20 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
         // Add it to the root component
         UI.getCurrent().addWindow(subWindow);
+    }
+
+    private void startNNAdminView() {
+        NNGamingView subWindow = new NNGamingView("Create New Game");
+
+        // set window characteristics
+        subWindow.center();
+        subWindow.setClosable(false);
+        subWindow.setDraggable(false);
+        subWindow.setResizable(false);
+        subWindow.setModal(true);
+
+        // Add it to the root component
+        UI.getCurrent().addWindow(subWindow);
+
     }
 }

@@ -23,8 +23,6 @@ import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.jasa.api.JASAFacade;
-import org.investovator.ui.authentication.Authenticator;
 
 /**
  * @author: Hasala Surasinghe
@@ -50,9 +48,8 @@ public class QuoteUI extends VerticalLayout{
     int orderStockCount;
 
 
-    public QuoteUI(CompanyData companyData) {
+    public QuoteUI() {
 
-        this.companyData = companyData;
         setupUI();
 
     }
@@ -63,7 +60,7 @@ public class QuoteUI extends VerticalLayout{
         //Side Select
         HorizontalLayout sideSelectLayout = new HorizontalLayout();
 
-        sideSelect = new ComboBox("Select side");
+        sideSelect = new ComboBox("Select Order Type");
         sideSelect.addItem(OrderSide.BUY);
         sideSelect.addItem(OrderSide.SELL);
         sideSelect.select(OrderSide.BUY);
@@ -72,6 +69,7 @@ public class QuoteUI extends VerticalLayout{
 
         sideSelectLayout.setSpacing(true);
         sideSelectLayout.setSizeFull();
+        sideSelectLayout.setWidth("100%");
         sideSelectLayout.addComponent(sideSelect);
 
         //Trade Button
@@ -82,7 +80,7 @@ public class QuoteUI extends VerticalLayout{
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setMargin(true);
         buttonLayout.setWidth("100%");
-        buttonLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        buttonLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
 
         buttonLayout.addComponent(tradeButton);
 
@@ -114,9 +112,6 @@ public class QuoteUI extends VerticalLayout{
         stockSelect.setNullSelectionAllowed(false);
         stockSelect.setWidth("100%");
         stockSelect.addValueChangeListener(selectSymbolValueChange);
-
-
-
 
         this.addComponent(stockSelect);
         this.addComponent(sideSelectLayout);
@@ -175,7 +170,8 @@ public class QuoteUI extends VerticalLayout{
     Button.ClickListener tradeButtonClickListener = new Button.ClickListener() {
         @Override
         public void buttonClick(Button.ClickEvent clickEvent) {
-            JASAFacade.getMarketFacade().putLimitOrder(Authenticator.getInstance().getCurrentUser(), selectedStock, orderStockCount, orderPrice, isBuy);
+
+            //ToDO add order to book
         }
     };
 
@@ -184,6 +180,9 @@ public class QuoteUI extends VerticalLayout{
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
             selectedStock = valueString;
+
+
+            //ToDO
 
         }
     };
