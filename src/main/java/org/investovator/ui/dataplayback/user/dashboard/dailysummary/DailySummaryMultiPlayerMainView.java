@@ -35,6 +35,7 @@ import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
+import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
@@ -52,11 +53,59 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
     private DailySummaryDataPLayer player;
 
+//    @Override
+//    public Chart buildMainChart() {
+//        Chart chart = new Chart();
+////        chart.setHeight("350px");
+////        chart.setWidth("90%");
+//        chart.setHeight(70,Unit.MM);
+//
+//
+//        Tooltip tooltip = new Tooltip();
+//        tooltip.setShared(true);
+//        tooltip.setUseHTML(true);
+//        tooltip.setHeaderFormat("{point.key}");
+//        tooltip.setPointFormat("");
+//        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
+//
+//        Configuration configuration = new Configuration();
+//        configuration.setTooltip(tooltip);
+//        configuration.getChart().setType(ChartType.LINE);
+//
+//        PlotOptionsLine plotOptions = new PlotOptionsLine();
+//        plotOptions.setDataLabels(new Labels(true));
+//        plotOptions.setEnableMouseTracking(false);
+//        configuration.setPlotOptions(plotOptions);
+//
+//        configuration.getxAxis().setType(AxisType.DATETIME);
+//        configuration.getxAxis().setDateTimeLabelFormats(
+//                new DateTimeLabelFormats("%e. %b", "%b"));
+//
+//        if (DataPlaybackEngineStates.playingSymbols != null) {
+//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+//                DataSeries ls = new DataSeries();
+//                ls.setName(stock);
+//                configuration.addSeries(ls);
+//                System.out.println(stock);
+//
+//            }
+//        }
+//        chart.drawChart(configuration);
+//
+//        //disable trademark
+//        chart.getConfiguration().disableCredits();
+//        chart.getConfiguration().getTitle().setText("Stock Prices");
+//
+//        return chart;
+//    }
+
     @Override
     public Chart buildMainChart() {
         Chart chart = new Chart();
-//        chart.setHeight("350px");
-//        chart.setWidth("90%");
+        chart.setHeight(70,Unit.MM);
+
+//        chart.setWidth("250px");
+//        chart.setSizeFull();
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -67,32 +116,48 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
         Configuration configuration = new Configuration();
         configuration.setTooltip(tooltip);
-        configuration.getChart().setType(ChartType.SPLINE);
+        configuration.getChart().setType(ChartType.LINE);
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setDataLabels(new Labels(true));
         plotOptions.setEnableMouseTracking(false);
+        //performance related
+        plotOptions.setShadow(false);
+
         configuration.setPlotOptions(plotOptions);
 
         configuration.getxAxis().setType(AxisType.DATETIME);
-        configuration.getxAxis().setDateTimeLabelFormats(
-                new DateTimeLabelFormats("%e. %b", "%b"));
+        DateTimeLabelFormats dateTimeLabelFormat=new DateTimeLabelFormats();
+        dateTimeLabelFormat.setWeek("%e. %b");
+        dateTimeLabelFormat.setYear("%Y");
+        configuration.getxAxis().setDateTimeLabelFormats(dateTimeLabelFormat);
+
+        configuration.getyAxis().setTitle("Price");
 
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
                 DataSeries ls = new DataSeries();
                 ls.setName(stock);
+
+                //add dummy points to fill it up
+                for(int counter=1;counter<=OHLC_CHART_LENGTH;counter++){
+                    ls.add(new DataSeriesItem
+                            (DateUtils.decrementTimeByDays((OHLC_CHART_LENGTH - counter),
+                                    DataPlaybackEngineStates.gameStartDate),0));
+                }
+
                 configuration.addSeries(ls);
-                System.out.println(stock);
 
             }
         }
-        chart.drawChart(configuration);
 
+        chart.setImmediate(true);
+        chart.drawChart(configuration);
         //disable trademark
         chart.getConfiguration().disableCredits();
-        chart.getConfiguration().getTitle().setText("Stock Prices");
 
+
+        chart.getConfiguration().setTitle("Real-time Stock Prices");
         return chart;
     }
 
@@ -133,8 +198,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
 
                     }
-                    //
-                    float price =event.getData().get(TradingDataAttribute.PRICE);
+                    //todo - change
+                    float price =event.getData().get(TradingDataAttribute.CLOSING_PRICE);
                     double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
 
                     //update the chart

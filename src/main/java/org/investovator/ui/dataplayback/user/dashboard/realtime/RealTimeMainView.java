@@ -65,6 +65,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public Chart buildMainChart() {
         Chart chart = new Chart();
         chart.setHeight(70,Unit.MM);
+
 //        chart.setWidth("250px");
 //        chart.setSizeFull();
 
@@ -263,11 +264,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.PRICE)), true, true);
+                                    event.getData().get(TradingDataAttribute.CLOSING_PRICE)), true, true);
 
                         } else {
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.PRICE)));
+                                    event.getData().get(TradingDataAttribute.CLOSING_PRICE)));
 
                         }
 
@@ -303,7 +304,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             public void run() {
                 beans.removeItem(event.getStockId());
                 beans.addBean(new StockNamePriceBean(event.getStockId(),
-                        event.getData().get(TradingDataAttribute.PRICE)));
+                        event.getData().get(TradingDataAttribute.CLOSING_PRICE)));
             }
         });
 
@@ -330,7 +331,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                 //if this is an update for a stock that the user has already bought
                 if(portfolio.getShares().containsKey(event.getStockId())){
-                    float price =event.getData().get(TradingDataAttribute.PRICE);
+                    float price =event.getData().get(TradingDataAttribute.CLOSING_PRICE);
                     double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
 
                     //update the chart
@@ -375,14 +376,21 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         if (arg instanceof StockUpdateEvent) {
             final StockUpdateEvent event = (StockUpdateEvent) arg;
 
-            //update the ticker chart
-            updateTickerChart(event);
+            //if event contains data
+            if(event.getData()!=null){
 
-            //update quantity chart
-            updateQuantityChart(event);
+                //update the ticker chart
+                updateTickerChart(event);
 
-            //update the table
-            updateStockPriceTable(event);
+                //update quantity chart
+                updateQuantityChart(event);
+
+                //update the table
+                updateStockPriceTable(event);
+
+                UI.getCurrent().push();
+            }
+
         }
         //if the game has stopped
         else if (arg instanceof PlaybackFinishedEvent) {
