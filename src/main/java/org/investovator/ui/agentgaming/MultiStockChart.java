@@ -52,6 +52,8 @@ public class MultiStockChart extends Chart{
 
     public void addStock(String stockID, ArrayList<TimeSeriesNode> data){
 
+        if(series.containsKey(stockID)) return;
+
         final DataSeries dataSeries = new DataSeries();
 
         //Show last "numberOfPoints" number of data points

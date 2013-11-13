@@ -177,8 +177,6 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     @Override
     public void onEnter() {
 
-        createUI();
-
         try {
             companyData =  new CompanyDataImpl();
         } catch (DataAccessException e) {
