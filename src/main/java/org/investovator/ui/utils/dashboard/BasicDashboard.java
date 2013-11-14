@@ -50,6 +50,7 @@ public abstract class BasicDashboard extends GlobalView {
 
         if(!authenticator.isLoggedIn()){
             getUI().getNavigator().navigateTo("");
+            return;
         }
 
         this.menuItems = getMenuItems();
