@@ -88,7 +88,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 }
                 //if there is a game running
                 else if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
-                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                    if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
                         try {
                             //if the game is multi player
                             if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
@@ -105,7 +105,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                         }
 
                     }
-                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                    else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
                         try {
                             //if this is a multiplayer game
                             if (DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
@@ -178,7 +178,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
-                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                    if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
                         try {
                             DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopPlayback();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
@@ -187,7 +187,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                         }
 
                     }
-                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                    else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
                         try {
                             DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopPlayback();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);

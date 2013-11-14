@@ -29,9 +29,9 @@ import java.util.Date;
  * @version: ${Revision}
  */
 public class DataPlaybackEngineStates {
-    //todo - remo
-    public static PlayerTypes currentGameMode;
-    //end of todo
+//    //todo - remo
+//    public static PlayerTypes currentGameMode;
+//    //end of todo
 
     //game configuration
     public static GameTypes gameConfig;

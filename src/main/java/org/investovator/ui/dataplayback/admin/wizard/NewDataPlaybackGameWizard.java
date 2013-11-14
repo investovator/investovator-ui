@@ -85,22 +85,25 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 //        mainView.setUpGame(false);
 
-        //todo - set these attributes from the wizard
-        //define the attributes needed
-        ArrayList<TradingDataAttribute> attributes = new ArrayList<TradingDataAttribute>();
-
-        //just the closing price is enough for now
-        attributes.add(TradingDataAttribute.DAY);
-        attributes.add(TradingDataAttribute.CLOSING_PRICE);
-        attributes.add(TradingDataAttribute.TRADES);
+//        //todo - set these attributes from the wizard
+//        //define the attributes needed
+//        ArrayList<TradingDataAttribute> attributes = new ArrayList<TradingDataAttribute>();
+//
+//        //just the closing price is enough for now
+//        attributes.add(TradingDataAttribute.DAY);
+//        attributes.add(TradingDataAttribute.CLOSING_PRICE);
+//        attributes.add(TradingDataAttribute.TRADES);
 
         //initialize the necessary player
-        DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.currentGameMode,
-                DataPlaybackEngineStates.playingSymbols,DataPlaybackEngineStates.gameStartDate,attributes,
-                TradingDataAttribute.CLOSING_PRICE,DataPlaybackEngineStates.isMultiplayer);
+        DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.gameConfig.getPlayerType(),
+                DataPlaybackEngineStates.playingSymbols,
+                DataPlaybackEngineStates.gameStartDate,
+                DataPlaybackEngineStates.gameConfig.getInterestedAttributes(),
+                DataPlaybackEngineStates.gameConfig.getAttributeToMatch(),
+                DataPlaybackEngineStates.isMultiplayer);
 
         //start the game now
-        if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+        if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
             try {
                 DataPlayerFacade.getInstance().getRealTimeDataPlayer().startPlayback(3);
                 GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
@@ -171,19 +174,19 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             //add the game types
 
             content.addComponent(gameTypes);
-            //content.setComponentAlignment(gameTypes,Alignment.MIDDLE_CENTER);
             gameTypes.setMultiSelect(false);
             gameTypes.setHtmlContentAllowed(true);
+
             gameTypes.addItem(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME);
             gameTypes.setItemCaption(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME,
                     GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME.getDescription());
 //            gameTypes.setItemCaption(PlayerTypes.DAILY_SUMMARY_PLAYER,
 //                    "<b>Daily summary data based game on closing price</b>");
 
-            gameTypes.addItem(PlayerTypes.REAL_TIME_DATA_PLAYER);
-            gameTypes.setItemCaption(PlayerTypes.REAL_TIME_DATA_PLAYER, "<b>Ticker data based game</b>");
-            gameTypes.setItemCaption(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME,
-                    GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME.getDescription());
+            gameTypes.addItem(GameTypes.TICKER_DATA_GAME);
+//            gameTypes.setItemCaption(PlayerTypes.REAL_TIME_DATA_PLAYER, "<b>Ticker data based game</b>");
+            gameTypes.setItemCaption(GameTypes.TICKER_DATA_GAME,
+                    GameTypes.TICKER_DATA_GAME.getDescription());
 
             //default item
             gameTypes.select(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME);
@@ -221,11 +224,11 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         public boolean onAdvance() {
             //set the selected state
             if(gameTypes.getValue()==GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME){
-                DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
+//                DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
                 DataPlaybackEngineStates.gameConfig=GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME;
             }
-            if(gameTypes.getValue()==PlayerTypes.REAL_TIME_DATA_PLAYER){
-                DataPlaybackEngineStates.currentGameMode = PlayerTypes.REAL_TIME_DATA_PLAYER;
+            if(gameTypes.getValue()==GameTypes.TICKER_DATA_GAME){
+                DataPlaybackEngineStates.gameConfig = GameTypes.TICKER_DATA_GAME;
             }
 
             //set multiplayer or not
@@ -362,7 +365,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
             }
             //else if this is a Ticker data based game
-            else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
                 datePicker.setResolution(Resolution.SECOND);
 
             }
@@ -437,7 +440,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
             }
             //else if this is a Ticker data based game
-            else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
                 range= StockUtils.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
                         CompanyStockTransactionsData.DataType.TICKER);
             }
@@ -451,7 +454,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
             }
             //else if this is a Ticker data based game
-            else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
                 range= StockUtils.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
                         CompanyStockTransactionsData.DataType.TICKER);
             }

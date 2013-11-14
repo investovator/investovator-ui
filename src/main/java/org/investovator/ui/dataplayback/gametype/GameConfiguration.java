@@ -21,6 +21,8 @@ package org.investovator.ui.dataplayback.gametype;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 
+import java.util.ArrayList;
+
 /**
  * @author: ishan
  * @version: ${Revision}
@@ -32,7 +34,7 @@ public interface GameConfiguration {
      * data playback events
      * @return
      */
-    public TradingDataAttribute[] getInterestedAttributes();
+    public ArrayList<TradingDataAttribute> getInterestedAttributes();
 
     /**
      * returns the data player that should be played when running the

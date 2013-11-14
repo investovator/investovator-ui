@@ -379,7 +379,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 updateStockPriceTable(event);
 
             }
-            UI.getCurrent().push();
+           // UI.getCurrent().push();
 
         }
         //if the game has stopped
