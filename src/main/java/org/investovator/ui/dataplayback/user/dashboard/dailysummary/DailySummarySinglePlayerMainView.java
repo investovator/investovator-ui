@@ -132,7 +132,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
         chart.getConfiguration().disableCredits();
 
 
-        chart.getConfiguration().setTitle("Real-time Stock Prices");
+        chart.getConfiguration().setTitle("Price");
         return chart;
     }
 

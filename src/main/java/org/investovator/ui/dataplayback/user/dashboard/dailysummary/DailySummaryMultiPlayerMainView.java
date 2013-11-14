@@ -158,7 +158,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         chart.getConfiguration().disableCredits();
 
 
-        chart.getConfiguration().setTitle("Real-time Stock Prices");
+        chart.getConfiguration().setTitle("Price");
         return chart;
     }
 

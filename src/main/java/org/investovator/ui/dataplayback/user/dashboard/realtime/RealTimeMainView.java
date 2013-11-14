@@ -117,7 +117,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         chart.getConfiguration().disableCredits();
 
 
-        chart.getConfiguration().setTitle("Real-time Stock Prices");
+        chart.getConfiguration().setTitle("Price");
         return chart;
     }
 
@@ -246,7 +246,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 }
                 else {
                     //get the value of the last stock
-                    value=dSeries.get(dSeries.size()-1).getY().floatValue();
+                    BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                            stockPriceTable.getContainerDataSource();
+                    value=beans.getItem(event.getStockId()).getBean().getPrice();
                     System.out.println("missing - "+event.getTime()+" - "+value);
                 }
 
