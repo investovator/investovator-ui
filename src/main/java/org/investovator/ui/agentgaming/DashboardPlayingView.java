@@ -36,6 +36,7 @@ import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Amila Surendra
@@ -185,6 +186,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
                 for(String stock: availableStocks){
                     if(!stock.equals(changedStockID)){
+                        Date tmp = ReportHelper.getInstance().getDate((int)JASAFacade.getMarketFacade().getSimulationTime(stock));
                         currentPriceChart.insertDataPoint(stock,stockChanged.getTimeStamp(),ReportHelper.getInstance().getCurrentPrice(stock));
                     }
                 }
