@@ -16,6 +16,7 @@ public enum GameTypes implements GameConfiguration {
         public ArrayList<TradingDataAttribute> getInterestedAttributes() {
             ArrayList<TradingDataAttribute> attrs=new ArrayList<>();
             attrs.add(TradingDataAttribute.DAY);
+            attrs.add(TradingDataAttribute.TRADES);
             attrs.add(TradingDataAttribute.CLOSING_PRICE);
             return attrs;
         }
