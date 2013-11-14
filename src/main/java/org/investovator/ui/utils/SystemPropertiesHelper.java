@@ -64,8 +64,8 @@ public class SystemPropertiesHelper implements
         System.out.println("SQL Path : " + realPath);
 
         //UnComment these once
-        clearOldData();
-        addTestConfig();
+        //clearOldData();
+        //addTestConfig();
 
     }
 

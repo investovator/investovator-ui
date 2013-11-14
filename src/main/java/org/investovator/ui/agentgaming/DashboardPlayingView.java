@@ -187,6 +187,20 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         if (currentPriceChart.isConnectorEnabled()) {
             currentPriceChart.insertDataPoint(stockChanged.getStockID(),stockChanged.getTimeStamp(), stockChanged.getMarketPrice());
+
+            try {
+                Collection<String> availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
+
+                for(String stock: availableStocks){
+                    if(!stock.equals(changedStockID)){
+                        currentPriceChart.insertDataPoint(stock,stockChanged.getTimeStamp(),ReportHelper.getInstance().getCurrentPrice(stock));
+                    }
+                }
+
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+
         }
 
 
