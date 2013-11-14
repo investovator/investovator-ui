@@ -242,7 +242,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 final float value;
                 //if new data is available
                 if(event.getData()!=null ){
-                    value=event.getData().get(TradingDataAttribute.CLOSING_PRICE);
+                    value=event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
                 }
                 else {
                     //get the value of the last stock
@@ -294,7 +294,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             public void run() {
                 beans.removeItem(event.getStockId());
                 beans.addBean(new StockNamePriceBean(event.getStockId(),
-                        event.getData().get(TradingDataAttribute.CLOSING_PRICE)));
+                        event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch())));
             }
         });
 
@@ -321,7 +321,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                 //if this is an update for a stock that the user has already bought
                 if(portfolio.getShares().containsKey(event.getStockId())){
-                    float price =event.getData().get(TradingDataAttribute.CLOSING_PRICE);
+                    float price =event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
                     double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
 
                     //update the chart
@@ -423,11 +423,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                                 dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
+                                        event.getData().get(TradingDataAttribute.SHARES)), true, true);
 
                             } else {
                                 dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)/100));
+                                        event.getData().get(TradingDataAttribute.SHARES)));
 
                             }
                     }

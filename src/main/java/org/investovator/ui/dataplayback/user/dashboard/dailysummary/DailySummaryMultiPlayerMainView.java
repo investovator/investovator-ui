@@ -37,6 +37,7 @@ import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -199,7 +200,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
                     }
                     //todo - change
-                    float price =event.getData().get(TradingDataAttribute.CLOSING_PRICE);
+                    float price =event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
                     double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
 
                     //update the chart
@@ -239,7 +240,14 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
                             userName);
-                    Notification.show(status.toString());
+                    //if the transaction was a success
+                    if(status){
+                        updatePortfolioTable(stocksList.getValue().toString());
+                    }
+                    else{
+
+                        Notification.show(status.toString());
+                    }
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());
                 } catch (UserJoinException e) {
@@ -278,6 +286,29 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         buttonsBar.addComponent(buySellButton);
 
         return buttonsBar;
+    }
+
+    public void updatePortfolioTable(final String stockID){
+        final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
+                portfolioTable.getContainerDataSource();
+
+        UI.getCurrent().access(new Runnable() {
+            @Override
+            public void run() {
+                //if the stock is already bought
+                if(beans.containsId(stockID)){
+                    beans.removeItem(stockID);
+                }
+                try {
+                    double price = player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.PRICE);
+                    int quantity =player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.QNTY).intValue();
+                    beans.addBean(new PortfolioBean(stockID,price, quantity));
+                } catch (UserJoinException e) {
+                    Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
+                }
+            }
+        });
+
     }
 
 

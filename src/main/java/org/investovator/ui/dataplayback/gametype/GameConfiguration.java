@@ -25,7 +25,7 @@ import org.investovator.dataplaybackengine.player.type.PlayerTypes;
  * @author: ishan
  * @version: ${Revision}
  */
-public interface GameType {
+public interface GameConfiguration {
 
     /**
      * returns the attributes that the data player should include in
