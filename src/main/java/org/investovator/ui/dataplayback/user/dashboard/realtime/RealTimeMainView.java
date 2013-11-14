@@ -239,36 +239,26 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-//                if (mainChart.isConnectorEnabled()) {
-//                    getSession().lock();
-//                    try {
-//                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
-//
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.PRICE)), true, true);
-//
-//                        } else {
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.PRICE)));
-//
-//                        }
-//
-//                    } finally {
-//                        getSession().unlock();
-//                    }
-//                }
+                final float value;
+                //if new data is available
+                if(event.getData()!=null ){
+                    value=event.getData().get(TradingDataAttribute.CLOSING_PRICE);
+                }
+                else {
+                    //get the value of the last stock
+                    value=dSeries.get(dSeries.size()-1).getY().floatValue();
+                    System.out.println("missing - "+event.getTime()+" - "+value);
+                }
 
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.CLOSING_PRICE)), true, true);
+                            dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
 
                         } else {
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.CLOSING_PRICE)));
+                            dSeries.add(new DataSeriesItem(event.getTime(),value));
 
                         }
 
@@ -376,11 +366,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         if (arg instanceof StockUpdateEvent) {
             final StockUpdateEvent event = (StockUpdateEvent) arg;
 
+            //update the ticker chart
+            updateTickerChart(event);
+
             //if event contains data
             if(event.getData()!=null){
-
-                //update the ticker chart
-                updateTickerChart(event);
 
                 //update quantity chart
                 updateQuantityChart(event);
@@ -388,8 +378,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 //update the table
                 updateStockPriceTable(event);
 
-                UI.getCurrent().push();
             }
+            UI.getCurrent().push();
 
         }
         //if the game has stopped
