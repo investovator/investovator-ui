@@ -423,11 +423,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                                 dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)), true, true);
+                                        event.getData().get(TradingDataAttribute.TRADES)), true, true);
 
                             } else {
                                 dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)));
+                                        event.getData().get(TradingDataAttribute.TRADES)));
 
                             }
                     }

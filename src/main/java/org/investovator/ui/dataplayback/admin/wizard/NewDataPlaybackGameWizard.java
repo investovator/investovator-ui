@@ -92,7 +92,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         //just the closing price is enough for now
         attributes.add(TradingDataAttribute.DAY);
         attributes.add(TradingDataAttribute.CLOSING_PRICE);
-        attributes.add(TradingDataAttribute.SHARES);
+        attributes.add(TradingDataAttribute.TRADES);
 
         //initialize the necessary player
         DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.currentGameMode,
