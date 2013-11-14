@@ -300,7 +300,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         //update the pie-chart
         try {
-            updatePieChart(event,beans);
+            updatePieChart(event);
         } catch (PlayerStateException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (UserJoinException e) {
@@ -309,7 +309,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     }
 
-    public void updatePieChart(final StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans)
+    public void updatePieChart(final StockUpdateEvent event)
             throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=this.player.getMyPortfolio(this.userName);

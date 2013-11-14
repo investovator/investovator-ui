@@ -178,7 +178,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         }
     }
 
-    public void updatePieChart(StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans) throws PlayerStateException, UserJoinException {
+    public void updatePieChart(StockUpdateEvent event) throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=this.player.getMyPortfolio(this.userName);
 
