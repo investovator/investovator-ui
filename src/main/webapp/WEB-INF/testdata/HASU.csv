@@ -1,4 +1,4 @@
-Day,Date High,High,Date Low,Low,Closing,No. of Trades,No. of Shares,Turnover,Last Traded,Days Traded
+Day,Date High,High,Date Low,Low,Closing,Trades,Shares,Turnover,Last Traded,Days Traded
 1/4/2010,4-Jan-10,50,4-Jan-10,48,49.25,18,9000,433650,4-Jan-10,1
 1/5/2010,5-Jan-10,49,5-Jan-10,48,48.25,5,5200,251850,5-Jan-10,1
 1/6/2010,6-Jan-10,49,6-Jan-10,48,48.25,44,74200,3616375,6-Jan-10,1
