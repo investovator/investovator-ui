@@ -36,6 +36,7 @@ import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Amila Surendra
@@ -51,7 +52,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     UserData userData;
 
     //Layout Components
-    GridLayout content;
+    VerticalLayout content;
     Table watchListTable;
     MultiStockChart currentPriceChart;
     WatchList watchList;
@@ -80,36 +81,53 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
     private void createUI(){
 
         //Setup Layout
-        content = new GridLayout();
-        content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        content.setRows(2);
-        content.setColumns(2);
+        content = new VerticalLayout();
+        content.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        content.setSpacing(true);
 
+        HorizontalLayout row1 = new HorizontalLayout();
+        HorizontalLayout row2 = new HorizontalLayout();
+
+        row1.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        row2.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+
+        row1.setWidth("100%");
+        row2.setWidth("100%");
+
+
+        row1.setHeight("60%");
+        row1.setHeight("35%");
+
+
+
+        content.addComponent(row1);
+        content.addComponent(row2);
+
+        content.setExpandRatio(row1, 55);
+        content.setExpandRatio(row2, 45);
 
         //Portfolio Summary
         portfolioSummary = new PortfolioSummary();
 
-
         //QuoteUI
         quoteUI = new QuoteUI(companyData);
-
-
 
         watchListTable = getTable();
         currentPriceChart = new MultiStockChart();
 
-
-
         //Adding to main layout
-        content.addComponent(watchListTable);
-        content.addComponent(currentPriceChart);
-        content.addComponent(quoteUI);
-        content.addComponent(portfolioSummary);
-        content.setComponentAlignment(watchListTable,Alignment.MIDDLE_CENTER);
-        content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
-        //content.addComponent(buttons);
+        row1.addComponent(watchListTable);
+        row1.addComponent(currentPriceChart);
+        row2.addComponent(quoteUI);
+        row2.addComponent(portfolioSummary);
+        row2.setComponentAlignment(portfolioSummary,Alignment.TOP_CENTER);
+
+        watchListTable.addStyleName("center-caption");
+        quoteUI.addStyleName("center-caption");
+        currentPriceChart.addStyleName("center-caption");
 
         content.setSizeFull();
+
 
         this.setSizeFull();
 
@@ -122,18 +140,11 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         BeanContainer<String, StockItemBean> watchList = new BeanContainer<String, StockItemBean>(StockItemBean.class);
         watchList.setBeanIdProperty("stockID");
 
-        StockItemBean stockItemBean = new StockItemBean();
-        stockItemBean.setStockID("GOOG");
-        stockItemBean.setLastAsk(125.4f);
-        stockItemBean.setLastBid(100);
-        stockItemBean.setMarketPrice(102.5f);
-
-        watchList.addBean(stockItemBean);
-
         Table table = new Table("Watch List", watchList);
 
-        table.setSizeFull();
+        //table.setSizeFull();
         table.setWidth("90%");
+        table.setHeight("300px");
         table.setSelectable(true);
         table.setImmediate(true);
 
@@ -169,6 +180,21 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         if (currentPriceChart.isConnectorEnabled()) {
             currentPriceChart.insertDataPoint(stockChanged.getStockID(),stockChanged.getTimeStamp(), stockChanged.getMarketPrice());
+
+            try {
+                Collection<String> availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
+
+                for(String stock: availableStocks){
+                    if(!stock.equals(changedStockID)){
+                        Date tmp = ReportHelper.getInstance().getDate((int)JASAFacade.getMarketFacade().getSimulationTime(stock));
+                        currentPriceChart.insertDataPoint(stock,stockChanged.getTimeStamp(),ReportHelper.getInstance().getCurrentPrice(stock));
+                    }
+                }
+
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+
         }
 
 

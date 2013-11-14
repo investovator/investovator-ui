@@ -44,6 +44,8 @@ public class QuoteUI extends VerticalLayout {
 
     private void setupUI(){
 
+        setCaption("Stock Quote");
+
         //Side Select
         HorizontalLayout sideSelectLayout = new HorizontalLayout();
 
