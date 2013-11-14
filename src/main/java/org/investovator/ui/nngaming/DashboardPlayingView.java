@@ -175,7 +175,7 @@ public class DashboardPlayingView extends DashboardPanel {
         configuration.disableCredits();
 
         //series.addData(2,true,true);
-
+                                                                                                      a
         configuration.setSeries(series);
 
         chart.drawChart(configuration);
@@ -183,7 +183,7 @@ public class DashboardPlayingView extends DashboardPanel {
 
         return chart;*/
 
-        MasterDetailChart chart = new MasterDetailChart();
+        BasicChart chart = new BasicChart();
         return chart.getChart();
     }
 
