@@ -3,9 +3,7 @@ package org.investovator.ui.utils;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.data.api.*;
-import org.investovator.core.data.api.utils.StockTradingData;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.core.data.rssexplorer.RSSManager;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

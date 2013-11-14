@@ -120,7 +120,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
         inputParam.add(TradingDataAttribute.TRADES);
         inputParam.add(TradingDataAttribute.TURNOVER);
 
-        NNManager nnManager = new NNManager(inputParam,"SAMP");
+        NNManager nnManager = new NNManager(inputParam,stockSelect.getSelectedStock());
         nnManager.createNeuralNetwork();
 
         try {
