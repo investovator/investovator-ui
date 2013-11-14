@@ -63,18 +63,18 @@ public class SystemPropertiesHelper implements
         System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
         System.out.println("SQL Path : " + realPath);
 
-        //clearOldData();
-
-        //UnComment this
-        //addTestConfig();
+        //UnComment these once
+        clearOldData();
+        addTestConfig();
 
     }
 
-
     private void clearOldData(){
-        CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+
         try {
-            historyData.clearAllTradingData(CompanyStockTransactionsData.DataType.OHLC);
+            DataStorage storage = new DataStorageImpl();
+            storage.resetDataStorage();
+
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -84,9 +84,22 @@ public class SystemPropertiesHelper implements
 
         CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
         try {
-            String filePath = context.getRealPath("/WEB-INF/testdata/sampath.csv");
+
+            String filePath = context.getRealPath("/WEB-INF/testdata/SAMP.csv");
             historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",new File(filePath));
             new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
+
+
+            filePath = context.getRealPath("/WEB-INF/testdata/RCL.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"RCL","MM/dd/yyyy",new File(filePath));
+            new CompanyDataImpl().addCompanyData("RCL", "Royal Ceramic Lanka", 100000);
+
+
+            filePath = context.getRealPath("/WEB-INF/testdata/HASU.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"HASU","MM/dd/yyyy",new File(filePath));
+            new CompanyDataImpl().addCompanyData("HASU", "HNB Assurance", 100000);
+
+
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -96,6 +109,7 @@ public class SystemPropertiesHelper implements
         try {
             UserData userData =  new UserDataImpl();
             userData.addToWatchList("testUser1", "SAMP");
+            userData.addToWatchList("testUser1", "RCL");
 
             Portfolio portfolio = new PortfolioImpl("testUser1", 1000000, 0);
             userData.updateUserPortfolio("testUser1",portfolio);
