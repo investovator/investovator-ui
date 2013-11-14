@@ -57,6 +57,7 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
     public void setupUI(){
 
         this.setWidth("100%");
+        this.setHeight("100%");
         this.setCaption("Portfolio Summary");
         addStyleName("center-caption");
 

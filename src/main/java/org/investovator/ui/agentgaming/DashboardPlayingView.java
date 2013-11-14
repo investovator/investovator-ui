@@ -139,19 +139,11 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
         BeanContainer<String, StockItemBean> watchList = new BeanContainer<String, StockItemBean>(StockItemBean.class);
         watchList.setBeanIdProperty("stockID");
 
-        StockItemBean stockItemBean = new StockItemBean();
-        stockItemBean.setStockID("GOOG");
-        stockItemBean.setLastAsk(125.4f);
-        stockItemBean.setLastBid(100);
-        stockItemBean.setMarketPrice(102.5f);
-
-        watchList.addBean(stockItemBean);
-
         Table table = new Table("Watch List", watchList);
 
         //table.setSizeFull();
         table.setWidth("90%");
-        table.setHeight("100%");
+        table.setHeight("300px");
         table.setSelectable(true);
         table.setImmediate(true);
 
