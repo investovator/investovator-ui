@@ -40,6 +40,9 @@ import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
 
@@ -357,8 +360,8 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             content.setComponentAlignment(datePicker,Alignment.MIDDLE_CENTER);
             datePicker.setValue(new Date());
             datePicker.setImmediate(true);
-            datePicker.setTimeZone(TimeZone.getTimeZone("UTC"));
-            datePicker.setLocale(Locale.US);
+//            datePicker.setTimeZone(TimeZone.getTimeZone("Etc/GMT"));
+//            datePicker.setLocale(Locale.US);
             //if this is a OHLC game
             if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 datePicker.setResolution(Resolution.DAY);
@@ -412,8 +415,13 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
                 DataPlaybackEngineStates.gameStartDate= DateUtils.truncate(datePicker.getValue(), Calendar.DATE);
             }
             else{
+                //save the default time zone first
+                TimeZone defaultT=TimeZone.getDefault();
+                //fixes the default timezone to GMT to correctly retrieve the time from calendar
+                TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
                 DataPlaybackEngineStates.gameStartDate= datePicker.getValue();
-
+                //restore the default time zone
+                TimeZone.setDefault(TimeZone.getTimeZone(defaultT.getID()));
             }
 
                 return true;
