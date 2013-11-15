@@ -178,49 +178,53 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         }
     }
 
-    public void updatePieChart(StockUpdateEvent event) throws PlayerStateException, UserJoinException {
+    public void updatePieChart(final StockUpdateEvent event)
+            throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=this.player.getMyPortfolio(this.userName);
 
         //since we know that there's only one data series
-        DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
-
-        //find the matching Data item
-//            DataSeriesItem item=dSeries.get(event.getStockId());
-//                    if(item.getName().equalsIgnoreCase(event.getStockId())){
-
-
-                //if this is an update for a stock that the user has already bought
-                if(portfolio.getShares().containsKey(event.getStockId())){
-                    //if it is already in the chart
-                    if(dSeries.get(event.getStockId())!=null){
-                        //remove it
-                        dSeries.remove(dSeries.get(event.getStockId()));
-
-
-                    }
-                    //todo - change
-                    float price =event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
-                    double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
-
-                    //update the chart
-                    dSeries.add(new DataSeriesItem(event.getStockId(),price*quantity));
-                    dSeries.update(dSeries.get(event.getStockId()));
-
-                }
+        final DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
 
 
 
-        if (stockPieChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
+        //if this is an update for a stock that the user has already bought
+        if(portfolio.getShares().containsKey(event.getStockId())){
+            float price =event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
+            double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
+
+            //update the chart
+            DataSeriesItem item=dSeries.get(event.getStockId());
+            item.setY(price*quantity);
+            dSeries.update(item);
+
+        }
+
+
+//
+//        if (stockPieChart.isConnectorEnabled()) {
+//            getSession().lock();
+//            try {
+//                dSeries.update(dSeries.get(event.getStockId()));
+//                stockPieChart.setImmediate(true);
+//                stockPieChart.drawChart();
+//
+//            } finally {
+//                getSession().unlock();
+//            }
+//        }
+
+        UI.getCurrent().access(new Runnable() {
+            @Override
+            public void run() {
+                dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
-
-            } finally {
-                getSession().unlock();
+                //UI.getCurrent().push();
+                //System.out.println("pushed");
+                getUI().push();
             }
-        }
+        });
     }
 
     @Override
