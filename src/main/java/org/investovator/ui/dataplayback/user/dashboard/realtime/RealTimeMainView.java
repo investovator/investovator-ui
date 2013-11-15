@@ -299,16 +299,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                         event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch())));
             }
         });
-
-        //update the pie-chart
-        try {
-            updatePieChart(event);
-        } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
     }
 
     public void updatePieChart(final StockUpdateEvent event)
@@ -380,8 +370,16 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 //update the table
                 updateStockPriceTable(event);
 
+                //update the pie-chart
+                try {
+                    updatePieChart(event);
+                } catch (PlayerStateException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (UserJoinException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
             }
-           // UI.getCurrent().push();
 
         }
         //if the game has stopped
