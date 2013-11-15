@@ -16,36 +16,45 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.nngaming;
+package org.investovator.ui.nngaming.utils;
 
-import org.investovator.ann.nngaming.events.AddBidEvent;
-import org.investovator.ann.nngaming.events.DayChangedEvent;
-
-import java.util.Observable;
-import java.util.Observer;
+import java.util.ArrayList;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class EventListener implements Observer{
+public class PlayableStockManager {
 
-    public EventListener(){
+    private static PlayableStockManager instance;
+    private ArrayList<String> stockList;
 
+    private PlayableStockManager(){
 
+         stockList = new ArrayList<>();
+
+    }
+
+    public static PlayableStockManager getInstance() {
+        if(instance == null){
+            synchronized(PlayableStockManager.class){
+                if(instance == null)
+                    instance = new PlayableStockManager();
+            }
+        }
+        return instance;
+    }
+
+    public void addStocks(String stockID){
+
+        stockList.add(stockID);
 
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
+    public ArrayList<String> getStockList(){
 
-        if(arg instanceof DayChangedEvent){
-            System.out.println("DayChangedObserved");
-        }
-        if(arg instanceof AddBidEvent){
-            System.out.println("AddBidObserved");
-
-        }
+        return stockList;
 
     }
+
 }

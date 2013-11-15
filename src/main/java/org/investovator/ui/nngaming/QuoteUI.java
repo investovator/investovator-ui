@@ -21,8 +21,7 @@ package org.investovator.ui.nngaming;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
-import org.investovator.core.data.api.CompanyDataImpl;
-import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 /**
  * @author: Hasala Surasinghe
@@ -127,18 +126,8 @@ public class QuoteUI extends VerticalLayout{
 
     public void update(){
 
-        try {
-            companyData =  new CompanyDataImpl();
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            for (String stock : companyData.getAvailableStockIds()) {
-                stockSelect.addItem(stock);
-            }
-        } catch (DataAccessException e) {
-            e.printStackTrace();
+        for (String stock : PlayableStockManager.getInstance().getStockList()) {
+            stockSelect.addItem(stock);
         }
 
     }

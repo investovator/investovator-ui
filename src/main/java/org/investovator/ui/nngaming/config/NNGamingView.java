@@ -26,6 +26,7 @@ import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.ui.nngaming.utils.PlayableStockManager;
 import org.investovator.ui.utils.ConfigHelper;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -111,6 +112,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
         }
 
         nnManager.createNeuralNetwork();*/
+        String selectedStockID = stockSelect.getSelectedStock();
 
         ArrayList<TradingDataAttribute> inputParam = new ArrayList<TradingDataAttribute>();
         inputParam.add(TradingDataAttribute.HIGH_PRICE);
@@ -120,8 +122,10 @@ public class NNGamingView extends Window implements WizardProgressListener{
         inputParam.add(TradingDataAttribute.TRADES);
         inputParam.add(TradingDataAttribute.TURNOVER);
 
-        NNManager nnManager = new NNManager(inputParam,stockSelect.getSelectedStock());
+        NNManager nnManager = new NNManager(inputParam,selectedStockID);
         nnManager.createNeuralNetwork();
+
+        PlayableStockManager.getInstance().addStocks(selectedStockID);
 
         try {
             GameControllerFacade.getInstance().startGame(GameModes.NN_GAME,null);

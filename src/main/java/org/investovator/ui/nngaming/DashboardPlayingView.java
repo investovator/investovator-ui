@@ -18,10 +18,9 @@
 
 package org.investovator.ui.nngaming;
 
-import com.vaadin.addon.charts.model.ListSeries;
 import com.vaadin.ui.*;
+import org.investovator.ann.nngaming.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
-import org.investovator.ann.nngaming.util.GameTypes;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
@@ -45,14 +44,21 @@ public class DashboardPlayingView extends DashboardPanel {
     Table orderBookBuy;
     Component currentPriceChart;
     QuoteUI quoteUI;
+
+    EventListener eventListener;
     NNGamingFacade nnGamingFacade;
+    MarketEventReceiver marketEventReceiver;
 
     boolean simulationRunning = false;
 
     public DashboardPlayingView() {
 
         createUI();
-        nnGamingFacade = new NNGamingFacade(GameTypes.TRADING_GAME);
+        nnGamingFacade = NNGamingFacade.getInstance();
+        eventListener = new EventListener();
+        marketEventReceiver = MarketEventReceiver.getInstance();
+
+        marketEventReceiver.addObserver(eventListener);
 
     }
 
@@ -157,34 +163,12 @@ public class DashboardPlayingView extends DashboardPanel {
     }
 
 
-        ListSeries series = new ListSeries("Traded Price",3,456,6,6,3,2,4,4);
-
-
 
     protected Component getChart() {
 
-        /*final Chart chart = new Chart();
-        chart.setHeight("350px");
-        chart.setWidth("90%");
-        chart.setCaption("Share Price Summary");
-
-        final Configuration configuration = new Configuration();
-        configuration.setTitle("Last Traded Price");
-
-        configuration.getChart().setType(ChartType.LINE);
-        configuration.disableCredits();
-
-        //series.addData(2,true,true);
-                                                                                                      a
-        configuration.setSeries(series);
-
-        chart.drawChart(configuration);
-
-
-        return chart;*/
-
         BasicChart chart = new BasicChart();
         return chart.getChart();
+
     }
 
     private void updateTable(){
@@ -192,6 +176,7 @@ public class DashboardPlayingView extends DashboardPanel {
         //todo
         ArrayList<Float> values;
         values = nnGamingFacade.getGeneratedOrders(2,3,"SAMP",1);
+        values.addAll(values);
 
         for(int i = 0; i < 3; i++){
 
@@ -204,17 +189,6 @@ public class DashboardPlayingView extends DashboardPanel {
         orderBookBuy.setPageLength(0);
         orderBookSell.setPageLength(0);
 
-        /*NNGamingFacade nnGamingFacade = new NNGamingFacade(GameTypes.TRADING_GAME);
-        ArrayList<Float> orders;
-
-        orders = nnGamingFacade.getGeneratedOrders(4,2,"SAMP",4);
-
-        for(int i = 0;i < orders.size();i++){
-
-            System.out.println(orders.get(i));
-
-        }*/
-
 
 
     }
@@ -222,11 +196,9 @@ public class DashboardPlayingView extends DashboardPanel {
     @Override
     public void onEnter() {
 
-
-
         quoteUI.update();
 
-        //updateTable();  //set system property values and check todo
+        updateTable();  //set system property values and check todo
 
         simulationRunning = true;
 
@@ -234,7 +206,7 @@ public class DashboardPlayingView extends DashboardPanel {
         try {
             availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
             for(String stock : availableStocks){
-                //simulationFacade.addListener(stock,watchList);
+
             }
         } catch (DataAccessException e) {
             e.printStackTrace();
