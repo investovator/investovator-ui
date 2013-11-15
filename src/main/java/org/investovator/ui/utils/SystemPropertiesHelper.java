@@ -63,7 +63,7 @@ public class SystemPropertiesHelper implements
         System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
         System.out.println("SQL Path : " + realPath);
 
-        //clearOldData();
+        clearOldData();
 
         //UnComment this
         addTestConfig();
@@ -87,6 +87,12 @@ public class SystemPropertiesHelper implements
             String filePath = context.getRealPath("/WEB-INF/testdata/sampath.csv");
             historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",new File(filePath));
             new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
+
+            //sampath ticker data
+            filePath = context.getRealPath("/WEB-INF/testdata/SAMP_ticker.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"SAMP","MM/dd/yyyy HH:mm:ss.SSS",
+                    new File(filePath));
+
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
