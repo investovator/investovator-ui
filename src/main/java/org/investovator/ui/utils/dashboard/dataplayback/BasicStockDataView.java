@@ -151,12 +151,12 @@ public abstract class BasicStockDataView extends DashboardPanel {
 //        timeline.setVerticalAxisLegendUnit(data, "Price");
 
         // Set the date range
-        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
+        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
             timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
                     DateUtils.incrementTimeByDays(5,DataPlaybackEngineStates.gameStartDate));
 
         }
-        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
             timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
                     DateUtils.incrementTimeBySeconds(60, DataPlaybackEngineStates.gameStartDate));
         }

@@ -65,6 +65,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public Chart buildMainChart() {
         Chart chart = new Chart();
         chart.setHeight(70,Unit.MM);
+
 //        chart.setWidth("250px");
 //        chart.setSizeFull();
 
@@ -116,7 +117,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         chart.getConfiguration().disableCredits();
 
 
-        chart.getConfiguration().setTitle("Real-time Stock Prices");
+        chart.getConfiguration().setTitle("Price");
         return chart;
     }
 
@@ -238,36 +239,28 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-//                if (mainChart.isConnectorEnabled()) {
-//                    getSession().lock();
-//                    try {
-//                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
-//
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.PRICE)), true, true);
-//
-//                        } else {
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.PRICE)));
-//
-//                        }
-//
-//                    } finally {
-//                        getSession().unlock();
-//                    }
-//                }
+                final float value;
+                //if new data is available
+                if(event.getData()!=null ){
+                    value=event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
+                }
+                else {
+                    //get the value of the last stock
+                    BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                            stockPriceTable.getContainerDataSource();
+                    value=beans.getItem(event.getStockId()).getBean().getPrice();
+                    System.out.println("missing - "+event.getTime()+" - "+value);
+                }
 
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.PRICE)), true, true);
+                            dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
 
                         } else {
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.PRICE)));
+                            dSeries.add(new DataSeriesItem(event.getTime(),value));
 
                         }
 
@@ -303,22 +296,12 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             public void run() {
                 beans.removeItem(event.getStockId());
                 beans.addBean(new StockNamePriceBean(event.getStockId(),
-                        event.getData().get(TradingDataAttribute.PRICE)));
+                        event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch())));
             }
         });
-
-        //update the pie-chart
-        try {
-            updatePieChart(event,beans);
-        } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
     }
 
-    public void updatePieChart(final StockUpdateEvent event, BeanContainer<String,StockNamePriceBean> beans)
+    public void updatePieChart(final StockUpdateEvent event)
             throws PlayerStateException, UserJoinException {
 
         Portfolio portfolio=this.player.getMyPortfolio(this.userName);
@@ -330,7 +313,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                 //if this is an update for a stock that the user has already bought
                 if(portfolio.getShares().containsKey(event.getStockId())){
-                    float price =event.getData().get(TradingDataAttribute.PRICE);
+                    float price =event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
                     double quantity= portfolio.getShares().get(event.getStockId()).get(Terms.QNTY);
 
                     //update the chart
@@ -378,11 +361,26 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //update the ticker chart
             updateTickerChart(event);
 
-            //update quantity chart
-            updateQuantityChart(event);
+            //if event contains data
+            if(event.getData()!=null){
 
-            //update the table
-            updateStockPriceTable(event);
+                //update quantity chart
+                updateQuantityChart(event);
+
+                //update the table
+                updateStockPriceTable(event);
+
+                //update the pie-chart
+                try {
+                    updatePieChart(event);
+                } catch (PlayerStateException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (UserJoinException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
+            }
+
         }
         //if the game has stopped
         else if (arg instanceof PlaybackFinishedEvent) {
@@ -425,11 +423,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                                 dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
+                                        event.getData().get(TradingDataAttribute.TRADES)), true, true);
 
                             } else {
                                 dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)/100));
+                                        event.getData().get(TradingDataAttribute.TRADES)));
 
                             }
                     }

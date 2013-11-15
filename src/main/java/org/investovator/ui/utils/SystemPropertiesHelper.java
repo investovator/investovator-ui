@@ -64,10 +64,11 @@ public class SystemPropertiesHelper implements
         System.out.println("SQL Path : " + realPath);
 
         //UnComment these once
-        //clearOldData();
-        //addTestConfig();
+        clearOldData();
+        addTestConfig();
 
     }
+
 
     private void clearOldData(){
 
@@ -99,6 +100,12 @@ public class SystemPropertiesHelper implements
             historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"HASU","MM/dd/yyyy",new File(filePath));
             new CompanyDataImpl().addCompanyData("HASU", "HNB Assurance", 100000);
 
+
+
+            //sampath ticker data
+            filePath = context.getRealPath("/WEB-INF/testdata/SAMP_ticker.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"SAMP","MM/dd/yyyy HH:mm:ss.SSS",
+                    new File(filePath));
 
         } catch (DataAccessException e) {
             e.printStackTrace();

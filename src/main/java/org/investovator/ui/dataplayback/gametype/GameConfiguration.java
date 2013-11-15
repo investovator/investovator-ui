@@ -16,33 +16,44 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package org.investovator.ui.dataplayback.gametype;
 
-package org.investovator.ui.dataplayback.util;
-
+import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
-import org.investovator.ui.dataplayback.gametype.GameTypes;
 
-import java.util.Date;
+import java.util.ArrayList;
 
 /**
  * @author: ishan
  * @version: ${Revision}
  */
-public class DataPlaybackEngineStates {
-//    //todo - remo
-//    public static PlayerTypes currentGameMode;
-//    //end of todo
+public interface GameConfiguration {
 
-    //game configuration
-    public static GameTypes gameConfig;
+    /**
+     * returns the attributes that the data player should include in
+     * data playback events
+     * @return
+     */
+    public ArrayList<TradingDataAttribute> getInterestedAttributes();
 
-    //stores the stock symbols up on which the game is played
-    public static String[] playingSymbols;
+    /**
+     * returns the data player that should be played when running the
+     * game
+     *
+     * @return
+     */
+    public PlayerTypes getPlayerType();
 
-    //stores the game start date
-    public static Date gameStartDate;
+    /**
+     * returns the attribute on which the game should be run.
+     * Ex - Closing price for a Daily Summary based game
+     * @return
+     */
+    public TradingDataAttribute getAttributeToMatch();
 
-    public static boolean isMultiplayer;
+    /**
+     * returns a description about the game
+     * @return
+     */
+    public String getDescription();
 }
-
-

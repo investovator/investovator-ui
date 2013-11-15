@@ -48,7 +48,7 @@ public class AdminDashboardLoader extends BasicDashboard{
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
         LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
         try{
-        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
             if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
                 Notification.show("Not implemented-load admin summary view");
 
@@ -57,7 +57,7 @@ public class AdminDashboardLoader extends BasicDashboard{
 //                map.put("main view", new RealTimeMainView());
 //            }
         }
-        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
             if(DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
                 Notification.show("Not implemented-load admin summary view");
             }
