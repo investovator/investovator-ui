@@ -34,8 +34,8 @@ public class ReportsView extends DashboardPanel {
 
     public ReportsView() {
 
+        setHeight("100%");
         addedStocks = new ArrayList<>();
-
         charts = new HashMap<>();
 
         layout = new VerticalLayout();
@@ -101,7 +101,7 @@ public class ReportsView extends DashboardPanel {
                                 chart.drawChart();
                             }
                             layout.addComponent(newChart);
-                            layout.setComponentAlignment(newChart, Alignment.MIDDLE_CENTER);
+                            layout.setComponentAlignment(newChart, Alignment.TOP_CENTER);
 
                             UI.getCurrent().push();
                         }
@@ -114,6 +114,7 @@ public class ReportsView extends DashboardPanel {
         charts.put( "market price", new TimeSeriesChart("market price"));
 
         HorizontalLayout stockSelectBar = new HorizontalLayout();
+        stockSelectBar.setHeight("50px");
 
         stockSelectBar.addComponent(stockSelect);
         stockSelectBar.addComponent(addButton);
@@ -124,10 +125,8 @@ public class ReportsView extends DashboardPanel {
 
         for(TimeSeriesChart chart : charts.values()){
             layout.addComponent(chart);
-            layout.setComponentAlignment(chart, Alignment.MIDDLE_CENTER);
+            layout.setComponentAlignment(chart, Alignment.TOP_CENTER);
         }
-
-        layout.addComponent(new Label());
 
         this.setContent(layout);
     }
