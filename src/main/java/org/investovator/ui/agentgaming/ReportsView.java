@@ -24,10 +24,17 @@ public class ReportsView extends DashboardPanel {
     HashMap<String,TimeSeriesChart> charts;
 
     ComboBox stockSelect;
+    ComboBox reportSelect;
     Button addButton;
+    Button addReportButton;
+
     private String selectedStock;
+    private String selectedReport;
+    ArrayList<String> addedStocks;
 
     public ReportsView() {
+
+        addedStocks = new ArrayList<>();
 
         charts = new HashMap<>();
 
@@ -38,6 +45,7 @@ public class ReportsView extends DashboardPanel {
 
         //Stock Select
         stockSelect = new ComboBox();
+        stockSelect.setNullSelectionAllowed(false);
         stockSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -51,6 +59,7 @@ public class ReportsView extends DashboardPanel {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 for(TimeSeriesChart chart : charts.values()){
+                    addedStocks.add(selectedStock);
                     chart.addStock(selectedStock);
                     chart.update();
                     chart.drawChart();
@@ -58,18 +67,64 @@ public class ReportsView extends DashboardPanel {
             }
         });
 
+        //Report Select
+        reportSelect = new ComboBox();
+        reportSelect.setNullSelectionAllowed(false);
+        reportSelect.addItem("market price");
+        reportSelect.addItem("market spread");
+
+        reportSelect.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
+                selectedReport = valueString;
+            }
+        });
+
+        addReportButton = new Button("Add Report");
+        addReportButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(!charts.containsKey(selectedReport)) {
+
+                    final TimeSeriesChart newChart = new TimeSeriesChart(selectedReport);
+                    charts.put( selectedReport,newChart  );
+
+                    UI.getCurrent().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(String stock : addedStocks){
+                                newChart.addStock(stock);
+                            }
+                            for(TimeSeriesChart chart : charts.values()){
+                                chart.update();
+                                chart.drawChart();
+                            }
+                            layout.addComponent(newChart);
+                            layout.setComponentAlignment(newChart, Alignment.MIDDLE_CENTER);
+
+                            UI.getCurrent().push();
+                        }
+                    });
+                }
+
+            }
+        });
+
         charts.put( "market price", new TimeSeriesChart("market price"));
-        charts.put( "market spread", new TimeSeriesChart("market spread"));
 
         HorizontalLayout stockSelectBar = new HorizontalLayout();
 
         stockSelectBar.addComponent(stockSelect);
         stockSelectBar.addComponent(addButton);
+        stockSelectBar.addComponent(reportSelect);
+        stockSelectBar.addComponent(addReportButton);
 
         layout.addComponent(stockSelectBar);
 
         for(TimeSeriesChart chart : charts.values()){
             layout.addComponent(chart);
+            layout.setComponentAlignment(chart, Alignment.MIDDLE_CENTER);
         }
 
         layout.addComponent(new Label());
@@ -80,6 +135,7 @@ public class ReportsView extends DashboardPanel {
     @Override
     public void onEnter() {
 
+        //Fill Stocks on page load
         try {
             ArrayList<String> stocks = new CompanyDataImpl().getAvailableStockIds();
             for(String stock : stocks){
@@ -141,8 +197,10 @@ class TimeSeriesChart extends Chart {
 
 
         drawChart(configuration);
+        configuration.disableCredits();
 
-        setHeight("300px");
+        setHeight("400px");
+        setWidth("90%");
 
     }
 
