@@ -97,6 +97,8 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
             e.printStackTrace();
         }
 
+        updateStocksTable();
+
     }
 
 
@@ -176,7 +178,6 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks","value"});
 
 
-        updateStocksTable();
     }
 
     public class StockSummary{
