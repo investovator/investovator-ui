@@ -2,8 +2,10 @@ package org.investovator.ui.agentgaming;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.UI;
+import com.vaadin.data.Property;
+import com.vaadin.ui.*;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 import org.w3c.dom.ls.LSInput;
 
@@ -18,24 +20,59 @@ import java.util.List;
  */
 public class ReportsView extends DashboardPanel {
 
-    GridLayout layout;
-    TimeSeriesChart chart;
-    TimeSeriesChart chart2;
+    VerticalLayout layout;
+    HashMap<String,TimeSeriesChart> charts;
+
+    ComboBox stockSelect;
+    Button addButton;
+    private String selectedStock;
 
     public ReportsView() {
 
-        layout = new GridLayout();
-        layout.setColumns(2);
-        layout.setSizeFull();
+        charts = new HashMap<>();
+
+        layout = new VerticalLayout();
+        layout.setWidth("100%");
         layout.setMargin(true);
         layout.setSpacing(true);
 
-        chart = new TimeSeriesChart("market price");
-        layout.addComponent(chart);
+        //Stock Select
+        stockSelect = new ComboBox();
+        stockSelect.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
+                selectedStock = valueString;
+            }
+        });
 
+        addButton = new Button("Add Stock");
+        addButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                for(TimeSeriesChart chart : charts.values()){
+                    chart.addStock(selectedStock);
+                    chart.update();
+                    chart.drawChart();
+                }
+            }
+        });
 
-        chart2 = new TimeSeriesChart("market spread");
-        layout.addComponent(chart2);
+        charts.put( "market price", new TimeSeriesChart("market price"));
+        charts.put( "market spread", new TimeSeriesChart("market spread"));
+
+        HorizontalLayout stockSelectBar = new HorizontalLayout();
+
+        stockSelectBar.addComponent(stockSelect);
+        stockSelectBar.addComponent(addButton);
+
+        layout.addComponent(stockSelectBar);
+
+        for(TimeSeriesChart chart : charts.values()){
+            layout.addComponent(chart);
+        }
+
+        layout.addComponent(new Label());
 
         this.setContent(layout);
     }
@@ -43,9 +80,21 @@ public class ReportsView extends DashboardPanel {
     @Override
     public void onEnter() {
 
-        chart.update();
-        chart2.update();
+        try {
+            ArrayList<String> stocks = new CompanyDataImpl().getAvailableStockIds();
+            for(String stock : stocks){
+                if(!stockSelect.containsId(stock)) stockSelect.addItem(stock);
+            }
 
+            if(selectedStock==null) selectedStock=stocks.get(0);
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
+        for(TimeSeriesChart chart : charts.values()){
+            chart.update();
+        }
     }
 
 
@@ -63,13 +112,19 @@ class TimeSeriesChart extends Chart {
         return chartVariable;
     }
 
+
+    public void addStock(String stockID){
+        if(!stocks.contains(stockID)){
+            stocks.add(stockID);
+        }
+    }
+
     public TimeSeriesChart(String chartVariable) {
 
         this.chartVariable = chartVariable;
 
         series = new HashMap<String, DataSeries>();
         stocks = new ArrayList<>();
-        stocks.add("SAMP");
 
         Configuration configuration = new Configuration();
         configuration.getChart().setType(ChartType.LINE);
@@ -87,13 +142,13 @@ class TimeSeriesChart extends Chart {
 
         drawChart(configuration);
 
+        setHeight("300px");
+
     }
 
     public void update() {
 
         for (String stock : stocks) {
-
-            DataSeries dataSeries = null;
 
             if (!series.containsKey(stock)) {
                 DataSeries tmp = new DataSeries();
@@ -101,27 +156,24 @@ class TimeSeriesChart extends Chart {
                 getConfiguration().addSeries(tmp);
             }
 
-            dataSeries = series.get(stock);
+            final DataSeries dataSeries = series.get(stock);
+            dataSeries.setName(stock);
 
-            ArrayList<TimeSeriesNode> data = ReportHelper.getInstance().getTimeSeriesReport("SAMP", chartVariable, 50);
+            final ArrayList<TimeSeriesNode> data = ReportHelper.getInstance().getTimeSeriesReport(stock, chartVariable, 50);
 
-            dataSeries.clear();
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
 
-            synchronized (UI.getCurrent()) {
+                    dataSeries.clear();
 
-                for (TimeSeriesNode node : data) {
-                    dataSeries.add(new DataSeriesItem(node.getDate(), node.getValue()));
+                    for (TimeSeriesNode node : data) {
+                        dataSeries.add(new DataSeriesItem(node.getDate(), node.getValue()));
+                    }
+
+                    UI.getCurrent().push();
                 }
-
-            }
-
-
-                /*getConfiguration().getSeries().clear();
-
-                synchronized (UI.getCurrent()){
-                    getConfiguration().addSeries(series.values().iterator().next());
-                }*/
-
+            });
 
         }
 

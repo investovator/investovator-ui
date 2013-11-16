@@ -203,7 +203,15 @@ public class ReportHelper {
 
         PriceReportTimeseriesVariables reportVar =  getTimeSeriesReports(stockId).get(report);
 
-        for (int index = 0; index < reportVar.getTimeseriesVariableBindings().get(reportVar.getName() + ".t").size(); index++) {
+        int startIndex  = 0;
+
+        int dataPoints = reportVar.getTimeseriesVariableBindings().get(reportVar.getName() + ".t").size();
+
+        if(dataPoints>maxRecords){
+             startIndex = dataPoints-1 -maxRecords;
+        }
+
+        for (int index = startIndex; index < dataPoints; index++) {
             TimeSeriesNode tmp = new TimeSeriesNode();
             tmp.setDate(getDate((int)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".t").get(index)));
             tmp.setValue((double)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".price").get(index));
