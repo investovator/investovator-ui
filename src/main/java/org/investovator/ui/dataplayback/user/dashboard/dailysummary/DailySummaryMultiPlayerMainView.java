@@ -54,51 +54,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
     private DailySummaryDataPLayer player;
 
-//    @Override
-//    public Chart buildMainChart() {
-//        Chart chart = new Chart();
-////        chart.setHeight("350px");
-////        chart.setWidth("90%");
-//        chart.setHeight(70,Unit.MM);
-//
-//
-//        Tooltip tooltip = new Tooltip();
-//        tooltip.setShared(true);
-//        tooltip.setUseHTML(true);
-//        tooltip.setHeaderFormat("{point.key}");
-//        tooltip.setPointFormat("");
-//        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
-//
-//        Configuration configuration = new Configuration();
-//        configuration.setTooltip(tooltip);
-//        configuration.getChart().setType(ChartType.LINE);
-//
-//        PlotOptionsLine plotOptions = new PlotOptionsLine();
-//        plotOptions.setDataLabels(new Labels(true));
-//        plotOptions.setEnableMouseTracking(false);
-//        configuration.setPlotOptions(plotOptions);
-//
-//        configuration.getxAxis().setType(AxisType.DATETIME);
-//        configuration.getxAxis().setDateTimeLabelFormats(
-//                new DateTimeLabelFormats("%e. %b", "%b"));
-//
-//        if (DataPlaybackEngineStates.playingSymbols != null) {
-//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
-//                DataSeries ls = new DataSeries();
-//                ls.setName(stock);
-//                configuration.addSeries(ls);
-//                System.out.println(stock);
-//
-//            }
-//        }
-//        chart.drawChart(configuration);
-//
-//        //disable trademark
-//        chart.getConfiguration().disableCredits();
-//        chart.getConfiguration().getTitle().setText("Stock Prices");
-//
-//        return chart;
-//    }
 
     @Override
     public Chart buildMainChart() {
@@ -313,6 +268,63 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             }
         });
 
+    }
+
+    public Chart buildQuantityChart(){
+        Chart chart = new Chart(ChartType.COLUMN);
+        chart.setHeight(43,Unit.MM);
+
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle("Quantity");
+
+        XAxis x = new XAxis();
+        x.setType(AxisType.DATETIME);
+        x.setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+//        x.setMinRange(3600000*24*7);
+        x.setTickInterval(24 * 3600 * 1000);
+        conf.addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setMin(0);
+//        y.setMinRange(500);
+        y.setTitle("Quantity");
+        conf.addyAxis(y);
+
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.y+' sold on '+this.x");
+        conf.setTooltip(tooltip);
+
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+//        plot.setPointPadding(0.1);
+//        plot.setBorderWidth(0);
+        //set the widht of the columns
+//        plot.setPointWidth(15);
+
+        if (DataPlaybackEngineStates.playingSymbols != null) {
+            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+                DataSeries ls = new DataSeries();
+                ls.setName(stock);
+                ls.setPlotOptions(plot);
+
+//                add dummy points to fill it up
+                for(int counter=1;counter<=OHLC_CHART_LENGTH;counter++){
+                    ls.add(new DataSeriesItem
+                            (DateUtils.decrementTimeByDays((OHLC_CHART_LENGTH-counter),
+                                    DataPlaybackEngineStates.gameStartDate),0));
+                }
+
+                conf.addSeries(ls);
+
+
+            }
+        }
+
+        conf.disableCredits();
+        chart.drawChart(conf);
+        chart.setImmediate(true);
+        return chart;
     }
 
 

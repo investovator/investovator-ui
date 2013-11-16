@@ -180,19 +180,22 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             gameTypes.setMultiSelect(false);
             gameTypes.setHtmlContentAllowed(true);
 
-            gameTypes.addItem(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME);
-            gameTypes.setItemCaption(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME,
-                    GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME.getDescription());
-//            gameTypes.setItemCaption(PlayerTypes.DAILY_SUMMARY_PLAYER,
-//                    "<b>Daily summary data based game on closing price</b>");
+            for(GameTypes type:GameTypes.values()){
+                gameTypes.addItem(type);
+                gameTypes.setItemCaption(type,
+                        type.getDescription());
+            }
 
-            gameTypes.addItem(GameTypes.TICKER_DATA_GAME);
-//            gameTypes.setItemCaption(PlayerTypes.REAL_TIME_DATA_PLAYER, "<b>Ticker data based game</b>");
-            gameTypes.setItemCaption(GameTypes.TICKER_DATA_GAME,
-                    GameTypes.TICKER_DATA_GAME.getDescription());
+//            gameTypes.addItem(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME);
+//            gameTypes.setItemCaption(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME,
+//                    GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME.getDescription());
+//
+//            gameTypes.addItem(GameTypes.TICKER_DATA_GAME);
+//            gameTypes.setItemCaption(GameTypes.TICKER_DATA_GAME,
+//                    GameTypes.TICKER_DATA_GAME.getDescription());
 
             //default item
-            gameTypes.select(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME);
+            gameTypes.select(GameTypes.values()[0]);
 
             //fire value change events immediately
             gameTypes.setImmediate(true);
@@ -226,13 +229,20 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         @Override
         public boolean onAdvance() {
             //set the selected state
-            if(gameTypes.getValue()==GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME){
-//                DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
-                DataPlaybackEngineStates.gameConfig=GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME;
+            for(GameTypes type:GameTypes.values()){
+                if(gameTypes.getValue()==type){
+                    DataPlaybackEngineStates.gameConfig=type;
+                    break;
+                }
             }
-            if(gameTypes.getValue()==GameTypes.TICKER_DATA_GAME){
-                DataPlaybackEngineStates.gameConfig = GameTypes.TICKER_DATA_GAME;
-            }
+
+//            if(gameTypes.getValue()==GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME){
+////                DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
+//                DataPlaybackEngineStates.gameConfig=GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME;
+//            }
+//            if(gameTypes.getValue()==GameTypes.TICKER_DATA_GAME){
+//                DataPlaybackEngineStates.gameConfig = GameTypes.TICKER_DATA_GAME;
+//            }
 
             //set multiplayer or not
             if(((Set)multiplayer.getValue()).contains(1)){

@@ -106,6 +106,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
         configuration.getxAxis().setType(AxisType.DATETIME);
         configuration.getxAxis().setDateTimeLabelFormats(
                 new DateTimeLabelFormats("%e. %b", "%b"));
+        //tick only days
+        configuration.getxAxis().setTickInterval(24 * 3600 * 1000);
 
         configuration.getyAxis().setTitle("Price");
 
@@ -117,7 +119,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                 //add dummy points to fill it up
                 for(int counter=1;counter<=OHLC_CHART_LENGTH;counter++){
                     ls.add(new DataSeriesItem
-                            (DateUtils.decrementTimeBySeconds((OHLC_CHART_LENGTH - counter),
+                            (DateUtils.decrementTimeByDays((OHLC_CHART_LENGTH - counter),
                                     DataPlaybackEngineStates.gameStartDate),0));
                 }
 
@@ -256,7 +258,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                             try {
                                 beans.removeItem(event.getStockId());
                                 beans.addBean(new StockNamePriceBean(event.getStockId(),
-                                        event.getData().get(TradingDataAttribute.CLOSING_PRICE)));
+                                        event.getData().get(DataPlaybackEngineStates.
+                                                gameConfig.getAttributeToMatch())));
                             } finally {
                                 getSession().unlock();
                             }
@@ -370,6 +373,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
         XAxis x = new XAxis();
         x.setType(AxisType.DATETIME);
+        x.setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+//        x.setMinRange(3600000*24*7);
+        x.setTickInterval(24 * 3600 * 1000);
         conf.addxAxis(x);
 
         YAxis y = new YAxis();
@@ -380,14 +387,14 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
 
         Tooltip tooltip = new Tooltip();
-        tooltip.setFormatter("this.y+' sold'");
+        tooltip.setFormatter("this.y+' sold on '+this.x");
         conf.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
-        plot.setPointPadding(0);
-        plot.setBorderWidth(0);
+//        plot.setPointPadding(0.1);
+//        plot.setBorderWidth(0);
         //set the widht of the columns
-        plot.setPointWidth(15);
+//        plot.setPointWidth(15);
 
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
@@ -395,10 +402,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                 ls.setName(stock);
                 ls.setPlotOptions(plot);
 
-                //add dummy points to fill it up
+//                add dummy points to fill it up
                 for(int counter=1;counter<=OHLC_CHART_LENGTH;counter++){
                     ls.add(new DataSeriesItem
-                            (DateUtils.decrementTimeBySeconds((OHLC_CHART_LENGTH-counter),
+                            (DateUtils.decrementTimeByDays((OHLC_CHART_LENGTH-counter),
                                     DataPlaybackEngineStates.gameStartDate),0));
                 }
 
@@ -448,11 +455,11 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                         if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.TRADES)), true, true);
+                                    event.getData().get(TradingDataAttribute.SHARES)), true, true);
 
                         } else {
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.TRADES)));
+                                    event.getData().get(TradingDataAttribute.SHARES)));
 
                         }
                     }
