@@ -26,12 +26,17 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
+import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -43,10 +48,14 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 */
 public abstract class BasicMainView extends DashboardPanel {
 
+    //length of the profit chart
+    private static int PROFIT_CHART_LENGTH=5;
+
     //charts to be shown
     protected Chart mainChart;
     protected Chart stockPieChart;
     protected Chart quantityChart;
+    protected Chart profitChart;
 
     protected Table stockPriceTable;
     protected Table portfolioTable;
@@ -156,6 +165,7 @@ public abstract class BasicMainView extends DashboardPanel {
 //            myPortfolioLayout.addComponent(portfolioCaption);
 //            myPortfolioLayout.setComponentAlignment(portfolioCaption,Alignment.MIDDLE_CENTER);
 
+
             HorizontalLayout portfolioContainer = new HorizontalLayout();
             portfolioContainer.setMargin(new MarginInfo(false,true,true,true));
             portfolioContainer.setCaption("My Portfolio");
@@ -165,10 +175,15 @@ public abstract class BasicMainView extends DashboardPanel {
             //portfolio table
             portfolioTable=setupPortfolioTable();
             portfolioContainer.addComponent(portfolioTable);
-            //pie-chart
-            stockPieChart =setupPieChart();
-            portfolioContainer.addComponent(stockPieChart);
-//            portfolioContainer.setComponentAlignment(stockPieChart,Alignment.TOP_RIGHT);
+
+            //profit chart
+            HorizontalLayout profitContainer = new HorizontalLayout();
+            bottowRow.addComponent(profitContainer);
+            profitContainer.setCaption("Profit");
+            profitContainer.addStyleName("center-caption");
+
+            profitChart=setupProfitChart();
+            profitContainer.addComponent(profitChart);
 
 
             this.setContent(content);
@@ -223,6 +238,68 @@ public abstract class BasicMainView extends DashboardPanel {
         table.setColumnHeader("totCost","Tot. Cost");
 
         return table;
+    }
+
+    //todo - make this abstract
+    public Chart setupProfitChart(){
+        Chart chart = new Chart();
+        chart.setHeight(40,Unit.MM);
+        chart.setWidth(90,Unit.MM);
+
+//        chart.setSizeFull();
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShared(true);
+        tooltip.setUseHTML(true);
+        tooltip.setHeaderFormat("{point.key}");
+        tooltip.setPointFormat("");
+        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
+
+        Configuration configuration = new Configuration();
+        configuration.setTooltip(tooltip);
+        configuration.getChart().setType(ChartType.LINE);
+        configuration.getLegend().setEnabled(false);
+        configuration.getyAxis().setTitle("");
+
+        PlotOptionsLine plotOptions = new PlotOptionsLine();
+        plotOptions.setDataLabels(new Labels(true));
+        plotOptions.setEnableMouseTracking(false);
+        //performance related
+        plotOptions.setShadow(false);
+
+        configuration.setPlotOptions(plotOptions);
+
+        configuration.getxAxis().setType(AxisType.DATETIME);
+        configuration.getxAxis().setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+
+
+//        configuration.getyAxis().getTitle().setText(null);
+
+//        if (DataPlaybackEngineStates.playingSymbols != null) {
+//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+                DataSeries ls = new DataSeries();
+//                ls.setName(stock);
+
+                //add dummy points to fill it up
+                for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+                    ls.add(new DataSeriesItem
+                            (DateUtils.decrementTimeBySeconds((PROFIT_CHART_LENGTH - counter),
+                                    DataPlaybackEngineStates.gameStartDate),0));
+                }
+
+                configuration.addSeries(ls);
+
+//            }
+//        }
+
+        chart.setImmediate(true);
+        chart.drawChart(configuration);
+        //disable trademark
+        chart.getConfiguration().disableCredits();
+
+        chart.getConfiguration().getTitle().setText(null);
+        return chart;
     }
 
     private Component setupBuySellForm(){

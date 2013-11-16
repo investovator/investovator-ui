@@ -39,6 +39,7 @@ import org.investovator.dataplaybackengine.exceptions.player.PlayerStateExceptio
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
@@ -369,16 +370,27 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 //update the table
                 updateStockPriceTable(event);
 
+                //update profit chart
+                updateProfitChart(event);
+
                 //update the pie-chart
-                try {
-                    updatePieChart(event);
-                } catch (PlayerStateException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (UserJoinException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+//                try {
+//                    updatePieChart(event);
+//                } catch (PlayerStateException e) {
+//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                } catch (UserJoinException e) {
+//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                }
 
             }
+
+            //push the changes
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    getUI().push();
+                }
+            });
 
         }
         //if the game has stopped
@@ -491,5 +503,50 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         chart.drawChart(conf);
         chart.setImmediate(true);
         return chart;
+    }
+
+    public void updateProfitChart(final StockUpdateEvent event){
+        Portfolio portfolio=null;
+
+
+            try {
+                //if this is a game based on the real time data player
+                if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                    portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                            getRealTimeDataPlayer().getMyPortfolio(this.userName);
+                }
+                else if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
+                    portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                            getDailySummaryDataPLayer().getMyPortfolio(this.userName);
+                }
+
+                //get the current prices of all the stocks
+                BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                        stockPriceTable.getContainerDataSource();
+
+                double profit=0;
+                for(String stock:portfolio.getShares().keySet()){
+                    //cost for a stock
+                    double cost = portfolio.getShares().get(stock).get(Terms.PRICE);
+                    //current price of a stock
+                    float currentPrice=beans.getItem(stock).getBean().getPrice();
+                    //total number of stocks bought
+                    double numOfStocks= portfolio.getShares().get(stock).get(Terms.QNTY);
+
+                    profit=profit+((currentPrice-cost)*numOfStocks);
+                }
+
+                //since there is only one series
+                DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
+                float floatProfit=(float)profit;
+                ds.add(new DataSeriesItem(event.getTime(),floatProfit));
+
+
+            } catch (PlayerStateException e) {
+                e.printStackTrace();
+            } catch (UserJoinException e) {
+                e.printStackTrace();
+            }
+
     }
 }
