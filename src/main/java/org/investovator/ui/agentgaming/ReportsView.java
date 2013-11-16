@@ -157,6 +157,7 @@ class TimeSeriesChart extends Chart {
             }
 
             final DataSeries dataSeries = series.get(stock);
+            dataSeries.setName(stock);
 
             final ArrayList<TimeSeriesNode> data = ReportHelper.getInstance().getTimeSeriesReport(stock, chartVariable, 50);
 
