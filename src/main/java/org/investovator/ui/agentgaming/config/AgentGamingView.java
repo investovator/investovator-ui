@@ -79,12 +79,14 @@ public class AgentGamingView extends Window implements WizardProgressListener {
         String mainTemplateFile =  basepath + "/WEB-INF/templates/main_template.xml";
         String beanTemplateFile =  basepath + "/WEB-INF/templates/bean-config-template.xml";
         String propertiesFile = basepath +  "/WEB-INF/configuration/config.properties";
+        String stockPropertiesFile = basepath + "/WEB-INF/templates/simulation.properties";
 
         configGenerator.setModelTemlpateFile(templateFile);
         configGenerator.setReportTemlpateFile(reportTemplateFile);
         configGenerator.setMainTemplateFile(mainTemplateFile);
         configGenerator.setSpringBeanConfigTemplate(beanTemplateFile);
         configGenerator.setProperties(propertiesFile);
+        configGenerator.addProperties("Default","file:"+stockPropertiesFile);
 
         configSet=true;
     }
