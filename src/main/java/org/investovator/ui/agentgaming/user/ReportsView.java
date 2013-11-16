@@ -1,4 +1,4 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
@@ -6,11 +6,11 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.ui.agentgaming.ReportHelper;
+import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
-import org.w3c.dom.ls.LSInput;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 

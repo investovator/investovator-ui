@@ -28,9 +28,9 @@ import org.investovator.agentsimulation.api.JASAFacade;
 
 import java.util.*;
 
-import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.agentsimulation.api.MarketFacade;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.investovator.ui.agentgaming.beans.StockItemBean;
+import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 
 /**
  * @author Amila Surendra
@@ -39,7 +39,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class ReportHelper {
 
     int lastIndex = 0;
-    boolean reportsReady = false;
+    public boolean reportsReady = false;
     HashMap<String,ArrayList<Report>> reports;
 
     HashMap<String,CurrentPriceReportVariables> currentPriceReports = new HashMap<String, CurrentPriceReportVariables>();

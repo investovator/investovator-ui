@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.beans;
 
 import java.io.Serializable;
 import java.util.Date;

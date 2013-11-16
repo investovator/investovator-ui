@@ -1,4 +1,4 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;

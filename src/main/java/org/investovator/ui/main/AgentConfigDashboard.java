@@ -1,8 +1,6 @@
 package org.investovator.ui.main;
 
 import com.vaadin.navigator.ViewChangeListener;
-import org.investovator.ui.agentgaming.DashboardPlayingView;
-import org.investovator.ui.agentgaming.ReportsView;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 

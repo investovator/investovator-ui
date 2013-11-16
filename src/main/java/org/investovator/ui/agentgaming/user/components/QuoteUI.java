@@ -1,8 +1,7 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user.components;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
-import net.sourceforge.jasa.market.Order;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;

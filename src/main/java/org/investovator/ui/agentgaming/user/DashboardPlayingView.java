@@ -16,13 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Configuration;
 import com.vaadin.addon.charts.model.ListSeries;
-import com.vaadin.addon.charts.model.PlotOptionsSpline;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
@@ -32,6 +28,14 @@ import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.agentsimulation.api.MarketFacade;
+import org.investovator.ui.agentgaming.*;
+import org.investovator.ui.agentgaming.beans.StockItemBean;
+import org.investovator.ui.agentgaming.events.AgentUIUpdater;
+import org.investovator.ui.agentgaming.events.StockChangedEvent;
+import org.investovator.ui.agentgaming.events.WatchList;
+import org.investovator.ui.agentgaming.user.components.MultiStockChart;
+import org.investovator.ui.agentgaming.user.components.PortfolioSummary;
+import org.investovator.ui.agentgaming.user.components.QuoteUI;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
