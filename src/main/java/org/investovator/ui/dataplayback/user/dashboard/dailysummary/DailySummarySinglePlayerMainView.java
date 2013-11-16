@@ -454,11 +454,11 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                         if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.TRADES)), true, true);
+                                    event.getData().get(TradingDataAttribute.SHARES)), true, true);
 
                         } else {
                             dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.TRADES)));
+                                    event.getData().get(TradingDataAttribute.SHARES)));
 
                         }
                     }
