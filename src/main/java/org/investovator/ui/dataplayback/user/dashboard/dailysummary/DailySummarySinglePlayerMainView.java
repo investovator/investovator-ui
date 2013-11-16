@@ -258,7 +258,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                             try {
                                 beans.removeItem(event.getStockId());
                                 beans.addBean(new StockNamePriceBean(event.getStockId(),
-                                        event.getData().get(TradingDataAttribute.CLOSING_PRICE)));
+                                        event.getData().get(DataPlaybackEngineStates.
+                                                gameConfig.getAttributeToMatch())));
                             } finally {
                                 getSession().unlock();
                             }
