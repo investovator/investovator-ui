@@ -116,8 +116,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         //disable trademark
         chart.getConfiguration().disableCredits();
 
-
-        chart.getConfiguration().setTitle("Price");
+        chart.getConfiguration().getTitle().setText("Price");
         return chart;
     }
 
@@ -446,7 +445,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         chart.setHeight(43,Unit.MM);
 
         Configuration conf = chart.getConfiguration();
-        conf.setTitle("Quantity");
+        conf.getTitle().setText("Quantity");
 
         XAxis x = new XAxis();
         x.setType(AxisType.DATETIME);
