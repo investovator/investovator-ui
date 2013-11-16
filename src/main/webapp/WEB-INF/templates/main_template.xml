@@ -47,4 +47,13 @@
     <bean id="stockMarketTimePriorityPricingPolicy" scope="simulation"
           class="net.sourceforge.jasa.market.rules.StockMarketTimePriorityPricingPolicy">
     </bean>
+
+    <bean id="configurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <property-files><!--Auto Fill--></property-files>
+            </list>
+        </property>
+    </bean>
+
 </beans>

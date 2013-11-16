@@ -6,7 +6,7 @@
     <controller>
 
         <bean id="$stockIDController"
-              class="net.sourceforge.jabm.SpringSimulationController"
+              class="org.investovator.agentsimulation.InvestovatorSimulationController"
               scope="singleton">
 
             <property name="simulationBeanName">
@@ -38,7 +38,7 @@
             <property name="agentMixer" ref="randomArrivalAgentMixer$stockID"/>
             <property name="agentInitialiser" ref="agentInitialiserProxy$stockID"/>
             <property name="auctioneer" ref="cda$stockID"/>
-            <property name="initialPrice" value="$initialPrice"/>
+            <property name="initialPrice" value="${$stockID.init.price}"/>
             <property name="stockID" value="$stockID" />
             <property name="slowSleepInterval" value="$slowSleepInterval" />
         </bean>
