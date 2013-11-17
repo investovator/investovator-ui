@@ -15,8 +15,7 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * @author Amila Surendra
@@ -118,10 +117,13 @@ public class AnalysisPanel extends DashboardPanel {
             params = new TimeSeriesParams(stockID, format.parse(staringDate), format.parse(endDate));
             params.setPeriod(5);
 
-            TimeSeriesResultSet resultSet = (TimeSeriesResultSet) calculator.calculateValues(IndicatorType.EMA, params);
+            TimeSeriesResultSet resultSet = (TimeSeriesResultSet) calculator.calculateValues(Enum.valueOf(IndicatorType.class,report), params);
 
             final MultiPlotTimeSeriesChart newChart = new MultiPlotTimeSeriesChart(report);
-            newChart.addSeries("Close", resultSet.getGraph(TimeSeriesGraph.EMA));
+
+            for(Map.Entry<TimeSeriesGraph, LinkedHashMap<Date, Double>> graph : resultSet.getGraphs().entrySet() )  {
+                newChart.addSeries(graph.getKey().name(), graph.getValue());
+            }
 
             UI.getCurrent().access(new Runnable() {
                 @Override

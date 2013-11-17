@@ -2,6 +2,7 @@ package org.investovator.ui.analysis;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.ui.UI;
 import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 
 import java.util.*;
@@ -55,11 +56,11 @@ public class MultiPlotTimeSeriesChart extends Chart {
         dataSeries.setName(seriesName);
         series.put(seriesName,dataSeries);
 
-        getUI().access(new Runnable() {
+        UI.getCurrent().access(new Runnable() {
             @Override
             public void run() {
                 getConfiguration().addSeries(dataSeries);
-                getUI().push();
+                UI.getCurrent().push();
             }
         });
 
