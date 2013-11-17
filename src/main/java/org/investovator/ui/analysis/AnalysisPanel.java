@@ -296,6 +296,10 @@ public class AnalysisPanel extends DashboardPanel {
             }
         });
 
+
+        startDatePicker.setWidth("100px");
+        endDatePicker.setWidth("100px");
+
     }
 
     private void createDateUpdateButton() {

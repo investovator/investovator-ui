@@ -732,4 +732,18 @@
     border-image:radial-gradient(circle, grey 10%, transparent 90%) 0 1 1;
   }
 
+  .v-datefield-popupcalendar .v-datefield-button {
+    width: 24px;
+    margin-right: -24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    background-image: url(../reindeer/datefield/img/popup-btn.png);/** sprite-ref: verticals */
+    cursor: pointer;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+  }
+
 }
