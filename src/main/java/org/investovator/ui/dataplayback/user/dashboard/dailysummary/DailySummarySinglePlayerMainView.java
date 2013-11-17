@@ -232,9 +232,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                                     System.out.println("missing - "+event.getTime()+" - "+value);
                                 }
 
-                                UI.getCurrent().access(new Runnable() {
-                                    @Override
-                                    public void run() {
+
+//                                UI.getCurrent().access(new Runnable() {
+//                                    @Override
+//                                    public void run() {
                                         if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
 
                                             dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
@@ -244,8 +245,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
                                         }
 
-                                    }
-                                });
+//                                    }
+//                                });
 
 
                             }
@@ -281,6 +282,14 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
                     //update the profit chart
                     updateProfitChart(player.getToday());
+
+                    //push the changes
+                    UI.getCurrent().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            getUI().push();
+                        }
+                    });
 
 
                 } catch (GameFinishedException e) {
@@ -321,16 +330,16 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             item.setY(price*quantity);
 //            dSeries.update(item);
 
-            UI.getCurrent().access(new Runnable() {
-                @Override
-                public void run() {
+//            UI.getCurrent().access(new Runnable() {
+//                @Override
+//                public void run() {
                     dSeries.update(item);
                     stockPieChart.drawChart();
                     //UI.getCurrent().push();
                     //System.out.println("pushed");
                     getUI().push();
-                }
-            });
+//                }
+//            });
 
         }
 
@@ -430,6 +439,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
     private void updateQuantityChart(final StockUpdateEvent event)  {
 
+        if(event.getData()==null){
+            return;
+        }
+
         //iterate every series in the chart at the moment
         for (Series series : quantityChart.getConfiguration().getSeries()) {
             final DataSeries dSeries = (DataSeries) series;
@@ -454,10 +467,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 //                        getSession().unlock();
 //                    }
 //                }
-
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
+//
+//                UI.getCurrent().access(new Runnable() {
+//                    @Override
+//                    public void run() {
 
                         if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
 
@@ -469,8 +482,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                                     event.getData().get(TradingDataAttribute.SHARES)));
 
                         }
-                    }
-                });
+//                    }
+//                });
 
 
             }
@@ -484,9 +497,9 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
         final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
                 portfolioTable.getContainerDataSource();
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
+//        UI.getCurrent().access(new Runnable() {
+//            @Override
+//            public void run() {
                 //if the stock is already bought
                 if(beans.containsId(stockID)){
                     beans.removeItem(stockID);
@@ -498,8 +511,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
-            }
-        });
+//            }
+//        });
 
     }
 

@@ -171,17 +171,17 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 //            }
 //        }
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
+//        UI.getCurrent().access(new Runnable() {
+//            @Override
+//            public void run() {
                 dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
                 //UI.getCurrent().push();
                 //System.out.println("pushed");
                 getUI().push();
-            }
-        });
+//            }
+//        });
     }
 
     @Override
@@ -253,9 +253,9 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
                 portfolioTable.getContainerDataSource();
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
+//        UI.getCurrent().access(new Runnable() {
+//            @Override
+//            public void run() {
                 //if the stock is already bought
                 if(beans.containsId(stockID)){
                     beans.removeItem(stockID);
@@ -267,8 +267,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
-            }
-        });
+//            }
+//        });
 
     }
 
