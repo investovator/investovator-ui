@@ -32,9 +32,9 @@ public class MultiPlotTimeSeriesChart extends Chart {
     }
 
 
-    public void addSeries(String sereiesName, ArrayList<TimeSeriesNode> data){
+    public void addSeries(String seriesName, ArrayList<TimeSeriesNode> data){
 
-        if(series.containsKey(sereiesName)) return;
+        if(series.containsKey(seriesName)) return;
 
         final DataSeries dataSeries = new DataSeries();
 
@@ -45,8 +45,8 @@ public class MultiPlotTimeSeriesChart extends Chart {
             dataSeries.add(new DataSeriesItem(data.get(count).getDate(), data.get(count).getValue()));
         }
 
-        dataSeries.setName(sereiesName);
-        series.put(sereiesName,dataSeries);
+        dataSeries.setName(seriesName);
+        series.put(seriesName,dataSeries);
 
         getUI().access(new Runnable() {
             @Override
