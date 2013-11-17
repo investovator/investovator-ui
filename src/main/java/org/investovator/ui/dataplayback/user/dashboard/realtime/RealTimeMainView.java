@@ -169,6 +169,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     //if the transaction was a success
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
+                        //update account info
+                        updateAccountBalance();
                     }
                     else{
 
@@ -637,16 +639,38 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         FormLayout form=new FormLayout();
 
         try {
-            Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
-            Label accountBalance=new Label(bal.toString());
-            accountBalance.setCaption("Account Balance");
-            form.addComponent(accountBalance);
+            if(this.userName==null){
 
-            int max=this.player.getMaxOrderSize();
-            Label maxOrderSize=new Label(Integer.toString(max));
-            maxOrderSize.setCaption("Max. Order Size");
-            form.addComponent(maxOrderSize);
+                int bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getInitialCredit();
+                Label accountBalance=new Label(Integer.toString(bal));
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
+            else{
+                Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMyPortfolio(this.userName).getCashBalance();
+                Label accountBalance=new Label(bal.toString());
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
         } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (PlayerStateException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
@@ -655,6 +679,15 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     }
 
     public void updateAccountBalance(){
+        try {
+            Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                    getRealTimeDataPlayer().getMyPortfolio(this.userName).getCashBalance();
+            this.accBalance.setValue(bal.toString());
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (PlayerStateException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
     }
 }
