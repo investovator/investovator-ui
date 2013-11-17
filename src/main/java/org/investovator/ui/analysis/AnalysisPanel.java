@@ -38,6 +38,7 @@ public class AnalysisPanel extends DashboardPanel {
      */
     VerticalLayout layout;
     GridLayout reportLayout;
+    HorizontalLayout titleBar;
     HashMap<String, MultiPlotTimeSeriesChart> charts;
 
     ComboBox reportSelect;
@@ -48,6 +49,8 @@ public class AnalysisPanel extends DashboardPanel {
 
     DateField startDatePicker;
     DateField endDatePicker;
+
+    Label stockTitle;
     /**
      * Layout Components *
      */
@@ -98,18 +101,27 @@ public class AnalysisPanel extends DashboardPanel {
         stockSelectBar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         stockSelectBar.setHeight("50px");
 
+        titleBar = new HorizontalLayout();
+        titleBar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        titleBar.setHeight("30px");
+        stockTitle = new Label();
+
+
         createDatePickers();
         createDateUpdateButton();
         createStockSelect();
 
-        stockSelectBar.addComponent(stockSelect);
         stockSelectBar.addComponent(reportSelect);
         stockSelectBar.addComponent(addReportButton);
         stockSelectBar.addComponent(startDatePicker);
         stockSelectBar.addComponent(endDatePicker);
         stockSelectBar.addComponent(dateUpdate);
 
+        titleBar.addComponent(stockTitle);
+        titleBar.addComponent(stockSelect);
+
         layout.addComponent(stockSelectBar);
+        layout.addComponent(titleBar);
         layout.addComponent(reportLayout);
 
         this.setContent(layout);
@@ -131,9 +143,16 @@ public class AnalysisPanel extends DashboardPanel {
                 @Override
                 public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
                     stockID =  stockSelect.getValue().toString();
+                    try {
+                        stockTitle.setValue(stockID + " - "+ new CompanyDataImpl().getCompanyName(stockID));
+                    } catch (DataAccessException e) {
+                        e.printStackTrace();
+                    }
+
                     for(String chart : charts.keySet()){
                         addReport(chart);
                     }
+
                     UI.getCurrent().access(new Runnable() {
                         @Override
                         public void run() {
@@ -142,6 +161,9 @@ public class AnalysisPanel extends DashboardPanel {
                     });
                 }
             });
+
+            stockTitle.setValue(stockID + " - "+ new CompanyDataImpl().getCompanyName(stockID));
+
 
         } catch (DataAccessException e) {
             e.printStackTrace();
@@ -292,6 +314,7 @@ public class AnalysisPanel extends DashboardPanel {
 
         stockSelect = new ComboBox();
         stockSelect.setImmediate(true);
+        stockSelect.setNullSelectionAllowed(false);
 
     }
 
