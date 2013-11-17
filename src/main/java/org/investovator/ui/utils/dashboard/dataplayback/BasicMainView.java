@@ -63,6 +63,9 @@ public abstract class BasicMainView extends DashboardPanel {
     //to store every component
     VerticalLayout content;
 
+    //account balance label
+    public Label accBalance;
+
     protected BasicMainView() {
         //set a link to this class
 //        mySelf = this;
@@ -122,6 +125,7 @@ public abstract class BasicMainView extends DashboardPanel {
 
             //bottom row conatainer
             HorizontalLayout bottowRow=new HorizontalLayout();
+            bottowRow.setWidth(100,Unit.PERCENTAGE);
             content.addComponent(bottowRow);
             content.setExpandRatio(bottowRow,1.0f);
 
@@ -140,6 +144,7 @@ public abstract class BasicMainView extends DashboardPanel {
 
             stockPriceTableContainer.setComponentAlignment(stockPriceTable,Alignment.MIDDLE_CENTER);
             bottowRow.addComponent(stockPriceTableContainer);
+//            bottowRow.setExpandRatio(stockPriceTableContainer,1.0f);
 
             //buy-sell window
             GridLayout buySellWindowContainer = new GridLayout(1,2);
@@ -155,6 +160,8 @@ public abstract class BasicMainView extends DashboardPanel {
 
             buySellWindowContainer.setComponentAlignment(buySellWindow,Alignment.MIDDLE_CENTER);
             bottowRow.addComponent(buySellWindowContainer);
+//            bottowRow.setExpandRatio(buySellWindowContainer,1.0f);
+
 
             //portfolio data
 //            VerticalLayout myPortfolioLayout=new VerticalLayout();
@@ -171,19 +178,25 @@ public abstract class BasicMainView extends DashboardPanel {
             portfolioContainer.setCaption("My Portfolio");
             portfolioContainer.addStyleName("center-caption");
             bottowRow.addComponent(portfolioContainer);
+//            bottowRow.setExpandRatio(portfolioContainer,1.0f);
+
 
             //portfolio table
             portfolioTable=setupPortfolioTable();
             portfolioContainer.addComponent(portfolioTable);
+//            portfolioContainer.setExpandRatio(portfolioTable,1.0f);
 
             //profit chart
-            HorizontalLayout profitContainer = new HorizontalLayout();
-            bottowRow.addComponent(profitContainer);
-            profitContainer.setCaption("Profit");
-            profitContainer.addStyleName("center-caption");
+//            HorizontalLayout profitContainer = new HorizontalLayout();
+//            bottowRow.addComponent(profitContainer);
+            Component accountInfo=setUpAccountInfoForm();
+            accountInfo.setCaption("Account Information");
+            accountInfo.addStyleName("center-caption");
 
-            profitChart=setupProfitChart();
-            profitContainer.addComponent(profitChart);
+//            profitChart=setupProfitChart();
+            bottowRow.addComponent(accountInfo);
+            bottowRow.setExpandRatio(accountInfo,1.3f);
+
 
 
             this.setContent(content);
@@ -240,8 +253,7 @@ public abstract class BasicMainView extends DashboardPanel {
         return table;
     }
 
-    //todo - make this abstract
-    public abstract Chart setupProfitChart();
+    abstract public Chart setupProfitChart();
 //    {
 //        Chart chart = new Chart();
 //        chart.setHeight(40,Unit.MM);
@@ -302,6 +314,8 @@ public abstract class BasicMainView extends DashboardPanel {
 //        chart.getConfiguration().getTitle().setText(null);
 //        return chart;
 //    }
+
+    abstract public Component setUpAccountInfoForm();
 
     private Component setupBuySellForm(){
         VerticalLayout formContent=new VerticalLayout();
