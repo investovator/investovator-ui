@@ -4,16 +4,14 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * @author Amila Surendra
  * @version $Revision
  */
 public class MultiPlotTimeSeriesChart extends Chart {
-    private static final int numberOfPoints = 10;
+    private static final int numberOfPoints = 100;
     private HashMap<String, DataSeries> series = new HashMap<>();
 
     public MultiPlotTimeSeriesChart(String reportName){
@@ -37,7 +35,7 @@ public class MultiPlotTimeSeriesChart extends Chart {
     }
 
 
-    public void addSeries(String seriesName, ArrayList<TimeSeriesNode> data){
+    public void addSeries(String seriesName, HashMap<Date, Double> data){
 
         if(series.containsKey(seriesName)) return;
 
@@ -46,9 +44,13 @@ public class MultiPlotTimeSeriesChart extends Chart {
         //Show last "numberOfPoints" number of data points
         int startIndex = data.size() <= numberOfPoints ? 0 : ( data.size() - 1) - numberOfPoints;
 
-        for(int count = startIndex; count<data.size(); count++){
-            dataSeries.add(new DataSeriesItem(data.get(count).getDate(), data.get(count).getValue()));
+        for(Map.Entry<Date, Double> entry : data.entrySet()){
+            dataSeries.add(new DataSeriesItem(entry.getKey(), entry.getValue()));
         }
+
+       /* for(int count = startIndex; count<data.size(); count++){
+            dataSeries.add(new DataSeriesItem(data.get(count).getDate(), data.get(count).getValue()));
+        }*/
 
         dataSeries.setName(seriesName);
         series.put(seriesName,dataSeries);
