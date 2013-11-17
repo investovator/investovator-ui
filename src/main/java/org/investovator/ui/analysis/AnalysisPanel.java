@@ -47,8 +47,6 @@ public class AnalysisPanel extends DashboardPanel {
 
         layout = new VerticalLayout();
         layout.setWidth("100%");
-        layout.setMargin(true);
-        layout.setSpacing(true);
 
         createReportLayout();
 
@@ -153,6 +151,13 @@ public class AnalysisPanel extends DashboardPanel {
         reportLayout.setSpacing(true);
         reportLayout.setMargin(true);
         reportLayout.setColumns(2);
+        reportLayout.setWidth("100%");
+
+        reportLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        reportLayout.setColumnExpandRatio(1,1);
+        reportLayout.setColumnExpandRatio(2,1);
+
+        reportLayout.setSpacing(true);
     }
 
     @Override

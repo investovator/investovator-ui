@@ -12,7 +12,6 @@ import java.util.*;
  * @version $Revision
  */
 public class MultiPlotTimeSeriesChart extends Chart {
-    private static final int numberOfPoints = 100;
     private HashMap<String, DataSeries> series = new HashMap<>();
 
     public MultiPlotTimeSeriesChart(String reportName){
@@ -22,8 +21,7 @@ public class MultiPlotTimeSeriesChart extends Chart {
 
     public MultiPlotTimeSeriesChart(){
         setHeight("300px");
-        setWidth("90%");
-        setCaption("Watchlist Summary");
+        setWidth("100%");
 
         final Configuration configuration = new Configuration();
         configuration.setTitle("Last Traded Price");
@@ -42,16 +40,10 @@ public class MultiPlotTimeSeriesChart extends Chart {
 
         final DataSeries dataSeries = new DataSeries();
 
-        //Show last "numberOfPoints" number of data points
-        int startIndex = data.size() <= numberOfPoints ? 0 : ( data.size() - 1) - numberOfPoints;
 
         for(Map.Entry<Date, Double> entry : data.entrySet()){
             dataSeries.add(new DataSeriesItem(entry.getKey(), entry.getValue()));
         }
-
-       /* for(int count = startIndex; count<data.size(); count++){
-            dataSeries.add(new DataSeriesItem(data.get(count).getDate(), data.get(count).getValue()));
-        }*/
 
         dataSeries.setName(seriesName);
         series.put(seriesName,dataSeries);
@@ -70,13 +62,8 @@ public class MultiPlotTimeSeriesChart extends Chart {
         getUI().access(new Runnable() {
             @Override
             public void run() {
-                if(series.get(stockID).size() < numberOfPoints){
-                    series.get(stockID).add(new DataSeriesItem(date, number));
-                    getUI().push();
-                }else{
-                    series.get(stockID).add(new DataSeriesItem(date, number),true,true);
-                    getUI().push();
-                }
+                 series.get(stockID).add(new DataSeriesItem(date, number),true,true);
+                 getUI().push();
             }
         });
     }
