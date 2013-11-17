@@ -10,12 +10,18 @@ import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSerie
 import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSeriesParams;
 import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSeriesResultSet;
 import org.investovator.analysis.technical.utils.IndicatorType;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
+import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
+import org.investovator.core.data.api.utils.StockTradingDataImpl;
+import org.investovator.core.data.cassandraexplorer.excelimporter.HistoryData;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.agentgaming.ReportHelper;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Calendar;
 
 /**
  * @author Amila Surendra
@@ -35,6 +41,10 @@ public class AnalysisPanel extends DashboardPanel {
 
     protected static final String OHLC_DATE_FORMAT = "MM/dd/yyyy";
     private String stockID = "SAMP";
+
+    Date startDate = null;
+    Date endDate = null;
+    Date dateRange[] = null;
 
 
     public AnalysisPanel() {
@@ -80,9 +90,25 @@ public class AnalysisPanel extends DashboardPanel {
         layout.addComponent(stockSelectBar);
         layout.addComponent(reportLayout);
 
-        addInitialCharts();
-
         this.setContent(layout);
+    }
+
+
+    private void setDefaults(){
+
+        try {
+            if(dateRange==null) dateRange = new CompanyStockTransactionsDataImpl().getDataDaysRange(CompanyStockTransactionsData.DataType.OHLC, stockID);
+            endDate =  dateRange[1];
+            Calendar tmp =  Calendar.getInstance();
+            tmp.setTime(endDate);
+            tmp.add(Calendar.MONTH, -1);
+            startDate =  tmp.getTime();
+
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void fillReportsCombo(){
@@ -103,14 +129,9 @@ public class AnalysisPanel extends DashboardPanel {
     private void addReport(String report){
 
         Calculator calculator = new CalculatorImpl();
-
-        String staringDate = "1/4/2010";
-        String endDate = "3/30/2010";
-        SimpleDateFormat format = new SimpleDateFormat(OHLC_DATE_FORMAT);
-
         TimeSeriesParams params = null;
         try {
-            params = new TimeSeriesParams(stockID, format.parse(staringDate), format.parse(endDate));
+            params = new TimeSeriesParams(stockID, startDate, endDate);
             params.setPeriod(5);
 
             TimeSeriesResultSet resultSet = (TimeSeriesResultSet) calculator.calculateValues(Enum.valueOf(IndicatorType.class,report), params);
@@ -133,8 +154,6 @@ public class AnalysisPanel extends DashboardPanel {
                 }) ;
             }
 
-        } catch (ParseException e) {
-            e.printStackTrace();
         } catch (AnalysisException e) {
             e.printStackTrace();
         } catch (InvalidParamException e) {
@@ -169,5 +188,18 @@ public class AnalysisPanel extends DashboardPanel {
     @Override
     public void onEnter() {
 
+        if(!loaded){
+            loaded=true;
+            firstLoad();
+        }
+
     }
+
+
+    public void firstLoad(){
+        setDefaults();
+        addInitialCharts();
+    }
+
+    boolean loaded = false;
 }
