@@ -394,10 +394,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //            System.out.println("new - "+ event.getTime());
 
             //todo -shows false values, does not use the latest data for calculations
-            if(lastUpdateTime!=null && lastUpdateTime.before(event.getTime())){
-                updateProfitChart(event);
-//                System.out.println("Update called");
-            }
+//            if(lastUpdateTime!=null && lastUpdateTime.before(event.getTime())){
+//                updateProfitChart(event);
+////                System.out.println("Update called");
+//            }
 
             //push the changes
             UI.getCurrent().access(new Runnable() {
@@ -574,7 +574,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public Chart setupProfitChart() {
             Chart chart = new Chart();
             chart.setHeight(40,Unit.MM);
-            chart.setWidth(10,Unit.PERCENTAGE);
+            chart.setWidth(100,Unit.MM);
 
 //        chart.setSizeFull();
 
@@ -630,6 +630,31 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
             chart.getConfiguration().getTitle().setText(null);
             return chart;
+
+    }
+
+    public Component setUpAccountInfoForm(){
+        FormLayout form=new FormLayout();
+
+        try {
+            Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
+            Label accountBalance=new Label(bal.toString());
+            accountBalance.setCaption("Account Balance");
+            form.addComponent(accountBalance);
+
+            int max=this.player.getMaxOrderSize();
+            Label maxOrderSize=new Label(Integer.toString(max));
+            maxOrderSize.setCaption("Max. Order Size");
+            form.addComponent(maxOrderSize);
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+
+        return form;
+    }
+
+    public void updateAccountBalance(){
 
     }
 }

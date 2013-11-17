@@ -624,4 +624,25 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
     }
 
+    public Component setUpAccountInfoForm(){
+        FormLayout form=new FormLayout();
+
+        try {
+            Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
+            Label accountBalance=new Label(bal.toString());
+            accountBalance.setCaption("Account Balance");
+            form.addComponent(accountBalance);
+
+            int max=this.player.getMaxOrderSize();
+            Label maxOrderSize=new Label(Integer.toString(max));
+            maxOrderSize.setCaption("Max. Order Size");
+            form.addComponent(maxOrderSize);
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+
+        return form;
+    }
+
 }
