@@ -38,7 +38,7 @@ public class AnalysisPanel extends DashboardPanel {
      */
     VerticalLayout layout;
     GridLayout reportLayout;
-    HorizontalLayout titleBar;
+    HorizontalLayout configBar;
     HashMap<String, MultiPlotTimeSeriesChart> charts;
 
     ComboBox reportSelect;
@@ -50,7 +50,6 @@ public class AnalysisPanel extends DashboardPanel {
     DateField startDatePicker;
     DateField endDatePicker;
 
-    Label stockTitle;
     /**
      * Layout Components *
      */
@@ -97,31 +96,33 @@ public class AnalysisPanel extends DashboardPanel {
         });
 
 
-        HorizontalLayout stockSelectBar = new HorizontalLayout();
-        stockSelectBar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        stockSelectBar.setHeight("50px");
+        configBar = new HorizontalLayout();
+        configBar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        configBar.setHeight("50px");
+        configBar.setWidth("95%");
 
-        titleBar = new HorizontalLayout();
-        titleBar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        titleBar.setHeight("30px");
-        stockTitle = new Label();
-
+        configBar.setStyleName("center-caption");
 
         createDatePickers();
         createDateUpdateButton();
         createStockSelect();
 
-        stockSelectBar.addComponent(reportSelect);
-        stockSelectBar.addComponent(addReportButton);
-        stockSelectBar.addComponent(startDatePicker);
-        stockSelectBar.addComponent(endDatePicker);
-        stockSelectBar.addComponent(dateUpdate);
+        configBar.addComponent(stockSelect);
+        configBar.addComponent(reportSelect);
+        configBar.addComponent(addReportButton);
+        configBar.addComponent(startDatePicker);
+        configBar.addComponent(endDatePicker);
+        configBar.addComponent(dateUpdate);
 
-        titleBar.addComponent(stockTitle);
-        titleBar.addComponent(stockSelect);
+        configBar.setExpandRatio(stockSelect,4);
+        configBar.setExpandRatio(reportSelect,2);
+        configBar.setExpandRatio(addReportButton,2);
+        configBar.setExpandRatio(startDatePicker,2);
+        configBar.setExpandRatio(endDatePicker,2);
+        configBar.setExpandRatio(dateUpdate,2);
 
-        layout.addComponent(stockSelectBar);
-        layout.addComponent(titleBar);
+
+        layout.addComponent(configBar);
         layout.addComponent(reportLayout);
 
         this.setContent(layout);
@@ -144,7 +145,7 @@ public class AnalysisPanel extends DashboardPanel {
                 public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
                     stockID =  stockSelect.getValue().toString();
                     try {
-                        stockTitle.setValue(stockID + " - "+ new CompanyDataImpl().getCompanyName(stockID));
+                        configBar.setCaption(stockID + " - "+ new CompanyDataImpl().getCompanyName(stockID));
                     } catch (DataAccessException e) {
                         e.printStackTrace();
                     }
@@ -162,7 +163,7 @@ public class AnalysisPanel extends DashboardPanel {
                 }
             });
 
-            stockTitle.setValue(stockID + " - "+ new CompanyDataImpl().getCompanyName(stockID));
+            configBar.setCaption(stockID + " - "+ new CompanyDataImpl().getCompanyName(stockID));
 
 
         } catch (DataAccessException e) {
