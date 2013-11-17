@@ -47,6 +47,8 @@ import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
+import java.util.Date;
+
 /**
  * @author: ishan
  * @version: ${Revision}
@@ -59,6 +61,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     private String userName;
 
     private RealTimeDataPlayer player;
+
+    //used to keep track of the date of the last update
+    public Date lastUpdateTime;
 
 
 
@@ -125,9 +130,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
                 portfolioTable.getContainerDataSource();
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
+//        UI.getCurrent().access(new Runnable() {
+//            @Override
+//            public void run() {
                 //if the stock is already bought
                 if(beans.containsId(stockID)){
                     beans.removeItem(stockID);
@@ -139,8 +144,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
-            }
-        });
+//            }
+//        });
 
     }
 
@@ -249,12 +254,12 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                             stockPriceTable.getContainerDataSource();
                     value=beans.getItem(event.getStockId()).getBean().getPrice();
-                    System.out.println("missing - "+event.getTime()+" - "+value);
+//                    System.out.println("missing - "+event.getTime()+" - "+value);
                 }
 
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
+//                UI.getCurrent().access(new Runnable() {
+//                    @Override
+//                    public void run() {
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
@@ -264,8 +269,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                         }
 
-                    }
-                });
+//                    }
+//                });
 
 
             }
@@ -291,14 +296,14 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //            }
 //        }
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
+//        UI.getCurrent().access(new Runnable() {
+//            @Override
+//            public void run() {
                 beans.removeItem(event.getStockId());
                 beans.addBean(new StockNamePriceBean(event.getStockId(),
                         event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch())));
-            }
-        });
+//            }
+//        });
     }
 
     public void updatePieChart(final StockUpdateEvent event)
@@ -337,23 +342,24 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //            }
 //        }
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
+//        UI.getCurrent().access(new Runnable() {
+//            @Override
+//            public void run() {
                 dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
                 //UI.getCurrent().push();
                 //System.out.println("pushed");
                 getUI().push();
-            }
-        });
+//            }
+//        });
     }
 
 
     @Override
     public void eventOccurred(PlaybackEvent arg) {
-//        System.out.println("Event");
+
+
         //if this is a stock price update
         if (arg instanceof StockUpdateEvent) {
             final StockUpdateEvent event = (StockUpdateEvent) arg;
@@ -370,8 +376,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 //update the table
                 updateStockPriceTable(event);
 
-                //update profit chart
-                updateProfitChart(event);
+
 
                 //update the pie-chart
 //                try {
@@ -384,6 +389,16 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
             }
 
+            //update profit chart only when jumping to a new time
+//            System.out.println("last - "+lastUpdateTime);
+//            System.out.println("new - "+ event.getTime());
+
+            //todo -shows false values, does not use the latest data for calculations
+            if(lastUpdateTime!=null && lastUpdateTime.before(event.getTime())){
+                updateProfitChart(event);
+//                System.out.println("Update called");
+            }
+
             //push the changes
             UI.getCurrent().access(new Runnable() {
                 @Override
@@ -391,6 +406,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     getUI().push();
                 }
             });
+
+            //save the updates event
+            if(lastUpdateTime==null || lastUpdateTime.before(event.getTime())){
+                lastUpdateTime=event.getTime();
+            }
 
         }
         //if the game has stopped
@@ -427,9 +447,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //                    }
 //                }
 
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
+//                UI.getCurrent().access(new Runnable() {
+//                    @Override
+//                    public void run() {
 
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
@@ -441,8 +461,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                                         event.getData().get(TradingDataAttribute.SHARES)));
 
                             }
-                    }
-                });
+//                    }
+//                });
 
 
             }
@@ -539,7 +559,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 //since there is only one series
                 DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
                 float floatProfit=(float)profit;
-                ds.add(new DataSeriesItem(event.getTime(),floatProfit));
+                ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
 
 
             } catch (PlayerStateException e) {
@@ -547,6 +567,69 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             } catch (UserJoinException e) {
                 e.printStackTrace();
             }
+
+    }
+
+    @Override
+    public Chart setupProfitChart() {
+            Chart chart = new Chart();
+            chart.setHeight(40,Unit.MM);
+            chart.setWidth(10,Unit.PERCENTAGE);
+
+//        chart.setSizeFull();
+
+            Tooltip tooltip = new Tooltip();
+            tooltip.setShared(true);
+            tooltip.setUseHTML(true);
+            tooltip.setHeaderFormat("{point.key}");
+            tooltip.setPointFormat("");
+            tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
+
+            Configuration configuration = new Configuration();
+            configuration.setTooltip(tooltip);
+            configuration.getChart().setType(ChartType.LINE);
+            configuration.getLegend().setEnabled(false);
+            configuration.getyAxis().setTitle("");
+
+            PlotOptionsLine plotOptions = new PlotOptionsLine();
+//        plotOptions.setDataLabels(new Labels(true));
+            plotOptions.setEnableMouseTracking(false);
+            //performance related
+            plotOptions.setShadow(false);
+
+            configuration.setPlotOptions(plotOptions);
+
+            configuration.getxAxis().setType(AxisType.DATETIME);
+            configuration.getxAxis().setDateTimeLabelFormats(
+                    new DateTimeLabelFormats("%e. %b", "%b"));
+
+
+//        configuration.getyAxis().getTitle().setText(null);
+
+//        if (DataPlaybackEngineStates.playingSymbols != null) {
+//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+            DataSeries ls = new DataSeries();
+//                ls.setName(stock);
+
+            //add dummy points to fill it up
+            for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+                ls.add(new DataSeriesItem
+                        (DateUtils.decrementTimeBySeconds((PROFIT_CHART_LENGTH - counter),
+                                DataPlaybackEngineStates.gameStartDate),0));
+            }
+
+            configuration.addSeries(ls);
+
+//            }
+//        }
+
+            chart.setImmediate(true);
+            chart.drawChart(configuration);
+            //disable trademark
+            chart.getConfiguration().disableCredits();
+
+            chart.getConfiguration().getTitle().setText(null);
+            return chart;
 
     }
 }

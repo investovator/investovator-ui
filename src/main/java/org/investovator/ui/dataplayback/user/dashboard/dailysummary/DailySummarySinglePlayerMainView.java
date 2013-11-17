@@ -36,6 +36,7 @@ import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
@@ -161,7 +162,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                         updatePortfolioTable(stocksList.getValue().toString());
 
                         //update the pie chart
-                        updatePieChart(stocksList.getValue().toString());
+//                        updatePieChart(stocksList.getValue().toString());
+
+                        //update the profit chart
+//                        updateProfitChart(player.getToday());
                     }
                     else{
 
@@ -266,17 +270,20 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                         }
 
                         //update the pie chart
-                        updatePieChart(event.getStockId());
+//                        updatePieChart(event.getStockId());
 
                         //update the quantity chart
                         updateQuantityChart(event);
 
+
+
                     }
+
+                    //update the profit chart
+                    updateProfitChart(player.getToday());
 
 
                 } catch (GameFinishedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (UserJoinException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 
@@ -495,4 +502,113 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
         });
 
     }
+
+    @Override
+    public Chart setupProfitChart() {
+        Chart chart = new Chart();
+        chart.setHeight(40,Unit.MM);
+        chart.setWidth(10,Unit.PERCENTAGE);
+
+//        chart.setSizeFull();
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShared(true);
+        tooltip.setUseHTML(true);
+        tooltip.setHeaderFormat("{point.key}");
+        tooltip.setPointFormat("");
+        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
+
+        Configuration configuration = new Configuration();
+        configuration.setTooltip(tooltip);
+        configuration.getChart().setType(ChartType.LINE);
+        configuration.getLegend().setEnabled(false);
+        configuration.getyAxis().setTitle("");
+
+        PlotOptionsLine plotOptions = new PlotOptionsLine();
+//        plotOptions.setDataLabels(new Labels(true));
+        plotOptions.setEnableMouseTracking(false);
+        //performance related
+        plotOptions.setShadow(false);
+
+        configuration.setPlotOptions(plotOptions);
+
+        configuration.getxAxis().setType(AxisType.DATETIME);
+        configuration.getxAxis().setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+
+
+//        configuration.getyAxis().getTitle().setText(null);
+
+//        if (DataPlaybackEngineStates.playingSymbols != null) {
+//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+        DataSeries ls = new DataSeries();
+//                ls.setName(stock);
+
+        //add dummy points to fill it up
+        for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+            ls.add(new DataSeriesItem
+                    (DateUtils.decrementTimeByDays((PROFIT_CHART_LENGTH - counter),
+                            DataPlaybackEngineStates.gameStartDate),0));
+        }
+
+        configuration.addSeries(ls);
+
+//            }
+//        }
+
+        chart.setImmediate(true);
+        chart.drawChart(configuration);
+        //disable trademark
+        chart.getConfiguration().disableCredits();
+
+        chart.getConfiguration().getTitle().setText(null);
+        return chart;
+
+    }
+
+    public void updateProfitChart(Date today){
+        Portfolio portfolio=null;
+
+
+        try {
+            //if this is a game based on the real time data player
+            if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMyPortfolio(this.userName);
+            }
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
+                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMyPortfolio(this.userName);
+            }
+
+            //get the current prices of all the stocks
+            BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                    stockPriceTable.getContainerDataSource();
+
+            double profit=0;
+            for(String stock:portfolio.getShares().keySet()){
+                //cost for a stock
+                double cost = portfolio.getShares().get(stock).get(Terms.PRICE);
+                //current price of a stock
+                float currentPrice=beans.getItem(stock).getBean().getPrice();
+                //total number of stocks bought
+                double numOfStocks= portfolio.getShares().get(stock).get(Terms.QNTY);
+
+                profit=profit+((currentPrice-cost)*numOfStocks);
+            }
+
+            //since there is only one series
+            DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
+            float floatProfit=(float)profit;
+            ds.add(new DataSeriesItem(today,floatProfit),true,true);
+
+
+        } catch (PlayerStateException e) {
+            e.printStackTrace();
+        } catch (UserJoinException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

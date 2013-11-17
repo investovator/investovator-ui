@@ -49,7 +49,7 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 public abstract class BasicMainView extends DashboardPanel {
 
     //length of the profit chart
-    private static int PROFIT_CHART_LENGTH=5;
+    public static int PROFIT_CHART_LENGTH=5;
 
     //charts to be shown
     protected Chart mainChart;
@@ -241,66 +241,67 @@ public abstract class BasicMainView extends DashboardPanel {
     }
 
     //todo - make this abstract
-    public Chart setupProfitChart(){
-        Chart chart = new Chart();
-        chart.setHeight(40,Unit.MM);
-        chart.setWidth(90,Unit.MM);
-
-//        chart.setSizeFull();
-
-        Tooltip tooltip = new Tooltip();
-        tooltip.setShared(true);
-        tooltip.setUseHTML(true);
-        tooltip.setHeaderFormat("{point.key}");
-        tooltip.setPointFormat("");
-        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
-
-        Configuration configuration = new Configuration();
-        configuration.setTooltip(tooltip);
-        configuration.getChart().setType(ChartType.LINE);
-        configuration.getLegend().setEnabled(false);
-        configuration.getyAxis().setTitle("");
-
-        PlotOptionsLine plotOptions = new PlotOptionsLine();
-        plotOptions.setDataLabels(new Labels(true));
-        plotOptions.setEnableMouseTracking(false);
-        //performance related
-        plotOptions.setShadow(false);
-
-        configuration.setPlotOptions(plotOptions);
-
-        configuration.getxAxis().setType(AxisType.DATETIME);
-        configuration.getxAxis().setDateTimeLabelFormats(
-                new DateTimeLabelFormats("%e. %b", "%b"));
-
-
-//        configuration.getyAxis().getTitle().setText(null);
-
-//        if (DataPlaybackEngineStates.playingSymbols != null) {
-//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
-                DataSeries ls = new DataSeries();
-//                ls.setName(stock);
-
-                //add dummy points to fill it up
-                for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
-                    ls.add(new DataSeriesItem
-                            (DateUtils.decrementTimeBySeconds((PROFIT_CHART_LENGTH - counter),
-                                    DataPlaybackEngineStates.gameStartDate),0));
-                }
-
-                configuration.addSeries(ls);
-
-//            }
-//        }
-
-        chart.setImmediate(true);
-        chart.drawChart(configuration);
-        //disable trademark
-        chart.getConfiguration().disableCredits();
-
-        chart.getConfiguration().getTitle().setText(null);
-        return chart;
-    }
+    public abstract Chart setupProfitChart();
+//    {
+//        Chart chart = new Chart();
+//        chart.setHeight(40,Unit.MM);
+//        chart.setWidth(10,Unit.PERCENTAGE);
+//
+////        chart.setSizeFull();
+//
+//        Tooltip tooltip = new Tooltip();
+//        tooltip.setShared(true);
+//        tooltip.setUseHTML(true);
+//        tooltip.setHeaderFormat("{point.key}");
+//        tooltip.setPointFormat("");
+//        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
+//
+//        Configuration configuration = new Configuration();
+//        configuration.setTooltip(tooltip);
+//        configuration.getChart().setType(ChartType.LINE);
+//        configuration.getLegend().setEnabled(false);
+//        configuration.getyAxis().setTitle("");
+//
+//        PlotOptionsLine plotOptions = new PlotOptionsLine();
+////        plotOptions.setDataLabels(new Labels(true));
+//        plotOptions.setEnableMouseTracking(false);
+//        //performance related
+//        plotOptions.setShadow(false);
+//
+//        configuration.setPlotOptions(plotOptions);
+//
+//        configuration.getxAxis().setType(AxisType.DATETIME);
+//        configuration.getxAxis().setDateTimeLabelFormats(
+//                new DateTimeLabelFormats("%e. %b", "%b"));
+//
+//
+////        configuration.getyAxis().getTitle().setText(null);
+//
+////        if (DataPlaybackEngineStates.playingSymbols != null) {
+////            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+//                DataSeries ls = new DataSeries();
+////                ls.setName(stock);
+//
+//                //add dummy points to fill it up
+//                for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+//                    ls.add(new DataSeriesItem
+//                            (DateUtils.decrementTimeBySeconds((PROFIT_CHART_LENGTH - counter),
+//                                    DataPlaybackEngineStates.gameStartDate),0));
+//                }
+//
+//                configuration.addSeries(ls);
+//
+////            }
+////        }
+//
+//        chart.setImmediate(true);
+//        chart.drawChart(configuration);
+//        //disable trademark
+//        chart.getConfiguration().disableCredits();
+//
+//        chart.getConfiguration().getTitle().setText(null);
+//        return chart;
+//    }
 
     private Component setupBuySellForm(){
         VerticalLayout formContent=new VerticalLayout();
