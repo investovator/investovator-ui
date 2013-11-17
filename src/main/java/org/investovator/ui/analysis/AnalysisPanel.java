@@ -12,6 +12,7 @@ import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSerie
 import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSeriesParams;
 import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSeriesResultSet;
 import org.investovator.analysis.technical.utils.IndicatorType;
+import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
 import org.investovator.core.data.api.utils.StockTradingDataImpl;
@@ -40,6 +41,7 @@ public class AnalysisPanel extends DashboardPanel {
     HashMap<String, MultiPlotTimeSeriesChart> charts;
 
     ComboBox reportSelect;
+    ComboBox stockSelect;
 
     Button addReportButton;
     Button dateUpdate;
@@ -98,7 +100,9 @@ public class AnalysisPanel extends DashboardPanel {
 
         createDatePickers();
         createDateUpdateButton();
+        createStockSelect();
 
+        stockSelectBar.addComponent(stockSelect);
         stockSelectBar.addComponent(reportSelect);
         stockSelectBar.addComponent(addReportButton);
         stockSelectBar.addComponent(startDatePicker);
@@ -113,6 +117,35 @@ public class AnalysisPanel extends DashboardPanel {
 
 
     private void setDefaults() {
+
+        try {
+            ArrayList<String> stocks = new CompanyDataImpl().getAvailableStockIds();
+
+            for(String stock : stocks){
+                stockSelect.addItem(stock);
+            }
+            stockSelect.select(stocks.get(0));
+            stockID = stocks.get(0);
+
+            stockSelect.addValueChangeListener(new Property.ValueChangeListener() {
+                @Override
+                public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                    stockID =  stockSelect.getValue().toString();
+                    for(String chart : charts.keySet()){
+                        addReport(chart);
+                    }
+                    UI.getCurrent().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            UI.getCurrent().push();
+                        }
+                    });
+                }
+            });
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
         try {
             if (dateRange == null)
@@ -169,7 +202,7 @@ public class AnalysisPanel extends DashboardPanel {
                 @Override
                 public void run() {
                     if (charts.containsKey(report)) {
-                        reportLayout.replaceComponent(charts.get(report),newChart);
+                        reportLayout.replaceComponent(charts.get(report), newChart);
                     }else{
                         reportLayout.addComponent(newChart);
                     }
@@ -253,6 +286,13 @@ public class AnalysisPanel extends DashboardPanel {
                 }
             }
         });
+    }
+
+    private void createStockSelect(){
+
+        stockSelect = new ComboBox();
+        stockSelect.setImmediate(true);
+
     }
 
     @Override
