@@ -69,9 +69,9 @@ public class AnalysisPanel extends DashboardPanel {
             }
         });
 
-        //charts.put( "market price", new MultiPlotTimeSeriesChart("market price"));
 
         HorizontalLayout stockSelectBar = new HorizontalLayout();
+        stockSelectBar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         stockSelectBar.setHeight("50px");
 
         stockSelectBar.addComponent(reportSelect);
@@ -80,10 +80,7 @@ public class AnalysisPanel extends DashboardPanel {
         layout.addComponent(stockSelectBar);
         layout.addComponent(reportLayout);
 
-        for(MultiPlotTimeSeriesChart chart : charts.values()){
-            reportLayout.addComponent(chart);
-            reportLayout.setComponentAlignment(chart, Alignment.TOP_CENTER);
-        }
+        addInitialCharts();
 
         this.setContent(layout);
     }
@@ -99,6 +96,10 @@ public class AnalysisPanel extends DashboardPanel {
 
     }
 
+    /**
+     * Adds a report of the given type to the panel
+     * @param report name of the report. value of IndicatorType Enum.
+     */
     private void addReport(String report){
 
         Calculator calculator = new CalculatorImpl();
@@ -141,6 +142,14 @@ public class AnalysisPanel extends DashboardPanel {
         }
 
 
+    }
+
+    private void addInitialCharts(){
+
+        addReport(IndicatorType.EMA.name());
+        addReport(IndicatorType.SMA.name());
+        addReport(IndicatorType.TRIMA.name());
+        addReport(IndicatorType.RSI.name());
     }
 
     private void createReportLayout(){
