@@ -241,7 +241,7 @@ public abstract class BasicMainView extends DashboardPanel {
     }
 
     //todo - make this abstract
-    public abstract Chart setupProfitChart();
+    abstract public Chart setupProfitChart();
 //    {
 //        Chart chart = new Chart();
 //        chart.setHeight(40,Unit.MM);
