@@ -63,9 +63,9 @@ public class SystemPropertiesHelper implements
         System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
         System.out.println("SQL Path : " + realPath);
 
-        //UnComment these once
-        clearOldData();
-        addTestConfig();
+//        //UnComment these once
+//        clearOldData();
+//        addTestConfig();
 
     }
 
