@@ -3,7 +3,6 @@ package org.investovator.ui.analysis;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.ui.UI;
-import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 
 import java.util.*;
 
@@ -34,11 +33,11 @@ public class MultiPlotTimeSeriesChart extends Chart {
     }
 
 
-    public void addSeries(String seriesName, HashMap<Date, Double> data){
+    public void addSeries(final String seriesName, final HashMap<Date, Double> data){
 
         if(series.containsKey(seriesName)) return;
 
-        final DataSeries dataSeries = new DataSeries();
+            final DataSeries dataSeries = new DataSeries();
 
 
         for(Map.Entry<Date, Double> entry : data.entrySet()){
@@ -46,23 +45,24 @@ public class MultiPlotTimeSeriesChart extends Chart {
         }
 
         dataSeries.setName(seriesName);
+
+        getConfiguration().addSeries(dataSeries);
         series.put(seriesName,dataSeries);
 
         UI.getCurrent().access(new Runnable() {
             @Override
             public void run() {
-                getConfiguration().addSeries(dataSeries);
                 getUI().push();
             }
         });
 
     }
 
-    public void insertDataPoint(final String stockID, final Date date, final Number number){
+    public void insertDataPoint(final String seriesName, final Date date, final Number number){
         getUI().access(new Runnable() {
             @Override
             public void run() {
-                 series.get(stockID).add(new DataSeriesItem(date, number),true,true);
+                 series.get(seriesName).add(new DataSeriesItem(date, number),true,true);
                  getUI().push();
             }
         });
