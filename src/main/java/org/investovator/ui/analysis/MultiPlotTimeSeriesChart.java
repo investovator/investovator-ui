@@ -16,6 +16,11 @@ public class MultiPlotTimeSeriesChart extends Chart {
     private static final int numberOfPoints = 10;
     private HashMap<String, DataSeries> series = new HashMap<>();
 
+    public MultiPlotTimeSeriesChart(String reportName){
+        this();
+        this.getConfiguration().setTitle(reportName);
+    }
+
     public MultiPlotTimeSeriesChart(){
         setHeight("300px");
         setWidth("90%");
