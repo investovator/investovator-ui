@@ -2,8 +2,19 @@ package org.investovator.ui.analysis;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import org.investovator.analysis.exceptions.AnalysisException;
+import org.investovator.analysis.exceptions.InvalidParamException;
+import org.investovator.analysis.technical.Calculator;
+import org.investovator.analysis.technical.CalculatorImpl;
+import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSeriesGraph;
+import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSeriesParams;
+import org.investovator.analysis.technical.indicators.timeseries.utils.TimeSeriesResultSet;
+import org.investovator.analysis.technical.utils.IndicatorType;
+import org.investovator.ui.agentgaming.ReportHelper;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -15,6 +26,7 @@ public class AnalysisPanel extends DashboardPanel {
 
 
     VerticalLayout layout;
+    GridLayout reportLayout;
     HashMap<String,MultiPlotTimeSeriesChart> charts;
 
     ComboBox reportSelect;
@@ -23,6 +35,10 @@ public class AnalysisPanel extends DashboardPanel {
     private String selectedStock;
     private String selectedReport;
     ArrayList<String> addedStocks;
+
+    protected static final String OHLC_DATE_FORMAT = "MM/dd/yyyy";
+    private String stockID = "SAMP";
+
 
     public AnalysisPanel() {
 
@@ -35,10 +51,12 @@ public class AnalysisPanel extends DashboardPanel {
         layout.setMargin(true);
         layout.setSpacing(true);
 
+        createReportLayout();
 
         //Report Select
         reportSelect = new ComboBox();
         reportSelect.setNullSelectionAllowed(false);
+        fillReportsCombo();
 
 
         reportSelect.addValueChangeListener(new Property.ValueChangeListener() {
@@ -49,12 +67,11 @@ public class AnalysisPanel extends DashboardPanel {
             }
         });
 
-        addReportButton = new Button("Add Report");
+        addReportButton = new Button("Add Analysis Report");
         addReportButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-
-
+                addReport(selectedReport);
             }
         });
 
@@ -67,14 +84,75 @@ public class AnalysisPanel extends DashboardPanel {
         stockSelectBar.addComponent(addReportButton);
 
         layout.addComponent(stockSelectBar);
+        layout.addComponent(reportLayout);
 
         for(MultiPlotTimeSeriesChart chart : charts.values()){
-            layout.addComponent(chart);
-            layout.setComponentAlignment(chart, Alignment.TOP_CENTER);
+            reportLayout.addComponent(chart);
+            reportLayout.setComponentAlignment(chart, Alignment.TOP_CENTER);
         }
 
         this.setContent(layout);
     }
+
+    private void fillReportsCombo(){
+
+        for(IndicatorType type : AnalysisHelper.getReportTypes()){
+            reportSelect.addItem(type);
+        }
+
+        reportSelect.select(AnalysisHelper.getReportTypes()[0]);
+        selectedReport=(AnalysisHelper.getReportTypes()[0].toString());
+
+    }
+
+    private void addReport(String report){
+
+        Calculator calculator = new CalculatorImpl();
+
+        String staringDate = "1/4/2010";
+        String endDate = "3/30/2010";
+        SimpleDateFormat format = new SimpleDateFormat(OHLC_DATE_FORMAT);
+
+        TimeSeriesParams params = null;
+        try {
+            params = new TimeSeriesParams(stockID, format.parse(staringDate), format.parse(endDate));
+            params.setPeriod(5);
+
+            TimeSeriesResultSet resultSet = (TimeSeriesResultSet) calculator.calculateValues(IndicatorType.EMA, params);
+
+            final MultiPlotTimeSeriesChart newChart = new MultiPlotTimeSeriesChart(report);
+            newChart.addSeries("Close", resultSet.getGraph(TimeSeriesGraph.EMA));
+
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    reportLayout.addComponent(newChart);
+                }
+            }) ;
+
+            UI.getCurrent().push();
+
+
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (AnalysisException e) {
+            e.printStackTrace();
+        } catch (InvalidParamException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void createReportLayout(){
+        reportLayout = new GridLayout();
+        reportLayout.setSpacing(true);
+        reportLayout.setMargin(true);
+        reportLayout.setColumns(2);
+    }
+
     @Override
     public void onEnter() {
 
