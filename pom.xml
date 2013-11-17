@@ -77,6 +77,11 @@
             <artifactId>investovator-core</artifactId>
             <version>0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.investovator</groupId>
+            <artifactId>investovator-analysis</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!--end of investovator related-->
 
         <dependency>
