@@ -52,7 +52,7 @@ public class MultiPlotTimeSeriesChart extends Chart {
             @Override
             public void run() {
                 getConfiguration().addSeries(dataSeries);
-                UI.getCurrent().push();
+                getUI().push();
             }
         });
 

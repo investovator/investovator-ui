@@ -31,9 +31,7 @@ public class AnalysisPanel extends DashboardPanel {
     ComboBox reportSelect;
     Button addReportButton;
 
-    private String selectedStock;
     private String selectedReport;
-    ArrayList<String> addedStocks;
 
     protected static final String OHLC_DATE_FORMAT = "MM/dd/yyyy";
     private String stockID = "SAMP";
@@ -42,7 +40,6 @@ public class AnalysisPanel extends DashboardPanel {
     public AnalysisPanel() {
 
         setHeight("100%");
-        addedStocks = new ArrayList<>();
         charts = new HashMap<>();
 
         layout = new VerticalLayout();
@@ -119,21 +116,21 @@ public class AnalysisPanel extends DashboardPanel {
 
             final MultiPlotTimeSeriesChart newChart = new MultiPlotTimeSeriesChart(report);
 
-            for(Map.Entry<TimeSeriesGraph, LinkedHashMap<Date, Double>> graph : resultSet.getGraphs().entrySet() )  {
-                newChart.addSeries(graph.getKey().name(), graph.getValue());
-            }
+            if(!charts.containsKey(report)){
 
-            UI.getCurrent().access(new Runnable() {
-                @Override
-                public void run() {
-                    reportLayout.addComponent(newChart);
+                charts.put(report,newChart );
+
+                for(Map.Entry<TimeSeriesGraph, LinkedHashMap<Date, Double>> graph : resultSet.getGraphs().entrySet() )  {
+                    newChart.addSeries(graph.getKey().name(), graph.getValue());
                 }
-            }) ;
 
-            UI.getCurrent().push();
-
-
-
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
+                        reportLayout.addComponent(newChart);
+                    }
+                }) ;
+            }
 
         } catch (ParseException e) {
             e.printStackTrace();
