@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 public class AgentConfigDashboard extends BasicDashboard {
 
     MainGamingView configView;
+    DataImportPanel dataImportView;
 
     public AgentConfigDashboard() {
         super("<span><center>Investovator</center></span>Configuration");
@@ -22,7 +23,9 @@ public class AgentConfigDashboard extends BasicDashboard {
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
         LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
         configView = new MainGamingView();
+        dataImportView = new DataImportPanel();
         menuList.put("game summary", configView);
+        menuList.put("data import", dataImportView);
         return menuList;
     }
 
