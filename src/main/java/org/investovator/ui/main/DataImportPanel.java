@@ -18,11 +18,21 @@
 
 package org.investovator.ui.main;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.core.data.api.CompanyData;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.CompanyStockTransactionsData;
+import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.main.components.CompanyTable;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * @author Amila Surendra
@@ -32,8 +42,13 @@ public class DataImportPanel extends DashboardPanel{
 
     //Layout Components
     VerticalLayout content;
-    HorizontalLayout ohclData;
+    HorizontalLayout dataTableLayout;
+    VerticalLayout ohclTable;
+    VerticalLayout tickerTable;
     CompanyTable ohclCompaniesTable;
+    CompanyTable tickerCompaniesTable;
+
+    Label pageTitle;
 
     public  DataImportPanel(){
         createLayout();
@@ -43,26 +58,63 @@ public class DataImportPanel extends DashboardPanel{
 
         content = new VerticalLayout();
 
-        //OHCL Data
-        ohclData = new HorizontalLayout();
-        ohclData.setCaption("Summary Data");
-        ohclData.setStyleName("center-caption");
+        pageTitle = new Label("Available Transaction Data");
+        pageTitle.setSizeUndefined();
+        pageTitle.setStyleName("h2");
 
+        ohclTable = new VerticalLayout();
+        ohclTable.setCaption("Summary Data");
+        ohclTable.addStyleName("center-caption");
+
+        tickerTable = new VerticalLayout();
+
+        dataTableLayout = new HorizontalLayout();
 
         ohclCompaniesTable = new CompanyTable();
-        ohclData.addComponent(ohclCompaniesTable);
+        tickerCompaniesTable = new CompanyTable();
 
+        ohclTable.addComponent(ohclCompaniesTable);
 
-        content.addComponent(ohclData);
+        dataTableLayout.addComponent(ohclTable);
+        dataTableLayout.addComponent(tickerTable);
+
+        content.addComponent(pageTitle);
+        content.addComponent(dataTableLayout);
+        content.setComponentAlignment(pageTitle, Alignment.MIDDLE_CENTER);
+
         this.setContent(content);
 
 
     }
 
-
-
     @Override
     public void onEnter() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        setDefaults();
+    }
+
+    private void setDefaults(){
+
+        try {
+
+            CompanyData companyData = new CompanyDataImpl();
+
+            ArrayList<String> stockIds = companyData.getAvailableStockIds();
+            HashMap<String, String> companyNames =  companyData.getCompanyIDsNames();
+
+            CompanyStockTransactionsData transactionData = new CompanyStockTransactionsDataImpl();
+
+            for(String stock: stockIds){
+
+                Date[] dateRange = transactionData.getDataDaysRange(CompanyStockTransactionsData.DataType.OHLC,stock);
+                ohclCompaniesTable.addCompany(stock, companyNames.get(stock), dateRange[0], dateRange[1]);
+
+            }
+
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
