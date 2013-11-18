@@ -28,19 +28,33 @@ import java.util.Observer;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class EventListener implements Observer{
+public class OrderBookChangeEventListener implements Observer{
 
-    public EventListener(){
+    private static OrderBookChangeEventListener instance;
 
 
+    private OrderBookChangeEventListener(){
 
+
+    }
+
+    public static OrderBookChangeEventListener getInstance() {
+        if(instance == null){
+            synchronized(OrderBookChangeEventListener.class){
+                if(instance == null)
+                    instance = new OrderBookChangeEventListener();
+            }
+        }
+        return instance;
     }
 
     @Override
     public void update(Observable o, Object arg) {
 
         if(arg instanceof DayChangedEvent){
-            System.out.println("DayChangedObserved");
+           System.out.println("DayChangedObserved");
+
+
         }
         if(arg instanceof AddBidEvent){
             System.out.println("AddBidObserved");
@@ -48,4 +62,6 @@ public class EventListener implements Observer{
         }
 
     }
+
+
 }

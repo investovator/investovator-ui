@@ -96,7 +96,6 @@ public class NNGamingView extends Window implements WizardProgressListener{
         String path = ConfigHelper.getBasepath();
         configReceiver.setBasePath(path);
 
-
         /*NNManager nnManager;
 
         HashMap<String, String> newParameters = parameterAdd.getAddedParameterList();
@@ -124,6 +123,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
 
         NNManager nnManager = new NNManager(inputParam,selectedStockID);
         nnManager.createNeuralNetwork();
+
 
         PlayableStockManager.getInstance().addStocks(selectedStockID);
 

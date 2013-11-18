@@ -21,6 +21,11 @@ package org.investovator.ui.nngaming;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.ui.Component;
+import org.investovator.ann.nngaming.NNGamingFacade;
+import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.ui.nngaming.utils.PlayableStockManager;
+
+import java.util.*;
 
 /**
  * @author: Hasala Surasinghe
@@ -28,12 +33,26 @@ import com.vaadin.ui.Component;
  */
 public class BasicChart {
 
+    private PlayableStockManager playableStockManager;
+    private ArrayList<String> stockList;
+    private NNGamingFacade nnGamingFacade;
+    private ArrayList<DataSeries> stockDataSeriesList;
+
+    public BasicChart(){
+
+        playableStockManager = PlayableStockManager.getInstance();
+        stockList = playableStockManager.getStockList();
+        nnGamingFacade = NNGamingFacade.getInstance();
+        stockDataSeriesList = new ArrayList<>();
+    }
+
 
     public String getDescription() {
-        return "Basic Line With Data Labels";
+        return "Stock Price Variation";
     }
 
     public Component getChart() {
+
         Chart chart = new Chart();
         chart.setHeight("300px");
         chart.setWidth("100%");
@@ -43,15 +62,11 @@ public class BasicChart {
         configuration.getChart().setMarginRight(130);
         configuration.getChart().setMarginBottom(25);
 
-        configuration.getTitle().setText("Monthly Average Temperature");
-        configuration.getSubTitle().setText("Source: WorldClimate.com");
-
-        configuration.getxAxis().setCategories("Jan", "Feb", "Mar", "Apr",
-                "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+        configuration.getxAxis().setType(AxisType.DATETIME);
 
         Axis yAxis = configuration.getyAxis();
         yAxis.setMin(-5d);
-        yAxis.setTitle(new Title("Temperature (°C)"));
+        yAxis.setTitle(new Title("Price (LKR)"));
         yAxis.getTitle().setVerticalAlign(VerticalAlign.HIGH);
 
        // configuration
@@ -70,28 +85,59 @@ public class BasicChart {
         legend.setY(100d);
         legend.setBorderWidth(0);
 
-        ListSeries ls = new ListSeries();
-        ls.setName("Tokyo");
-        ls.setData(7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3,
-                13.9, 9.6);
-        configuration.addSeries(ls);
-        ls = new ListSeries();
-        ls.setName("New York");
-        ls.setData(-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1,
-                8.6, 2.5);
-        configuration.addSeries(ls);
-        ls = new ListSeries();
-        ls.setName("Berlin");
-        ls.setData(-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9,
-                1.0);
-        configuration.addSeries(ls);
-        ls = new ListSeries();
-        ls.setName("London");
-        ls.setData(3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6,
-                4.8);
-        configuration.addSeries(ls);
+        prepareDataSeriesLists();
+
+        for(int i = 0; i < stockList.size(); i++){
+
+            DataSeries dataSeries = stockDataSeriesList.get(i);
+            dataSeries.setName(stockList.get(i));
+            configuration.addSeries(dataSeries);
+
+        }
 
         chart.drawChart(configuration);
+
+        chart.getConfiguration().disableCredits();
+        chart.getConfiguration().getTitle().setText("Stock Prices");
+
         return chart;
+    }
+
+    public void addPointToChart(){
+
+
+    }
+
+    private void prepareDataSeriesLists(){
+
+        Calendar calendar = Calendar.getInstance();
+
+        ArrayList<TradingDataAttribute> attributes = new ArrayList<>();
+        attributes.add(TradingDataAttribute.CLOSING_PRICE);
+
+        for(int i = 0; i < stockList.size(); i++){
+
+            Date[] dates = nnGamingFacade.getDateRange(stockList.get(i));    //get date range
+            calendar.setTime(dates[1]);
+            calendar.add(Calendar.DATE, -18);
+
+            Date start = calendar.getTime();
+
+            HashMap<Date, String> dataMap = nnGamingFacade.getChartData(start, dates[1], stockList.get(i), attributes);
+
+            Set<Date> dateList = nnGamingFacade.getDates(start, dates[1], stockList.get(i), attributes);
+
+            DataSeries dataSeries = new DataSeries();
+
+            for (Iterator<Date> iterator = dateList.iterator(); iterator.hasNext(); ) {
+                Date next = iterator.next();
+                dataSeries.add(new DataSeriesItem(next,Float.valueOf(dataMap.get(next))));
+            }
+            stockDataSeriesList.add(dataSeries);
+
+        }
+
+
+
     }
 }

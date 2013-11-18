@@ -18,119 +18,113 @@
 
 package org.investovator.ui.nngaming;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
 import org.investovator.ann.nngaming.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
-import org.investovator.core.data.api.UserDataImpl;
-import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ann.nngaming.events.AddBidEvent;
+import org.investovator.ann.nngaming.events.DayChangedEvent;
+import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.utils.PlayableStockManager;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Random;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class DashboardPlayingView extends DashboardPanel {
+public class DashboardPlayingView extends DashboardPanel implements Observer{
 
 
     //Layout Components
-    GridLayout content;
-    GridLayout orderBookContent;
-    GridLayout footerContent;
+    VerticalLayout content;
+
     Table orderBookSell;
     Table orderBookBuy;
     Component currentPriceChart;
     QuoteUI quoteUI;
 
-    EventListener eventListener;
-    NNGamingFacade nnGamingFacade;
-    MarketEventReceiver marketEventReceiver;
+    private MarketEventReceiver marketEventReceiver;
+    private NNGamingFacade nnGamingFacade;
+    private PlayableStockManager playableStockManager;
+
+    private ArrayList<String> playableStocks;
+    private ArrayList<ArrayList<OrderBean>> stockBeanListBuy;
+    private ArrayList<ArrayList<OrderBean>> stockBeanListSell;
+
+    private int currentDay = 1;
 
     boolean simulationRunning = false;
 
     public DashboardPlayingView() {
 
         createUI();
+
         nnGamingFacade = NNGamingFacade.getInstance();
-        eventListener = new EventListener();
+        playableStockManager = PlayableStockManager.getInstance();
+        playableStocks = playableStockManager.getStockList();
+
+        if(stockBeanListBuy == null){
+            stockBeanListBuy = new ArrayList<>();
+        }
+        if(stockBeanListSell == null){
+            stockBeanListSell = new ArrayList<>();
+        }
+
         marketEventReceiver = MarketEventReceiver.getInstance();
+        marketEventReceiver.addObserver(this);
 
-        marketEventReceiver.addObserver(eventListener);
-
+        System.out.println("Constructor called");
     }
 
 
     private void createUI(){
 
         //Setup Layout
-        content = new GridLayout();
+        content = new VerticalLayout();
         content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        content.setRows(2);
-        content.setColumns(1);
+        content.setSpacing(true);
 
-        footerContent = new GridLayout();
-        footerContent.setRows(1);
-        footerContent.setColumns(2);
-        footerContent.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        HorizontalLayout row1 = new HorizontalLayout();
+        HorizontalLayout row2 = new HorizontalLayout();
 
-        orderBookContent = new GridLayout();
-        orderBookContent.setRows(1);
-        orderBookContent.setColumns(2);
-        orderBookContent.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        row1.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        row2.setDefaultComponentAlignment(Alignment.TOP_CENTER);
 
+        row1.setWidth("100%");
+        row2.setWidth("100%");
 
-        Button start = new Button("Start");
-        Button stop = new Button("Stop");
+        row1.setHeight("60%");
+        row2.setHeight("35%");
 
+        content.addComponent(row1);
+        content.addComponent(row2);
 
-        start.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
+        content.setExpandRatio(row1, 55);
+        content.setExpandRatio(row2, 45);
 
-                System.out.println("Started");
-                simulationRunning = true;
-                updateTable();
+        HorizontalLayout orderBookLayout = new HorizontalLayout();
 
-            }
-        });
-
-
-        stop.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-                System.out.println("Terminated");
-                simulationRunning = false;
-            }
-        });
-
-
-        orderBookSell = getTable(OrderSide.SELL);
-        orderBookBuy = getTable(OrderSide.BUY);
+        orderBookSell = getSellSideTable();
+        orderBookBuy = getBuySideTable();
         currentPriceChart = getChart();
         quoteUI = new QuoteUI();
 
-        orderBookContent.addComponent(orderBookSell);
-        orderBookContent.addComponent(orderBookBuy);
+        orderBookLayout.addComponent(orderBookSell);
+        orderBookLayout.addComponent(orderBookBuy);
 
-        footerContent.addComponent(orderBookContent);
-        footerContent.addComponent(quoteUI);
+        row1.addComponent(currentPriceChart);
+        row2.addComponent(orderBookLayout);
+        row2.addComponent(quoteUI);
 
-        VerticalLayout buttons = new VerticalLayout();
-        buttons.addComponent(start);
-        buttons.addComponent(stop);
-
-        //Adding to main layout
-        content.addComponent(currentPriceChart);
-        content.addComponent(footerContent);
-        content.setComponentAlignment(currentPriceChart,Alignment.MIDDLE_CENTER);
-        content.setComponentAlignment(footerContent, Alignment.MIDDLE_CENTER);
-
-        //content.addComponent(buttons);
-       // content.setComponentAlignment(buttons,Alignment.MIDDLE_CENTER);
+        orderBookLayout.addStyleName("center-caption");
+        quoteUI.addStyleName("center-caption");
+        currentPriceChart.addStyleName("center-caption");
 
         content.setSizeFull();
 
@@ -140,29 +134,187 @@ public class DashboardPlayingView extends DashboardPanel {
 
     }
 
-    protected Table getTable(OrderSide orderSide) {
+    private void updateTable(){
 
-        Table table = new Table();
 
-        table.setHeight("100%");
-        table.setWidth("45%");
-        table.setSelectable(true);
-        table.setImmediate(true);
+        final Container beansBuy = orderBookBuy.getContainerDataSource();
+        final Container beansSell = orderBookSell.getContainerDataSource();
 
-        if(orderSide == OrderSide.SELL){
-            table.addContainerProperty("Sell Orders", Float.class, null);
-            table.addContainerProperty("Order Count", Integer.class, null);
+        if(!(beansBuy.size() == 0)){
+             beansBuy.removeAllItems();
         }
-        else{
-            table.addContainerProperty("Buy Orders",  Float.class, null);
-            table.addContainerProperty("Order Count", Integer.class, null);
+        if(!(beansSell.size() == 0)){
+            beansSell.removeAllItems();
         }
 
+        updateStockOrders();    // updates sell & buy orders of each stock
 
-        return table;
+        for(int i = 0; i < stockBeanListBuy.get(0).size();i++){
+
+            beansBuy.addItem(stockBeanListBuy.get(0).get(i));
+
+        }
+
+        for(int i = 0; i < stockBeanListSell.get(0).size();i++){
+
+            beansSell.addItem(stockBeanListSell.get(0).get(i));
+
+        }
+
+        if (orderBookBuy.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+
+                getUI().access(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        orderBookBuy.setContainerDataSource(beansBuy);
+                        orderBookBuy.setSortContainerPropertyId("orderValue");
+                        orderBookBuy.setSortAscending(false);
+                        orderBookBuy.sort();
+                        getUI().push();
+                    }
+                });
+
+            } finally {
+                getSession().unlock();
+            }
+        }
+
+        if (orderBookSell.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+
+                getUI().access(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        orderBookSell.setContainerDataSource(beansSell);
+                        orderBookSell.setSortContainerPropertyId("orderValue");
+                        orderBookSell.setSortAscending(true);
+                        orderBookSell.sort();
+                        getUI().push();
+                    }
+                });
+
+            } finally {
+                getSession().unlock();
+            }
+        }
+
     }
 
+    private void updateStockOrders(){
 
+        ArrayList<OrderBean> beanListBuy;
+        ArrayList<OrderBean> beanListSell;
+        int stockCount = playableStocks.size();
+        ArrayList<Float> values;
+        Random randomGenerator = new Random();
+
+
+        for(int i = 0; i < stockCount; i++)
+        {
+
+            int buyOrderCount = randomGenerator.nextInt(3) + 1;
+            int sellOrderCount = randomGenerator.nextInt(3) + 1;
+
+            values = nnGamingFacade.getGeneratedOrders(buyOrderCount,sellOrderCount,playableStocks.get(i),currentDay);
+
+
+            beanListBuy = getBuyOrderList(playableStocks.get(i), buyOrderCount, values);
+
+            stockBeanListBuy.add(beanListBuy);
+
+            beanListSell = getSellOrderList(playableStocks.get(i), buyOrderCount, sellOrderCount, values);
+
+            stockBeanListSell.add(beanListSell);
+        }
+    }
+
+    private ArrayList<OrderBean> getBuyOrderList(String stockID, int buyOrderCount,
+                                                 ArrayList<Float> values){
+
+        ArrayList<OrderBean> beanListBuy = new ArrayList<>();
+        Random randomGenerator = new Random();
+
+
+        for(int i = 0; i < buyOrderCount; i++){
+
+            beanListBuy.add(new OrderBean(values.get(i),randomGenerator.nextInt(199) + 1));
+
+        }
+
+        if(!stockBeanListBuy.isEmpty()){
+
+            ArrayList<OrderBean> temp = stockBeanListBuy.get(playableStocks.indexOf(stockID));
+
+            for(int j = 0; j < beanListBuy.size(); j++){
+
+                temp.add(beanListBuy.get(j));
+
+            }
+
+            return temp;
+        }
+
+        return beanListBuy;
+    }
+
+    private ArrayList<OrderBean> getSellOrderList(String stockID, int buyOrderCount, int sellOrderCount,
+                                                  ArrayList<Float> values){
+
+        ArrayList<OrderBean> beanListSell = new ArrayList<>();
+        Random randomGenerator = new Random();
+
+        for(int i = buyOrderCount; i < (buyOrderCount+sellOrderCount); i++){
+
+            beanListSell.add(new OrderBean(values.get(i), randomGenerator.nextInt(199) + 1));
+
+        }
+
+        if(!stockBeanListSell.isEmpty()){
+
+            ArrayList<OrderBean> temp = stockBeanListSell.get(playableStocks.indexOf(stockID));
+
+            for(int j = 0; j < beanListSell.size(); j++){
+
+                temp.add(beanListSell.get(j));
+
+            }
+            return temp;
+        }
+
+        return beanListSell;
+    }
+
+    private Table getSellSideTable() {
+
+        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
+        Table orderBookSell = new Table("Sell Order Side", beans);
+
+        orderBookSell.setHeight("100%");
+        orderBookSell.setWidth("45%");
+        orderBookSell.setSelectable(true);
+        orderBookSell.setImmediate(true);
+
+        return orderBookSell;
+    }
+
+    private Table getBuySideTable() {
+
+        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
+
+        Table orderBookBuy = new Table("Buy Order Side",beans);
+
+        orderBookBuy.setHeight("100%");
+        orderBookBuy.setWidth("45%");
+        orderBookBuy.setSelectable(true);
+        orderBookBuy.setImmediate(true);
+
+        return orderBookBuy;
+    }
 
     protected Component getChart() {
 
@@ -171,47 +323,33 @@ public class DashboardPlayingView extends DashboardPanel {
 
     }
 
-    private void updateTable(){
-
-        //todo
-        ArrayList<Float> values;
-        values = nnGamingFacade.getGeneratedOrders(2,3,"SAMP",1);
-        values.addAll(values);
-
-        for(int i = 0; i < 3; i++){
-
-            if(i < 2)
-            orderBookSell.addItem(new Object[]{values.get(i),new Integer(100)},i) ;
-            orderBookBuy.addItem(new Object[]{values.get(i + 2), new Integer(50)},i);
-
-        }
-
-        orderBookBuy.setPageLength(0);
-        orderBookSell.setPageLength(0);
-
-
-
-    }
-
     @Override
     public void onEnter() {
 
         quoteUI.update();
 
-        updateTable();  //set system property values and check todo
+       // updateTable();
+
+        //onEnter redraw table       //todo
 
         simulationRunning = true;
 
-        Collection<String> availableStocks = null;
-        try {
-            availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
-            for(String stock : availableStocks){
-
-            }
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
 
+        if(arg instanceof DayChangedEvent){
+            System.out.println("DayChanged");
+            updateTable();
+            currentDay++;
+            System.out.println("TableUpdated");
+        }
+
+        if(arg instanceof AddBidEvent){
+
+
+
+        }
+    }
 }

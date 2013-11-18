@@ -23,6 +23,8 @@ import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
+import java.util.ArrayList;
+
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
@@ -126,9 +128,13 @@ public class QuoteUI extends VerticalLayout{
 
     public void update(){
 
-        for (String stock : PlayableStockManager.getInstance().getStockList()) {
+        ArrayList<String> stockIDs = PlayableStockManager.getInstance().getStockList();
+
+        for (String stock : stockIDs) {
             stockSelect.addItem(stock);
         }
+        stockSelect.setNullSelectionAllowed(false);
+        stockSelect.setValue(stockIDs.get(0));
 
     }
 
