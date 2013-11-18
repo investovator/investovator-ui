@@ -47,7 +47,6 @@ public class DataImportPanel extends DashboardPanel {
     VerticalLayout tickerTableLayout;
     CompanyTable ohclCompaniesTable;
     CompanyTable tickerCompaniesTable;
-
     Label pageTitle;
 
     public DataImportPanel() {
@@ -65,12 +64,15 @@ public class DataImportPanel extends DashboardPanel {
         ohclTableLayout = new VerticalLayout();
         ohclTableLayout.setCaption("Summary Data");
         ohclTableLayout.addStyleName("center-caption");
+        ohclTableLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
         tickerTableLayout = new VerticalLayout();
         tickerTableLayout.setCaption("Ticker Data");
         tickerTableLayout.addStyleName("center-caption");
+        tickerTableLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
         dataTableLayout = new HorizontalLayout();
+        dataTableLayout.setWidth("95%");
 
         ohclCompaniesTable = new CompanyTable();
         tickerCompaniesTable = new CompanyTable();
@@ -84,6 +86,7 @@ public class DataImportPanel extends DashboardPanel {
         content.addComponent(pageTitle);
         content.addComponent(dataTableLayout);
         content.setComponentAlignment(pageTitle, Alignment.MIDDLE_CENTER);
+        content.setComponentAlignment(dataTableLayout, Alignment.MIDDLE_CENTER);
 
         this.setContent(content);
 
@@ -92,10 +95,10 @@ public class DataImportPanel extends DashboardPanel {
 
     @Override
     public void onEnter() {
-        setDefaults();
+        setEntryData();
     }
 
-    private void setDefaults() {
+    private void setEntryData() {
 
         try {
 
