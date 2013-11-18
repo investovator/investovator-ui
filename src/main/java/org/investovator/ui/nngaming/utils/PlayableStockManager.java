@@ -45,9 +45,9 @@ public class PlayableStockManager {
         return instance;
     }
 
-    public void addStocks(String stockID){
+    public void addStocks(ArrayList<String> stockIDs){
 
-        stockList.add(stockID);
+        stockList = stockIDs;
 
     }
 

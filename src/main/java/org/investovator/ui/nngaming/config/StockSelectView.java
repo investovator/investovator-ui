@@ -20,7 +20,8 @@ package org.investovator.ui.nngaming.config;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -28,6 +29,7 @@ import org.vaadin.teemu.wizards.WizardStep;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author: Hasala Surasinghe
@@ -35,16 +37,16 @@ import java.util.Iterator;
  */
 public class StockSelectView implements WizardStep{
 
-    private String selectedStock = null;
+    private ArrayList<String> selectedStocks = null;
     private CompanyDataImpl companyData;
     private ArrayList<String> stockIDList;
 
-    ListSelect stockSelectList;
+    TwinColSelect stockSelectList;
     VerticalLayout content;
 
     public StockSelectView() {
 
-        stockSelectList = new ListSelect("Select Stock for Game");
+        stockSelectList = new TwinColSelect("Select Stocks for Game");
 
         stockSelectList.setNullSelectionAllowed(false);
 
@@ -52,7 +54,14 @@ public class StockSelectView implements WizardStep{
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
 
-                selectedStock = (String) valueChangeEvent.getProperty().getValue();
+                Set<String> results = (Set<String>) valueChangeEvent.getProperty().getValue();
+
+                selectedStocks = new ArrayList<>();
+
+                for (Iterator<String> iterator = results.iterator(); iterator.hasNext(); ) {
+                    String next = iterator.next();
+                    selectedStocks.add(next);
+                }
             }
         });
 
@@ -98,11 +107,14 @@ public class StockSelectView implements WizardStep{
 
     @Override
     public boolean onAdvance() {
-        if(selectedStock == null)
+        if(selectedStocks == null)
         {
-            selectedStock = (String) stockSelectList.getValue();
+            Notification.show("Please Select Stocks", Notification.Type.WARNING_MESSAGE);
+            return false;
         }
-        return true;
+        else{
+            return true;
+        }
     }
 
     @Override
@@ -110,7 +122,7 @@ public class StockSelectView implements WizardStep{
         return false;
     }
 
-    public String getSelectedStock(){
-        return selectedStock;
+    public ArrayList<String> getSelectedStocks(){
+        return selectedStocks;
     }
 }

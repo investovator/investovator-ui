@@ -111,7 +111,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
         }
 
         nnManager.createNeuralNetwork();*/
-        String selectedStockID = stockSelect.getSelectedStock();
+        ArrayList<String> selectedStockIDs = stockSelect.getSelectedStocks();
 
         ArrayList<TradingDataAttribute> inputParam = new ArrayList<TradingDataAttribute>();
         inputParam.add(TradingDataAttribute.HIGH_PRICE);
@@ -121,11 +121,10 @@ public class NNGamingView extends Window implements WizardProgressListener{
         inputParam.add(TradingDataAttribute.TRADES);
         inputParam.add(TradingDataAttribute.TURNOVER);
 
-        NNManager nnManager = new NNManager(inputParam,selectedStockID);
+        NNManager nnManager = new NNManager(inputParam,selectedStockIDs);
         nnManager.createNeuralNetwork();
 
-
-        PlayableStockManager.getInstance().addStocks(selectedStockID);
+        PlayableStockManager.getInstance().addStocks(selectedStockIDs);
 
         try {
             GameControllerFacade.getInstance().startGame(GameModes.NN_GAME,null);

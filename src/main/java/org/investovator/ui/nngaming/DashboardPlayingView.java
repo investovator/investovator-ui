@@ -26,6 +26,7 @@ import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.ann.nngaming.events.AddBidEvent;
 import org.investovator.ann.nngaming.events.DayChangedEvent;
 import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -54,10 +55,10 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
     private PlayableStockManager playableStockManager;
 
     private ArrayList<String> playableStocks;
+    private GameDataHelper gameDataHelper;
     private ArrayList<ArrayList<OrderBean>> stockBeanListBuy;
     private ArrayList<ArrayList<OrderBean>> stockBeanListSell;
-
-    private int currentDay = 1;
+    private int currentDay;
 
     boolean simulationRunning = false;
 
@@ -65,21 +66,18 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         createUI();
 
+        gameDataHelper = GameDataHelper.getInstance();
         nnGamingFacade = NNGamingFacade.getInstance();
         playableStockManager = PlayableStockManager.getInstance();
         playableStocks = playableStockManager.getStockList();
 
-        if(stockBeanListBuy == null){
-            stockBeanListBuy = new ArrayList<>();
-        }
-        if(stockBeanListSell == null){
-            stockBeanListSell = new ArrayList<>();
-        }
+        stockBeanListBuy = gameDataHelper.getStockBeanListBuy();
+        stockBeanListSell = gameDataHelper.getStockBeanListSell();
+        currentDay = gameDataHelper.getCurrentDay();
 
         marketEventReceiver = MarketEventReceiver.getInstance();
         marketEventReceiver.addObserver(this);
 
-        System.out.println("Constructor called");
     }
 
 
@@ -227,9 +225,13 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
             stockBeanListBuy.add(beanListBuy);
 
+            gameDataHelper.setStockBeanListBuy(stockBeanListBuy);
+
             beanListSell = getSellOrderList(playableStocks.get(i), buyOrderCount, sellOrderCount, values);
 
             stockBeanListSell.add(beanListSell);
+
+            gameDataHelper.setStockBeanListSell(stockBeanListSell);
         }
     }
 
@@ -238,7 +240,7 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         ArrayList<OrderBean> beanListBuy = new ArrayList<>();
         Random randomGenerator = new Random();
-
+        stockBeanListBuy = gameDataHelper.getStockBeanListBuy();
 
         for(int i = 0; i < buyOrderCount; i++){
 
@@ -267,6 +269,7 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         ArrayList<OrderBean> beanListSell = new ArrayList<>();
         Random randomGenerator = new Random();
+        stockBeanListSell = gameDataHelper.getStockBeanListSell();
 
         for(int i = buyOrderCount; i < (buyOrderCount+sellOrderCount); i++){
 
@@ -328,9 +331,6 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         quoteUI.update();
 
-       // updateTable();
-
-        //onEnter redraw table       //todo
 
         simulationRunning = true;
 
@@ -341,14 +341,21 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         if(arg instanceof DayChangedEvent){
             System.out.println("DayChanged");
-            updateTable();
+
+            stockBeanListBuy.clear();
+            gameDataHelper.setStockBeanListBuy(stockBeanListBuy);
+
+            stockBeanListSell.clear();
+            gameDataHelper.setStockBeanListSell(stockBeanListSell);
+
             currentDay++;
+            gameDataHelper.setCurrentDay(currentDay);
             System.out.println("TableUpdated");
         }
 
         if(arg instanceof AddBidEvent){
 
-
+            updateTable();
 
         }
     }
