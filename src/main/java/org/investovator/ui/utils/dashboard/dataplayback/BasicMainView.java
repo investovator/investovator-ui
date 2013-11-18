@@ -72,7 +72,7 @@ public abstract class BasicMainView extends DashboardPanel {
 
         content = new VerticalLayout();
         //to show the scroll bar
-        this.setHeight("100%");
+//        this.setHeight("100%");
         content.setSizeFull();
     }
 
