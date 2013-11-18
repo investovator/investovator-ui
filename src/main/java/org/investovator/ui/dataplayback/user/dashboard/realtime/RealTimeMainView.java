@@ -72,8 +72,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         Chart chart = new Chart();
         chart.setHeight(70,Unit.MM);
 
-//        chart.setWidth("250px");
-//        chart.setSizeFull();
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -130,9 +128,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
                 portfolioTable.getContainerDataSource();
 
-//        UI.getCurrent().access(new Runnable() {
-//            @Override
-//            public void run() {
                 //if the stock is already bought
                 if(beans.containsId(stockID)){
                     beans.removeItem(stockID);
@@ -163,10 +158,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-//                Notification.show(stocksList.getValue().toString() + "--" + orderSide.getValue().toString() + "--" + quantity.getValue().toString());
-//                System.out.println();
-
-//                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
@@ -186,20 +177,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 } catch (UserJoinException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-//                }
-
-//                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
-//                    try {
-//                        Boolean status=realTimePlayer.executeOrder(stocksList.getValue().toString(),
-//                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
-//                        Notification.show(status.toString());
-//
-//                    } catch (InvalidOrderException e) {
-//                        Notification.show(e.getMessage());
-//                    } catch (UserJoinException e) {
-//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                    }
-//                }
 
             }});
 
@@ -234,14 +211,12 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //update the account balance
             this.updateAccountBalance();
 
-//            System.out.println("ui join -->"+this.toString());
-//            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
         } catch (UserAlreadyJoinedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -264,12 +239,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                             stockPriceTable.getContainerDataSource();
                     value=beans.getItem(event.getStockId()).getBean().getPrice();
-//                    System.out.println("missing - "+event.getTime()+" - "+value);
                 }
 
-//                UI.getCurrent().access(new Runnable() {
-//                    @Override
-//                    public void run() {
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
@@ -278,10 +249,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                             dSeries.add(new DataSeriesItem(event.getTime(),value));
 
                         }
-
-//                    }
-//                });
-
 
             }
 
@@ -294,26 +261,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         final BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                 stockPriceTable.getContainerDataSource();
 
-
-//        if (stockPriceTable.isConnectorEnabled()) {
-//            getSession().lock();
-//            try {
-//                beans.removeItem(event.getStockId());
-//                beans.addBean(new StockNamePriceBean(event.getStockId(),
-//                        event.getData().get(TradingDataAttribute.PRICE)));
-//            } finally {
-//                getSession().unlock();
-//            }
-//        }
-
-//        UI.getCurrent().access(new Runnable() {
-//            @Override
-//            public void run() {
                 beans.removeItem(event.getStockId());
                 beans.addBean(new StockNamePriceBean(event.getStockId(),
                         event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch())));
-//            }
-//        });
     }
 
     public void updatePieChart(final StockUpdateEvent event)
@@ -339,30 +289,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 }
 
 
-//
-//        if (stockPieChart.isConnectorEnabled()) {
-//            getSession().lock();
-//            try {
-//                dSeries.update(dSeries.get(event.getStockId()));
-//                stockPieChart.setImmediate(true);
-//                stockPieChart.drawChart();
-//
-//            } finally {
-//                getSession().unlock();
-//            }
-//        }
-
-//        UI.getCurrent().access(new Runnable() {
-//            @Override
-//            public void run() {
                 dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
-                //UI.getCurrent().push();
-                //System.out.println("pushed");
                 getUI().push();
-//            }
-//        });
     }
 
 
@@ -385,28 +315,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                 //update the table
                 updateStockPriceTable(event);
-
-
-
-                //update the pie-chart
-//                try {
-//                    updatePieChart(event);
-//                } catch (PlayerStateException e) {
-//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                } catch (UserJoinException e) {
-//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                }
-
             }
-
-            //update profit chart only when jumping to a new time
-//            System.out.println("last - "+lastUpdateTime);
-//            System.out.println("new - "+ event.getTime());
 
             //todo -shows false values, does not use the latest data for calculations
             if(lastUpdateTime!=null && lastUpdateTime.before(event.getTime())){
                 updateProfitChart(event);
-//                System.out.println("Update called");
             }
 
             //push the changes
@@ -438,28 +351,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-//                if (mainChart.isConnectorEnabled()) {
-//                    getSession().lock();
-//                    try {
-//                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
-//
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
-//
-//                        } else {
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.SHARES)/100));
-//
-//                        }
-//
-//                    } finally {
-//                        getSession().unlock();
-//                    }
-//                }
-
-//                UI.getCurrent().access(new Runnable() {
-//                    @Override
-//                    public void run() {
 
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
@@ -471,9 +362,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                                         event.getData().get(TradingDataAttribute.SHARES)));
 
                             }
-//                    }
-//                });
-
 
             }
 
@@ -495,7 +383,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         YAxis y = new YAxis();
         y.setMin(0);
-//        y.setMinRange(500);
         y.setTitle("Quantity");
         conf.addyAxis(y);
 
@@ -586,8 +473,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             chart.setHeight(100,Unit.PERCENTAGE);
             chart.setWidth(95,Unit.PERCENTAGE);
 
-//        chart.setSizeFull();
-
             Tooltip tooltip = new Tooltip();
             tooltip.setShared(true);
             tooltip.setUseHTML(true);
@@ -602,7 +487,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             configuration.getyAxis().setTitle("");
 
             PlotOptionsLine plotOptions = new PlotOptionsLine();
-//        plotOptions.setDataLabels(new Labels(true));
             plotOptions.setEnableMouseTracking(false);
             //performance related
             plotOptions.setShadow(false);
@@ -614,12 +498,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     new DateTimeLabelFormats("%e. %b", "%b"));
 
 
-//        configuration.getyAxis().getTitle().setText(null);
-
-//        if (DataPlaybackEngineStates.playingSymbols != null) {
-//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
             DataSeries ls = new DataSeries();
-//                ls.setName(stock);
 
             //add dummy points to fill it up
             for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
@@ -629,9 +508,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             }
 
             configuration.addSeries(ls);
-
-//            }
-//        }
 
             chart.setImmediate(true);
             chart.drawChart(configuration);
@@ -677,9 +553,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 form.addComponent(maxOrderSize);
             }
         } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
 
@@ -692,9 +568,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     getRealTimeDataPlayer().getMyPortfolio(this.userName).getCashBalance();
             this.accBalance.setValue(bal.toString());
         } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
     }
