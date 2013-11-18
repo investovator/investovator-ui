@@ -140,7 +140,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 try {
                     Portfolio portfolio=player.getMyPortfolio(userName);
                     //if the user has stocks
-                    if(!portfolio.getShares().isEmpty()){
+                    if(!portfolio.getShares().isEmpty() && (portfolio.getShares().get(stockID)!=null)){
 
                         double price = portfolio.getShares().get(stockID).get(Terms.PRICE);
                         int quantity =portfolio.getShares().get(stockID).get(Terms.QNTY).intValue();
