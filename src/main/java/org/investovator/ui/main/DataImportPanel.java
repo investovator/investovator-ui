@@ -38,23 +38,23 @@ import java.util.HashMap;
  * @author Amila Surendra
  * @version $Revision
  */
-public class DataImportPanel extends DashboardPanel{
+public class DataImportPanel extends DashboardPanel {
 
     //Layout Components
     VerticalLayout content;
     HorizontalLayout dataTableLayout;
-    VerticalLayout ohclTable;
-    VerticalLayout tickerTable;
+    VerticalLayout ohclTableLayout;
+    VerticalLayout tickerTableLayout;
     CompanyTable ohclCompaniesTable;
     CompanyTable tickerCompaniesTable;
 
     Label pageTitle;
 
-    public  DataImportPanel(){
+    public DataImportPanel() {
         createLayout();
     }
 
-    private void createLayout(){
+    private void createLayout() {
 
         content = new VerticalLayout();
 
@@ -62,21 +62,24 @@ public class DataImportPanel extends DashboardPanel{
         pageTitle.setSizeUndefined();
         pageTitle.setStyleName("h2");
 
-        ohclTable = new VerticalLayout();
-        ohclTable.setCaption("Summary Data");
-        ohclTable.addStyleName("center-caption");
+        ohclTableLayout = new VerticalLayout();
+        ohclTableLayout.setCaption("Summary Data");
+        ohclTableLayout.addStyleName("center-caption");
 
-        tickerTable = new VerticalLayout();
+        tickerTableLayout = new VerticalLayout();
+        tickerTableLayout.setCaption("Ticker Data");
+        tickerTableLayout.addStyleName("center-caption");
 
         dataTableLayout = new HorizontalLayout();
 
         ohclCompaniesTable = new CompanyTable();
         tickerCompaniesTable = new CompanyTable();
 
-        ohclTable.addComponent(ohclCompaniesTable);
+        ohclTableLayout.addComponent(ohclCompaniesTable);
+        tickerTableLayout.addComponent(tickerCompaniesTable);
 
-        dataTableLayout.addComponent(ohclTable);
-        dataTableLayout.addComponent(tickerTable);
+        dataTableLayout.addComponent(ohclTableLayout);
+        dataTableLayout.addComponent(tickerTableLayout);
 
         content.addComponent(pageTitle);
         content.addComponent(dataTableLayout);
@@ -92,27 +95,52 @@ public class DataImportPanel extends DashboardPanel{
         setDefaults();
     }
 
-    private void setDefaults(){
+    private void setDefaults() {
 
         try {
 
             CompanyData companyData = new CompanyDataImpl();
 
             ArrayList<String> stockIds = companyData.getAvailableStockIds();
-            HashMap<String, String> companyNames =  companyData.getCompanyIDsNames();
+            HashMap<String, String> companyNames = companyData.getCompanyIDsNames();
 
             CompanyStockTransactionsData transactionData = new CompanyStockTransactionsDataImpl();
 
-            for(String stock: stockIds){
+            for (String stock : stockIds) {
 
-                Date[] dateRange = transactionData.getDataDaysRange(CompanyStockTransactionsData.DataType.OHLC,stock);
+                Date[] dateRange = transactionData.getDataDaysRange(CompanyStockTransactionsData.DataType.
+                        OHLC, stock);
                 ohclCompaniesTable.addCompany(stock, companyNames.get(stock), dateRange[0], dateRange[1]);
-
             }
 
 
         } catch (DataAccessException e) {
             e.printStackTrace();
+        }
+
+
+        CompanyData companyData;
+        ArrayList<String> stockIds = null;
+        HashMap<String, String> companyNames = null;
+
+        try {
+            companyData = new CompanyDataImpl();
+            stockIds = companyData.getAvailableStockIds();
+            companyNames = companyData.getCompanyIDsNames();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
+        CompanyStockTransactionsData transactionData = new CompanyStockTransactionsDataImpl();
+
+        //TODO: Remove this and add method to get is data available.
+        for (String stock : stockIds) {
+            Date[] dateRange = new Date[0];
+            try {
+                dateRange = transactionData.getDataDaysRange(CompanyStockTransactionsData.DataType.TICKER, stock);
+                tickerCompaniesTable.addCompany(stock, companyNames.get(stock), dateRange[0], dateRange[1]);
+
+            } catch (DataAccessException e) { }
         }
 
 
