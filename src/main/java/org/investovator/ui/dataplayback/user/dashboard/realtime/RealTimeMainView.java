@@ -138,9 +138,14 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     beans.removeItem(stockID);
                 }
                 try {
-                    double price = player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.PRICE);
-                    int quantity =player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.QNTY).intValue();
-                    beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    Portfolio portfolio=player.getMyPortfolio(userName);
+                    //if the user has stocks
+                    if(!portfolio.getShares().isEmpty()){
+
+                        double price = portfolio.getShares().get(stockID).get(Terms.PRICE);
+                        int quantity =portfolio.getShares().get(stockID).get(Terms.QNTY).intValue();
+                        beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    }
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
@@ -170,7 +175,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
                         //update account info
-                        updateAccountBalance();
+//                        updateAccountBalance();
                     }
                     else{
 
@@ -396,10 +401,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //            System.out.println("new - "+ event.getTime());
 
             //todo -shows false values, does not use the latest data for calculations
-//            if(lastUpdateTime!=null && lastUpdateTime.before(event.getTime())){
-//                updateProfitChart(event);
-////                System.out.println("Update called");
-//            }
+            if(lastUpdateTime!=null && lastUpdateTime.before(event.getTime())){
+                updateProfitChart(event);
+//                System.out.println("Update called");
+            }
 
             //push the changes
             UI.getCurrent().access(new Runnable() {
@@ -575,8 +580,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     @Override
     public Chart setupProfitChart() {
             Chart chart = new Chart();
-            chart.setHeight(40,Unit.MM);
-            chart.setWidth(100,Unit.MM);
+            chart.setHeight(100,Unit.PERCENTAGE);
+            chart.setWidth(95,Unit.PERCENTAGE);
 
 //        chart.setSizeFull();
 

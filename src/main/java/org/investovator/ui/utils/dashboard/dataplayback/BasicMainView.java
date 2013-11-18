@@ -189,13 +189,19 @@ public abstract class BasicMainView extends DashboardPanel {
             //profit chart
 //            HorizontalLayout profitContainer = new HorizontalLayout();
 //            bottowRow.addComponent(profitContainer);
-            Component accountInfo=setUpAccountInfoForm();
-            accountInfo.setCaption("Account Information");
-            accountInfo.addStyleName("center-caption");
 
-//            profitChart=setupProfitChart();
-            bottowRow.addComponent(accountInfo);
-            bottowRow.setExpandRatio(accountInfo,1.3f);
+            profitChart=setupProfitChart();
+            profitChart.setCaption("Profit Chart");
+            profitChart.addStyleName("center-caption");
+            bottowRow.addComponent(profitChart);
+            bottowRow.setExpandRatio(profitChart,1.3f);
+
+//            Component accountInfo=setUpAccountInfoForm();
+//            accountInfo.setCaption("Profit Chart");
+//            accountInfo.addStyleName("center-caption");
+//
+//            bottowRow.addComponent(accountInfo);
+//            bottowRow.setExpandRatio(accountInfo,1.3f);
 
 
 
