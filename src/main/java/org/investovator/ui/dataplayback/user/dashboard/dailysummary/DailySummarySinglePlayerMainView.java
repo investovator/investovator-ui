@@ -372,6 +372,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinSingleplayerGame(this.userName);
             }
+            //update the account balance
+            this.updateAccountBalance();
         } catch (UserAlreadyJoinedException e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -509,7 +511,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                 try {
                     Portfolio portfolio=player.getMyPortfolio(userName);
                     //if the user has stocks
-                    if(!portfolio.getShares().isEmpty()){
+                    if(!portfolio.getShares().isEmpty() && (portfolio.getShares().get(stockID)!=null)){
 
                         double price = portfolio.getShares().get(stockID).get(Terms.PRICE);
                         int quantity =portfolio.getShares().get(stockID).get(Terms.QNTY).intValue();
@@ -526,8 +528,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
     @Override
     public Chart setupProfitChart() {
         Chart chart = new Chart();
-        chart.setHeight(40,Unit.MM);
-        chart.setWidth(10,Unit.PERCENTAGE);
+        chart.setHeight(100,Unit.PERCENTAGE);
+        chart.setWidth(95,Unit.PERCENTAGE);
 
 //        chart.setSizeFull();
 

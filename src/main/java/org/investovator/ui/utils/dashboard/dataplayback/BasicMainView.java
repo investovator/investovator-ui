@@ -72,7 +72,7 @@ public abstract class BasicMainView extends DashboardPanel {
 
         content = new VerticalLayout();
         //to show the scroll bar
-        this.setHeight("100%");
+//        this.setHeight("100%");
         content.setSizeFull();
     }
 
@@ -189,13 +189,19 @@ public abstract class BasicMainView extends DashboardPanel {
             //profit chart
 //            HorizontalLayout profitContainer = new HorizontalLayout();
 //            bottowRow.addComponent(profitContainer);
-            Component accountInfo=setUpAccountInfoForm();
-            accountInfo.setCaption("Account Information");
-            accountInfo.addStyleName("center-caption");
 
-//            profitChart=setupProfitChart();
-            bottowRow.addComponent(accountInfo);
-            bottowRow.setExpandRatio(accountInfo,1.3f);
+            profitChart=setupProfitChart();
+            profitChart.setCaption("Profit Chart");
+            profitChart.addStyleName("center-caption");
+            bottowRow.addComponent(profitChart);
+            bottowRow.setExpandRatio(profitChart,1.3f);
+
+//            Component accountInfo=setUpAccountInfoForm();
+//            accountInfo.setCaption("Profit Chart");
+//            accountInfo.addStyleName("center-caption");
+//
+//            bottowRow.addComponent(accountInfo);
+//            bottowRow.setExpandRatio(accountInfo,1.3f);
 
 
 
@@ -322,6 +328,10 @@ public abstract class BasicMainView extends DashboardPanel {
 
         FormLayout form=new FormLayout();
 
+        //account balance
+        this.accBalance=new Label("");
+        this.accBalance.setCaption("Account Balance");
+
         //stocks list
         final ComboBox stocksList=new ComboBox();
         stocksList.setCaption("Stock");
@@ -346,7 +356,7 @@ public abstract class BasicMainView extends DashboardPanel {
         final TextField quantity=new TextField("Amount");
         //quantity.setWidth("75%");
 
-
+        form.addComponent(accBalance);
         form.addComponent(stocksList);
         form.addComponent(orderSide);
         form.addComponent(quantity);

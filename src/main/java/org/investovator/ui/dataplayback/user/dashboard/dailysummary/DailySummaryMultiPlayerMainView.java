@@ -128,6 +128,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinMultiplayerGame(this,this.userName);
             }
+            //update the account balance
+            this.updateAccountBalance();
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
@@ -265,7 +267,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 try {
                     Portfolio portfolio=player.getMyPortfolio(userName);
                     //if the user has stocks
-                    if(!portfolio.getShares().isEmpty()){
+                    if(!portfolio.getShares().isEmpty() && (portfolio.getShares().get(stockID)!=null)){
 
                         double price = portfolio.getShares().get(stockID).get(Terms.PRICE);
                         int quantity =portfolio.getShares().get(stockID).get(Terms.QNTY).intValue();
@@ -339,8 +341,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     @Override
     public Chart setupProfitChart() {
         Chart chart = new Chart();
-        chart.setHeight(150,Unit.PIXELS);
-        chart.setWidth(10,Unit.PERCENTAGE);
+        chart.setHeight(100,Unit.PERCENTAGE);
+        chart.setWidth(95,Unit.PERCENTAGE);
 //
 ////        chart.setSizeFull();
 //
@@ -390,7 +392,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 //        }
 
         chart.setImmediate(true);
-//        chart.drawChart(configuration);
+        chart.drawChart(configuration);
         //disable trademark
         chart.getConfiguration().disableCredits();
 
@@ -431,8 +433,23 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             }
 
             //since there is only one series
-            DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
-            float floatProfit=(float)profit;
+//            if(!profitChart.getConfiguration().getSeries().isEmpty()){
+
+                DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
+                float floatProfit=(float)profit;
+                ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
+
+//            }
+//            else{
+////                DataSeries ls = new DataSeries();
+////                for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+////                    ls.add(new DataSeriesItem
+////                            (DateUtils.decrementTimeByDays((PROFIT_CHART_LENGTH - counter-1),
+////                                    DataPlaybackEngineStates.gameStartDate),0));
+////                }
+//                profitChart=setupProfitChart();
+//                profitChart.drawChart();
+//            }
 
 //            //check if the date is already updated
 //            if(ds.get(ds.size()-1).getX().equals(event.getTime())){
@@ -443,7 +460,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 //                ds.update(item);
 //            }
 //            else{
-                ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
 //            }
 
 
