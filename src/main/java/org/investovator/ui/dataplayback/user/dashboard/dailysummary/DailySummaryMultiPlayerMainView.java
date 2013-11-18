@@ -61,9 +61,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         Chart chart = new Chart();
         chart.setHeight(70,Unit.MM);
 
-//        chart.setWidth("250px");
-//        chart.setSizeFull();
-
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
         tooltip.setUseHTML(true);
@@ -159,31 +156,10 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
         }
 
-
-//
-//        if (stockPieChart.isConnectorEnabled()) {
-//            getSession().lock();
-//            try {
-//                dSeries.update(dSeries.get(event.getStockId()));
-//                stockPieChart.setImmediate(true);
-//                stockPieChart.drawChart();
-//
-//            } finally {
-//                getSession().unlock();
-//            }
-//        }
-
-//        UI.getCurrent().access(new Runnable() {
-//            @Override
-//            public void run() {
                 dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
-                //UI.getCurrent().push();
-                //System.out.println("pushed");
                 getUI().push();
-//            }
-//        });
     }
 
     @Override
@@ -195,10 +171,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-//                Notification.show(stocksList.getValue().toString() + "--" + orderSide.getValue().toString() + "--" + quantity.getValue().toString());
-//                System.out.println();
-
-//                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
@@ -218,20 +190,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 } catch (UserJoinException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-//                }
-
-//                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
-//                    try {
-//                        Boolean status=realTimePlayer.executeOrder(stocksList.getValue().toString(),
-//                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
-//                        Notification.show(status.toString());
-//
-//                    } catch (InvalidOrderException e) {
-//                        Notification.show(e.getMessage());
-//                    } catch (UserJoinException e) {
-//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                    }
-//                }
 
             }});
 
@@ -257,9 +215,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
                 portfolioTable.getContainerDataSource();
 
-//        UI.getCurrent().access(new Runnable() {
-//            @Override
-//            public void run() {
                 //if the stock is already bought
                 if(beans.containsId(stockID)){
                     beans.removeItem(stockID);
@@ -276,8 +231,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
-//            }
-//        });
 
     }
 
@@ -292,13 +245,11 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         x.setType(AxisType.DATETIME);
         x.setDateTimeLabelFormats(
                 new DateTimeLabelFormats("%e. %b", "%b"));
-//        x.setMinRange(3600000*24*7);
         x.setTickInterval(24 * 3600 * 1000);
         conf.addxAxis(x);
 
         YAxis y = new YAxis();
         y.setMin(0);
-//        y.setMinRange(500);
         y.setTitle("Quantity");
         conf.addyAxis(y);
 
@@ -308,10 +259,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         conf.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
-//        plot.setPointPadding(0.1);
-//        plot.setBorderWidth(0);
-        //set the widht of the columns
-//        plot.setPointWidth(15);
 
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
@@ -343,27 +290,14 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         Chart chart = new Chart();
         chart.setHeight(100,Unit.PERCENTAGE);
         chart.setWidth(95,Unit.PERCENTAGE);
-//
-////        chart.setSizeFull();
-//
-//        Tooltip tooltip = new Tooltip();
-//        tooltip.setShared(true);
-//        tooltip.setUseHTML(true);
-//        tooltip.setHeaderFormat("{point.key}");
-//        tooltip.setPointFormat("");
-//        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
-//
+
         Configuration configuration = new Configuration();
-//        configuration.setTooltip(tooltip);
         configuration.getChart().setType(ChartType.LINE);
         configuration.getLegend().setEnabled(false);
         configuration.getyAxis().setTitle("");
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
-//        plotOptions.setDataLabels(new Labels(true));
         plotOptions.setEnableMouseTracking(false);
-        //performance related
-//        plotOptions.setShadow(false);
 
         configuration.setPlotOptions(plotOptions);
 
@@ -372,12 +306,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 new DateTimeLabelFormats("%e. %b", "%b"));
 
 
-//        configuration.getyAxis().getTitle().setText(null);
-
-//        if (DataPlaybackEngineStates.playingSymbols != null) {
-//            for (String stock : DataPlaybackEngineStates.playingSymbols) {
         DataSeries ls = new DataSeries();
-//                ls.setName(stock);
 
         //add dummy points to fill it up
         for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
@@ -388,8 +317,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
         configuration.addSeries(ls);
 
-//            }
-//        }
 
         chart.setImmediate(true);
         chart.drawChart(configuration);
@@ -433,34 +360,10 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             }
 
             //since there is only one series
-//            if(!profitChart.getConfiguration().getSeries().isEmpty()){
 
                 DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
                 float floatProfit=(float)profit;
                 ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
-
-//            }
-//            else{
-////                DataSeries ls = new DataSeries();
-////                for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
-////                    ls.add(new DataSeriesItem
-////                            (DateUtils.decrementTimeByDays((PROFIT_CHART_LENGTH - counter-1),
-////                                    DataPlaybackEngineStates.gameStartDate),0));
-////                }
-//                profitChart=setupProfitChart();
-//                profitChart.drawChart();
-//            }
-
-//            //check if the date is already updated
-//            if(ds.get(ds.size()-1).getX().equals(event.getTime())){
-//                //update that item
-//                System.out.println("else");
-//                DataSeriesItem item=ds.get(ds.size()-1);
-//                item.setY(profit);
-//                ds.update(item);
-//            }
-//            else{
-//            }
 
 
 
@@ -506,9 +409,9 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 form.addComponent(maxOrderSize);
             }
         } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
 
@@ -521,9 +424,9 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                     getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
             this.accBalance.setValue(bal.toString());
         } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
     }

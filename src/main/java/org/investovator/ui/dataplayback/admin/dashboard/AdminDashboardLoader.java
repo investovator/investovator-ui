@@ -53,17 +53,11 @@ public class AdminDashboardLoader extends BasicDashboard{
                 Notification.show("Not implemented-load admin summary view");
 
             }
-//            else{
-//                map.put("main view", new RealTimeMainView());
-//            }
         }
         else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
             if(DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
                 Notification.show("Not implemented-load admin summary view");
             }
-//            else{
-//                map.put("main view", new DailySummarySinglePlayerMainView());
-//            }
         }
         }catch (PlayerStateException ex){
             ex.printStackTrace();

@@ -59,9 +59,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     public NewDataPlaybackGameWizard(Window window) {
 
-//        this.mainView = mainView;
         this.window = window;
-//        this.player=new DataPlayer();
 
         this.addStep(new FirstStep());
         this.addStep(new SecondStep());
@@ -85,17 +83,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     @Override
     public void wizardCompleted(WizardCompletedEvent wizardCompletedEvent) {
         Notification.show("Complete");
-
-//        mainView.setUpGame(false);
-
-//        //todo - set these attributes from the wizard
-//        //define the attributes needed
-//        ArrayList<TradingDataAttribute> attributes = new ArrayList<TradingDataAttribute>();
-//
-//        //just the closing price is enough for now
-//        attributes.add(TradingDataAttribute.DAY);
-//        attributes.add(TradingDataAttribute.CLOSING_PRICE);
-//        attributes.add(TradingDataAttribute.TRADES);
 
         //initialize the necessary player
         DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.gameConfig.getPlayerType(),
@@ -186,13 +173,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
                         type.getDescription());
             }
 
-//            gameTypes.addItem(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME);
-//            gameTypes.setItemCaption(GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME,
-//                    GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME.getDescription());
-//
-//            gameTypes.addItem(GameTypes.TICKER_DATA_GAME);
-//            gameTypes.setItemCaption(GameTypes.TICKER_DATA_GAME,
-//                    GameTypes.TICKER_DATA_GAME.getDescription());
 
             //default item
             gameTypes.select(GameTypes.values()[0]);
@@ -206,24 +186,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             multiplayer.addItem(1);
             multiplayer.setItemCaption(1,"Let others connect to the game");
 
-
-
-//            //monitor the selected item
-//            gameTypes.addValueChangeListener(new Property.ValueChangeListener() {
-//                @Override
-//                public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-//                    if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.OHLC_BASED)) {
-//
-//                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
-//
-//                    } else if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.TICKER_BASED)) {
-//
-//                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.TICKER_BASED;
-//                    }
-//                }
-//            });
-
-            return content;  //To change body of implemented methods use File | Settings | File Templates.
+            return content;
         }
 
         @Override
@@ -235,14 +198,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
                     break;
                 }
             }
-
-//            if(gameTypes.getValue()==GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME){
-////                DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
-//                DataPlaybackEngineStates.gameConfig=GameTypes.DAILY_SUMMARY_CLOSING_PRICE_GAME;
-//            }
-//            if(gameTypes.getValue()==GameTypes.TICKER_DATA_GAME){
-//                DataPlaybackEngineStates.gameConfig = GameTypes.TICKER_DATA_GAME;
-//            }
 
             //set multiplayer or not
             if(((Set)multiplayer.getValue()).contains(1)){
@@ -315,7 +270,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             //obtain the selected items
             Set selectedStocks= (Set) selector.getValue();
 
-            //if there are selested stocks
+            //if there are selected stocks
             if(selectedStocks.size()>0){
                 ArrayList<String> stocksList=new ArrayList<String>();
                 for (Object items:selectedStocks){
@@ -334,7 +289,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public boolean onBack() {
-            return true;  //To change body of implemented methods use File | Settings | File Templates.
+            return true;
         }
 
 
@@ -352,9 +307,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             datePicker=new InlineDateField();
             dateRangeType = new OptionGroup();
 
-            //set timezone to GMT
-//            datePicker.setTimeZone(TimeZone.getTimeZone("GMT"));
-
         }
 
         @Override
@@ -370,8 +322,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             content.setComponentAlignment(datePicker,Alignment.MIDDLE_CENTER);
             datePicker.setValue(new Date());
             datePicker.setImmediate(true);
-//            datePicker.setTimeZone(TimeZone.getTimeZone("Etc/GMT"));
-//            datePicker.setLocale(Locale.US);
             //if this is a OHLC game
             if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 datePicker.setResolution(Resolution.DAY);
@@ -384,7 +334,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             }
 
             //select the date range type
-
             content.addComponent(dateRangeType);
             content.setComponentAlignment(dateRangeType,Alignment.MIDDLE_CENTER);
             dateRangeType.setMultiSelect(true);
@@ -440,7 +389,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public boolean onBack() {
-            return true;  //To change body of implemented methods use File | Settings | File Templates.
+            return true;
         }
 
 
