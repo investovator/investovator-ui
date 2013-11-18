@@ -18,6 +18,10 @@
 
 package org.investovator.ui.main;
 
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import org.investovator.ui.main.components.CompanyTable;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 /**
@@ -26,9 +30,36 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
  */
 public class DataImportPanel extends DashboardPanel{
 
+    //Layout Components
+    VerticalLayout content;
+    HorizontalLayout ohclData;
+    CompanyTable ohclCompaniesTable;
+
     public  DataImportPanel(){
+        createLayout();
+    }
+
+    private void createLayout(){
+
+        content = new VerticalLayout();
+
+        //OHCL Data
+        ohclData = new HorizontalLayout();
+        ohclData.setCaption("Summary Data");
+        ohclData.setStyleName("center-caption");
+
+
+        ohclCompaniesTable = new CompanyTable();
+        ohclData.addComponent(ohclCompaniesTable);
+
+
+        content.addComponent(ohclData);
+        this.setContent(content);
+
 
     }
+
+
 
     @Override
     public void onEnter() {
