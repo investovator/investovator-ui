@@ -390,7 +390,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 //        }
 
         chart.setImmediate(true);
-//        chart.drawChart(configuration);
+        chart.drawChart(configuration);
         //disable trademark
         chart.getConfiguration().disableCredits();
 
@@ -431,8 +431,23 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             }
 
             //since there is only one series
-            DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
-            float floatProfit=(float)profit;
+//            if(!profitChart.getConfiguration().getSeries().isEmpty()){
+
+                DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
+                float floatProfit=(float)profit;
+                ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
+
+//            }
+//            else{
+////                DataSeries ls = new DataSeries();
+////                for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+////                    ls.add(new DataSeriesItem
+////                            (DateUtils.decrementTimeByDays((PROFIT_CHART_LENGTH - counter-1),
+////                                    DataPlaybackEngineStates.gameStartDate),0));
+////                }
+//                profitChart=setupProfitChart();
+//                profitChart.drawChart();
+//            }
 
 //            //check if the date is already updated
 //            if(ds.get(ds.size()-1).getX().equals(event.getTime())){
@@ -443,7 +458,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 //                ds.update(item);
 //            }
 //            else{
-                ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
 //            }
 
 
