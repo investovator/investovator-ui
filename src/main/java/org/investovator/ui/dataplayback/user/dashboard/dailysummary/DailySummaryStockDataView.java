@@ -33,8 +33,8 @@ public class DailySummaryStockDataView extends BasicStockDataView {
     public TradingDataAttribute[] setSelectableAttributes(){
         ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
 
-        attributes.add(TradingDataAttribute.DATE_HIGH);
-        attributes.add(TradingDataAttribute.DATE_LOW);
+        attributes.add(TradingDataAttribute.HIGH_PRICE);
+        attributes.add(TradingDataAttribute.LOW_PRICE);
         attributes.add(TradingDataAttribute.CLOSING_PRICE);
 
 

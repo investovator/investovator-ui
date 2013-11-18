@@ -41,6 +41,7 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.awt.*;
 import java.util.*;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -152,8 +153,8 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
         // Set the date range
         if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
-            timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
-                    DateUtils.incrementTimeByDays(5,DataPlaybackEngineStates.gameStartDate));
+//            timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
+//                    DateUtils.incrementTimeByDays(5,DataPlaybackEngineStates.gameStartDate));
 
         }
         else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
@@ -182,7 +183,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
         container.addContainerProperty(Timeline.PropertyId.VALUE, Float.class,
                 new Float(0));
         container.addContainerProperty(Timeline.PropertyId.TIMESTAMP,
-                java.util.Date.class, null);
+                Date.class, null);
 
 
 
@@ -205,6 +206,10 @@ public abstract class BasicStockDataView extends DashboardPanel {
             Collections.sort(list);
 
             for(Date date:list){
+//                Calendar cal = new GregorianCalendar(date.getYear(),date.getMonth(),date.getDay());
+//                cal.setTime(date);
+
+
                 // Create  a point in time
                 Item item = container.addItem(date);
 
