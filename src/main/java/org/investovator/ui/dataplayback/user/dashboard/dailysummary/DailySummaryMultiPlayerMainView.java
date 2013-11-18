@@ -128,6 +128,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinMultiplayerGame(this,this.userName);
             }
+            //update the account balance
+            this.updateAccountBalance();
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
@@ -205,7 +207,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
                         //update the account balance
-//                        updateAccountBalance();
+                        updateAccountBalance();
                     }
                     else{
 

@@ -161,7 +161,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
 
-//                        updateAccountBalance();
+                        updateAccountBalance();
 
                         //update the pie chart
 //                        updatePieChart(stocksList.getValue().toString());
@@ -372,6 +372,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinSingleplayerGame(this.userName);
             }
+            //update the account balance
+            this.updateAccountBalance();
         } catch (UserAlreadyJoinedException e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

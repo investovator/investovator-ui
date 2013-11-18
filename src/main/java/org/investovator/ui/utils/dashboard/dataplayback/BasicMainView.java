@@ -328,6 +328,10 @@ public abstract class BasicMainView extends DashboardPanel {
 
         FormLayout form=new FormLayout();
 
+        //account balance
+        this.accBalance=new Label("");
+        this.accBalance.setCaption("Account Balance");
+
         //stocks list
         final ComboBox stocksList=new ComboBox();
         stocksList.setCaption("Stock");
@@ -352,7 +356,7 @@ public abstract class BasicMainView extends DashboardPanel {
         final TextField quantity=new TextField("Amount");
         //quantity.setWidth("75%");
 
-
+        form.addComponent(accBalance);
         form.addComponent(stocksList);
         form.addComponent(orderSide);
         form.addComponent(quantity);

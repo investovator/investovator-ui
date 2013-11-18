@@ -175,7 +175,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
                         //update account info
-//                        updateAccountBalance();
+                        updateAccountBalance();
                     }
                     else{
 
@@ -230,6 +230,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this,this.userName);
             }
+
+            //update the account balance
+            this.updateAccountBalance();
 
 //            System.out.println("ui join -->"+this.toString());
 //            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
