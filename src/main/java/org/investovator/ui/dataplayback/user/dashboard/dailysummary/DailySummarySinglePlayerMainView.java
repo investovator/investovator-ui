@@ -161,6 +161,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
 
+                        updateAccountBalance();
+
                         //update the pie chart
 //                        updatePieChart(stocksList.getValue().toString());
 
@@ -505,9 +507,14 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                     beans.removeItem(stockID);
                 }
                 try {
-                    double price = player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.PRICE);
-                    int quantity =player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.QNTY).intValue();
-                    beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    Portfolio portfolio=player.getMyPortfolio(userName);
+                    //if the user has stocks
+                    if(!portfolio.getShares().isEmpty()){
+
+                        double price = portfolio.getShares().get(stockID).get(Terms.PRICE);
+                        int quantity =portfolio.getShares().get(stockID).get(Terms.QNTY).intValue();
+                        beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    }
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
@@ -620,6 +627,63 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             e.printStackTrace();
         } catch (UserJoinException e) {
             e.printStackTrace();
+        }
+
+    }
+
+
+    public Component setUpAccountInfoForm(){
+        FormLayout form=new FormLayout();
+
+        try {
+            if(this.userName==null){
+
+                int bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getInitialCredit();
+                Label accountBalance=new Label(Integer.toString(bal));
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
+            else{
+                Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+                Label accountBalance=new Label(bal.toString());
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (PlayerStateException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+
+        return form;
+    }
+
+    public void updateAccountBalance(){
+        try {
+            Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                    getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+            this.accBalance.setValue(bal.toString());
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (PlayerStateException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
     }
