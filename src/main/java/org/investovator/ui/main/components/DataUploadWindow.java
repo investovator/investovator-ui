@@ -42,12 +42,12 @@ public class DataUploadWindow extends Window{
     private CheckBox newCompanyCheckBox;
 
     //state
-    boolean newCompanySettngsShown;
+    boolean newCompanySettingsShown;
     private String selectedStock;
 
     public DataUploadWindow(){
 
-        newCompanySettngsShown = false;
+        newCompanySettingsShown = false;
         setLayout();
 
     }
@@ -56,21 +56,38 @@ public class DataUploadWindow extends Window{
 
         //Window Properties
         setCaption("Upload Data");
+        setResizable(false);
+        setClosable(true);
+        center();
 
         content = new VerticalLayout();
+        content.setSpacing(true);
+        companySelectLayout = new HorizontalLayout();
+        companyDetailUploadLayout = new HorizontalLayout();
+
+        newCompanyCheckBox = new CheckBox("New Company");
 
         companySelect = new ComboBox();
 
-        companySelect = new ComboBox("New Company");
+        companySelect = new ComboBox();
         companySelect.setNullSelectionAllowed(false);
         companySelect.setImmediate(true);
 
         dataUpload = new Upload();
-        dataUpload.setCaption(null);
+        dataUpload.setCaption("Select Data File");
+        dataUpload.setButtonCaption(null);
+
+        detailUpload = new Upload();
+        detailUpload.setCaption("select Company Info XML");
+        detailUpload.setButtonCaption(null);
+
+        companyDetailUploadLayout.addComponent(detailUpload);
 
         companySelectLayout.addComponent(companySelect);
+        companySelectLayout.addComponent(newCompanyCheckBox);
 
         content.addComponent(companySelectLayout);
+        content.addComponent(dataUpload);
 
         setContent(content);
         setDefaults();
@@ -109,19 +126,25 @@ public class DataUploadWindow extends Window{
 
         //File Receivers
         dataUpload.setReceiver(new DataFileReceiver());
-        detailUpload.setReceiver(new DataFileReceiver());
+        detailUpload.setReceiver(new DetailFileReceiver());
 
     }
 
 
     private void setNewCompanySettings(boolean enable){
 
-        if(enable && !newCompanySettngsShown){
+        if(enable && !newCompanySettingsShown){
 
-            newCompanySettngsShown = true;
-        }else if(!enable && newCompanySettngsShown){
+            content.addComponent(companyDetailUploadLayout, 1);
+            companySelect.setEnabled(false);
+            newCompanySettingsShown = true;
 
-            newCompanySettngsShown = false;
+        }else if(!enable && newCompanySettingsShown){
+
+            content.removeComponent(companyDetailUploadLayout);
+            companySelect.setEnabled(true);
+            newCompanySettingsShown = false;
+
         }
 
 
@@ -129,6 +152,14 @@ public class DataUploadWindow extends Window{
 
 
     private class DataFileReceiver implements Upload.Receiver{
+
+        @Override
+        public OutputStream receiveUpload(String s, String s2) {
+            return null;
+        }
+    }
+
+    private class DetailFileReceiver implements Upload.Receiver{
 
         @Override
         public OutputStream receiveUpload(String s, String s2) {
