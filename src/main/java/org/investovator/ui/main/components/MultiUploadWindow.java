@@ -34,9 +34,9 @@ import java.io.File;
  * @author Amila Surendra
  * @version $Revision
  */
-public class UploadWindow extends Window {
+public class MultiUploadWindow extends Window {
 
-    private UploadWindow(String caption) {
+    private MultiUploadWindow(String caption) {
         super(caption);
 
         final VerticalLayout content = new VerticalLayout();
@@ -45,13 +45,13 @@ public class UploadWindow extends Window {
             @Override
             protected void handleFile(File file, String s, String s2, long l) {
 
-                CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
+                /*CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
                 try {
-                    historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",file);
+                    //historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",file);
                     new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
                 } catch (DataAccessException e) {
                     e.printStackTrace();
-                }
+                }*/
 
                 synchronized (UI.getCurrent()){
                     content.addComponent(new Label(s));
