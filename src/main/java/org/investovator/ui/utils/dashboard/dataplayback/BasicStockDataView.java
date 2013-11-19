@@ -60,7 +60,8 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
     public BasicStockDataView() {
         this.content = new VerticalLayout();
-        content.setSizeFull();
+        this.setHeight("100%");
+//        content.setSizeFull();
     }
 
 
@@ -126,11 +127,12 @@ public abstract class BasicStockDataView extends DashboardPanel {
     private Timeline setUpChart(){
         Timeline timeline=new Timeline();
 
-//        timeline.setSizeFull();
-//        timeline.setHeight(100,Unit.CM);
-        timeline.setWidth(100,Unit.PERCENTAGE);
+        timeline.setSizeFull();
+        timeline.setHeight(625,Unit.PIXELS);
+//        timeline.setWidth(100,Unit.PERCENTAGE);
         timeline.setId("timeline");
         timeline.setUniformBarThicknessEnabled(true);
+        timeline.setImmediate(true);
 
         timeline.setChartMode(Timeline.ChartMode.LINE);
 
@@ -206,10 +208,6 @@ public abstract class BasicStockDataView extends DashboardPanel {
             Collections.sort(list);
 
             for(Date date:list){
-//                Calendar cal = new GregorianCalendar(date.getYear(),date.getMonth(),date.getDay());
-//                cal.setTime(date);
-
-
                 // Create  a point in time
                 Item item = container.addItem(date);
 
@@ -253,7 +251,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
         mainChart.setGraphFillColor(data, null);
         mainChart.setVerticalAxisLegendUnit(data, "Price");
 
-        mainChart.setImmediate(true);
+//        mainChart.setImmediate(true);
 
 
     }
