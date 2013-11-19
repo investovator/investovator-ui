@@ -18,16 +18,14 @@
 
 package org.investovator.ui.main;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.main.components.CompanyTable;
+import org.investovator.ui.main.components.DataUploadWindow;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.ArrayList;
@@ -43,10 +41,12 @@ public class DataImportPanel extends DashboardPanel {
     //Layout Components
     VerticalLayout content;
     HorizontalLayout dataTableLayout;
+    HorizontalLayout dataInsertLayout;
     VerticalLayout ohclTableLayout;
     VerticalLayout tickerTableLayout;
     CompanyTable ohclCompaniesTable;
     CompanyTable tickerCompaniesTable;
+    Button dataInsertButton;
     Label pageTitle;
 
     public DataImportPanel() {
@@ -57,7 +57,7 @@ public class DataImportPanel extends DashboardPanel {
 
         content = new VerticalLayout();
 
-        pageTitle = new Label("Available Transaction Data");
+        pageTitle = new Label("Available Historical Transaction Data");
         pageTitle.setSizeUndefined();
         pageTitle.setStyleName("h2");
 
@@ -70,6 +70,14 @@ public class DataImportPanel extends DashboardPanel {
         tickerTableLayout.setCaption("Ticker Data");
         tickerTableLayout.addStyleName("center-caption");
         tickerTableLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
+        dataInsertLayout = new HorizontalLayout();
+        dataInsertLayout.setWidth("100%");
+
+        dataInsertButton = new Button("Insert Historical Data");
+
+        dataInsertLayout.addComponent(dataInsertButton);
+        dataInsertLayout.setComponentAlignment(dataInsertButton, Alignment.MIDDLE_CENTER);
 
         dataTableLayout = new HorizontalLayout();
         dataTableLayout.setWidth("95%");
@@ -85,13 +93,27 @@ public class DataImportPanel extends DashboardPanel {
 
         content.addComponent(pageTitle);
         content.addComponent(dataTableLayout);
+        content.addComponent(dataInsertLayout);
         content.setComponentAlignment(pageTitle, Alignment.MIDDLE_CENTER);
         content.setComponentAlignment(dataTableLayout, Alignment.MIDDLE_CENTER);
 
+        bindEvents();
         this.setContent(content);
 
+    }
+
+
+    private void bindEvents(){
+
+        dataInsertButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                  getUI().addWindow(new DataUploadWindow());
+            }
+        });
 
     }
+
 
     @Override
     public void onEnter() {
