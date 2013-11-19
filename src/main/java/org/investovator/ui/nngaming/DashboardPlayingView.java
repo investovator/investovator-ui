@@ -18,6 +18,7 @@
 
 package org.investovator.ui.nngaming;
 
+import com.vaadin.addon.charts.Chart;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
@@ -68,8 +69,6 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         gameDataHelper = GameDataHelper.getInstance();
         nnGamingFacade = NNGamingFacade.getInstance();
-        playableStockManager = PlayableStockManager.getInstance();
-        playableStocks = playableStockManager.getStockList();
 
         stockBeanListBuy = gameDataHelper.getStockBeanListBuy();
         stockBeanListSell = gameDataHelper.getStockBeanListSell();
@@ -147,11 +146,13 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         updateStockOrders();    // updates sell & buy orders of each stock
 
+
         for(int i = 0; i < stockBeanListBuy.get(0).size();i++){
 
             beansBuy.addItem(stockBeanListBuy.get(0).get(i));
 
         }
+
 
         for(int i = 0; i < stockBeanListSell.get(0).size();i++){
 
@@ -211,15 +212,13 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
         ArrayList<Float> values;
         Random randomGenerator = new Random();
 
-
         for(int i = 0; i < stockCount; i++)
         {
 
-            int buyOrderCount = randomGenerator.nextInt(3) + 1;
-            int sellOrderCount = randomGenerator.nextInt(3) + 1;
+            int buyOrderCount = (randomGenerator.nextInt(2) + 1);
+            int sellOrderCount = (randomGenerator.nextInt(2) + 1);
 
             values = nnGamingFacade.getGeneratedOrders(buyOrderCount,sellOrderCount,playableStocks.get(i),currentDay);
-
 
             beanListBuy = getBuyOrderList(playableStocks.get(i), buyOrderCount, values);
 
@@ -232,7 +231,9 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
             stockBeanListSell.add(beanListSell);
 
             gameDataHelper.setStockBeanListSell(stockBeanListSell);
+
         }
+
     }
 
     private ArrayList<OrderBean> getBuyOrderList(String stockID, int buyOrderCount,
@@ -244,21 +245,32 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         for(int i = 0; i < buyOrderCount; i++){
 
-            beanListBuy.add(new OrderBean(values.get(i),randomGenerator.nextInt(199) + 1));
+            beanListBuy.add(new OrderBean(values.get(i),(randomGenerator.nextInt(199) + 1)));
 
         }
 
-        if(!stockBeanListBuy.isEmpty()){
 
-            ArrayList<OrderBean> temp = stockBeanListBuy.get(playableStocks.indexOf(stockID));
+        if(!(stockBeanListBuy.isEmpty())){
 
-            for(int j = 0; j < beanListBuy.size(); j++){
 
-                temp.add(beanListBuy.get(j));
+            if(stockBeanListBuy.size() <= playableStocks.indexOf(stockID))
+            {
+                return beanListBuy;
+            }
+            else {
+
+                ArrayList<OrderBean> temp = stockBeanListBuy.get(playableStocks.indexOf(stockID));
+
+                for(int j = 0; j < beanListBuy.size(); j++){
+
+                    temp.add(beanListBuy.get(j));
+
+                }
+
+                return temp;
 
             }
 
-            return temp;
         }
 
         return beanListBuy;
@@ -273,20 +285,27 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         for(int i = buyOrderCount; i < (buyOrderCount+sellOrderCount); i++){
 
-            beanListSell.add(new OrderBean(values.get(i), randomGenerator.nextInt(199) + 1));
+            beanListSell.add(new OrderBean(values.get(i), (randomGenerator.nextInt(199) + 1)));
 
         }
 
-        if(!stockBeanListSell.isEmpty()){
+        if(!(stockBeanListSell.isEmpty())){
 
-            ArrayList<OrderBean> temp = stockBeanListSell.get(playableStocks.indexOf(stockID));
-
-            for(int j = 0; j < beanListSell.size(); j++){
-
-                temp.add(beanListSell.get(j));
-
+            if(stockBeanListSell.size() <= playableStocks.indexOf(stockID))
+            {
+                return beanListSell;
             }
-            return temp;
+
+            else{
+                ArrayList<OrderBean> temp = stockBeanListSell.get(playableStocks.indexOf(stockID));
+
+                for(int j = 0; j < beanListSell.size(); j++){
+
+                    temp.add(beanListSell.get(j));
+
+                }
+                return temp;
+            }
         }
 
         return beanListSell;
@@ -319,11 +338,10 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
         return orderBookBuy;
     }
 
-    protected Component getChart() {
+    private Chart getChart(){
 
         BasicChart chart = new BasicChart();
         return chart.getChart();
-
     }
 
     @Override
@@ -331,13 +349,15 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         quoteUI.update();
 
-
         simulationRunning = true;
 
     }
 
     @Override
     public void update(Observable o, Object arg) {
+
+        playableStockManager = PlayableStockManager.getInstance();
+        playableStocks = playableStockManager.getStockList();
 
         if(arg instanceof DayChangedEvent){
             System.out.println("DayChanged");
@@ -350,12 +370,28 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
             currentDay++;
             gameDataHelper.setCurrentDay(currentDay);
+
+
+            /*if (currentPriceChart.isConnectorEnabled()) {
+                getSession().lock();
+                try {
+
+                    currentPriceChart.addPointToChart();
+
+                } finally {
+                    getSession().unlock();
+                }
+            }*/
+
+
             System.out.println("TableUpdated");
         }
 
         if(arg instanceof AddBidEvent){
+            System.out.println("AddBid");
 
             updateTable();
+            System.out.println("AddBideFired");
 
         }
     }

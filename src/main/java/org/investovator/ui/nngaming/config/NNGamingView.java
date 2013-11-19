@@ -124,7 +124,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
         NNManager nnManager = new NNManager(inputParam,selectedStockIDs);
         nnManager.createNeuralNetwork();
 
-        PlayableStockManager.getInstance().addStocks(selectedStockIDs);
+        PlayableStockManager.getInstance().setStocks(selectedStockIDs);
 
         try {
             GameControllerFacade.getInstance().startGame(GameModes.NN_GAME,null);

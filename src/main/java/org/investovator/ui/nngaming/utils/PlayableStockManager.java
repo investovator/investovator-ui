@@ -31,7 +31,9 @@ public class PlayableStockManager {
 
     private PlayableStockManager(){
 
-         stockList = new ArrayList<>();
+        if(stockList == null){
+            stockList = new ArrayList<>();
+        }
 
     }
 
@@ -45,9 +47,9 @@ public class PlayableStockManager {
         return instance;
     }
 
-    public void addStocks(ArrayList<String> stockIDs){
+    public void setStocks(ArrayList<String> stockIDs){
 
-        stockList = stockIDs;
+        this.stockList = stockIDs;
 
     }
 

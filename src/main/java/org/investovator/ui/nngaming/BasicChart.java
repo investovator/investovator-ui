@@ -20,7 +20,6 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
-import com.vaadin.ui.Component;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
@@ -31,12 +30,15 @@ import java.util.*;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class BasicChart {
+public class BasicChart extends Chart{
 
     private PlayableStockManager playableStockManager;
     private ArrayList<String> stockList;
     private NNGamingFacade nnGamingFacade;
     private ArrayList<DataSeries> stockDataSeriesList;
+    private ArrayList<float[]> predictedValues;
+    private ArrayList<Date[]> dateValues;
+    private int currentIndex = 0;
 
     public BasicChart(){
 
@@ -44,6 +46,12 @@ public class BasicChart {
         stockList = playableStockManager.getStockList();
         nnGamingFacade = NNGamingFacade.getInstance();
         stockDataSeriesList = new ArrayList<>();
+
+        predictedValues = new ArrayList<>();
+        dateValues = new ArrayList<>();
+
+
+
     }
 
 
@@ -51,7 +59,7 @@ public class BasicChart {
         return "Stock Price Variation";
     }
 
-    public Component getChart() {
+    public Chart getChart() {
 
         Chart chart = new Chart();
         chart.setHeight("300px");
@@ -68,10 +76,6 @@ public class BasicChart {
         yAxis.setMin(-5d);
         yAxis.setTitle(new Title("Price (LKR)"));
         yAxis.getTitle().setVerticalAlign(VerticalAlign.HIGH);
-
-       // configuration
-            //    .getTooltip()
-             //   .setFormatter(" "++": " +"°C"+" ");
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setDataLabels(new Labels(true));
@@ -101,11 +105,80 @@ public class BasicChart {
         chart.getConfiguration().getTitle().setText("Stock Prices");
 
         return chart;
+
     }
 
     public void addPointToChart(){
 
+        if((predictedValues.isEmpty()) && (dateValues.isEmpty())){
 
+            prepareChartData();
+
+        }
+
+        final int stockListSize = stockList.size();
+
+        getUI().access(new Runnable() {
+            @Override
+            public void run() {
+
+                for(int i = 0; i < stockListSize; i++){
+
+                    String stock = stockList.get(i);
+                    float[] values = predictedValues.get(stockList.indexOf(stock));
+                    Date[] dates = dateValues.get(stockList.indexOf(stock));
+                    stockDataSeriesList.get(stockList.indexOf(stock)).add(
+                            new DataSeriesItem(dates[currentIndex],values[currentIndex]));
+                }
+                getUI().push();
+
+            }
+        });
+
+        currentIndex++;
+
+    }
+
+    private void prepareChartData(){
+
+        int stockListSize = stockList.size();
+        float[] stockPrices;
+        Date[] dateArray;
+
+        for(int i = 0; i < stockListSize; i++){
+            stockPrices = nnGamingFacade.getPredictedPrices(stockList.get(i));
+            predictedValues.add(stockPrices);
+
+            int stockPriceLength = stockPrices.length;
+            dateArray = new Date[stockPriceLength];            //same length as stock prices array per stock
+
+            Calendar calendar = Calendar.getInstance();
+
+            Date[] dates = nnGamingFacade.getDateRange(stockList.get(i));    //get date range
+            calendar.setTime(dates[1]);
+
+            for(int k = 0; k < stockPriceLength; k++){
+
+                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+                if (dayOfWeek == Calendar.FRIDAY) {
+                    calendar.add(Calendar.DATE, 3);
+                } else if (dayOfWeek == Calendar.SATURDAY) {
+                    calendar.add(Calendar.DATE, 2);
+                } else {
+                    calendar.add(Calendar.DATE, 1);
+                }
+
+                Date nextBusinessDay = calendar.getTime();
+
+                dateArray[k] = nextBusinessDay;
+
+                calendar.setTime(nextBusinessDay);
+            }
+
+            dateValues.add(dateArray);
+
+        }
     }
 
     private void prepareDataSeriesLists(){
