@@ -50,7 +50,7 @@ public class BasicChart extends Chart{
         predictedValues = new ArrayList<>();
         dateValues = new ArrayList<>();
 
-
+        initChart();
 
     }
 
@@ -59,11 +59,11 @@ public class BasicChart extends Chart{
         return "Stock Price Variation";
     }
 
-    public Chart getChart() {
+    public void initChart() {
 
-        Chart chart = new Chart();
-        chart.setHeight("300px");
-        chart.setWidth("100%");
+
+        setHeight("300px");
+        setWidth("100%");
 
         Configuration configuration = new Configuration();
         configuration.getChart().setType(ChartType.LINE);
@@ -99,12 +99,11 @@ public class BasicChart extends Chart{
 
         }
 
-        chart.drawChart(configuration);
+        drawChart(configuration);
 
-        chart.getConfiguration().disableCredits();
-        chart.getConfiguration().getTitle().setText("Stock Prices");
+        getConfiguration().disableCredits();
+        getConfiguration().getTitle().setText("Stock Prices");
 
-        return chart;
 
     }
 

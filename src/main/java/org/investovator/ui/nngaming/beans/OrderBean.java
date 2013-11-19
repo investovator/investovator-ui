@@ -19,12 +19,13 @@
 package org.investovator.ui.nngaming.beans;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class OrderBean implements Serializable{
+public class OrderBean implements Serializable,Comparator<OrderBean>{
 
     private float orderValue;
     private int quantity;
@@ -50,5 +51,15 @@ public class OrderBean implements Serializable{
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public int compare(OrderBean o1, OrderBean o2) {
+        if(o1.getOrderValue() < o2.getOrderValue())
+            return -1;
+        else if(o1.getOrderValue() > o2.getOrderValue())
+            return 1;
+        else
+            return 0;
     }
 }

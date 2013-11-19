@@ -20,7 +20,8 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
-import org.investovator.core.data.api.CompanyData;
+import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 import java.util.ArrayList;
@@ -30,9 +31,6 @@ import java.util.ArrayList;
  * @version: ${Revision}
  */
 public class QuoteUI extends VerticalLayout{
-
-    //External Data
-    CompanyData companyData;
 
     //Layout Components
     Button tradeButton;
@@ -48,10 +46,15 @@ public class QuoteUI extends VerticalLayout{
     float orderPrice;
     int orderStockCount;
 
+    private GameDataHelper gameDataHelper;
+    private PlayableStockManager playableStockManager;
+
 
     public QuoteUI() {
 
         setupUI();
+        gameDataHelper = GameDataHelper.getInstance();
+        playableStockManager = PlayableStockManager.getInstance();
 
     }
 
@@ -136,6 +139,14 @@ public class QuoteUI extends VerticalLayout{
         stockSelect.setNullSelectionAllowed(false);
         stockSelect.setValue(stockIDs.get(0));
 
+        selectedStock = stockIDs.get(0);
+
+    }
+
+    public String getSelectedStock(){
+
+        return selectedStock;
+
     }
 
     private void setAmount(){
@@ -166,7 +177,19 @@ public class QuoteUI extends VerticalLayout{
         @Override
         public void buttonClick(Button.ClickEvent clickEvent) {
 
-            //ToDO add order to book
+            boolean status = checkExecutableStatus();
+
+            if(status){
+                //execute order
+                //let dashboard playing view know
+                //update portfolio
+                System.out.println("Order Can be Executed");
+            }
+            else {
+                 //add order to table
+                System.out.println("Nope");
+            }
+
         }
     };
 
@@ -192,7 +215,44 @@ public class QuoteUI extends VerticalLayout{
         }
     };
 
+    private boolean checkExecutableStatus(){
 
+        boolean status = false;
+        ArrayList<String> stockList = playableStockManager.getStockList();
+
+        if(isBuy){
+            ArrayList<ArrayList<OrderBean>> sellStockBeanList = gameDataHelper.getStockBeanListSell();
+            ArrayList<OrderBean> sellBeanList = sellStockBeanList.get(stockList.indexOf(selectedStock));
+
+            if(sellBeanList == null)
+                return false;
+
+            if(sellBeanList.get(0).getOrderValue() <= orderPrice){
+                status = true;
+            }
+            else {
+                status = false;
+            }
+
+        }
+        else{
+            ArrayList<ArrayList<OrderBean>> buyStockBeanList = gameDataHelper.getStockBeanListBuy();
+            ArrayList<OrderBean> buyBeanList = buyStockBeanList.get(stockList.indexOf(selectedStock));
+
+            if(buyBeanList == null)
+                return false;
+
+            if(buyBeanList.get(0).getOrderValue() >= orderPrice){
+                status = true;
+            }
+            else {
+                status = false;
+            }
+
+        }
+
+        return status;
+    }
 
 }
 

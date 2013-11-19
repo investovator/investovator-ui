@@ -18,10 +18,12 @@
 
 package org.investovator.ui.nngaming;
 
-import com.vaadin.addon.charts.Chart;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.investovator.ann.nngaming.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.ann.nngaming.events.AddBidEvent;
@@ -31,10 +33,7 @@ import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author: Hasala Surasinghe
@@ -48,7 +47,7 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
     Table orderBookSell;
     Table orderBookBuy;
-    Component currentPriceChart;
+    BasicChart currentPriceChart;
     QuoteUI quoteUI;
 
     private MarketEventReceiver marketEventReceiver;
@@ -107,10 +106,11 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         HorizontalLayout orderBookLayout = new HorizontalLayout();
 
+        currentPriceChart = new BasicChart();
         orderBookSell = getSellSideTable();
         orderBookBuy = getBuySideTable();
-        currentPriceChart = getChart();
         quoteUI = new QuoteUI();
+
 
         orderBookLayout.addComponent(orderBookSell);
         orderBookLayout.addComponent(orderBookBuy);
@@ -169,9 +169,9 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
                     public void run() {
 
                         orderBookBuy.setContainerDataSource(beansBuy);
-                        orderBookBuy.setSortContainerPropertyId("orderValue");
+                        /*orderBookBuy.setSortContainerPropertyId("orderValue");
                         orderBookBuy.setSortAscending(false);
-                        orderBookBuy.sort();
+                        orderBookBuy.sort();*/
                         getUI().push();
                     }
                 });
@@ -190,9 +190,6 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
                     public void run() {
 
                         orderBookSell.setContainerDataSource(beansSell);
-                        orderBookSell.setSortContainerPropertyId("orderValue");
-                        orderBookSell.setSortAscending(true);
-                        orderBookSell.sort();
                         getUI().push();
                     }
                 });
@@ -249,6 +246,9 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         }
 
+        OrderBean comparator = new OrderBean(new Float(12.50),12);
+        Collections.sort(beanListBuy, comparator);
+        Collections.reverse(beanListBuy);
 
         if(!(stockBeanListBuy.isEmpty())){
 
@@ -266,6 +266,9 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
                     temp.add(beanListBuy.get(j));
 
                 }
+
+                Collections.sort(temp, comparator);
+                Collections.reverse(temp);
 
                 return temp;
 
@@ -289,6 +292,9 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         }
 
+        OrderBean comparator = new OrderBean(new Float(12.50),12);
+        Collections.sort(beanListSell, comparator);
+
         if(!(stockBeanListSell.isEmpty())){
 
             if(stockBeanListSell.size() <= playableStocks.indexOf(stockID))
@@ -304,6 +310,9 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
                     temp.add(beanListSell.get(j));
 
                 }
+
+                Collections.sort(temp, comparator);
+
                 return temp;
             }
         }
@@ -338,12 +347,6 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
         return orderBookBuy;
     }
 
-    private Chart getChart(){
-
-        BasicChart chart = new BasicChart();
-        return chart.getChart();
-    }
-
     @Override
     public void onEnter() {
 
@@ -372,7 +375,7 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
             gameDataHelper.setCurrentDay(currentDay);
 
 
-            /*if (currentPriceChart.isConnectorEnabled()) {
+            if (currentPriceChart.isConnectorEnabled()) {
                 getSession().lock();
                 try {
 
@@ -381,17 +384,16 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
                 } finally {
                     getSession().unlock();
                 }
-            }*/
+            }
 
 
             System.out.println("TableUpdated");
         }
 
         if(arg instanceof AddBidEvent){
-            System.out.println("AddBid");
 
             updateTable();
-            System.out.println("AddBideFired");
+
 
         }
     }
