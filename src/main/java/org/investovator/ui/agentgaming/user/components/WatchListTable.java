@@ -11,6 +11,7 @@ import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.main.beans.CompanyDataBean;
+import org.investovator.ui.main.components.StockSelectComboBox;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,8 +28,7 @@ public class WatchListTable extends Table implements Button.ClickListener {
 
     public WatchListTable() {
 
-        setWidth("90%");
-        setHeight("300px");
+        setSizeUndefined();
         setSelectable(true);
         setImmediate(true);
 
