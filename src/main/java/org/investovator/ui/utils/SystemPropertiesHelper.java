@@ -63,9 +63,9 @@ public class SystemPropertiesHelper implements
         System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
         System.out.println("SQL Path : " + realPath);
 
-        //UnComment these once
-        clearOldData();
-        addTestConfig();
+//        //UnComment these once
+//        clearOldData();
+//        addTestConfig();
 
     }
 
@@ -105,6 +105,11 @@ public class SystemPropertiesHelper implements
             //sampath ticker data
             filePath = context.getRealPath("/WEB-INF/testdata/SAMP_ticker.csv");
             historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"SAMP","MM/dd/yyyy HH:mm:ss.SSS",
+                    new File(filePath));
+
+            //HASU ticker data
+            filePath = context.getRealPath("/WEB-INF/testdata/HASU_ticker.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"HASU","MM/dd/yyyy HH:mm:ss.SSS",
                     new File(filePath));
 
         } catch (DataAccessException e) {

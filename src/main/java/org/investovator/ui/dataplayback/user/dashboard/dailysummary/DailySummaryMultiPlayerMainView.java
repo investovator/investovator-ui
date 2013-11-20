@@ -35,6 +35,7 @@ import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
@@ -59,9 +60,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     public Chart buildMainChart() {
         Chart chart = new Chart();
         chart.setHeight(70,Unit.MM);
-
-//        chart.setWidth("250px");
-//        chart.setSizeFull();
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -121,11 +119,14 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     public void onEnterMainView() {
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
+
             this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinMultiplayerGame(this,this.userName);
             }
+            //update the account balance
+            this.updateAccountBalance();
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PlayerStateException e) {
@@ -155,31 +156,10 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
         }
 
-
-//
-//        if (stockPieChart.isConnectorEnabled()) {
-//            getSession().lock();
-//            try {
-//                dSeries.update(dSeries.get(event.getStockId()));
-//                stockPieChart.setImmediate(true);
-//                stockPieChart.drawChart();
-//
-//            } finally {
-//                getSession().unlock();
-//            }
-//        }
-
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
                 dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
-                //UI.getCurrent().push();
-                //System.out.println("pushed");
                 getUI().push();
-            }
-        });
     }
 
     @Override
@@ -191,10 +171,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-//                Notification.show(stocksList.getValue().toString() + "--" + orderSide.getValue().toString() + "--" + quantity.getValue().toString());
-//                System.out.println();
-
-//                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
@@ -202,6 +178,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                     //if the transaction was a success
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
+                        //update the account balance
+                        updateAccountBalance();
                     }
                     else{
 
@@ -212,20 +190,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 } catch (UserJoinException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-//                }
-
-//                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
-//                    try {
-//                        Boolean status=realTimePlayer.executeOrder(stocksList.getValue().toString(),
-//                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
-//                        Notification.show(status.toString());
-//
-//                    } catch (InvalidOrderException e) {
-//                        Notification.show(e.getMessage());
-//                    } catch (UserJoinException e) {
-//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                    }
-//                }
 
             }});
 
@@ -251,22 +215,22 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
                 portfolioTable.getContainerDataSource();
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
                 //if the stock is already bought
                 if(beans.containsId(stockID)){
                     beans.removeItem(stockID);
                 }
                 try {
-                    double price = player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.PRICE);
-                    int quantity =player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.QNTY).intValue();
-                    beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    Portfolio portfolio=player.getMyPortfolio(userName);
+                    //if the user has stocks
+                    if(!portfolio.getShares().isEmpty() && (portfolio.getShares().get(stockID)!=null)){
+
+                        double price = portfolio.getShares().get(stockID).get(Terms.PRICE);
+                        int quantity =portfolio.getShares().get(stockID).get(Terms.QNTY).intValue();
+                        beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    }
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
-            }
-        });
 
     }
 
@@ -281,13 +245,11 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         x.setType(AxisType.DATETIME);
         x.setDateTimeLabelFormats(
                 new DateTimeLabelFormats("%e. %b", "%b"));
-//        x.setMinRange(3600000*24*7);
         x.setTickInterval(24 * 3600 * 1000);
         conf.addxAxis(x);
 
         YAxis y = new YAxis();
         y.setMin(0);
-//        y.setMinRange(500);
         y.setTitle("Quantity");
         conf.addyAxis(y);
 
@@ -297,10 +259,6 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         conf.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
-//        plot.setPointPadding(0.1);
-//        plot.setBorderWidth(0);
-        //set the widht of the columns
-//        plot.setPointWidth(15);
 
         if (DataPlaybackEngineStates.playingSymbols != null) {
             for (String stock : DataPlaybackEngineStates.playingSymbols) {
@@ -325,6 +283,152 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         chart.drawChart(conf);
         chart.setImmediate(true);
         return chart;
+    }
+
+    @Override
+    public Chart setupProfitChart() {
+        Chart chart = new Chart();
+        chart.setHeight(100,Unit.PERCENTAGE);
+        chart.setWidth(95,Unit.PERCENTAGE);
+
+        Configuration configuration = new Configuration();
+        configuration.getChart().setType(ChartType.LINE);
+        configuration.getLegend().setEnabled(false);
+        configuration.getyAxis().setTitle("");
+
+        PlotOptionsLine plotOptions = new PlotOptionsLine();
+        plotOptions.setEnableMouseTracking(false);
+
+        configuration.setPlotOptions(plotOptions);
+
+        configuration.getxAxis().setType(AxisType.DATETIME);
+        configuration.getxAxis().setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+
+
+        DataSeries ls = new DataSeries();
+
+        //add dummy points to fill it up
+        for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+            ls.add(new DataSeriesItem
+                    (DateUtils.decrementTimeByDays((PROFIT_CHART_LENGTH - counter),
+                            DataPlaybackEngineStates.gameStartDate),0));
+        }
+
+        configuration.addSeries(ls);
+
+
+        chart.setImmediate(true);
+        chart.drawChart(configuration);
+        //disable trademark
+        chart.getConfiguration().disableCredits();
+
+        chart.getConfiguration().getTitle().setText(null);
+        return chart;
+
+    }
+
+    public void updateProfitChart(final StockUpdateEvent event){
+        Portfolio portfolio=null;
+
+
+        try {
+            //if this is a game based on the real time data player
+            if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMyPortfolio(this.userName);
+            }
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
+                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMyPortfolio(this.userName);
+            }
+
+            //get the current prices of all the stocks
+            BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                    stockPriceTable.getContainerDataSource();
+
+            double profit=0;
+            for(String stock:portfolio.getShares().keySet()){
+                //cost for a stock
+                double cost = portfolio.getShares().get(stock).get(Terms.PRICE);
+                //current price of a stock
+                float currentPrice=beans.getItem(stock).getBean().getPrice();
+                //total number of stocks bought
+                double numOfStocks= portfolio.getShares().get(stock).get(Terms.QNTY);
+
+                profit=profit+((currentPrice-cost)*numOfStocks);
+            }
+
+            //since there is only one series
+
+                DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
+                float floatProfit=(float)profit;
+                ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
+
+
+
+        } catch (PlayerStateException e) {
+            e.printStackTrace();
+        } catch (UserJoinException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public Component setUpAccountInfoForm(){
+        FormLayout form=new FormLayout();
+
+        try {
+            if(this.userName==null){
+
+                int bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getInitialCredit();
+                Label accountBalance=new Label(Integer.toString(bal));
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
+            else{
+                Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+                Label accountBalance=new Label(bal.toString());
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getDailySummaryDataPLayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
+        } catch (UserJoinException e) {
+            e.printStackTrace();
+        } catch (PlayerStateException e) {
+            e.printStackTrace();
+        }
+
+
+        return form;
+    }
+
+    public void updateAccountBalance(){
+        try {
+            Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                    getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+            this.accBalance.setValue(bal.toString());
+        } catch (UserJoinException e) {
+            e.printStackTrace();
+        } catch (PlayerStateException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

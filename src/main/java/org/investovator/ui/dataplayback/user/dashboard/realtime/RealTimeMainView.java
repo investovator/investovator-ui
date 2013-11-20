@@ -39,12 +39,15 @@ import org.investovator.dataplaybackengine.exceptions.player.PlayerStateExceptio
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
+
+import java.util.Date;
 
 /**
  * @author: ishan
@@ -59,6 +62,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     private RealTimeDataPlayer player;
 
+    //used to keep track of the date of the last update
+    public Date lastUpdateTime;
+
 
 
     @Override
@@ -66,8 +72,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         Chart chart = new Chart();
         chart.setHeight(70,Unit.MM);
 
-//        chart.setWidth("250px");
-//        chart.setSizeFull();
 
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -116,8 +120,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         //disable trademark
         chart.getConfiguration().disableCredits();
 
-
-        chart.getConfiguration().setTitle("Price");
+        chart.getConfiguration().getTitle().setText("Price");
         return chart;
     }
 
@@ -125,22 +128,24 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         final BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
                 portfolioTable.getContainerDataSource();
 
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
                 //if the stock is already bought
                 if(beans.containsId(stockID)){
                     beans.removeItem(stockID);
                 }
                 try {
-                    double price = player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.PRICE);
-                    int quantity =player.getMyPortfolio(userName).getShares().get(stockID).get(Terms.QNTY).intValue();
-                    beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    Portfolio portfolio=player.getMyPortfolio(userName);
+                    //if the user has stocks
+                    if(!portfolio.getShares().isEmpty() && (portfolio.getShares().get(stockID)!=null)){
+
+                        double price = portfolio.getShares().get(stockID).get(Terms.PRICE);
+                        int quantity =portfolio.getShares().get(stockID).get(Terms.QNTY).intValue();
+                        beans.addBean(new PortfolioBean(stockID,price, quantity));
+                    }
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
-            }
-        });
+//            }
+//        });
 
     }
 
@@ -153,10 +158,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-//                Notification.show(stocksList.getValue().toString() + "--" + orderSide.getValue().toString() + "--" + quantity.getValue().toString());
-//                System.out.println();
-
-//                if (DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
@@ -164,6 +165,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     //if the transaction was a success
                     if(status){
                         updatePortfolioTable(stocksList.getValue().toString());
+                        //update account info
+                        updateAccountBalance();
                     }
                     else{
 
@@ -174,20 +177,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 } catch (UserJoinException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-//                }
-
-//                if (DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
-//                    try {
-//                        Boolean status=realTimePlayer.executeOrder(stocksList.getValue().toString(),
-//                                Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()));
-//                        Notification.show(status.toString());
-//
-//                    } catch (InvalidOrderException e) {
-//                        Notification.show(e.getMessage());
-//                    } catch (UserJoinException e) {
-//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                    }
-//                }
 
             }});
 
@@ -219,14 +208,15 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 this.player.joinGame(this,this.userName);
             }
 
-//            System.out.println("ui join -->"+this.toString());
-//            DataPlayerFacade.getInstance().getRealTimeDataPlayer().setObserver(this);
+            //update the account balance
+            this.updateAccountBalance();
+
         } catch (UserAlreadyJoinedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (UserJoinException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -249,12 +239,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                     BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                             stockPriceTable.getContainerDataSource();
                     value=beans.getItem(event.getStockId()).getBean().getPrice();
-                    System.out.println("missing - "+event.getTime()+" - "+value);
                 }
 
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
                         if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
                             dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
@@ -263,10 +249,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                             dSeries.add(new DataSeriesItem(event.getTime(),value));
 
                         }
-
-                    }
-                });
-
 
             }
 
@@ -279,26 +261,9 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         final BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
                 stockPriceTable.getContainerDataSource();
 
-
-//        if (stockPriceTable.isConnectorEnabled()) {
-//            getSession().lock();
-//            try {
-//                beans.removeItem(event.getStockId());
-//                beans.addBean(new StockNamePriceBean(event.getStockId(),
-//                        event.getData().get(TradingDataAttribute.PRICE)));
-//            } finally {
-//                getSession().unlock();
-//            }
-//        }
-
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
                 beans.removeItem(event.getStockId());
                 beans.addBean(new StockNamePriceBean(event.getStockId(),
                         event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch())));
-            }
-        });
     }
 
     public void updatePieChart(final StockUpdateEvent event)
@@ -324,36 +289,17 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 }
 
 
-//
-//        if (stockPieChart.isConnectorEnabled()) {
-//            getSession().lock();
-//            try {
-//                dSeries.update(dSeries.get(event.getStockId()));
-//                stockPieChart.setImmediate(true);
-//                stockPieChart.drawChart();
-//
-//            } finally {
-//                getSession().unlock();
-//            }
-//        }
-
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
                 dSeries.update(dSeries.get(event.getStockId()));
                 stockPieChart.setImmediate(true);
                 stockPieChart.drawChart();
-                //UI.getCurrent().push();
-                //System.out.println("pushed");
                 getUI().push();
-            }
-        });
     }
 
 
     @Override
     public void eventOccurred(PlaybackEvent arg) {
-//        System.out.println("Event");
+
+
         //if this is a stock price update
         if (arg instanceof StockUpdateEvent) {
             final StockUpdateEvent event = (StockUpdateEvent) arg;
@@ -369,16 +315,24 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
                 //update the table
                 updateStockPriceTable(event);
+            }
 
-                //update the pie-chart
-                try {
-                    updatePieChart(event);
-                } catch (PlayerStateException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (UserJoinException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            //todo -shows false values, does not use the latest data for calculations
+            if(lastUpdateTime!=null && lastUpdateTime.before(event.getTime())){
+                updateProfitChart(event);
+            }
+
+            //push the changes
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    getUI().push();
                 }
+            });
 
+            //save the updates event
+            if(lastUpdateTime==null || lastUpdateTime.before(event.getTime())){
+                lastUpdateTime=event.getTime();
             }
 
         }
@@ -397,28 +351,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-//                if (mainChart.isConnectorEnabled()) {
-//                    getSession().lock();
-//                    try {
-//                        if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
-//
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.SHARES)/100), true, true);
-//
-//                        } else {
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.SHARES)/100));
-//
-//                        }
-//
-//                    } finally {
-//                        getSession().unlock();
-//                    }
-//                }
-
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
 
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
@@ -430,9 +362,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                                         event.getData().get(TradingDataAttribute.SHARES)));
 
                             }
-                    }
-                });
-
 
             }
 
@@ -446,7 +375,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         chart.setHeight(43,Unit.MM);
 
         Configuration conf = chart.getConfiguration();
-        conf.setTitle("Quantity");
+        conf.getTitle().setText("Quantity");
 
         XAxis x = new XAxis();
         x.setType(AxisType.DATETIME);
@@ -454,7 +383,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         YAxis y = new YAxis();
         y.setMin(0);
-//        y.setMinRange(500);
         y.setTitle("Quantity");
         conf.addyAxis(y);
 
@@ -492,5 +420,158 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         chart.drawChart(conf);
         chart.setImmediate(true);
         return chart;
+    }
+
+    public void updateProfitChart(final StockUpdateEvent event){
+        Portfolio portfolio=null;
+
+
+            try {
+                //if this is a game based on the real time data player
+                if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                    portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                            getRealTimeDataPlayer().getMyPortfolio(this.userName);
+                }
+                else if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
+                    portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
+                            getDailySummaryDataPLayer().getMyPortfolio(this.userName);
+                }
+
+                //get the current prices of all the stocks
+                BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                        stockPriceTable.getContainerDataSource();
+
+                double profit=0;
+                for(String stock:portfolio.getShares().keySet()){
+                    //cost for a stock
+                    double cost = portfolio.getShares().get(stock).get(Terms.PRICE);
+                    //current price of a stock
+                    float currentPrice=beans.getItem(stock).getBean().getPrice();
+                    //total number of stocks bought
+                    double numOfStocks= portfolio.getShares().get(stock).get(Terms.QNTY);
+
+                    profit=profit+((currentPrice-cost)*numOfStocks);
+                }
+
+                //since there is only one series
+                DataSeries ds=(DataSeries)profitChart.getConfiguration().getSeries().get(0);
+                float floatProfit=(float)profit;
+                ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
+
+
+            } catch (PlayerStateException e) {
+                e.printStackTrace();
+            } catch (UserJoinException e) {
+                e.printStackTrace();
+            }
+
+    }
+
+    @Override
+    public Chart setupProfitChart() {
+            Chart chart = new Chart();
+            chart.setHeight(100,Unit.PERCENTAGE);
+            chart.setWidth(95,Unit.PERCENTAGE);
+
+            Tooltip tooltip = new Tooltip();
+            tooltip.setShared(true);
+            tooltip.setUseHTML(true);
+            tooltip.setHeaderFormat("{point.key}");
+            tooltip.setPointFormat("");
+            tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
+
+            Configuration configuration = new Configuration();
+            configuration.setTooltip(tooltip);
+            configuration.getChart().setType(ChartType.LINE);
+            configuration.getLegend().setEnabled(false);
+            configuration.getyAxis().setTitle("");
+
+            PlotOptionsLine plotOptions = new PlotOptionsLine();
+            plotOptions.setEnableMouseTracking(false);
+            //performance related
+            plotOptions.setShadow(false);
+
+            configuration.setPlotOptions(plotOptions);
+
+            configuration.getxAxis().setType(AxisType.DATETIME);
+            configuration.getxAxis().setDateTimeLabelFormats(
+                    new DateTimeLabelFormats("%e. %b", "%b"));
+
+
+            DataSeries ls = new DataSeries();
+
+            //add dummy points to fill it up
+            for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+                ls.add(new DataSeriesItem
+                        (DateUtils.decrementTimeBySeconds((PROFIT_CHART_LENGTH - counter),
+                                DataPlaybackEngineStates.gameStartDate),0));
+            }
+
+            configuration.addSeries(ls);
+
+            chart.setImmediate(true);
+            chart.drawChart(configuration);
+            //disable trademark
+            chart.getConfiguration().disableCredits();
+
+            chart.getConfiguration().getTitle().setText(null);
+            return chart;
+
+    }
+
+    public Component setUpAccountInfoForm(){
+        FormLayout form=new FormLayout();
+
+        try {
+            if(this.userName==null){
+
+                int bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getInitialCredit();
+                Label accountBalance=new Label(Integer.toString(bal));
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
+            else{
+                Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMyPortfolio(this.userName).getCashBalance();
+                Label accountBalance=new Label(bal.toString());
+                this.accBalance=accountBalance;
+                accountBalance.setCaption("Account Balance");
+                form.addComponent(accountBalance);
+
+                int max=DataPlaybackGameFacade.getDataPlayerFacade().
+                        getRealTimeDataPlayer().getMaxOrderSize();
+                Label maxOrderSize=new Label(Integer.toString(max));
+                maxOrderSize.setCaption("Max. Order Size");
+                form.addComponent(maxOrderSize);
+            }
+        } catch (UserJoinException e) {
+            e.printStackTrace();
+        } catch (PlayerStateException e) {
+            e.printStackTrace();
+        }
+
+
+        return form;
+    }
+
+    public void updateAccountBalance(){
+        try {
+            Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
+                    getRealTimeDataPlayer().getMyPortfolio(this.userName).getCashBalance();
+            this.accBalance.setValue(bal.toString());
+        } catch (UserJoinException e) {
+            e.printStackTrace();
+        } catch (PlayerStateException e) {
+            e.printStackTrace();
+        }
+
     }
 }

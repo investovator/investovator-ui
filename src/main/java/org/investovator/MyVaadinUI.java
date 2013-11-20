@@ -4,6 +4,7 @@ import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.communication.PushMode;
@@ -64,6 +65,17 @@ public class MyVaadinUI extends UI
         navigator.addView(UIConstants.NNVIEW, new NNGamingView());
         navigator.addView(UIConstants.NNGAMINGVIEW, new NNGamingDashBoard());
         navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
+
+
+        //TODO: Uncaught Error Handling
+        getUI().setErrorHandler(new DefaultErrorHandler(){
+            @Override
+            public void error(com.vaadin.server.ErrorEvent event) {
+                doDefault(event);
+            }
+        });
+
+
 
         //test JASA code
 //        Main main=new Main();
