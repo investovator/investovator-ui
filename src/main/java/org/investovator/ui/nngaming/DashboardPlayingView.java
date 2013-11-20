@@ -20,10 +20,9 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.server.Page;
+import com.vaadin.shared.Position;
+import com.vaadin.ui.*;
 import org.investovator.ann.nngaming.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.ann.nngaming.events.AddBidEvent;
@@ -39,7 +38,7 @@ import java.util.*;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class DashboardPlayingView extends DashboardPanel implements Observer{
+public class DashboardPlayingView extends DashboardPanel implements Observer, AddOrderEvent{
 
 
     //Layout Components
@@ -75,6 +74,8 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
         marketEventReceiver = MarketEventReceiver.getInstance();
         marketEventReceiver.addObserver(this);
+
+        quoteUI.addAddOrderListener(this);
 
     }
 
@@ -169,9 +170,6 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
                     public void run() {
 
                         orderBookBuy.setContainerDataSource(beansBuy);
-                        /*orderBookBuy.setSortContainerPropertyId("orderValue");
-                        orderBookBuy.setSortAscending(false);
-                        orderBookBuy.sort();*/
                         getUI().push();
                     }
                 });
@@ -396,5 +394,122 @@ public class DashboardPlayingView extends DashboardPanel implements Observer{
 
 
         }
+    }
+
+    @Override
+    public void onAddOrder(boolean isBuy, String stockID, float orderPrice, int orderStockCount) {
+
+        ArrayList<String> stockList = playableStockManager.getStockList();
+        int stockIndex = stockList.indexOf(stockID);
+
+        if(isBuy){
+            ArrayList<ArrayList<OrderBean>> buyStockBeanList = gameDataHelper.getStockBeanListBuy();
+
+            if(buyStockBeanList.size() <= stockIndex){
+                Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
+                notification.setPosition(Position.BOTTOM_RIGHT);
+                notification.show(Page.getCurrent());
+            }
+
+            else{
+
+                ArrayList<OrderBean> buyBeanList = buyStockBeanList.get(stockList.indexOf(stockID));
+
+                buyBeanList.add(new OrderBean(orderPrice, orderStockCount));
+
+                OrderBean comparator = new OrderBean(new Float(12.50),12);
+                Collections.sort(buyBeanList, comparator);
+                Collections.reverse(buyBeanList);
+
+                buyStockBeanList.set(stockIndex, buyBeanList);
+
+                gameDataHelper.setStockBeanListBuy(buyStockBeanList);
+
+                final Container beansBuy = orderBookBuy.getContainerDataSource();
+
+                if(!(beansBuy.size() == 0)){
+                    beansBuy.removeAllItems();
+                }
+
+                for(int i = 0; i < buyStockBeanList.get(stockIndex).size();i++){
+
+                    beansBuy.addItem(buyStockBeanList.get(stockIndex).get(i));
+
+                }
+
+                if (orderBookBuy.isConnectorEnabled()) {
+                    getSession().lock();
+                    try {
+
+                        getUI().access(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            orderBookBuy.setContainerDataSource(beansBuy);
+                            getUI().push();
+                        }
+                    });
+
+                    } finally {
+                    getSession().unlock();
+                }
+            }
+            }
+        }
+
+        else {
+            ArrayList<ArrayList<OrderBean>> sellStockBeanList = gameDataHelper.getStockBeanListSell();
+
+            if(sellStockBeanList.size() <= stockIndex){
+                Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
+                notification.setPosition(Position.BOTTOM_RIGHT);
+                notification.show(Page.getCurrent());
+            }
+
+            else {
+
+                ArrayList<OrderBean> sellBeanList = sellStockBeanList.get(stockList.indexOf(stockID));
+
+                sellBeanList.add(new OrderBean(orderPrice, orderStockCount));
+
+                OrderBean comparator = new OrderBean(new Float(12.50),12);
+                Collections.sort(sellBeanList, comparator);
+
+                sellStockBeanList.set(stockIndex, sellBeanList);
+
+                gameDataHelper.setStockBeanListSell(sellStockBeanList);
+
+                final Container beansSell = orderBookSell.getContainerDataSource();
+
+                if(!(beansSell.size() == 0)){
+                    beansSell.removeAllItems();
+                }
+
+                for(int i = 0; i < sellStockBeanList.get(stockIndex).size();i++){
+
+                    beansSell.addItem(sellStockBeanList.get(stockIndex).get(i));
+
+                }
+
+                if (orderBookSell.isConnectorEnabled()) {
+                    getSession().lock();
+                    try {
+
+                        getUI().access(new Runnable() {
+                        @Override
+                        public void run() {
+
+                                orderBookSell.setContainerDataSource(beansSell);
+                                getUI().push();
+                            }
+                        });
+
+                } finally {
+                    getSession().unlock();
+                }
+            }
+        }
+        }
+
     }
 }

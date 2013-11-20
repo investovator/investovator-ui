@@ -19,18 +19,22 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.data.Property;
+import com.vaadin.server.Page;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.List;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class QuoteUI extends VerticalLayout{
+public class QuoteUI extends VerticalLayout implements EventListener {
 
     //Layout Components
     Button tradeButton;
@@ -48,6 +52,7 @@ public class QuoteUI extends VerticalLayout{
 
     private GameDataHelper gameDataHelper;
     private PlayableStockManager playableStockManager;
+    private List<AddOrderEvent> listeners;
 
 
     public QuoteUI() {
@@ -55,6 +60,7 @@ public class QuoteUI extends VerticalLayout{
         setupUI();
         gameDataHelper = GameDataHelper.getInstance();
         playableStockManager = PlayableStockManager.getInstance();
+        listeners = new ArrayList<>();
 
     }
 
@@ -65,11 +71,12 @@ public class QuoteUI extends VerticalLayout{
         HorizontalLayout sideSelectLayout = new HorizontalLayout();
 
         sideSelect = new ComboBox("Select Order Type");
-        sideSelect.addItem(OrderSide.BUY);
-        sideSelect.addItem(OrderSide.SELL);
-        sideSelect.select(OrderSide.BUY);
+        sideSelect.addItem("Buy Order");
+        sideSelect.addItem("Sell Order");
+        sideSelect.select("Buy Order");
         isBuy=true;
         sideSelect.setNullSelectionAllowed(false);
+        sideSelect.addValueChangeListener(sideSelectValueChangeListener);
 
         sideSelectLayout.setSpacing(true);
         sideSelectLayout.setSizeFull();
@@ -129,6 +136,16 @@ public class QuoteUI extends VerticalLayout{
 
     }
 
+    public void addAddOrderListener(AddOrderEvent listener){
+        this.listeners.add(listener);
+    }
+
+    private void notifyListeners(boolean isBuy, String stockID, float orderPrice, int orderStockCount){
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onAddOrder(isBuy, stockID, orderPrice, orderStockCount);
+        }
+    }
+
     public void update(){
 
         ArrayList<String> stockIDs = PlayableStockManager.getInstance().getStockList();
@@ -158,8 +175,15 @@ public class QuoteUI extends VerticalLayout{
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
-            orderPrice = Float.parseFloat(valueString);
-            setAmount();
+            if(!(valueString.isEmpty())) {
+                orderPrice = Float.parseFloat(valueString);
+                setAmount();
+            }
+            else{
+                Notification notification = new Notification("Please enter Order Price", Notification.Type.ERROR_MESSAGE);
+                notification.setPosition(Position.BOTTOM_RIGHT);
+                notification.show(Page.getCurrent());
+            }
         }
     };
 
@@ -167,8 +191,15 @@ public class QuoteUI extends VerticalLayout{
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
-            orderStockCount = Integer.parseInt(valueString);
-            setAmount();
+            if(!(valueString.isEmpty())){
+                orderStockCount = Integer.parseInt(valueString);
+                setAmount();
+            }
+            else{
+                Notification notification = new Notification("Please enter Stock Amount", Notification.Type.ERROR_MESSAGE);
+                notification.setPosition(Position.BOTTOM_RIGHT);
+                notification.show(Page.getCurrent());
+            }
         }
     };
 
@@ -186,8 +217,9 @@ public class QuoteUI extends VerticalLayout{
                 System.out.println("Order Can be Executed");
             }
             else {
-                 //add order to table
-                System.out.println("Nope");
+                price.setValue("");
+                stocks.setValue("");
+                notifyListeners(isBuy, selectedStock, orderPrice, orderStockCount);
             }
 
         }
@@ -209,23 +241,36 @@ public class QuoteUI extends VerticalLayout{
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
-            if(valueString.equals(OrderSide.BUY)) isBuy = true;
-            else isBuy=false;
+
+            if(!(valueString.isEmpty())){
+
+                if(valueString.equals("Buy Order")) {
+                    isBuy = true;
+                }
+                else if(valueString.equals("Sell Order")) {
+                    isBuy = false;
+                }
+            }
 
         }
     };
 
     private boolean checkExecutableStatus(){
 
-        boolean status = false;
+        boolean status;
         ArrayList<String> stockList = playableStockManager.getStockList();
 
         if(isBuy){
             ArrayList<ArrayList<OrderBean>> sellStockBeanList = gameDataHelper.getStockBeanListSell();
             ArrayList<OrderBean> sellBeanList = sellStockBeanList.get(stockList.indexOf(selectedStock));
 
-            if(sellBeanList == null)
-                return false;
+            if(sellBeanList == null) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             if(sellBeanList.get(0).getOrderValue() <= orderPrice){
                 status = true;
@@ -239,8 +284,13 @@ public class QuoteUI extends VerticalLayout{
             ArrayList<ArrayList<OrderBean>> buyStockBeanList = gameDataHelper.getStockBeanListBuy();
             ArrayList<OrderBean> buyBeanList = buyStockBeanList.get(stockList.indexOf(selectedStock));
 
-            if(buyBeanList == null)
-                return false;
+            if(buyBeanList == null) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             if(buyBeanList.get(0).getOrderValue() >= orderPrice){
                 status = true;
