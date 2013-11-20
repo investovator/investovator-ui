@@ -48,6 +48,7 @@ public class DataImportPanel extends DashboardPanel {
     CompanyTable tickerCompaniesTable;
     Button dataInsertButton;
     Label pageTitle;
+    DataUploadWindow uploadWindow;
 
     public DataImportPanel() {
         createLayout();
@@ -108,7 +109,15 @@ public class DataImportPanel extends DashboardPanel {
         dataInsertButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                  getUI().addWindow(new DataUploadWindow());
+                uploadWindow = new DataUploadWindow();
+                uploadWindow.addCloseListener(new Window.CloseListener() {
+                    @Override
+                    public void windowClose(Window.CloseEvent closeEvent) {
+                        setEntryData();
+                    }
+                });
+
+                 getUI().addWindow(uploadWindow);
             }
         });
 
