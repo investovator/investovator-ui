@@ -107,6 +107,11 @@ public class SystemPropertiesHelper implements
             historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"SAMP","MM/dd/yyyy HH:mm:ss.SSS",
                     new File(filePath));
 
+            //HASU ticker data
+            filePath = context.getRealPath("/WEB-INF/testdata/HASU_ticker.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"HASU","MM/dd/yyyy HH:mm:ss.SSS",
+                    new File(filePath));
+
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
