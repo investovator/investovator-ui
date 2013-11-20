@@ -80,6 +80,7 @@ public class DataUploadWindow extends Window implements Upload.SucceededListener
 
         content = new VerticalLayout();
         content.setSpacing(true);
+        content.setMargin(true);
 
         companySelectLayout = new HorizontalLayout();
         companyDetailUploadLayout = new HorizontalLayout();
@@ -123,6 +124,8 @@ public class DataUploadWindow extends Window implements Upload.SucceededListener
         content.addComponent(dataTypeSelect);
         content.addComponent(dataUpload);
         content.addComponent(submitButton);
+
+        content.setComponentAlignment(submitButton,Alignment.MIDDLE_CENTER);
 
         setContent(content);
         setDefaults();
@@ -242,6 +245,9 @@ public class DataUploadWindow extends Window implements Upload.SucceededListener
                 e.printStackTrace();
             }
         }
+
+        close();
+        Notification.show("Data Successfully Inserted", Notification.Type.TRAY_NOTIFICATION);
     }
 
 
