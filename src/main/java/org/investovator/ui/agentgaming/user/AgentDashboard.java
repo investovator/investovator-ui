@@ -47,6 +47,7 @@ public class AgentDashboard extends BasicDashboard {
         mainDashView = new DashboardPlayingView();
         reportView = new ReportsView();
         menuList.put("my dashboard", mainDashView);
+        menuList.put("watch list", new WatchListView());
         menuList.put("market reports", reportView);
 
         return menuList;
