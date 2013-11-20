@@ -140,7 +140,7 @@
             <constructor-arg ref="prng"/>
             <!--  In this model the probability of an agent arriving represents the
                     total liquidity of the market  -->
-            <property name="arrivalProbability" value="0.5"/>
+            <property name="arrivalProbability" value="1"/>
         </bean>
 
         <bean id="agentInitialiserProxy$stockID" scope="simulation"
