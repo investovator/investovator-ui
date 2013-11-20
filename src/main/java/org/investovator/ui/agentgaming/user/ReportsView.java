@@ -8,6 +8,7 @@ import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.agentgaming.ReportHelper;
 import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
+import org.investovator.ui.agentgaming.user.components.TimeSeriesChart;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.ArrayList;
@@ -150,90 +151,6 @@ public class ReportsView extends DashboardPanel {
         for(TimeSeriesChart chart : charts.values()){
             chart.update();
         }
-    }
-
-
-}
-
-
-class TimeSeriesChart extends Chart {
-
-    private HashMap<String, DataSeries> series;
-    private List<String> stocks;
-    private String chartVariable;
-    private int dataPoints = 50;
-
-    String getChartVariable() {
-        return chartVariable;
-    }
-
-
-    public void addStock(String stockID){
-        if(!stocks.contains(stockID)){
-            stocks.add(stockID);
-        }
-    }
-
-    public TimeSeriesChart(String chartVariable) {
-
-        this.chartVariable = chartVariable;
-
-        series = new HashMap<String, DataSeries>();
-        stocks = new ArrayList<>();
-
-        Configuration configuration = new Configuration();
-        configuration.getChart().setType(ChartType.LINE);
-        configuration.setTitle(chartVariable);
-
-
-        configuration.getxAxis().setType(AxisType.DATETIME);
-
-        PlotOptionsLine plotOptionsLine = new PlotOptionsLine();
-        plotOptionsLine.setMarker(new Marker(false));
-        plotOptionsLine.setShadow(false);
-        plotOptionsLine.setAnimation(false);
-        configuration.setPlotOptions(plotOptionsLine);
-
-
-        drawChart(configuration);
-        configuration.disableCredits();
-
-        setHeight("400px");
-        setWidth("90%");
-
-    }
-
-    public void update() {
-
-        for (String stock : stocks) {
-
-            if (!series.containsKey(stock)) {
-                DataSeries tmp = new DataSeries();
-                series.put(stock, tmp);
-                getConfiguration().addSeries(tmp);
-            }
-
-            final DataSeries dataSeries = series.get(stock);
-            dataSeries.setName(stock);
-
-            final ArrayList<TimeSeriesNode> data = ReportHelper.getInstance().getTimeSeriesReport(stock, chartVariable, 50);
-
-            UI.getCurrent().access(new Runnable() {
-                @Override
-                public void run() {
-
-                    dataSeries.clear();
-
-                    for (TimeSeriesNode node : data) {
-                        dataSeries.add(new DataSeriesItem(node.getDate(), node.getValue()));
-                    }
-
-                    UI.getCurrent().push();
-                }
-            });
-
-        }
-
     }
 
 
