@@ -230,6 +230,8 @@ public class QuoteUI extends VerticalLayout implements EventListener {
 
             notifyListeners(selectedStock);
 
+            eventBroadcaster.setEvent(new Object());
+
         }
     };
 

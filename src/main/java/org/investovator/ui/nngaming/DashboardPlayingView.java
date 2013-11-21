@@ -221,20 +221,27 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
                 stockIndex = ((TableData) object).getStockList().indexOf(selectedStock);
             }
 
+            if(((TableData) object).getStockBeanListBuy().size() <= stockIndex ||
+                    ((TableData) object).getStockBeanListSell().size() <= stockIndex){
 
-            for(int i = 0; i < ((TableData) object).getStockBeanListBuy().get(stockIndex).size(); i++){
-
-                buyBeans.addItem(((TableData) object).getStockBeanListBuy().get(stockIndex).get(i));
-
-            }
-
-            for(int i = 0; i < ((TableData) object).getStockBeanListSell().get(stockIndex).size(); i++){
-
-                sellBeans.addItem(((TableData) object).getStockBeanListSell().get(stockIndex).get(i));
 
             }
 
-            updateTables(buyBeans, sellBeans);
+            else{
+                for(int i = 0; i < ((TableData) object).getStockBeanListBuy().get(stockIndex).size(); i++){
+
+                    buyBeans.addItem(((TableData) object).getStockBeanListBuy().get(stockIndex).get(i));
+
+                }
+
+                for(int i = 0; i < ((TableData) object).getStockBeanListSell().get(stockIndex).size(); i++){
+
+                    sellBeans.addItem(((TableData) object).getStockBeanListSell().get(stockIndex).get(i));
+
+                }
+
+                updateTables(buyBeans, sellBeans);
+            }
 
         }
 
