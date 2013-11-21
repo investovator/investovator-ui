@@ -26,6 +26,7 @@ import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.ann.nngaming.events.AddBidEvent;
 import org.investovator.ann.nngaming.events.DayChangedEvent;
 import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.Order;
 import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
@@ -143,7 +144,13 @@ public class EventBroadcaster implements EventListener,Observer{
 
         }
 
-        else{
+        if(object instanceof GraphData){
+
+
+
+        }
+
+        if(object instanceof Object){
 
             notifyListeners(new TableData(stockBeanListBuy, stockBeanListSell, playableStocks));
 

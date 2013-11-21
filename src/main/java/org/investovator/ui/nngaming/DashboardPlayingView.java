@@ -25,6 +25,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -245,16 +246,19 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         }
 
-        /*if (currentPriceChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
+        if(object instanceof GraphData) {
 
-                currentPriceChart.addPointToChart();
+            if (currentPriceChart.isConnectorEnabled()) {
+                getSession().lock();
+                try {
 
-            } finally {
-                getSession().unlock();
+                    currentPriceChart.addPointToChart();
+
+                } finally {
+                    getSession().unlock();
+                }
             }
-        }*/
+        }
 
     }
 }
