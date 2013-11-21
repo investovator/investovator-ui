@@ -21,8 +21,9 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 public class WatchListView extends DashboardPanel {
 
     private VerticalLayout content;
+    private HorizontalLayout firstRowlayout;
     private HorizontalLayout stockAddLayout;
-    private HorizontalLayout watchListTableLayout;
+    private VerticalLayout watchListLayout;
     private WatchListTable watchListTable;
     private StockSelectComboBox stockSelect;
     private org.investovator.ui.agentgaming.user.components.TimeSeriesChart selectedStockHistoryChart;
@@ -45,12 +46,18 @@ public class WatchListView extends DashboardPanel {
         content = new VerticalLayout();
         content.setSizeUndefined();
         content.setWidth("100%");
+        content.setSpacing(true);
+
 
         stockAddLayout = new HorizontalLayout();
         stockAddLayout.setHeight("50px");
 
-        watchListTableLayout = new HorizontalLayout();
-        watchListTableLayout.setWidth("95%");
+        watchListLayout = new VerticalLayout();
+
+        firstRowlayout = new HorizontalLayout();
+        firstRowlayout.setWidth("95%");
+        firstRowlayout.setCaption("Manage Watch List");
+        firstRowlayout.addStyleName("center-caption");
 
         stockSelect = new StockSelectComboBox();
         stockSelect.setWidth("150px");
@@ -63,10 +70,14 @@ public class WatchListView extends DashboardPanel {
         stockAddLayout.addComponent(addStockButton);
         stockAddLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
-        watchListTableLayout.addComponent(watchListTable);
+        watchListLayout.addComponent(stockAddLayout);
+        watchListLayout.addComponent(watchListTable);
+        watchListLayout.setComponentAlignment(stockAddLayout, Alignment.MIDDLE_CENTER);
+        watchListLayout.setComponentAlignment(watchListTable, Alignment.TOP_CENTER);
 
-        content.addComponent(stockAddLayout);
-        content.addComponent(watchListTableLayout);
+        firstRowlayout.addComponent(watchListLayout);
+
+        content.addComponent(firstRowlayout);
 
         this.setContent(content);
     }
@@ -105,12 +116,10 @@ public class WatchListView extends DashboardPanel {
         watchListTable.select(selectedStock);
         addHistoryChart();
 
-        watchListTableLayout.setExpandRatio(watchListTable, 2);
-        watchListTableLayout.setExpandRatio(selectedStockHistoryChart, 1);
+        firstRowlayout.setExpandRatio(watchListLayout, 2);
+        firstRowlayout.setExpandRatio(selectedStockHistoryChart, 1);
 
         watchListTable.setWidth("90%");
-        watchListTableLayout.setComponentAlignment(watchListTable, Alignment.MIDDLE_CENTER);
-
 
     }
 
@@ -123,9 +132,9 @@ public class WatchListView extends DashboardPanel {
         newChart.update();
 
         if(selectedStockHistoryChart == null){
-            watchListTableLayout.addComponent(newChart);
+            firstRowlayout.addComponent(newChart);
         } else{
-            watchListTableLayout.replaceComponent(selectedStockHistoryChart, newChart);
+            firstRowlayout.replaceComponent(selectedStockHistoryChart, newChart);
         }
         selectedStockHistoryChart = newChart;
 
