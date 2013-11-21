@@ -55,6 +55,11 @@ public class WatchListTable extends Table implements Button.ClickListener {
         addContainerProperty("Company Name", String.class, null);
         addContainerProperty("Remove",       Button.class, null);
 
+        setColumnExpandRatio("Symbol", 1);
+        setColumnExpandRatio("Company Name", 5);
+        setColumnExpandRatio("Remove", 1);
+
+
     }
 
 
