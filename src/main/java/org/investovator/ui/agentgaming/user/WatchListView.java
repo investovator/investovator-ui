@@ -1,6 +1,7 @@
 package org.investovator.ui.agentgaming.user;
 
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -43,11 +44,13 @@ public class WatchListView extends DashboardPanel {
 
         content = new VerticalLayout();
         content.setSizeUndefined();
+        content.setWidth("100%");
 
         stockAddLayout = new HorizontalLayout();
         stockAddLayout.setHeight("50px");
 
         watchListTableLayout = new HorizontalLayout();
+        watchListTableLayout.setWidth("95%");
 
         stockSelect = new StockSelectComboBox();
         stockSelect.setWidth("150px");
@@ -55,13 +58,12 @@ public class WatchListView extends DashboardPanel {
         addStockButton = new Button("Add to watch list");
 
         watchListTable = new WatchListTable();
-        selectedStockHistoryChart = new org.investovator.ui.agentgaming.user.components.TimeSeriesChart("market price");
 
         stockAddLayout.addComponent(stockSelect);
         stockAddLayout.addComponent(addStockButton);
+        stockAddLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
         watchListTableLayout.addComponent(watchListTable);
-        watchListTableLayout.addComponent(selectedStockHistoryChart);
 
         content.addComponent(stockAddLayout);
         content.addComponent(watchListTableLayout);
@@ -88,7 +90,7 @@ public class WatchListView extends DashboardPanel {
             @Override
             public void itemClick(ItemClickEvent itemClickEvent) {
                 selectedStock = itemClickEvent.getItemId().toString();
-                updateHistoryChart();
+                addHistoryChart();
             }
         });
     }
@@ -101,15 +103,30 @@ public class WatchListView extends DashboardPanel {
 
         selectedStock = (String) watchListTable.getItemIds().iterator().next();
         watchListTable.select(selectedStock);
-        updateHistoryChart();
+        addHistoryChart();
+
+        watchListTableLayout.setExpandRatio(watchListTable, 2);
+        watchListTableLayout.setExpandRatio(selectedStockHistoryChart, 1);
+
+        watchListTable.setWidth("90%");
+        watchListTableLayout.setComponentAlignment(watchListTable, Alignment.MIDDLE_CENTER);
+
 
     }
 
-    private void updateHistoryChart(){
+    private void addHistoryChart(){
+
         TimeSeriesChart newChart = new TimeSeriesChart("market price");
+        newChart.setWidth("400px");
+        newChart.setHeight("300px");
         newChart.setStocks(new String[]{selectedStock});
         newChart.update();
-        watchListTableLayout.replaceComponent(selectedStockHistoryChart, newChart);
+
+        if(selectedStockHistoryChart == null){
+            watchListTableLayout.addComponent(newChart);
+        } else{
+            watchListTableLayout.replaceComponent(selectedStockHistoryChart, newChart);
+        }
         selectedStockHistoryChart = newChart;
 
     }
