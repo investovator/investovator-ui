@@ -22,7 +22,6 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 import java.util.*;
@@ -34,18 +33,19 @@ import java.util.*;
 public class BasicChart extends Chart{
 
     private PlayableStockManager playableStockManager;
-    private GameDataHelper gameDataHelper;
     private ArrayList<String> stockList;
     private NNGamingFacade nnGamingFacade;
     private ArrayList<DataSeries> stockDataSeriesList;
     private ArrayList<float[]> predictedValues;
     private ArrayList<Date[]> dateValues;
-    private int currentIndex;
 
     public BasicChart(){
 
         nnGamingFacade = NNGamingFacade.getInstance();
-        stockDataSeriesList = new ArrayList<>();
+
+        if(stockDataSeriesList == null){
+            stockDataSeriesList = new ArrayList<>();
+        }
 
         predictedValues = new ArrayList<>();
         dateValues = new ArrayList<>();
@@ -54,11 +54,9 @@ public class BasicChart extends Chart{
 
         stockList = playableStockManager.getStockList();
 
-        System.out.println(stockList.size());
-
-        if(!(stockList.isEmpty()))
-        initChart();
-
+        if(!(stockList.isEmpty()) && stockDataSeriesList.isEmpty()){
+            initChart();
+        }
     }
 
 
@@ -96,9 +94,9 @@ public class BasicChart extends Chart{
         legend.setY(100d);
         legend.setBorderWidth(0);
 
+
         prepareDataSeriesLists();
 
-        System.out.println(stockDataSeriesList.size());
 
         for(int i = 0; i < stockList.size(); i++){
 
@@ -108,10 +106,6 @@ public class BasicChart extends Chart{
 
         }
 
-        /*if(gameDataHelper.getStockDataSeriesList().isEmpty()){
-            gameDataHelper.setStockDataSeriesList(stockDataSeriesList);
-        }*/
-
         drawChart(configuration);
 
         getConfiguration().disableCredits();
@@ -119,21 +113,13 @@ public class BasicChart extends Chart{
 
     }
 
-    public void addPointToChart(){
+    public void addPointToChart(int currentIndex){
 
         if((predictedValues.isEmpty()) && (dateValues.isEmpty())){
 
             prepareChartData();
 
         }
-
-        System.out.println(predictedValues.get(0)[0]+" "+dateValues.get(0)[0]);
-        System.out.println(predictedValues.get(1)[0]+" "+dateValues.get(1)[0]);
-
-        currentIndex = gameDataHelper.getCurrentIndex();
-        stockDataSeriesList = gameDataHelper.getStockDataSeriesList();
-
-        System.out.println(currentIndex);
 
         final int stockListSize = stockList.size();
 
@@ -158,10 +144,6 @@ public class BasicChart extends Chart{
             });
 
         }
-
-        currentIndex++;
-        gameDataHelper.setStockDataSeriesList(stockDataSeriesList);
-        gameDataHelper.setCurrentIndex(currentIndex);
 
     }
 

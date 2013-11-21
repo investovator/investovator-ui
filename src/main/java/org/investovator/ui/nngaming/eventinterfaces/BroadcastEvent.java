@@ -16,14 +16,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.nngaming;
+package org.investovator.ui.nngaming.eventinterfaces;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public interface SymbolChangeEvent {
+public interface BroadcastEvent {
 
-    void onSymbolChange(String selectedStock);
+    public void onBroadcast(Object object);
 
 }

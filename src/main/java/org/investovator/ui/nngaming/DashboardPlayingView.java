@@ -25,6 +25,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
+import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
@@ -33,7 +35,7 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent{
+public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent {
 
 
     //Layout Components
@@ -228,6 +230,12 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
             }
 
+            if(((TableData) object).getStockBeanListBuy().isEmpty() || ((TableData) object).getStockBeanListSell().isEmpty()){
+
+                updateTables(buyBeans, sellBeans);
+
+            }
+
             else{
                 for(int i = 0; i < ((TableData) object).getStockBeanListBuy().get(stockIndex).size(); i++){
 
@@ -248,11 +256,13 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         if(object instanceof GraphData) {
 
+            int currentIndex = ((GraphData) object).getCurrentIndex();
+
             if (currentPriceChart.isConnectorEnabled()) {
                 getSession().lock();
                 try {
 
-                    currentPriceChart.addPointToChart();
+                    currentPriceChart.addPointToChart(currentIndex);
 
                 } finally {
                     getSession().unlock();

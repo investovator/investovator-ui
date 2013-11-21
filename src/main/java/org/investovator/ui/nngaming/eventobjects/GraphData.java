@@ -24,10 +24,19 @@ package org.investovator.ui.nngaming.eventobjects;
  */
 public class GraphData {
 
+    private int currentIndex;
 
-    public GraphData(){
+    public GraphData(int currentIndex){
 
+        this.currentIndex = currentIndex;
 
+    }
 
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
     }
 }

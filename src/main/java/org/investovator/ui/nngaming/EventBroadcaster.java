@@ -26,13 +26,14 @@ import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.ann.nngaming.events.AddBidEvent;
 import org.investovator.ann.nngaming.events.DayChangedEvent;
 import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.Order;
 import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
-import java.util.EventListener;
 import java.util.*;
+import java.util.EventListener;
 
 /**
  * @author: Hasala Surasinghe
@@ -144,12 +145,6 @@ public class EventBroadcaster implements EventListener,Observer{
 
         }
 
-        if(object instanceof GraphData){
-
-
-
-        }
-
         if(object instanceof Object){
 
             notifyListeners(new TableData(stockBeanListBuy, stockBeanListSell, playableStocks));
@@ -181,9 +176,13 @@ public class EventBroadcaster implements EventListener,Observer{
 
             stockBeanListSell.clear();
 
+            notifyListeners(new TableData(stockBeanListBuy,stockBeanListSell,playableStocks));
+
+            notifyListeners(new GraphData(currentIndex));
+
+            currentIndex++;
+
             currentDay++;
-
-
 
 
             System.out.println("TableUpdated");
@@ -314,11 +313,4 @@ public class EventBroadcaster implements EventListener,Observer{
         return beanListSell;
     }
 
-    public int getCurrentIndex() {
-        return currentIndex;
-    }
-
-    public void setCurrentIndex(int currentIndex) {
-        this.currentIndex = currentIndex;
-    }
 }
