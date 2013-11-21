@@ -19,12 +19,20 @@
 
 package org.investovator.ui.dataplayback.admin;
 
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
+import org.investovator.dataplaybackengine.events.PlaybackEvent;
+import org.investovator.dataplaybackengine.events.PlaybackEventListener;
+import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.player.DataPlayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.beans.PlayerInformationBean;
@@ -40,13 +48,16 @@ import java.util.*;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DataPlaybackEngineAdminDashboard extends DashboardPanel {
+public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements PlaybackEventListener {
 
     GridLayout content;
     DataPlayer player;
 
+    //pie chart
+    Chart stockPieChart;
+
     public DataPlaybackEngineAdminDashboard() {
-        this.content = new GridLayout(3,3);
+        this.content = new GridLayout(3,2);
         this.setContent(this.content);
     }
 
@@ -54,12 +65,25 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel {
     public void onEnter() {
         //set the data player
         this.player= DataPlayerFacade.getInstance().getCurrentPlayer();
+
+        //add the UI elements
+        addUIElements();
+
+        //set as an observer
+        player.setObserver(this);
+
+    }
+
+    private void addUIElements(){
         //add the game config
-        this.content.addComponent(setupGameConfigBox(),1,1);
+        this.content.addComponent(setupGameConfigBox(),1,0);
         //add the game stats
-        this.content.addComponent(setupGameStatsBox(),2,1);
+        this.content.addComponent(setupGameStatsBox(),2,0);
         //add players table
-        this.content.addComponent(setupLeaderBoard(),0,0,0,2);
+        this.content.addComponent(setupLeaderBoard(),0,0,0,1);
+        //add the pie chart
+        this.stockPieChart=setupPieChart();
+        this.content.addComponent(stockPieChart,1,1,2,1);
     }
 
     public Component setupGameConfigBox(){
@@ -159,8 +183,9 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel {
 
         Table table=new Table("Player Information",beans);
         table.setCaption(null);
-        //restrict the maximum number of viewable entries to 5
-        table.setPageLength(5);
+        table.setSelectable(true);
+        //restrict the maximum number of viewable entries to 20
+        table.setPageLength(20);
 
         //set the column order
         table.setVisibleColumns(new Object[]{"userName", "cashBalance", "totalExpense", "totalStocks",
@@ -171,6 +196,116 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel {
         table.setColumnHeader("totalStocks","Total Stocks");
         table.setColumnHeader("equityPosition","Equity Position");
 
+        //add a click listener to the table
+        table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+           @Override
+            public void itemClick(ItemClickEvent itemClickEvent) {
+                updatePieChart(itemClickEvent.getItemId().toString());
+            }
+        });
+
         return table;
+    }
+
+    public Chart setupPieChart(){
+
+        Chart chart = new Chart(ChartType.PIE);
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.getTitle().setText(null);
+
+        PlotOptionsPie plotOptions = new PlotOptionsPie();
+        plotOptions.setCursor(Cursor.POINTER);
+        plotOptions.setShowInLegend(true);
+//        plotOptions.setSize("120%");
+
+        Labels dataLabels = new Labels();
+        dataLabels.setEnabled(true);
+        dataLabels.setColor(new SolidColor(0, 0, 0));
+        dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
+        dataLabels
+                .setFormatter("''+ this.point.name +': '+ this.percentage +' %'");
+        plotOptions.setDataLabels(dataLabels);
+        conf.setPlotOptions(plotOptions);
+
+        DataSeries series = new DataSeries();
+        //if the stock items has been set
+        if(DataPlaybackEngineStates.playingSymbols!=null){
+            for(String stock:DataPlaybackEngineStates.playingSymbols){
+                series.add(new DataSeriesItem(stock, 50));
+            }
+        }
+        conf.setSeries(series);
+
+        conf.disableCredits();
+
+
+        chart.drawChart(conf);
+        //turn off animation
+        conf.getChart().setAnimation(false);
+        chart.setWidth(95,Unit.PERCENTAGE);
+        chart.setHeight(100,Unit.MM);
+
+//        chart.setWidth(75,Unit.PERCENTAGE);
+//        chart.setHeight(55,Unit.MM);
+
+
+        return chart;
+    }
+
+    public void updatePieChart(String userName){
+        Portfolio portfolio= null;
+        try {
+            portfolio = this.player.getMyPortfolio(userName);
+            //since we know that there's only one data series
+            final DataSeries dSeries = (DataSeries) stockPieChart.getConfiguration().getSeries().get(0);
+
+            //remove all the items from the series
+            dSeries.clear();
+
+
+            //add the new items
+            HashMap<String,HashMap<String,Double>> stockValues=portfolio.getShares();
+            Iterator it=stockValues.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry=(Map.Entry)it.next();
+                HashMap<String,Double> values =(HashMap<String,Double>)entry.getValue();
+
+                //get stock quantity
+                float quantity=values.get(Terms.QNTY).floatValue();
+                //get stock price
+                float price = values.get(Terms.PRICE).floatValue();
+
+                //add the item to data series
+                dSeries.add(new DataSeriesItem(entry.getKey().toString(),quantity*price));
+
+            }
+
+
+
+                stockPieChart.drawChart();
+
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    getUI().push();
+
+                }
+            });
+
+        } catch (UserJoinException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+
+    }
+
+    @Override
+    public void eventOccurred(PlaybackEvent event) {
+//        this.content.removeAllComponents();
+//
+//        addUIElements();
+
     }
 }
