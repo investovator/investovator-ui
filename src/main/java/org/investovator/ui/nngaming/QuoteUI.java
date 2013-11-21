@@ -23,6 +23,7 @@ import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import org.investovator.ui.nngaming.beans.OrderBean;
+import org.investovator.ui.nngaming.eventobjects.Order;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
@@ -51,16 +52,16 @@ public class QuoteUI extends VerticalLayout implements EventListener {
     int orderStockCount;
 
     private GameDataHelper gameDataHelper;
-    private PlayableStockManager playableStockManager;
-    private List<AddOrderEvent> listeners;
-
+    private EventBroadcaster eventBroadcaster;
+    private List<SymbolChangeEvent> symbolListeners;
 
     public QuoteUI() {
 
         setupUI();
         gameDataHelper = GameDataHelper.getInstance();
-        playableStockManager = PlayableStockManager.getInstance();
-        listeners = new ArrayList<>();
+        eventBroadcaster = EventBroadcaster.getInstance();
+
+        symbolListeners = new ArrayList<>();
 
     }
 
@@ -77,6 +78,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         isBuy=true;
         sideSelect.setNullSelectionAllowed(false);
         sideSelect.addValueChangeListener(sideSelectValueChangeListener);
+        sideSelect.setImmediate(true);
 
         sideSelectLayout.setSpacing(true);
         sideSelectLayout.setSizeFull();
@@ -99,7 +101,6 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         HorizontalLayout priceLayout = new HorizontalLayout();
 
         price = new TextField("Price");
-        price.setImmediate(true);
         price.addValueChangeListener(priceValueChangedListener);
         price.setImmediate(true);
 
@@ -122,6 +123,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         stockSelect.setCaption("Select stock to trade");
         stockSelect.setNullSelectionAllowed(false);
         stockSelect.setWidth("100%");
+        stockSelect.setImmediate(true);
         stockSelect.addValueChangeListener(selectSymbolValueChange);
 
         this.addComponent(stockSelect);
@@ -136,16 +138,6 @@ public class QuoteUI extends VerticalLayout implements EventListener {
 
     }
 
-    public void addAddOrderListener(AddOrderEvent listener){
-        this.listeners.add(listener);
-    }
-
-    private void notifyListeners(boolean isBuy, String stockID, float orderPrice, int orderStockCount){
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onAddOrder(isBuy, stockID, orderPrice, orderStockCount);
-        }
-    }
-
     public void update(){
 
         ArrayList<String> stockIDs = PlayableStockManager.getInstance().getStockList();
@@ -154,16 +146,17 @@ public class QuoteUI extends VerticalLayout implements EventListener {
             stockSelect.addItem(stock);
         }
         stockSelect.setNullSelectionAllowed(false);
-        stockSelect.setValue(stockIDs.get(0));
-
-        selectedStock = stockIDs.get(0);
 
     }
 
-    public String getSelectedStock(){
+    public void addListener(SymbolChangeEvent listener){
+        this.symbolListeners.add(listener);
+    }
 
-        return selectedStock;
-
+    private void notifyListeners(String selectedStock){
+        for (int i = 0; i < symbolListeners.size(); i++) {
+            symbolListeners.get(i).onSymbolChange(selectedStock);
+        }
     }
 
     private void setAmount(){
@@ -198,8 +191,9 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         @Override
         public void buttonClick(Button.ClickEvent clickEvent) {
 
-            if((stocks.getValue().isEmpty()) || (price.getValue().isEmpty()) ){
-                Notification notification = new Notification("Please enter Stock Price & Amount",
+            if((stocks.getValue().isEmpty()) || (price.getValue().isEmpty() || (stocks.getValue().equals("0"))
+            || (price.getValue().equals("0"))) || (stockSelect.getValue() == null)){
+                Notification notification = new Notification("Please enter a valid Stock Price & Amount",
                         Notification.Type.ERROR_MESSAGE);
                 notification.setPosition(Position.BOTTOM_RIGHT);
                 notification.show(Page.getCurrent());
@@ -217,7 +211,8 @@ public class QuoteUI extends VerticalLayout implements EventListener {
                 else if (status == 0) {
                     price.setValue("");
                     stocks.setValue("");
-                    notifyListeners(isBuy, selectedStock, orderPrice, orderStockCount);
+                    amount.setValue("");
+                    eventBroadcaster.setEvent(new Order(selectedStock, isBuy, orderPrice, orderStockCount));
                 }
                 else {
 
@@ -230,11 +225,10 @@ public class QuoteUI extends VerticalLayout implements EventListener {
     Property.ValueChangeListener selectSymbolValueChange = new Property.ValueChangeListener() {
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-            final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
+            String valueString = (String) valueChangeEvent.getProperty().getValue();
             selectedStock = valueString;
 
-
-            //ToDO
+            notifyListeners(selectedStock);
 
         }
     };
@@ -260,7 +254,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
     private int checkExecutableStatus(){
 
         int status = -1;
-        ArrayList<String> stockList = playableStockManager.getStockList();
+        ArrayList<String> stockList = eventBroadcaster.getStocks();
 
         if(isBuy){
             ArrayList<ArrayList<OrderBean>> sellStockBeanList = gameDataHelper.getStockBeanListSell();
@@ -301,21 +295,5 @@ public class QuoteUI extends VerticalLayout implements EventListener {
 
         return status;
     }
-
-}
-
-enum OrderSide{
-    BUY,
-    SELL;
-
-    @Override
-    public String toString() {
-        switch (this)
-        {
-            case BUY: return "Buy Order";
-            case SELL: return "Sell Order" ;
-        }
-        return null;    }
-
 
 }

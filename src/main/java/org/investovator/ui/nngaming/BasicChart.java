@@ -22,6 +22,7 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 import java.util.*;
@@ -33,23 +34,29 @@ import java.util.*;
 public class BasicChart extends Chart{
 
     private PlayableStockManager playableStockManager;
+    private GameDataHelper gameDataHelper;
     private ArrayList<String> stockList;
     private NNGamingFacade nnGamingFacade;
     private ArrayList<DataSeries> stockDataSeriesList;
     private ArrayList<float[]> predictedValues;
     private ArrayList<Date[]> dateValues;
-    private int currentIndex = 0;
+    private int currentIndex;
 
     public BasicChart(){
 
-        playableStockManager = PlayableStockManager.getInstance();
-        stockList = playableStockManager.getStockList();
         nnGamingFacade = NNGamingFacade.getInstance();
         stockDataSeriesList = new ArrayList<>();
 
         predictedValues = new ArrayList<>();
         dateValues = new ArrayList<>();
 
+        playableStockManager = PlayableStockManager.getInstance();
+
+        stockList = playableStockManager.getStockList();
+
+        System.out.println(stockList.size());
+
+        if(!(stockList.isEmpty()))
         initChart();
 
     }
@@ -91,6 +98,8 @@ public class BasicChart extends Chart{
 
         prepareDataSeriesLists();
 
+        System.out.println(stockDataSeriesList.size());
+
         for(int i = 0; i < stockList.size(); i++){
 
             DataSeries dataSeries = stockDataSeriesList.get(i);
@@ -99,11 +108,14 @@ public class BasicChart extends Chart{
 
         }
 
+        /*if(gameDataHelper.getStockDataSeriesList().isEmpty()){
+            gameDataHelper.setStockDataSeriesList(stockDataSeriesList);
+        }*/
+
         drawChart(configuration);
 
         getConfiguration().disableCredits();
         getConfiguration().getTitle().setText("Stock Prices");
-
 
     }
 
@@ -115,26 +127,41 @@ public class BasicChart extends Chart{
 
         }
 
+        System.out.println(predictedValues.get(0)[0]+" "+dateValues.get(0)[0]);
+        System.out.println(predictedValues.get(1)[0]+" "+dateValues.get(1)[0]);
+
+        currentIndex = gameDataHelper.getCurrentIndex();
+        stockDataSeriesList = gameDataHelper.getStockDataSeriesList();
+
+        System.out.println(currentIndex);
+
         final int stockListSize = stockList.size();
 
-        getUI().access(new Runnable() {
-            @Override
-            public void run() {
+        for(int i = 0; i < stockListSize; i++){
 
-                for(int i = 0; i < stockListSize; i++){
+            String stock = stockList.get(i);
 
-                    String stock = stockList.get(i);
-                    float[] values = predictedValues.get(stockList.indexOf(stock));
-                    Date[] dates = dateValues.get(stockList.indexOf(stock));
-                    stockDataSeriesList.get(stockList.indexOf(stock)).add(
-                            new DataSeriesItem(dates[currentIndex],values[currentIndex]));
+            float[] values = predictedValues.get(stockList.indexOf(stock));
+            Date[] dates = dateValues.get(stockList.indexOf(stock));
+            DataSeriesItem item =  stockDataSeriesList.get(stockList.indexOf(stock)).get(0);
+            stockDataSeriesList.get(stockList.indexOf(stockList.get(i))).remove(item);
+            stockDataSeriesList.get(stockList.indexOf(stock)).add(
+                    new DataSeriesItem(dates[currentIndex], values[currentIndex]));
+
+            getUI().access(new Runnable() {
+                @Override
+                public void run() {
+
+                    getUI().push();
+
                 }
-                getUI().push();
+            });
 
-            }
-        });
+        }
 
         currentIndex++;
+        gameDataHelper.setStockDataSeriesList(stockDataSeriesList);
+        gameDataHelper.setCurrentIndex(currentIndex);
 
     }
 

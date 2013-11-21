@@ -18,6 +18,7 @@
 
 package org.investovator.ui.nngaming.utils;
 
+import com.vaadin.addon.charts.model.DataSeries;
 import org.investovator.ui.nngaming.beans.OrderBean;
 
 import java.util.ArrayList;
@@ -32,6 +33,10 @@ public class GameDataHelper {
     private ArrayList<ArrayList<OrderBean>> stockBeanListBuy;
     private ArrayList<ArrayList<OrderBean>> stockBeanListSell;
     private int currentDay = 1;
+    private int currentIndex;
+    private String selectedStock;
+
+    private ArrayList<DataSeries> stockDataSeriesList;
 
     private GameDataHelper(){
 
@@ -41,6 +46,10 @@ public class GameDataHelper {
         if(stockBeanListSell == null){
             stockBeanListSell = new ArrayList<>();
         }
+        if(stockDataSeriesList == null){
+            stockDataSeriesList = new ArrayList<>();
+        }
+        currentIndex = 0;
 
     }
 
@@ -76,5 +85,29 @@ public class GameDataHelper {
 
     public void setCurrentDay(int currentDay) {
         this.currentDay = currentDay;
+    }
+
+    public int getCurrentIndex(){
+        return currentIndex;
+    }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
+
+    public ArrayList<DataSeries> getStockDataSeriesList() {
+        return stockDataSeriesList;
+    }
+
+    public void setStockDataSeriesList(ArrayList<DataSeries> stockDataSeriesList) {
+        this.stockDataSeriesList = stockDataSeriesList;
+    }
+
+    public String getSelectedStock() {
+        return selectedStock;
+    }
+
+    public void setSelectedStock(String selectedStock) {
+        this.selectedStock = selectedStock;
     }
 }

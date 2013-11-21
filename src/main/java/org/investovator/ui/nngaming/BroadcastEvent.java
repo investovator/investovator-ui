@@ -22,8 +22,8 @@ package org.investovator.ui.nngaming;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public interface AddOrderEvent {
+public interface BroadcastEvent {
 
-    void onAddOrder(boolean isBuy, String stockID, float orderPrice, int orderStockCount);
+    public void onBroadcast(Object object);
 
 }

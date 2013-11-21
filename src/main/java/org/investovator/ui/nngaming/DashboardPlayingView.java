@@ -20,25 +20,19 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.Page;
-import com.vaadin.shared.Position;
-import com.vaadin.ui.*;
-import org.investovator.ann.nngaming.MarketEventReceiver;
-import org.investovator.ann.nngaming.NNGamingFacade;
-import org.investovator.ann.nngaming.events.AddBidEvent;
-import org.investovator.ann.nngaming.events.DayChangedEvent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.nngaming.beans.OrderBean;
-import org.investovator.ui.nngaming.utils.GameDataHelper;
-import org.investovator.ui.nngaming.utils.PlayableStockManager;
+import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
-
-import java.util.*;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class DashboardPlayingView extends DashboardPanel implements Observer, AddOrderEvent{
+public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent{
 
 
     //Layout Components
@@ -49,34 +43,20 @@ public class DashboardPlayingView extends DashboardPanel implements Observer, Ad
     BasicChart currentPriceChart;
     QuoteUI quoteUI;
 
-    private MarketEventReceiver marketEventReceiver;
-    private NNGamingFacade nnGamingFacade;
-    private PlayableStockManager playableStockManager;
 
-    private ArrayList<String> playableStocks;
-    private GameDataHelper gameDataHelper;
-    private ArrayList<ArrayList<OrderBean>> stockBeanListBuy;
-    private ArrayList<ArrayList<OrderBean>> stockBeanListSell;
-    private int currentDay;
+    private EventBroadcaster eventBroadcaster;
+    private String selectedStock;
 
     boolean simulationRunning = false;
 
     public DashboardPlayingView() {
 
+        eventBroadcaster = EventBroadcaster.getInstance();
+        eventBroadcaster.addListener(this);
+
         createUI();
 
-        gameDataHelper = GameDataHelper.getInstance();
-        nnGamingFacade = NNGamingFacade.getInstance();
-
-        stockBeanListBuy = gameDataHelper.getStockBeanListBuy();
-        stockBeanListSell = gameDataHelper.getStockBeanListSell();
-        currentDay = gameDataHelper.getCurrentDay();
-
-        marketEventReceiver = MarketEventReceiver.getInstance();
-        marketEventReceiver.addObserver(this);
-
-        quoteUI.addAddOrderListener(this);
-
+        quoteUI.addListener(this);
     }
 
 
@@ -132,34 +112,52 @@ public class DashboardPlayingView extends DashboardPanel implements Observer, Ad
 
     }
 
-    private void updateTable(){
+    private Table getSellSideTable() {
 
+        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
+        Table orderBookSell = new Table("Sell Order Side", beans);
 
-        final Container beansBuy = orderBookBuy.getContainerDataSource();
-        final Container beansSell = orderBookSell.getContainerDataSource();
+        orderBookSell.setHeight("100%");
+        orderBookSell.setWidth("45%");
+        orderBookSell.setSelectable(true);
+        orderBookSell.setPageLength(10);
+        orderBookSell.setImmediate(true);
 
-        if(!(beansBuy.size() == 0)){
-             beansBuy.removeAllItems();
-        }
-        if(!(beansSell.size() == 0)){
-            beansSell.removeAllItems();
-        }
+        return orderBookSell;
+    }
 
-        updateStockOrders();    // updates sell & buy orders of each stock
+    private Table getBuySideTable() {
 
+        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
 
-        for(int i = 0; i < stockBeanListBuy.get(0).size();i++){
+        Table orderBookBuy = new Table("Buy Order Side",beans);
 
-            beansBuy.addItem(stockBeanListBuy.get(0).get(i));
+        orderBookBuy.setHeight("100%");
+        orderBookBuy.setWidth("45%");
+        orderBookBuy.setSelectable(true);
+        orderBookBuy.setPageLength(10);
+        orderBookBuy.setImmediate(true);
 
-        }
+        return orderBookBuy;
+    }
 
+    @Override
+    public void onEnter() {
 
-        for(int i = 0; i < stockBeanListSell.get(0).size();i++){
+        quoteUI.update();
 
-            beansSell.addItem(stockBeanListSell.get(0).get(i));
+        simulationRunning = true;
 
-        }
+    }
+
+    @Override
+    public void onSymbolChange(String selectedStock) {
+
+        this.selectedStock = selectedStock;
+
+    }
+
+    private void updateTables(final Container beansBuy, final Container beansSell){
 
         if (orderBookBuy.isConnectorEnabled()) {
             getSession().lock();
@@ -199,317 +197,57 @@ public class DashboardPlayingView extends DashboardPanel implements Observer, Ad
 
     }
 
-    private void updateStockOrders(){
+    @Override
+    public void onBroadcast(Object object) {
 
-        ArrayList<OrderBean> beanListBuy;
-        ArrayList<OrderBean> beanListSell;
-        int stockCount = playableStocks.size();
-        ArrayList<Float> values;
-        Random randomGenerator = new Random();
+        if(object instanceof TableData){
+            int stockIndex;
 
-        for(int i = 0; i < stockCount; i++)
-        {
+            final Container buyBeans = orderBookBuy.getContainerDataSource();
+            final Container sellBeans = orderBookSell.getContainerDataSource();
 
-            int buyOrderCount = (randomGenerator.nextInt(2) + 1);
-            int sellOrderCount = (randomGenerator.nextInt(2) + 1);
-
-            values = nnGamingFacade.getGeneratedOrders(buyOrderCount,sellOrderCount,playableStocks.get(i),currentDay);
-
-            beanListBuy = getBuyOrderList(playableStocks.get(i), buyOrderCount, values);
-
-            stockBeanListBuy.add(beanListBuy);
-
-            gameDataHelper.setStockBeanListBuy(stockBeanListBuy);
-
-            beanListSell = getSellOrderList(playableStocks.get(i), buyOrderCount, sellOrderCount, values);
-
-            stockBeanListSell.add(beanListSell);
-
-            gameDataHelper.setStockBeanListSell(stockBeanListSell);
-
-        }
-
-    }
-
-    private ArrayList<OrderBean> getBuyOrderList(String stockID, int buyOrderCount,
-                                                 ArrayList<Float> values){
-
-        ArrayList<OrderBean> beanListBuy = new ArrayList<>();
-        Random randomGenerator = new Random();
-        stockBeanListBuy = gameDataHelper.getStockBeanListBuy();
-
-        for(int i = 0; i < buyOrderCount; i++){
-
-            beanListBuy.add(new OrderBean(values.get(i),(randomGenerator.nextInt(199) + 1)));
-
-        }
-
-        OrderBean comparator = new OrderBean(new Float(12.50),12);
-        Collections.sort(beanListBuy, comparator);
-        Collections.reverse(beanListBuy);
-
-        if(!(stockBeanListBuy.isEmpty())){
-
-
-            if(stockBeanListBuy.size() <= playableStocks.indexOf(stockID))
-            {
-                return beanListBuy;
-            }
-            else {
-
-                ArrayList<OrderBean> temp = stockBeanListBuy.get(playableStocks.indexOf(stockID));
-
-                for(int j = 0; j < beanListBuy.size(); j++){
-
-                    temp.add(beanListBuy.get(j));
-
-                }
-
-                Collections.sort(temp, comparator);
-                Collections.reverse(temp);
-
-                return temp;
-
+            if(!(buyBeans.size() == 0)){
+                buyBeans.removeAllItems();
             }
 
-        }
-
-        return beanListBuy;
-    }
-
-    private ArrayList<OrderBean> getSellOrderList(String stockID, int buyOrderCount, int sellOrderCount,
-                                                  ArrayList<Float> values){
-
-        ArrayList<OrderBean> beanListSell = new ArrayList<>();
-        Random randomGenerator = new Random();
-        stockBeanListSell = gameDataHelper.getStockBeanListSell();
-
-        for(int i = buyOrderCount; i < (buyOrderCount+sellOrderCount); i++){
-
-            beanListSell.add(new OrderBean(values.get(i), (randomGenerator.nextInt(199) + 1)));
-
-        }
-
-        OrderBean comparator = new OrderBean(new Float(12.50),12);
-        Collections.sort(beanListSell, comparator);
-
-        if(!(stockBeanListSell.isEmpty())){
-
-            if(stockBeanListSell.size() <= playableStocks.indexOf(stockID))
-            {
-                return beanListSell;
+            if(!(sellBeans.size() == 0)){
+                sellBeans.removeAllItems();
             }
 
+            if(selectedStock == null){
+                stockIndex = 0;
+            }
             else{
-                ArrayList<OrderBean> temp = stockBeanListSell.get(playableStocks.indexOf(stockID));
-
-                for(int j = 0; j < beanListSell.size(); j++){
-
-                    temp.add(beanListSell.get(j));
-
-                }
-
-                Collections.sort(temp, comparator);
-
-                return temp;
+                stockIndex = ((TableData) object).getStockList().indexOf(selectedStock);
             }
+
+
+            for(int i = 0; i < ((TableData) object).getStockBeanListBuy().get(stockIndex).size(); i++){
+
+                buyBeans.addItem(((TableData) object).getStockBeanListBuy().get(stockIndex).get(i));
+
+            }
+
+            for(int i = 0; i < ((TableData) object).getStockBeanListSell().get(stockIndex).size(); i++){
+
+                sellBeans.addItem(((TableData) object).getStockBeanListSell().get(stockIndex).get(i));
+
+            }
+
+            updateTables(buyBeans, sellBeans);
+
         }
 
-        return beanListSell;
-    }
+        /*if (currentPriceChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
 
-    private Table getSellSideTable() {
+                currentPriceChart.addPointToChart();
 
-        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
-        Table orderBookSell = new Table("Sell Order Side", beans);
-
-        orderBookSell.setHeight("100%");
-        orderBookSell.setWidth("45%");
-        orderBookSell.setSelectable(true);
-        orderBookSell.setImmediate(true);
-
-        return orderBookSell;
-    }
-
-    private Table getBuySideTable() {
-
-        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
-
-        Table orderBookBuy = new Table("Buy Order Side",beans);
-
-        orderBookBuy.setHeight("100%");
-        orderBookBuy.setWidth("45%");
-        orderBookBuy.setSelectable(true);
-        orderBookBuy.setImmediate(true);
-
-        return orderBookBuy;
-    }
-
-    @Override
-    public void onEnter() {
-
-        quoteUI.update();
-
-        simulationRunning = true;
-
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-
-        playableStockManager = PlayableStockManager.getInstance();
-        playableStocks = playableStockManager.getStockList();
-
-        if(arg instanceof DayChangedEvent){
-            System.out.println("DayChanged");
-
-            stockBeanListBuy.clear();
-            gameDataHelper.setStockBeanListBuy(stockBeanListBuy);
-
-            stockBeanListSell.clear();
-            gameDataHelper.setStockBeanListSell(stockBeanListSell);
-
-            currentDay++;
-            gameDataHelper.setCurrentDay(currentDay);
-
-
-            if (currentPriceChart.isConnectorEnabled()) {
-                getSession().lock();
-                try {
-
-                    currentPriceChart.addPointToChart();
-
-                } finally {
-                    getSession().unlock();
-                }
+            } finally {
+                getSession().unlock();
             }
-
-
-            System.out.println("TableUpdated");
-        }
-
-        if(arg instanceof AddBidEvent){
-
-            updateTable();
-
-
-        }
-    }
-
-    @Override
-    public void onAddOrder(boolean isBuy, String stockID, float orderPrice, int orderStockCount) {
-
-        ArrayList<String> stockList = playableStockManager.getStockList();
-        int stockIndex = stockList.indexOf(stockID);
-
-        if(isBuy){
-            ArrayList<ArrayList<OrderBean>> buyStockBeanList = gameDataHelper.getStockBeanListBuy();
-
-            if(buyStockBeanList.size() <= stockIndex){
-                Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
-                notification.setPosition(Position.BOTTOM_RIGHT);
-                notification.show(Page.getCurrent());
-            }
-
-            else{
-
-                ArrayList<OrderBean> buyBeanList = buyStockBeanList.get(stockList.indexOf(stockID));
-
-                buyBeanList.add(new OrderBean(orderPrice, orderStockCount));
-
-                OrderBean comparator = new OrderBean(new Float(12.50),12);
-                Collections.sort(buyBeanList, comparator);
-                Collections.reverse(buyBeanList);
-
-                buyStockBeanList.set(stockIndex, buyBeanList);
-
-                gameDataHelper.setStockBeanListBuy(buyStockBeanList);
-
-                final Container beansBuy = orderBookBuy.getContainerDataSource();
-
-                if(!(beansBuy.size() == 0)){
-                    beansBuy.removeAllItems();
-                }
-
-                for(int i = 0; i < buyStockBeanList.get(stockIndex).size();i++){
-
-                    beansBuy.addItem(buyStockBeanList.get(stockIndex).get(i));
-
-                }
-
-                if (orderBookBuy.isConnectorEnabled()) {
-                    getSession().lock();
-                    try {
-
-                        getUI().access(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            orderBookBuy.setContainerDataSource(beansBuy);
-                            getUI().push();
-                        }
-                    });
-
-                    } finally {
-                    getSession().unlock();
-                }
-            }
-            }
-        }
-
-        else {
-            ArrayList<ArrayList<OrderBean>> sellStockBeanList = gameDataHelper.getStockBeanListSell();
-
-            if(sellStockBeanList.size() <= stockIndex){
-                Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
-                notification.setPosition(Position.BOTTOM_RIGHT);
-                notification.show(Page.getCurrent());
-            }
-
-            else {
-
-                ArrayList<OrderBean> sellBeanList = sellStockBeanList.get(stockList.indexOf(stockID));
-
-                sellBeanList.add(new OrderBean(orderPrice, orderStockCount));
-
-                OrderBean comparator = new OrderBean(new Float(12.50),12);
-                Collections.sort(sellBeanList, comparator);
-
-                sellStockBeanList.set(stockIndex, sellBeanList);
-
-                gameDataHelper.setStockBeanListSell(sellStockBeanList);
-
-                final Container beansSell = orderBookSell.getContainerDataSource();
-
-                if(!(beansSell.size() == 0)){
-                    beansSell.removeAllItems();
-                }
-
-                for(int i = 0; i < sellStockBeanList.get(stockIndex).size();i++){
-
-                    beansSell.addItem(sellStockBeanList.get(stockIndex).get(i));
-
-                }
-
-                if (orderBookSell.isConnectorEnabled()) {
-                    getSession().lock();
-                    try {
-
-                        getUI().access(new Runnable() {
-                        @Override
-                        public void run() {
-
-                                orderBookSell.setContainerDataSource(beansSell);
-                                getUI().push();
-                            }
-                        });
-
-                } finally {
-                    getSession().unlock();
-                }
-            }
-        }
-        }
+        }*/
 
     }
 }
