@@ -33,6 +33,7 @@ import java.util.*;
 public class BasicChart extends Chart{
 
     private PlayableStockManager playableStockManager;
+    private EventBroadcaster eventBroadcaster;
     private ArrayList<String> stockList;
     private NNGamingFacade nnGamingFacade;
     private ArrayList<DataSeries> stockDataSeriesList;
@@ -43,9 +44,9 @@ public class BasicChart extends Chart{
 
         nnGamingFacade = NNGamingFacade.getInstance();
 
-        if(stockDataSeriesList == null){
-            stockDataSeriesList = new ArrayList<>();
-        }
+        stockDataSeriesList = new ArrayList<>();
+
+        eventBroadcaster = EventBroadcaster.getInstance();
 
         predictedValues = new ArrayList<>();
         dateValues = new ArrayList<>();
@@ -54,11 +55,46 @@ public class BasicChart extends Chart{
 
         stockList = playableStockManager.getStockList();
 
-        if(!(stockList.isEmpty()) && stockDataSeriesList.isEmpty()){
+        if(!(stockList.isEmpty())){
             initChart();
+        }
+
+        if(eventBroadcaster.getStockDataSeriesList().isEmpty()){
+            eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
         }
     }
 
+    public void updateGraph(){
+
+        stockDataSeriesList = eventBroadcaster.getStockDataSeriesList();
+
+        final int stockListSize = stockList.size();
+
+        for(int  i = 0; i < stockListSize; i++){
+
+            String stock = stockList.get(i);
+            int lastIndex = stockDataSeriesList.get(stockList.indexOf(stock)).size() - 1;
+
+            System.out.println(lastIndex);
+
+            DataSeriesItem item =  stockDataSeriesList.get(stockList.indexOf(stock)).get(lastIndex);
+            stockDataSeriesList.get(stockList.indexOf(stockList.get(i))).remove(item);
+            stockDataSeriesList.get(stockList.indexOf(stock)).add(item);
+
+            getUI().access(new Runnable() {
+                @Override
+                public void run() {
+
+                    getUI().push();
+
+                }
+            });
+
+        }
+
+
+
+    }
 
     public String getDescription() {
         return "Stock Price Variation";
@@ -122,6 +158,7 @@ public class BasicChart extends Chart{
         }
 
         final int stockListSize = stockList.size();
+        stockDataSeriesList = eventBroadcaster.getStockDataSeriesList();
 
         for(int i = 0; i < stockListSize; i++){
 
@@ -144,6 +181,8 @@ public class BasicChart extends Chart{
             });
 
         }
+
+        eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
 
     }
 

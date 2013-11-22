@@ -22,10 +22,8 @@ import com.vaadin.data.Property;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
-import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.Order;
-import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 import java.util.ArrayList;
@@ -52,14 +50,12 @@ public class QuoteUI extends VerticalLayout implements EventListener {
     float orderPrice;
     int orderStockCount;
 
-    private GameDataHelper gameDataHelper;
     private EventBroadcaster eventBroadcaster;
     private List<SymbolChangeEvent> symbolListeners;
 
     public QuoteUI() {
 
         setupUI();
-        gameDataHelper = GameDataHelper.getInstance();
         eventBroadcaster = EventBroadcaster.getInstance();
 
         symbolListeners = new ArrayList<>();
@@ -148,6 +144,8 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         }
         stockSelect.setNullSelectionAllowed(false);
 
+        stockSelect.setValue(stockIDs.get(0));
+
     }
 
     public void addListener(SymbolChangeEvent listener){
@@ -198,26 +196,17 @@ public class QuoteUI extends VerticalLayout implements EventListener {
                         Notification.Type.ERROR_MESSAGE);
                 notification.setPosition(Position.BOTTOM_RIGHT);
                 notification.show(Page.getCurrent());
+
+                price.setValue("");
+                stocks.setValue("");
+                amount.setValue("");
             }
 
             else{
-                int status = checkExecutableStatus();
-
-                if(status == 1){
-                    //execute order
-                    //let dashboard playing view know
-                    //update portfolio
-                    System.out.println("Order Can be Executed");
-                }
-                else if (status == 0) {
-                    price.setValue("");
-                    stocks.setValue("");
-                    amount.setValue("");
-                    eventBroadcaster.setEvent(new Order(selectedStock, isBuy, orderPrice, orderStockCount));
-                }
-                else {
-
-                }
+                 price.setValue("");
+                 stocks.setValue("");
+                 amount.setValue("");
+                 eventBroadcaster.setEvent(new Order(selectedStock, isBuy, orderPrice, orderStockCount));
             }
 
         }
@@ -254,49 +243,5 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         }
     };
 
-    private int checkExecutableStatus(){
-
-        int status = -1;
-        ArrayList<String> stockList = eventBroadcaster.getStocks();
-
-        if(isBuy){
-            ArrayList<ArrayList<OrderBean>> sellStockBeanList = gameDataHelper.getStockBeanListSell();
-
-            if(sellStockBeanList.size() <= stockList.indexOf(selectedStock)){
-                 status = -1;
-            }
-
-            else{
-                ArrayList<OrderBean> sellBeanList = sellStockBeanList.get(stockList.indexOf(selectedStock));
-
-                if(sellBeanList.get(0).getOrderValue() <= orderPrice){
-                    status = 1;
-                }
-                else {
-                    status = 0;
-                }
-            }
-
-        }
-        else{
-            ArrayList<ArrayList<OrderBean>> buyStockBeanList = gameDataHelper.getStockBeanListBuy();
-
-            if(buyStockBeanList.size() <= stockList.indexOf(selectedStock)){
-                status = -1;
-            }
-            else{
-                ArrayList<OrderBean> buyBeanList = buyStockBeanList.get(stockList.indexOf(selectedStock));
-
-                if(buyBeanList.get(0).getOrderValue() >= orderPrice){
-                    status = 1;
-                }
-                else {
-                    status = 0;
-                }
-            }
-        }
-
-        return status;
-    }
 
 }

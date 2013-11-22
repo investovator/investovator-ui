@@ -18,6 +18,7 @@
 
 package org.investovator.ui.nngaming;
 
+import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.Notification;
@@ -51,6 +52,7 @@ public class EventBroadcaster implements EventListener,Observer{
     private int currentIndex;
     private MarketEventReceiver marketEventReceiver;
     private PlayableStockManager playableStockManager;
+    private ArrayList<DataSeries> stockDataSeriesList;
 
     private EventBroadcaster(){
 
@@ -68,6 +70,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
         playableStockManager = PlayableStockManager.getInstance();
 
+        stockDataSeriesList = new ArrayList<>();
     }
 
     public static EventBroadcaster getInstance() {
@@ -106,17 +109,32 @@ public class EventBroadcaster implements EventListener,Observer{
 
                 else{
 
-                    ArrayList<OrderBean> buyBeanList = stockBeanListBuy.get(stockIndex);
+                    int status = checkExecutableStatus(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
+                            ((Order) object).getOrderPrice());
 
-                    buyBeanList.add(new OrderBean(((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount()));
+                    if(status == 0){
 
-                    OrderBean comparator = new OrderBean(new Float(12.50),12);
-                    Collections.sort(buyBeanList, comparator);
-                    Collections.reverse(buyBeanList);
+                        ArrayList<OrderBean> buyBeanList = stockBeanListBuy.get(stockIndex);
 
-                    stockBeanListBuy.set(stockIndex, buyBeanList);
+                        buyBeanList.add(new OrderBean(((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount()));
+
+                        OrderBean comparator = new OrderBean(new Float(12.50),12);
+                        Collections.sort(buyBeanList, comparator);
+                        Collections.reverse(buyBeanList);
+
+                        stockBeanListBuy.set(stockIndex, buyBeanList);
+                    }
+
+                    else if(status == 1){
 
                     }
+
+                    else{
+                        Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
+                        notification.setPosition(Position.BOTTOM_RIGHT);
+                        notification.show(Page.getCurrent());
+                    }
+                }
             }
 
             else {
@@ -129,14 +147,28 @@ public class EventBroadcaster implements EventListener,Observer{
 
                 else {
 
-                    ArrayList<OrderBean> sellBeanList = stockBeanListSell.get(stockIndex);
+                    int status = checkExecutableStatus(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
+                            ((Order) object).getOrderPrice());
 
-                    sellBeanList.add(new OrderBean(((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount()));
+                    if(status == 0){
+                        ArrayList<OrderBean> sellBeanList = stockBeanListSell.get(stockIndex);
 
-                    OrderBean comparator = new OrderBean(new Float(12.50),12);
-                    Collections.sort(sellBeanList, comparator);
+                        sellBeanList.add(new OrderBean(((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount()));
 
-                    stockBeanListSell.set(stockIndex, sellBeanList);
+                        OrderBean comparator = new OrderBean(new Float(12.50),12);
+                        Collections.sort(sellBeanList, comparator);
+
+                        stockBeanListSell.set(stockIndex, sellBeanList);
+                    }
+                    else if(status == 1){
+
+                    }
+
+                    else{
+                        Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
+                        notification.setPosition(Position.BOTTOM_RIGHT);
+                        notification.show(Page.getCurrent());
+                    }
 
                 }
             }
@@ -311,6 +343,57 @@ public class EventBroadcaster implements EventListener,Observer{
         }
 
         return beanListSell;
+    }
+
+    public ArrayList<DataSeries> getStockDataSeriesList() {
+        return stockDataSeriesList;
+    }
+
+    public void setStockDataSeriesList(ArrayList<DataSeries> stockDataSeriesList) {
+        this.stockDataSeriesList = stockDataSeriesList;
+    }
+
+    private int checkExecutableStatus(boolean isBuy, String selectedStock, float orderPrice){
+
+        int status = -1;
+        ArrayList<String> stockList = playableStocks;
+
+        if(isBuy){
+
+            if(stockBeanListSell.size() <= stockList.indexOf(selectedStock)){
+                status = -1;
+            }
+
+            else{
+                ArrayList<OrderBean> sellBeanList = stockBeanListSell.get(stockList.indexOf(selectedStock));
+
+                if(sellBeanList.get(0).getOrderValue() <= orderPrice){
+                    status = 1;
+                }
+                else {
+                    status = 0;
+                }
+            }
+
+        }
+        else{
+
+            if(stockBeanListBuy.size() <= stockList.indexOf(selectedStock)){
+                status = -1;
+            }
+            else{
+                ArrayList<OrderBean> buyBeanList = stockBeanListBuy.get(stockList.indexOf(selectedStock));
+
+                if(buyBeanList.get(0).getOrderValue() >= orderPrice){
+                    status = 1;
+                }
+                else {
+                    status = 0;
+                }
+            }
+        }
+
+        return status;
     }
 
 }

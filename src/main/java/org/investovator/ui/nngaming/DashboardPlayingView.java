@@ -147,6 +147,17 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
     @Override
     public void onEnter() {
 
+        if (currentPriceChart.isConnectorEnabled()) {
+            getSession().lock();
+            try {
+
+                currentPriceChart.updateGraph();
+
+            } finally {
+                getSession().unlock();
+            }
+        }
+
         quoteUI.update();
 
         simulationRunning = true;
