@@ -241,7 +241,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                     }
 
                     //update the profit chart
-                    updateProfitChart(player.getToday());
+                    updateProfitChart(player.getCurrentTime());
 
                     //push the changes
                     UI.getCurrent().access(new Runnable() {
