@@ -25,6 +25,7 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.core.commons.utils.Portfolio;
@@ -76,22 +77,35 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
     private void addUIElements(){
         //add the game config
-        this.content.addComponent(setupGameConfigBox(),1,0);
+        VerticalLayout gameConfigLayout=new VerticalLayout();
+        gameConfigLayout.addComponent(setupGameConfigBox());
+        gameConfigLayout.setMargin(new MarginInfo(true,true,true,true));
+//        gameConfigLayout.setCaption("User Portfolio");
+//        gameConfigLayout.addStyleName("center-caption");
+        this.content.addComponent(gameConfigLayout,1,0);
+
         //add the game stats
-        this.content.addComponent(setupGameStatsBox(),2,0);
+        VerticalLayout gameStatsLayout=new VerticalLayout();
+        gameStatsLayout.addComponent(setupGameStatsBox());
+        gameStatsLayout.setMargin(new MarginInfo(true,true,true,true));
+        this.content.addComponent(gameStatsLayout,2,0);
+
         //add players table
         VerticalLayout tableLayout=new VerticalLayout();
         Table leaderboard=setupLeaderBoard();
         tableLayout.addComponent(leaderboard);
+        tableLayout.setMargin(new MarginInfo(false,true,true,true));
 //        tableLayout.setCaption("User Portfolio");
 //        tableLayout.addStyleName("center-caption");
         this.content.addComponent(tableLayout,0,0,0,1);
+
         //add the pie chart
         this.stockPieChart=setupPieChart();
         VerticalLayout pieChartLayout=new VerticalLayout();
         pieChartLayout.addComponent(this.stockPieChart);
-        pieChartLayout.setCaption("User Portfolio");
-        pieChartLayout.addStyleName("center-caption");
+        pieChartLayout.setMargin(new MarginInfo(true,true,true,true));
+//        pieChartLayout.setCaption("User Portfolio");
+//        pieChartLayout.addStyleName("center-caption");
         this.content.addComponent(pieChartLayout,1,1,2,1);
     }
 
@@ -103,9 +117,10 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         GameTypes config=DataPlaybackEngineStates.gameConfig;
 
         //show the game description
-        Label gameDescription=new Label("<p>"+config.getDescription()+"</p>");
+        Label gameDescription=new Label(config.getDescription());
         layout.addComponent(gameDescription);
         gameDescription.setContentMode(ContentMode.HTML);
+        gameDescription.setWidth(320, Unit.PIXELS);
         gameDescription.setCaption("Game: ");
 
 
@@ -161,6 +176,35 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
         runTime.setCaption("Up Time: ");
         layout.addComponent(runTime);
+        //start the time updating thread
+        new Thread()
+        {
+            public void run() {
+                //update forever
+                while(true){
+                    UI.getCurrent().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            TimeZone defaultTz=TimeZone.getDefault();
+                            TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+                            SimpleDateFormat sDate = new SimpleDateFormat("HH:mm:ss");
+                            runTime.setValue(sDate.format(new Date(player.getGameRuntime())));
+                            TimeZone.setDefault(defaultTz);
+                            getUI().push();
+                        }
+                    });
+
+                    //wait before updating
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }.start();
+
 
         //show market turnover
         Label turnover=new Label(Float.toString(player.getMarketTurnover()));
@@ -243,12 +287,13 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         conf.setPlotOptions(plotOptions);
 
         DataSeries series = new DataSeries();
+        series.setName("Total valuation: ");
         //if the stock items has been set
-        if(DataPlaybackEngineStates.playingSymbols!=null){
-            for(String stock:DataPlaybackEngineStates.playingSymbols){
-                series.add(new DataSeriesItem(stock, 50));
-            }
-        }
+//        if(DataPlaybackEngineStates.playingSymbols!=null){
+//            for(String stock:DataPlaybackEngineStates.playingSymbols){
+//                series.add(new DataSeriesItem(stock, 0));
+//            }
+//        }
         conf.setSeries(series);
 
         conf.disableCredits();
@@ -262,8 +307,8 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
 
 
-//        chart.setCaption("User Portfolio");
-//        chart.addStyleName("center-caption");
+        chart.setCaption("User Portfolio");
+        chart.addStyleName("center-caption");
 
 //        chart.setWidth(75,Unit.PERCENTAGE);
 //        chart.setHeight(55,Unit.MM);
@@ -301,7 +346,8 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
             }
 
 
-
+                //update chart caption
+            stockPieChart.setCaption("User Portfolio of "+userName);
                 stockPieChart.drawChart();
 
             UI.getCurrent().access(new Runnable() {
