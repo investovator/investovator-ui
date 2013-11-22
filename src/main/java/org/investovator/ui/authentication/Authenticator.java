@@ -61,7 +61,7 @@ public class Authenticator {
 
     }
 
-    public boolean authenticate(String username, String password){
+    public boolean authenticate(String username, String password) throws AuthenticationException{
         boolean success=false;
 
         //TODO: Test users, Remove after testing.
@@ -88,17 +88,12 @@ public class Authenticator {
 
         SimpleCredentials credentials = new SimpleCredentials(username, password.toCharArray());
         DirectoryDAO directoryDAO = new DirectoryDAOImpl();
-        try {
-                HashMap<Object, Object> userData = directoryDAO.bindUser(credentials);
-                UserType type  = (boolean)userData.get(DirectoryDAO.UserRole.ADMIN) ? UserType.ADMIN  :UserType.ORDINARY;
-                setUserType(type);
-        }
-         catch (AuthenticationException e) {
-            if(e.getMessage().equals(LdapUtils.ERROR_INVALID_PASSWORD)||
-                    e.getMessage().equals(LdapUtils.ERROR_INVALID_USER)){
-                return false;
-            }
-            Notification.show("Error: LDAP server error", Notification.Type.TRAY_NOTIFICATION);
+
+        HashMap<Object, Object> userData = directoryDAO.bindUser(credentials);
+        if(userData!= null) {
+            success = true;
+            UserType type  = (boolean)userData.get(DirectoryDAO.UserRole.ADMIN) ? UserType.ADMIN  :UserType.ORDINARY;
+            setUserType(type);
         }
 
         if(success){setLoggedIn(true);}
