@@ -102,9 +102,7 @@ public class EventBroadcaster implements EventListener,Observer{
             if(((Order) object).isBuy()){
 
                 if(stockBeanListBuy.size() <= stockIndex){
-                    Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
-                    notification.setPosition(Position.BOTTOM_RIGHT);
-                    notification.show(Page.getCurrent());
+                    showNotification("Order placing was not successful");
                 }
 
                 else{
@@ -118,14 +116,17 @@ public class EventBroadcaster implements EventListener,Observer{
 
                         buyBeanList.add(new OrderBean(((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount()));
 
-                        OrderBean comparator = new OrderBean(new Float(12.50),12);
-                        Collections.sort(buyBeanList, comparator);
-                        Collections.reverse(buyBeanList);
+                        buyBeanList = sortOrderBeanList(buyBeanList, false);
 
                         stockBeanListBuy.set(stockIndex, buyBeanList);
                     }
 
                     else if(status == 1){
+
+                        marketEventReceiver.deleteObserver(this);
+                        executeOrder(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
+                                ((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount());
+                        marketEventReceiver.addObserver(this);
 
                     }
 
@@ -140,9 +141,7 @@ public class EventBroadcaster implements EventListener,Observer{
             else {
 
                 if(stockBeanListSell.size() <= stockIndex){
-                    Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
-                    notification.setPosition(Position.BOTTOM_RIGHT);
-                    notification.show(Page.getCurrent());
+                    showNotification("Order placing was not successful");
                 }
 
                 else {
@@ -155,12 +154,16 @@ public class EventBroadcaster implements EventListener,Observer{
 
                         sellBeanList.add(new OrderBean(((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount()));
 
-                        OrderBean comparator = new OrderBean(new Float(12.50),12);
-                        Collections.sort(sellBeanList, comparator);
+                        sellBeanList = sortOrderBeanList(sellBeanList, true);
 
                         stockBeanListSell.set(stockIndex, sellBeanList);
                     }
                     else if(status == 1){
+
+                        marketEventReceiver.deleteObserver(this);
+                        executeOrder(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
+                                ((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount());
+                        marketEventReceiver.addObserver(this);
 
                     }
 
@@ -182,18 +185,6 @@ public class EventBroadcaster implements EventListener,Observer{
             notifyListeners(new TableData(stockBeanListBuy, stockBeanListSell, playableStocks));
 
         }
-
-    }
-
-    public void setStocks(ArrayList<String> stocks){
-
-        this.playableStocks = stocks;
-
-    }
-
-    public ArrayList<String> getStocks(){
-
-        return playableStocks;
 
     }
 
@@ -272,9 +263,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
         }
 
-        OrderBean comparator = new OrderBean(new Float(12.50),12);
-        Collections.sort(beanListBuy, comparator);
-        Collections.reverse(beanListBuy);
+        beanListBuy = sortOrderBeanList(beanListBuy, false);
 
         if(!(stockBeanListBuy.isEmpty())){
 
@@ -293,8 +282,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
                 }
 
-                Collections.sort(temp, comparator);
-                Collections.reverse(temp);
+                temp = sortOrderBeanList(temp, false);
 
                 return temp;
 
@@ -317,8 +305,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
         }
 
-        OrderBean comparator = new OrderBean(new Float(12.50),12);
-        Collections.sort(beanListSell, comparator);
+        beanListSell = sortOrderBeanList(beanListSell, true);
 
         if(!(stockBeanListSell.isEmpty())){
 
@@ -336,7 +323,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
                 }
 
-                Collections.sort(temp, comparator);
+                temp = sortOrderBeanList(temp, true);
 
                 return temp;
             }
@@ -356,16 +343,16 @@ public class EventBroadcaster implements EventListener,Observer{
     private int checkExecutableStatus(boolean isBuy, String selectedStock, float orderPrice){
 
         int status = -1;
-        ArrayList<String> stockList = playableStocks;
+        int stockIndex = playableStocks.indexOf(selectedStock);
 
         if(isBuy){
 
-            if(stockBeanListSell.size() <= stockList.indexOf(selectedStock)){
+            if(stockBeanListSell.size() <= stockIndex){
                 status = -1;
             }
 
             else{
-                ArrayList<OrderBean> sellBeanList = stockBeanListSell.get(stockList.indexOf(selectedStock));
+                ArrayList<OrderBean> sellBeanList = stockBeanListSell.get(stockIndex);
 
                 if(sellBeanList.get(0).getOrderValue() <= orderPrice){
                     status = 1;
@@ -378,11 +365,11 @@ public class EventBroadcaster implements EventListener,Observer{
         }
         else{
 
-            if(stockBeanListBuy.size() <= stockList.indexOf(selectedStock)){
+            if(stockBeanListBuy.size() <= stockIndex){
                 status = -1;
             }
             else{
-                ArrayList<OrderBean> buyBeanList = stockBeanListBuy.get(stockList.indexOf(selectedStock));
+                ArrayList<OrderBean> buyBeanList = stockBeanListBuy.get(stockIndex);
 
                 if(buyBeanList.get(0).getOrderValue() >= orderPrice){
                     status = 1;
@@ -394,6 +381,201 @@ public class EventBroadcaster implements EventListener,Observer{
         }
 
         return status;
+    }
+
+    private void executeOrder(boolean isBuy, String selectedStock, float orderPrice, int stockCount){
+
+         int stockIndex = playableStocks.indexOf(selectedStock);
+
+         if(isBuy){
+
+             if(stockBeanListSell.size() <= stockIndex || stockBeanListBuy.size() <= stockIndex){
+                showNotification("Order execution was not successful");
+             }
+
+             else {
+                 int temp = stockCount;
+                 ArrayList<OrderBean> sellBeanList = stockBeanListSell.get(stockIndex);
+                 ArrayList<OrderBean> buyBeanList = stockBeanListBuy.get(stockIndex);
+                 int executionFeasibleIndex = 0;
+                 int lastIndexChanged = 0;
+
+                 for(int i = 0; i < sellBeanList.size(); i++){
+
+                     if((checkExecutableStatus(isBuy, selectedStock, orderPrice)) == 1){
+                        executionFeasibleIndex = i;
+                     }
+                     else {
+                         break;
+                     }
+                 }
+
+                 for(int i = 0; i <= executionFeasibleIndex; i++){
+                     int quantity = sellBeanList.get(i).getQuantity();
+                     temp = temp - quantity;
+
+                     lastIndexChanged = i;
+
+                     if(temp <= 0){
+
+                         break;
+
+                     }
+
+                 }
+
+                 if(temp == 0){
+
+                     for(int i = 0; i <= lastIndexChanged; i++){
+
+                         sellBeanList.remove(0);
+
+                     }
+
+                 }
+
+                 else if(temp < 0){
+
+                     for(int i = 0; i < lastIndexChanged; i++){
+
+                         sellBeanList.remove(0);
+
+                     }
+
+                     OrderBean order = sellBeanList.get(0);
+                     order.setQuantity(Math.abs(temp));
+                     sellBeanList.set(0, order);
+
+                 }
+
+                 else if(temp > 0) {
+
+                     for(int i = 0; i <= executionFeasibleIndex; i++){
+
+                         sellBeanList.remove(0);
+
+                     }
+                     buyBeanList.add(new OrderBean(orderPrice, temp));
+                     buyBeanList = sortOrderBeanList(buyBeanList, false);
+
+                 }
+
+                 stockBeanListBuy.set(stockIndex, buyBeanList);
+                 stockBeanListSell.set(stockIndex, sellBeanList);
+             }
+
+         }
+
+         else {
+
+             if(stockBeanListSell.size() <= stockIndex || stockBeanListBuy.size() <= stockIndex){
+                 showNotification("Order execution was not successful");
+             }
+
+             else {
+                 int temp = stockCount;
+                 ArrayList<OrderBean> sellBeanList = stockBeanListSell.get(stockIndex);
+                 ArrayList<OrderBean> buyBeanList = stockBeanListBuy.get(stockIndex);
+                 int executionFeasibleIndex = 0;
+                 int lastIndexChanged = 0;
+
+                 for(int i = 0; i < buyBeanList.size(); i++){
+
+                     if((checkExecutableStatus(isBuy, selectedStock, orderPrice)) == 1){
+                         executionFeasibleIndex = i;
+                     }
+                     else {
+                         break;
+                     }
+                 }
+
+                 for(int i = 0; i <= executionFeasibleIndex; i++){
+                     int quantity = buyBeanList.get(i).getQuantity();
+                     temp = temp - quantity;
+
+                     lastIndexChanged = i;
+
+                     if(temp <= 0){
+
+                         break;
+
+                     }
+
+                 }
+
+                 if(temp == 0){
+
+                     for(int i = 0; i <= lastIndexChanged; i++){
+
+                         buyBeanList.remove(0);
+
+                     }
+
+                 }
+
+                 else if(temp < 0){
+
+                     for(int i = 0; i < lastIndexChanged; i++){
+
+                         buyBeanList.remove(0);
+
+                     }
+
+                     OrderBean order = buyBeanList.get(0);
+                     order.setQuantity(Math.abs(temp));
+                     buyBeanList.set(0, order);
+
+                 }
+
+                 else if(temp > 0){
+
+                     for(int i = 0; i <= executionFeasibleIndex; i++){
+
+                         buyBeanList.remove(0);
+
+                     }
+                     sellBeanList.add(new OrderBean(orderPrice, temp));
+                     sellBeanList = sortOrderBeanList(sellBeanList, true);
+
+                 }
+
+                 stockBeanListBuy.set(stockIndex, buyBeanList);
+                 stockBeanListSell.set(stockIndex, sellBeanList);
+
+             }
+         }
+
+
+    }
+
+    private void showNotification(String message){
+
+        Notification notification = new Notification(message, Notification.Type.ERROR_MESSAGE);
+        notification.setPosition(Position.BOTTOM_RIGHT);
+        notification.show(Page.getCurrent());
+
+    }
+
+    private ArrayList<OrderBean> sortOrderBeanList(ArrayList<OrderBean> arrayList, boolean ascending){
+
+        ArrayList<OrderBean> orderBeans = arrayList;
+        OrderBean comparator = new OrderBean(new Float(12.50),12);
+
+        if(true){
+
+            Collections.sort(orderBeans, comparator);
+
+        }
+
+        else {
+
+            Collections.sort(orderBeans, comparator);
+            Collections.reverse(orderBeans);
+
+        }
+
+        return orderBeans;
+
     }
 
 }
