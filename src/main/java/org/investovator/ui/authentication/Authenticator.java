@@ -65,13 +65,11 @@ public class Authenticator {
         boolean success=false;
 
         //TODO: Test users, Remove after testing.
-        if(username.isEmpty()){
-            if(password.isEmpty()){
+        if(username.isEmpty() && password.isEmpty()){
                 //set the user as a standard user
                 setUser("testUser1");
                 setLoggedIn(true);
                 return  true;
-            }
         }
         //user name for admin
         else if(username.equalsIgnoreCase("a")){
@@ -93,6 +91,7 @@ public class Authenticator {
         if(userData!= null) {
             success = true;
             UserType type  = (boolean)userData.get(DirectoryDAO.UserRole.ADMIN) ? UserType.ADMIN  :UserType.ORDINARY;
+            setUser(username);
             setUserType(type);
         }
 
