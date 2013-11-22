@@ -80,10 +80,19 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         //add the game stats
         this.content.addComponent(setupGameStatsBox(),2,0);
         //add players table
-        this.content.addComponent(setupLeaderBoard(),0,0,0,1);
+        VerticalLayout tableLayout=new VerticalLayout();
+        Table leaderboard=setupLeaderBoard();
+        tableLayout.addComponent(leaderboard);
+//        tableLayout.setCaption("User Portfolio");
+//        tableLayout.addStyleName("center-caption");
+        this.content.addComponent(tableLayout,0,0,0,1);
         //add the pie chart
         this.stockPieChart=setupPieChart();
-        this.content.addComponent(stockPieChart,1,1,2,1);
+        VerticalLayout pieChartLayout=new VerticalLayout();
+        pieChartLayout.addComponent(this.stockPieChart);
+        pieChartLayout.setCaption("User Portfolio");
+        pieChartLayout.addStyleName("center-caption");
+        this.content.addComponent(pieChartLayout,1,1,2,1);
     }
 
     public Component setupGameConfigBox(){
@@ -182,7 +191,8 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
 
         Table table=new Table("Player Information",beans);
-        table.setCaption(null);
+        table.setCaption("Users List");
+        table.addStyleName("center-caption");
         table.setSelectable(true);
         //restrict the maximum number of viewable entries to 20
         table.setPageLength(20);
@@ -213,6 +223,9 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
         Configuration conf = chart.getConfiguration();
 
+        //set the number of decimals to be shown to 2
+        conf.getTooltip().setValueDecimals(2);
+
         conf.getTitle().setText(null);
 
         PlotOptionsPie plotOptions = new PlotOptionsPie();
@@ -225,7 +238,7 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         dataLabels.setColor(new SolidColor(0, 0, 0));
         dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
         dataLabels
-                .setFormatter("''+ this.point.name +': '+ this.percentage +' %'");
+                .setFormatter("''+ this.point.name +': '+ this.percentage.toFixed(2) +' %'");
         plotOptions.setDataLabels(dataLabels);
         conf.setPlotOptions(plotOptions);
 
@@ -246,6 +259,11 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         conf.getChart().setAnimation(false);
         chart.setWidth(95,Unit.PERCENTAGE);
         chart.setHeight(100,Unit.MM);
+
+
+
+//        chart.setCaption("User Portfolio");
+//        chart.addStyleName("center-caption");
 
 //        chart.setWidth(75,Unit.PERCENTAGE);
 //        chart.setHeight(55,Unit.MM);

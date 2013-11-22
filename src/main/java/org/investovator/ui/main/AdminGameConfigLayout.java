@@ -91,8 +91,8 @@ public class AdminGameConfigLayout extends VerticalLayout {
                     if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
                         try {
                             //if the game is multi player
+                            //todo - modify to data player parentnew  (no need to even check the follwoing if conditions it seems)
                             if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
-                                //todo - load the summary view --  from DATA_PLAYBACK_ADMIN_DASH?
                                 getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
 
                             }
@@ -106,18 +106,20 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
                     }
                     else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
-                        try {
+//                        try {
                             //if this is a multiplayer game
-                            if (DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
-                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+//                            if (DataPlayerFacade.getInstance().getCurrentPlayer().isMultiplayer()){
+                                if (DataPlaybackEngineStates.isMultiplayer){
+
+                                    getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
                             }
                             else{
                                 //loads single player daily summary data playback view
                                 getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
                             }
-                        } catch (PlayerStateException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
+//                        } catch (PlayerStateException e) {
+//                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                        }
                     }
 
                 }
