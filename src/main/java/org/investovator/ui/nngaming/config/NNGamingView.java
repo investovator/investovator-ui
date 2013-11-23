@@ -121,10 +121,22 @@ public class NNGamingView extends Window implements WizardProgressListener{
         inputParam.add(TradingDataAttribute.TRADES);
         inputParam.add(TradingDataAttribute.TURNOVER);
 
+        PlayableStockManager.getInstance().setStocks(selectedStockIDs);
+
         NNManager nnManager = new NNManager(inputParam,selectedStockIDs);
         nnManager.createNeuralNetwork();
 
-        PlayableStockManager.getInstance().setStocks(selectedStockIDs);
+        /*ProgressWindow test = new ProgressWindow("Creating Game....Please Wait!!");
+        GameControllerFacade.getInstance().registerListener(test);
+        getUI().addWindow(test);
+
+        test.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                closeWindow();
+            }
+        });*/
+
 
         try {
             GameControllerFacade.getInstance().startGame(GameModes.NN_GAME,null);
@@ -132,7 +144,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
             e.printStackTrace();
         }
 
-        closeWindow();
+        this.closeWindow();
 
     }
 

@@ -26,6 +26,11 @@ import org.investovator.ann.nngaming.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.ann.nngaming.events.AddBidEvent;
 import org.investovator.ann.nngaming.events.DayChangedEvent;
+import org.investovator.controller.utils.events.PortfolioChangedEvent;
+import org.investovator.core.commons.utils.Portfolio;
+import org.investovator.core.data.api.UserData;
+import org.investovator.core.data.api.UserDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
@@ -53,6 +58,7 @@ public class EventBroadcaster implements EventListener,Observer{
     private MarketEventReceiver marketEventReceiver;
     private PlayableStockManager playableStockManager;
     private ArrayList<DataSeries> stockDataSeriesList;
+    private  UserData userData;
 
     private EventBroadcaster(){
 
@@ -71,6 +77,12 @@ public class EventBroadcaster implements EventListener,Observer{
         playableStockManager = PlayableStockManager.getInstance();
 
         stockDataSeriesList = new ArrayList<>();
+
+        try {
+            userData = new UserDataImpl();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public static EventBroadcaster getInstance() {
@@ -124,16 +136,28 @@ public class EventBroadcaster implements EventListener,Observer{
                     else if(status == 1){
 
                         marketEventReceiver.deleteObserver(this);
-                        executeOrder(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
+                        float avgPrice = executeOrder(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
                                 ((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount());
                         marketEventReceiver.addObserver(this);
+
+                        String buyingUser = (((Order) object).getUserName());
+
+                        try {
+                            Portfolio buyerPortfolio = userData.getUserPortfolio(buyingUser);
+                            String stockID = ((Order) object).getSelectedStock();
+                            buyerPortfolio.boughtShares(stockID,((Order) object).getOrderStockCount(), avgPrice);
+
+                            userData.updateUserPortfolio(buyingUser, buyerPortfolio);
+                            notifyListeners(new PortfolioChangedEvent(buyerPortfolio));
+
+                        } catch (DataAccessException e) {
+                            e.printStackTrace();
+                        }
 
                     }
 
                     else{
-                        Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
-                        notification.setPosition(Position.BOTTOM_RIGHT);
-                        notification.show(Page.getCurrent());
+                         showNotification("Order placing was not successful");
                     }
                 }
             }
@@ -161,16 +185,28 @@ public class EventBroadcaster implements EventListener,Observer{
                     else if(status == 1){
 
                         marketEventReceiver.deleteObserver(this);
-                        executeOrder(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
+                        float avgPrice = executeOrder(((Order) object).isBuy(), ((Order) object).getSelectedStock(),
                                 ((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount());
                         marketEventReceiver.addObserver(this);
+
+                        String sellingUser = (((Order) object).getUserName());
+
+                        try {
+                            Portfolio sellerPortfolio = userData.getUserPortfolio(sellingUser);
+                            String stockID = ((Order) object).getSelectedStock();
+                            sellerPortfolio.soldShares(stockID,((Order) object).getOrderStockCount(), avgPrice);
+
+                            userData.updateUserPortfolio(sellingUser, sellerPortfolio);
+                            notifyListeners(new PortfolioChangedEvent(sellerPortfolio));
+
+                        } catch (DataAccessException e) {
+                            e.printStackTrace();
+                        }
 
                     }
 
                     else{
-                        Notification notification = new Notification("Order placing was not successful", Notification.Type.ERROR_MESSAGE);
-                        notification.setPosition(Position.BOTTOM_RIGHT);
-                        notification.show(Page.getCurrent());
+                        showNotification("Order placing was not successful");
                     }
 
                 }
@@ -383,9 +419,11 @@ public class EventBroadcaster implements EventListener,Observer{
         return status;
     }
 
-    private void executeOrder(boolean isBuy, String selectedStock, float orderPrice, int stockCount){
+    private float executeOrder(boolean isBuy, String selectedStock, float orderPrice, int stockCount){
 
          int stockIndex = playableStocks.indexOf(selectedStock);
+         float avgPrice = 0;
+         int stocks = 0;
 
          if(isBuy){
 
@@ -428,6 +466,8 @@ public class EventBroadcaster implements EventListener,Observer{
 
                      for(int i = 0; i <= lastIndexChanged; i++){
 
+                         avgPrice += sellBeanList.get(0).getOrderValue() * sellBeanList.get(0).getQuantity();
+                         stocks += sellBeanList.get(0).getQuantity();
                          sellBeanList.remove(0);
 
                      }
@@ -438,11 +478,15 @@ public class EventBroadcaster implements EventListener,Observer{
 
                      for(int i = 0; i < lastIndexChanged; i++){
 
+                         avgPrice += sellBeanList.get(0).getOrderValue() * sellBeanList.get(0).getQuantity();
+                         stocks += sellBeanList.get(0).getQuantity();
                          sellBeanList.remove(0);
 
                      }
 
                      OrderBean order = sellBeanList.get(0);
+                     avgPrice += order.getOrderValue() * (order.getQuantity() - Math.abs(temp));
+                     stocks += (order.getQuantity() - Math.abs(temp));
                      order.setQuantity(Math.abs(temp));
                      sellBeanList.set(0, order);
 
@@ -452,6 +496,8 @@ public class EventBroadcaster implements EventListener,Observer{
 
                      for(int i = 0; i <= executionFeasibleIndex; i++){
 
+                         avgPrice += sellBeanList.get(0).getOrderValue() * sellBeanList.get(0).getQuantity();
+                         stocks += sellBeanList.get(0).getQuantity();
                          sellBeanList.remove(0);
 
                      }
@@ -507,6 +553,8 @@ public class EventBroadcaster implements EventListener,Observer{
 
                      for(int i = 0; i <= lastIndexChanged; i++){
 
+                         avgPrice += buyBeanList.get(0).getOrderValue() * buyBeanList.get(0).getQuantity();
+                         stocks += buyBeanList.get(0).getQuantity();
                          buyBeanList.remove(0);
 
                      }
@@ -517,11 +565,15 @@ public class EventBroadcaster implements EventListener,Observer{
 
                      for(int i = 0; i < lastIndexChanged; i++){
 
+                         avgPrice += buyBeanList.get(0).getOrderValue() * buyBeanList.get(0).getQuantity();
+                         stocks += buyBeanList.get(0).getQuantity();
                          buyBeanList.remove(0);
 
                      }
 
                      OrderBean order = buyBeanList.get(0);
+                     avgPrice += order.getOrderValue() * (order.getQuantity() - Math.abs(temp));
+                     stocks += (order.getQuantity() - Math.abs(temp));
                      order.setQuantity(Math.abs(temp));
                      buyBeanList.set(0, order);
 
@@ -531,6 +583,8 @@ public class EventBroadcaster implements EventListener,Observer{
 
                      for(int i = 0; i <= executionFeasibleIndex; i++){
 
+                         avgPrice += buyBeanList.get(0).getOrderValue() * buyBeanList.get(0).getQuantity();
+                         stocks += buyBeanList.get(0).getQuantity();
                          buyBeanList.remove(0);
 
                      }
@@ -545,7 +599,7 @@ public class EventBroadcaster implements EventListener,Observer{
              }
          }
 
-
+        return (avgPrice/stocks);
     }
 
     private void showNotification(String message){

@@ -30,7 +30,7 @@ import java.util.*;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class BasicChart extends Chart{
+public class QuantityChart extends Chart {
 
     private PlayableStockManager playableStockManager;
     private EventBroadcaster eventBroadcaster;
@@ -40,7 +40,7 @@ public class BasicChart extends Chart{
     private ArrayList<float[]> predictedValues;
     private ArrayList<Date[]> dateValues;
 
-    public BasicChart(){
+    public QuantityChart(){
 
         nnGamingFacade = NNGamingFacade.getInstance();
 
@@ -64,60 +64,25 @@ public class BasicChart extends Chart{
         }
     }
 
-    public void updateGraph(){
-
-        stockDataSeriesList = eventBroadcaster.getStockDataSeriesList();
-
-        final int stockListSize = stockList.size();
-
-        for(int  i = 0; i < stockListSize; i++){
-
-            String stock = stockList.get(i);
-            int lastIndex = stockDataSeriesList.get(stockList.indexOf(stock)).size() - 1;
-
-            System.out.println(lastIndex);
-
-            DataSeriesItem item =  stockDataSeriesList.get(stockList.indexOf(stock)).get(lastIndex);
-            stockDataSeriesList.get(stockList.indexOf(stockList.get(i))).remove(item);
-            stockDataSeriesList.get(stockList.indexOf(stock)).add(item);
-
-            getUI().access(new Runnable() {
-                @Override
-                public void run() {
-
-                    getUI().push();
-
-                }
-            });
-
-        }
-
-
-
-    }
-
     public String getDescription() {
-        return "Stock Price Variation";
+        return "Stock Trades Quantity Variation";
     }
 
-    public void initChart() {
+    private void initChart() {
 
-        setHeight(65,Unit.MM);
+        setHeight(45,Unit.MM);
         setWidth("100%");
 
         Configuration configuration = new Configuration();
-        configuration.getChart().setType(ChartType.LINE);
+        configuration.getChart().setType(ChartType.COLUMN);
+        configuration.setTitle("Stock Trades Quantity");
 
         configuration.getxAxis().setType(AxisType.DATETIME);
 
         Axis yAxis = configuration.getyAxis();
         yAxis.setMin(0);
-        yAxis.setTitle(new Title("Price (LKR)"));
+        yAxis.setTitle(new Title("Trades Quantity"));
         yAxis.getTitle().setVerticalAlign(VerticalAlign.HIGH);
-
-        PlotOptionsLine plotOptions = new PlotOptionsLine();
-        plotOptions.setDataLabels(new Labels(true));
-        configuration.setPlotOptions(plotOptions);
 
         Legend legend = configuration.getLegend();
         legend.setLayout(LayoutDirection.HORIZONTAL);
@@ -125,6 +90,13 @@ public class BasicChart extends Chart{
         legend.setVerticalAlign(VerticalAlign.BOTTOM);
         legend.setBorderWidth(1);
 
+        Tooltip tooltip = configuration.getTooltip();
+        tooltip.setFormatter("this.x +': '+ this.y");
+        configuration.setTooltip(tooltip);
+
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
 
         prepareDataSeriesLists();
 
@@ -140,8 +112,7 @@ public class BasicChart extends Chart{
         drawChart(configuration);
 
         getConfiguration().disableCredits();
-        getConfiguration().getTitle().setText("Stock Prices");
-
+        getConfiguration().getTitle().setText("Stock Trades Quantity");
     }
 
     public void addPointToChart(int currentIndex){
@@ -228,7 +199,7 @@ public class BasicChart extends Chart{
         Calendar calendar = Calendar.getInstance();
 
         ArrayList<TradingDataAttribute> attributes = new ArrayList<>();
-        attributes.add(TradingDataAttribute.CLOSING_PRICE);
+        attributes.add(TradingDataAttribute.TRADES);
 
         for(int i = 0; i < stockList.size(); i++){
 
@@ -251,8 +222,6 @@ public class BasicChart extends Chart{
             stockDataSeriesList.add(dataSeries);
 
         }
-
-
 
     }
 }

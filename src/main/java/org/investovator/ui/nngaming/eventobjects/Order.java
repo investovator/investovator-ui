@@ -28,13 +28,15 @@ public class Order {
     private boolean isBuy;
     private float orderPrice;
     private int orderStockCount;
+    private String userName;
 
-    public Order(String selectedStock, boolean isBuy, float orderPrice, int orderStockCount){
+    public Order(String userName, String selectedStock, boolean isBuy, float orderPrice, int orderStockCount){
 
         this.selectedStock = selectedStock;
         this.isBuy = isBuy;
         this.orderPrice = orderPrice;
         this.orderStockCount = orderStockCount;
+        this.userName = userName;
 
     }
 
@@ -68,5 +70,13 @@ public class Order {
 
     public void setOrderStockCount(int orderStockCount) {
         this.orderStockCount = orderStockCount;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
