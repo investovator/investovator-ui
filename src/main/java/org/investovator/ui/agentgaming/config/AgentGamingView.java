@@ -3,8 +3,10 @@ package org.investovator.ui.agentgaming.config;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
-import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.GameController;
+import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.ui.GlobalView;
 import org.investovator.controller.config.ConfigGenerator;
@@ -147,20 +149,24 @@ public class AgentGamingView extends Window implements WizardProgressListener {
 
         //Notification.show("Configuration for agent game created");
 
+        GameController controller = GameControllerImpl.getInstance();
+
         ProgressWindow test = new ProgressWindow("Creating Agent Game");
-        GameControllerFacade.getInstance().registerListener(test);
-        getUI().addWindow(test);
-
-        test.addCloseListener(new Window.CloseListener() {
-            @Override
-            public void windowClose(Window.CloseEvent closeEvent) {
-                closeWindow();
-            }
-        });
-
-
         try {
-            GameControllerFacade.getInstance().startGame(GameModes.AGENT_GAME,null);
+            String instance = controller.createGameInstance(GameModes.AGENT_GAME);
+            controller.registerListener(instance, test);
+            getUI().addWindow(test);
+            controller.startGame(instance);
+
+            test.addCloseListener(new Window.CloseListener() {
+                @Override
+                public void windowClose(Window.CloseEvent closeEvent) {
+                    closeWindow();
+                }
+            });
+
+        } catch (GameCreationException e) {
+            e.printStackTrace();
         } catch (GameProgressingException e) {
             e.printStackTrace();
         }
