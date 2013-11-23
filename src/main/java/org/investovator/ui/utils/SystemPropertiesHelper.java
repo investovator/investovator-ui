@@ -55,9 +55,14 @@ public class SystemPropertiesHelper implements
             e.printStackTrace();
         }
 
+        //SQL Config
         String realPath = context.getRealPath("/WEB-INF/configuration/investovator.sql");
         System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
-        System.out.println("SQL Path : " + realPath);
+
+
+        //Game Configuration
+        realPath = context.getRealPath("/WEB-INF/configuration/game.properties");
+        System.setProperty("game_properties_url", realPath );
 
 
 
