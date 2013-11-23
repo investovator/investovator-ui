@@ -64,10 +64,14 @@ public abstract class BasicDashboard extends GlobalView {
 
         content.removeAllComponents();
         setUpBasicDashboard(dashboardName);
+        setupUI(viewChangeEvent);
+
+
         DashboardPanel addedPanel = menuItems.get(menuItems.keySet().iterator().next());
         addedPanel.addStyleName("selected");
         content.addComponent(addedPanel);
         addedPanel.onEnter();
+
     }
 
 
