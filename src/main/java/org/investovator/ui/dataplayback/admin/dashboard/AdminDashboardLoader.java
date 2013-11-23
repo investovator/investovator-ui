@@ -26,6 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.dataplayback.admin.DataPlaybackEngineAdminDashboard;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -48,39 +49,36 @@ public class AdminDashboardLoader extends BasicDashboard{
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
         LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
         try{
-        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
             if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
-                Notification.show("Not implemented-load admin summary view");
+//                Notification.show("Not implemented-load admin summary view");
 
             }
-//            else{
-//                map.put("main view", new RealTimeMainView());
-//            }
         }
-        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
             if(DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
-                Notification.show("Not implemented-load admin summary view");
+//                Notification.show("Not implemented-load admin summary view");
             }
-//            else{
-//                map.put("main view", new DailySummarySinglePlayerMainView());
-//            }
         }
         }catch (PlayerStateException ex){
             ex.printStackTrace();
         }
 
 
-        VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
+//        VerticalLayout panelContent2 = new VerticalLayout();
+//        panelContent2.addComponent(new Button("Test 2"));
+//
+//        DashboardPanel panel2 = new DashboardPanel() {
+//            @Override
+//            public void onEnter() {
+//                //To change body of implemented methods use File | Settings | File Templates.
+//            }
+//        };
+//        panel2.setContent(panelContent2);
+//        map.put("test 2", panel2);
 
-        DashboardPanel panel2 = new DashboardPanel() {
-            @Override
-            public void onEnter() {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
-        panel2.setContent(panelContent2);
-        map.put("test 2", panel2);
+        map.put("overview", new DataPlaybackEngineAdminDashboard());
+
 
         return map;
 

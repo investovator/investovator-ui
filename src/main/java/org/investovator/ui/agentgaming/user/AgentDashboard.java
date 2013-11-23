@@ -1,7 +1,8 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
+import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
@@ -10,7 +11,10 @@ import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 
 /**
  * @author: Ishan Somasiri
@@ -39,6 +43,18 @@ public class AgentDashboard extends BasicDashboard {
            Notification.show("No Agent Game is Configured");
            getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
         }
+
+
+        JASAFacade facade = JASAFacade.getMarketFacade();
+        String user = Authenticator.getInstance().getCurrentUser();
+        Properties gameConfig = new Properties();
+        try {
+            gameConfig.load(new FileReader(System.getProperty("game_properties_url")));
+            if (!facade.isUserAgentAvailable(user)) facade.AddUserAgent(user, Double.parseDouble(gameConfig.getProperty("initialFunds")));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -47,6 +63,7 @@ public class AgentDashboard extends BasicDashboard {
         mainDashView = new DashboardPlayingView();
         reportView = new ReportsView();
         menuList.put("my dashboard", mainDashView);
+        menuList.put("watch list", new WatchListView());
         menuList.put("market reports", reportView);
 
         return menuList;

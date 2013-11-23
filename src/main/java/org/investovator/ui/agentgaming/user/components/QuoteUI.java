@@ -1,13 +1,16 @@
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user.components;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
-import net.sourceforge.jasa.market.Order;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.ui.authentication.Authenticator;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * @author Amila Surendra
@@ -38,11 +41,10 @@ public class QuoteUI extends VerticalLayout {
     public QuoteUI(CompanyData companyData) {
         this.companyData = companyData;
         setupUI();
-        JASAFacade.getMarketFacade().AddUserAgent("testUser1",10000000);
     }
 
 
-    private void setupUI(){
+    private void setupUI() {
 
         setCaption("Stock Quote");
 
@@ -53,7 +55,7 @@ public class QuoteUI extends VerticalLayout {
         sideSelect.addItem(OrderSide.BUY);
         sideSelect.addItem(OrderSide.SELL);
         sideSelect.select(OrderSide.BUY);
-        isBuy=true;
+        isBuy = true;
         sideSelect.setNullSelectionAllowed(false);
         sideSelect.addValueChangeListener(sideSelectValueChangeListener);
 
@@ -98,7 +100,7 @@ public class QuoteUI extends VerticalLayout {
         price.addValueChangeListener(priceValueChangedListener);
         price.setImmediate(true);
 
-        amount= new Label();
+        amount = new Label();
         amount.setCaption("Amount");
         amount.addStyleName("outlined");
 
@@ -120,8 +122,6 @@ public class QuoteUI extends VerticalLayout {
         stockSelect.addValueChangeListener(selectSymbolValueChange);
 
 
-
-
         this.addComponent(stockSelect);
         this.addComponent(sideSelectLayout);
         this.addComponent(priceLayout);
@@ -134,10 +134,10 @@ public class QuoteUI extends VerticalLayout {
 
     }
 
-    public void update(){
+    public void update() {
 
         try {
-            companyData =  new CompanyDataImpl();
+            companyData = new CompanyDataImpl();
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -152,8 +152,8 @@ public class QuoteUI extends VerticalLayout {
 
     }
 
-    private void setAmount(){
-      amount.setValue( Float.toString(orderPrice*orderStockCount));
+    private void setAmount() {
+        amount.setValue(Float.toString(orderPrice * orderStockCount));
     }
 
 
@@ -196,62 +196,66 @@ public class QuoteUI extends VerticalLayout {
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
-            if(valueString.equals(OrderSide.BUY)) isBuy = true;
-            else isBuy=false;
+            if (valueString.equals(OrderSide.BUY)) isBuy = true;
+            else isBuy = false;
 
         }
     };
 
 
-
 }
 
 
-enum OrderValidity{
+enum OrderValidity {
     DAY_ORDER,
     VALID_UNTIL_CANCEL,
     CUSTOM_ORDER;
 
     @Override
     public String toString() {
-        switch (this)
-        {
-            case DAY_ORDER: return "End of Day";
-            case VALID_UNTIL_CANCEL: return "Good Till Cancelled" ;
-            case CUSTOM_ORDER: return "Custom";
+        switch (this) {
+            case DAY_ORDER:
+                return "End of Day";
+            case VALID_UNTIL_CANCEL:
+                return "Good Till Cancelled";
+            case CUSTOM_ORDER:
+                return "Custom";
         }
         return null;
     }
 }
 
 
-enum OrderType{
+enum OrderType {
     MARKET_ORDER,
     LIMIT_ORDER;
 
     @Override
     public String toString() {
-        switch (this)
-        {
-            case MARKET_ORDER: return "Market Order";
-            case LIMIT_ORDER: return "Limit Order" ;
+        switch (this) {
+            case MARKET_ORDER:
+                return "Market Order";
+            case LIMIT_ORDER:
+                return "Limit Order";
         }
         return null;
     }
 }
 
-enum OrderSide{
+enum OrderSide {
     BUY,
     SELL;
 
     @Override
     public String toString() {
-        switch (this)
-        {
-            case BUY: return "Buy Order";
-            case SELL: return "Sell Order" ;
+        switch (this) {
+            case BUY:
+                return "Buy Order";
+            case SELL:
+                return "Sell Order";
         }
-        return null;    }
+        return null;
+    }
 
 
 }

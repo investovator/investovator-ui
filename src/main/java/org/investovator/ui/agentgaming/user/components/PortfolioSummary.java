@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user.components;
 
 import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.util.BeanContainer;
@@ -97,6 +97,8 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
             e.printStackTrace();
         }
 
+        updateStocksTable();
+
     }
 
 
@@ -176,7 +178,6 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks","value"});
 
 
-        updateStocksTable();
     }
 
     public class StockSummary{

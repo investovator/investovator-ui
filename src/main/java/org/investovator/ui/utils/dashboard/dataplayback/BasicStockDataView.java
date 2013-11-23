@@ -41,6 +41,7 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.awt.*;
 import java.util.*;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -59,7 +60,8 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
     public BasicStockDataView() {
         this.content = new VerticalLayout();
-        content.setSizeFull();
+        this.setHeight("100%");
+//        content.setSizeFull();
     }
 
 
@@ -125,11 +127,12 @@ public abstract class BasicStockDataView extends DashboardPanel {
     private Timeline setUpChart(){
         Timeline timeline=new Timeline();
 
-//        timeline.setSizeFull();
-//        timeline.setHeight(100,Unit.CM);
-        timeline.setWidth(100,Unit.PERCENTAGE);
+        timeline.setSizeFull();
+        timeline.setHeight(625,Unit.PIXELS);
+//        timeline.setWidth(100,Unit.PERCENTAGE);
         timeline.setId("timeline");
         timeline.setUniformBarThicknessEnabled(true);
+        timeline.setImmediate(true);
 
         timeline.setChartMode(Timeline.ChartMode.LINE);
 
@@ -151,12 +154,12 @@ public abstract class BasicStockDataView extends DashboardPanel {
 //        timeline.setVerticalAxisLegendUnit(data, "Price");
 
         // Set the date range
-        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
-            timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
-                    DateUtils.incrementTimeByDays(5,DataPlaybackEngineStates.gameStartDate));
+        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
+//            timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
+//                    DateUtils.incrementTimeByDays(5,DataPlaybackEngineStates.gameStartDate));
 
         }
-        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
             timeline.setVisibleDateRange(DataPlaybackEngineStates.gameStartDate,
                     DateUtils.incrementTimeBySeconds(60, DataPlaybackEngineStates.gameStartDate));
         }
@@ -182,7 +185,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
         container.addContainerProperty(Timeline.PropertyId.VALUE, Float.class,
                 new Float(0));
         container.addContainerProperty(Timeline.PropertyId.TIMESTAMP,
-                java.util.Date.class, null);
+                Date.class, null);
 
 
 
@@ -248,7 +251,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
         mainChart.setGraphFillColor(data, null);
         mainChart.setVerticalAxisLegendUnit(data, "Price");
 
-        mainChart.setImmediate(true);
+//        mainChart.setImmediate(true);
 
 
     }

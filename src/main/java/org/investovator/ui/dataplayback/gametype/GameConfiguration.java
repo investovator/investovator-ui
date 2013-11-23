@@ -16,11 +16,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-package org.investovator.ui.dataplayback.user.dashboard.dailysummary;
+package org.investovator.ui.dataplayback.gametype;
 
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.ui.utils.dashboard.dataplayback.BasicStockDataView;
+import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 
 import java.util.ArrayList;
 
@@ -28,17 +27,33 @@ import java.util.ArrayList;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DailySummaryStockDataView extends BasicStockDataView {
-    @Override
-    public TradingDataAttribute[] setSelectableAttributes(){
-        ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
+public interface GameConfiguration {
 
-        attributes.add(TradingDataAttribute.HIGH_PRICE);
-        attributes.add(TradingDataAttribute.LOW_PRICE);
-        attributes.add(TradingDataAttribute.CLOSING_PRICE);
+    /**
+     * returns the attributes that the data player should include in
+     * data playback events
+     * @return
+     */
+    public ArrayList<TradingDataAttribute> getInterestedAttributes();
 
+    /**
+     * returns the data player that should be played when running the
+     * game
+     *
+     * @return
+     */
+    public PlayerTypes getPlayerType();
 
+    /**
+     * returns the attribute on which the game should be run.
+     * Ex - Closing price for a Daily Summary based game
+     * @return
+     */
+    public TradingDataAttribute getAttributeToMatch();
 
-        return attributes.toArray(new TradingDataAttribute[attributes.size()]);
-    }
+    /**
+     * returns a description about the game
+     * @return
+     */
+    public String getDescription();
 }

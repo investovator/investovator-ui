@@ -89,11 +89,11 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 }
                 //if there is a game running
                 else if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
-                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                    if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
                         try {
                             //if the game is multi player
+                            //todo - modify to data player parentnew  (no need to even check the follwoing if conditions it seems)
                             if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
-                                //todo - load the summary view --  from DATA_PLAYBACK_ADMIN_DASH?
                                 getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
 
                             }
@@ -106,19 +106,21 @@ public class AdminGameConfigLayout extends VerticalLayout {
                         }
 
                     }
-                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
-                        try {
+                    else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
+//                        try {
                             //if this is a multiplayer game
-                            if (DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
-                                getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
+//                            if (DataPlayerFacade.getInstance().getCurrentPlayer().isMultiplayer()){
+                                if (DataPlaybackEngineStates.isMultiplayer){
+
+                                    getUI().getNavigator().navigateTo(UIConstants.DATA_PLAYBACK_ADMIN_DASH);
                             }
                             else{
                                 //loads single player daily summary data playback view
                                 getUI().getNavigator().navigateTo(UIConstants.DATAPLAY_USR_DASH);
                             }
-                        } catch (PlayerStateException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
+//                        } catch (PlayerStateException e) {
+//                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                        }
                     }
 
                 }
@@ -179,7 +181,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
-                    if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.REAL_TIME_DATA_PLAYER){
+                    if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
                         try {
                             DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopPlayback();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
@@ -188,7 +190,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                         }
 
                     }
-                    else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                    else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
                         try {
                             DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopPlayback();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
@@ -224,64 +226,9 @@ public class AdminGameConfigLayout extends VerticalLayout {
         this.addComponent(dataPlaybackLayout);
         this.addComponent(annLayout);
 
-
-
-        //Configuration Popup
-        Button setConfig = new Button("Config");
-
-        setConfig.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                getUI().addWindow(new UploadWindow("Select Data Files"));
-            }
-        });
-
-        this.addComponent(setConfig);
     }
 
-    private class UploadWindow extends Window {
 
-        private UploadWindow(String caption) {
-            super(caption);
-
-            final VerticalLayout content = new VerticalLayout();
-
-            MultiFileUpload uploder = new MultiFileUpload() {
-                @Override
-                protected void handleFile(File file, String s, String s2, long l) {
-
-                    CompanyStockTransactionsData historyData = new CompanyStockTransactionsDataImpl();
-                    try {
-                        historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"SAMP","MM/dd/yyyy",file);
-                        new CompanyDataImpl().addCompanyData("SAMP", "Sampath Bank", 100000);
-                    } catch (DataAccessException e) {
-                        e.printStackTrace();
-                    }
-
-                    synchronized (UI.getCurrent()){
-                        content.addComponent(new Label(s));
-                    }
-
-                }
-
-                @Override
-                protected boolean supportsFileDrops(){
-                    return false;
-                }
-
-
-            };
-
-            uploder.setUploadButtonCaption("Choose Files");
-            uploder.setImmediate(true);
-
-            content.addComponent(uploder);
-
-            this.setContent(content);
-            this.setResizable(false);
-            this.center();
-        }
-    }
 
 
     private void startDailySummaryAddGameWizard() {

@@ -1,16 +1,12 @@
 package org.investovator.ui.agentgaming.config;
 
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.*;
-import com.vaadin.ui.*;
+import com.vaadin.server.VaadinService;
+import com.vaadin.ui.Window;
 import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.config.ConfigGenerator;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
-import org.investovator.ui.GlobalView;
-import org.investovator.controller.config.ConfigGenerator;
 import org.investovator.ui.dataplayback.util.ProgressWindow;
-import org.investovator.ui.main.MainGamingView;
-import org.investovator.ui.utils.UIConstants;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
@@ -79,12 +75,14 @@ public class AgentGamingView extends Window implements WizardProgressListener {
         String mainTemplateFile =  basepath + "/WEB-INF/templates/main_template.xml";
         String beanTemplateFile =  basepath + "/WEB-INF/templates/bean-config-template.xml";
         String propertiesFile = basepath +  "/WEB-INF/configuration/config.properties";
+        String stockPropertiesFile = basepath + "/WEB-INF/templates/simulation.properties";
 
         configGenerator.setModelTemlpateFile(templateFile);
         configGenerator.setReportTemlpateFile(reportTemplateFile);
         configGenerator.setMainTemplateFile(mainTemplateFile);
         configGenerator.setSpringBeanConfigTemplate(beanTemplateFile);
         configGenerator.setProperties(propertiesFile);
+        configGenerator.addProperties("Default","file:"+stockPropertiesFile);
 
         configSet=true;
     }

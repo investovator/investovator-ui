@@ -22,7 +22,7 @@ package org.investovator.ui.dataplayback.admin.wizard;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
-import net.sourceforge.jabm.gametheory.GameTheoreticSimulationController;
+import org.apache.commons.lang.time.DateUtils;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
@@ -34,12 +34,17 @@ import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedExceptio
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
+import org.investovator.ui.dataplayback.gametype.GameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Calendar;
 
 /**
  * @author: ishan
@@ -49,17 +54,12 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     //window that this wizard is run
     Window window;
-//    //Parent view class
-//    DataPlaybackMainView mainView;
-//    //to access the data
-//    DataPlayer player;
+
 
 
     public NewDataPlaybackGameWizard(Window window) {
 
-//        this.mainView = mainView;
         this.window = window;
-//        this.player=new DataPlayer();
 
         this.addStep(new FirstStep());
         this.addStep(new SecondStep());
@@ -84,24 +84,16 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     public void wizardCompleted(WizardCompletedEvent wizardCompletedEvent) {
         Notification.show("Complete");
 
-//        mainView.setUpGame(false);
-
-        //todo - set these attributes from the wizard
-        //define the attributes needed
-        ArrayList<TradingDataAttribute> attributes = new ArrayList<TradingDataAttribute>();
-
-        //just the closing price is enough for now
-        attributes.add(TradingDataAttribute.DAY);
-        attributes.add(TradingDataAttribute.PRICE);
-        attributes.add(TradingDataAttribute.SHARES);
-
         //initialize the necessary player
-        DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.currentGameMode,
-                DataPlaybackEngineStates.playingSymbols,DataPlaybackEngineStates.gameStartDate,attributes,
-                TradingDataAttribute.PRICE,DataPlaybackEngineStates.isMultiplayer);
+        DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.gameConfig.getPlayerType(),
+                DataPlaybackEngineStates.playingSymbols,
+                DataPlaybackEngineStates.gameStartDate,
+                DataPlaybackEngineStates.gameConfig.getInterestedAttributes(),
+                DataPlaybackEngineStates.gameConfig.getAttributeToMatch(),
+                DataPlaybackEngineStates.isMultiplayer);
 
         //start the game now
-        if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+        if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
             try {
                 DataPlayerFacade.getInstance().getRealTimeDataPlayer().startPlayback(3);
                 GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
@@ -172,17 +164,18 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             //add the game types
 
             content.addComponent(gameTypes);
-            //content.setComponentAlignment(gameTypes,Alignment.MIDDLE_CENTER);
             gameTypes.setMultiSelect(false);
             gameTypes.setHtmlContentAllowed(true);
-            gameTypes.addItem(PlayerTypes.DAILY_SUMMARY_PLAYER);
-            gameTypes.setItemCaption(PlayerTypes.DAILY_SUMMARY_PLAYER, "<b>OHLC price based game</b>");
 
-            gameTypes.addItem(PlayerTypes.REAL_TIME_DATA_PLAYER);
-            gameTypes.setItemCaption(PlayerTypes.REAL_TIME_DATA_PLAYER, "<b>Ticker data based game</b>");
+            for(GameTypes type:GameTypes.values()){
+                gameTypes.addItem(type);
+                gameTypes.setItemCaption(type,
+                        type.getDescription());
+            }
+
 
             //default item
-            gameTypes.select(PlayerTypes.DAILY_SUMMARY_PLAYER);
+            gameTypes.select(GameTypes.values()[0]);
 
             //fire value change events immediately
             gameTypes.setImmediate(true);
@@ -193,34 +186,17 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             multiplayer.addItem(1);
             multiplayer.setItemCaption(1,"Let others connect to the game");
 
-
-
-//            //monitor the selected item
-//            gameTypes.addValueChangeListener(new Property.ValueChangeListener() {
-//                @Override
-//                public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-//                    if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.OHLC_BASED)) {
-//
-//                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.OHLC_BASED;
-//
-//                    } else if ((valueChangeEvent.getProperty().getValue() == DataPLaybackEngineGameTypes.TICKER_BASED)) {
-//
-//                        DataPlaybackEngineStates.currentGameMode = DataPLaybackEngineGameTypes.TICKER_BASED;
-//                    }
-//                }
-//            });
-
-            return content;  //To change body of implemented methods use File | Settings | File Templates.
+            return content;
         }
 
         @Override
         public boolean onAdvance() {
             //set the selected state
-            if(gameTypes.getValue()==PlayerTypes.DAILY_SUMMARY_PLAYER){
-                DataPlaybackEngineStates.currentGameMode = PlayerTypes.DAILY_SUMMARY_PLAYER;
-            }
-            if(gameTypes.getValue()==PlayerTypes.REAL_TIME_DATA_PLAYER){
-                DataPlaybackEngineStates.currentGameMode = PlayerTypes.REAL_TIME_DATA_PLAYER;
+            for(GameTypes type:GameTypes.values()){
+                if(gameTypes.getValue()==type){
+                    DataPlaybackEngineStates.gameConfig=type;
+                    break;
+                }
             }
 
             //set multiplayer or not
@@ -294,7 +270,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             //obtain the selected items
             Set selectedStocks= (Set) selector.getValue();
 
-            //if there are selested stocks
+            //if there are selected stocks
             if(selectedStocks.size()>0){
                 ArrayList<String> stocksList=new ArrayList<String>();
                 for (Object items:selectedStocks){
@@ -313,7 +289,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public boolean onBack() {
-            return true;  //To change body of implemented methods use File | Settings | File Templates.
+            return true;
         }
 
 
@@ -346,21 +322,18 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             content.setComponentAlignment(datePicker,Alignment.MIDDLE_CENTER);
             datePicker.setValue(new Date());
             datePicker.setImmediate(true);
-            datePicker.setTimeZone(TimeZone.getTimeZone("UTC"));
-            datePicker.setLocale(Locale.US);
             //if this is a OHLC game
-            if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
+            if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
                 datePicker.setResolution(Resolution.DAY);
 
             }
             //else if this is a Ticker data based game
-            else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
                 datePicker.setResolution(Resolution.SECOND);
 
             }
 
             //select the date range type
-
             content.addComponent(dateRangeType);
             content.setComponentAlignment(dateRangeType,Alignment.MIDDLE_CENTER);
             dateRangeType.setMultiSelect(true);
@@ -396,8 +369,19 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public boolean onAdvance() {
-
-            DataPlaybackEngineStates.gameStartDate=datePicker.getValue();
+            if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
+                //get only the date(ignore time)
+                DataPlaybackEngineStates.gameStartDate= DateUtils.truncate(datePicker.getValue(), Calendar.DATE);
+            }
+            else{
+                //save the default time zone first
+                TimeZone defaultT=TimeZone.getDefault();
+                //fixes the default timezone to GMT to correctly retrieve the time from calendar
+                TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+                DataPlaybackEngineStates.gameStartDate= datePicker.getValue();
+                //restore the default time zone
+                TimeZone.setDefault(TimeZone.getTimeZone(defaultT.getID()));
+            }
 
                 return true;
 
@@ -405,7 +389,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
         @Override
         public boolean onBack() {
-            return true;  //To change body of implemented methods use File | Settings | File Templates.
+            return true;
         }
 
 
@@ -417,13 +401,13 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         //if it is checked
         if(dateRangeType.getValue().equals(1)){
             //check the game type and request for date ranges
-            if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+            if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
                 range= StockUtils.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
                         CompanyStockTransactionsData.DataType.OHLC);
 
             }
             //else if this is a Ticker data based game
-            else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
                 range= StockUtils.getCommonStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
                         CompanyStockTransactionsData.DataType.TICKER);
             }
@@ -431,13 +415,13 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         }
         else{
             //check the game type and request for date ranges
-            if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.DAILY_SUMMARY_PLAYER){
+            if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
                 range= StockUtils.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
                         CompanyStockTransactionsData.DataType.OHLC);
 
             }
             //else if this is a Ticker data based game
-            else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+            else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
                 range= StockUtils.getStartingAndEndDates(DataPlaybackEngineStates.playingSymbols,
                         CompanyStockTransactionsData.DataType.TICKER);
             }

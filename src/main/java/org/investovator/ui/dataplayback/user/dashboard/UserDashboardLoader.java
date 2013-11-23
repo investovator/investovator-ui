@@ -21,6 +21,7 @@ package org.investovator.ui.dataplayback.user.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.ui.analysis.AnalysisPanel;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryMultiPlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryStockDataView;
@@ -48,26 +49,27 @@ public class UserDashboardLoader extends BasicDashboard {
         LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
 
         //if this is a daily summary data game
-        if(DataPlaybackEngineStates.currentGameMode== PlayerTypes.DAILY_SUMMARY_PLAYER){
+        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
             //if this is a multiplayer game
             if(DataPlaybackEngineStates.isMultiplayer){
                 map.put("main view", new DailySummaryMultiPlayerMainView());
                 map.put("stocks", new DailySummaryStockDataView());
+                map.put("analysis", new AnalysisPanel());
 
 
             }
             else{
                 map.put("main view", new DailySummarySinglePlayerMainView());
                 map.put("stocks", new DailySummaryStockDataView());
-
+                map.put("analysis", new AnalysisPanel());
 
             }
         }
         //if this is a real time data game
-        else if(DataPlaybackEngineStates.currentGameMode==PlayerTypes.REAL_TIME_DATA_PLAYER){
+        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
             map.put("main view", new RealTimeMainView());
             map.put("stocks", new RealTimeStockDataView());
-
+            map.put("analysis", new AnalysisPanel());
 
         }
 

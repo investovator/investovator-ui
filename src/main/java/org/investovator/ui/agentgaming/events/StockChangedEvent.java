@@ -16,13 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.events;
+
+import org.investovator.ui.agentgaming.beans.StockItemBean;
 
 /**
  * @author Amila Surendra
  * @version $Revision
  */
-interface StockChangedEvent {
+public interface StockChangedEvent {
 
     void onStockChange(StockItemBean stockChanged);
 

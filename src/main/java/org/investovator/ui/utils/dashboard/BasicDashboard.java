@@ -38,10 +38,7 @@ public abstract class BasicDashboard extends GlobalView {
         this.menu = new CssLayout();
         this.root = new CssLayout();
         this.content = new CssLayout();
-        this.menuItems = getMenuItems();
 
-        //to make the dashboard take up the whole space of the browser
-        this.setSizeFull();
 
         this.dashboardName=name;
 
@@ -53,7 +50,12 @@ public abstract class BasicDashboard extends GlobalView {
 
         if(!authenticator.isLoggedIn()){
             getUI().getNavigator().navigateTo("");
+            return;
         }
+
+        this.menuItems = getMenuItems();
+        //to make the dashboard take up the whole space of the browser
+        this.setSizeFull();
 
         if(menuItems.isEmpty()){
             setupUI(viewChangeEvent);
@@ -62,10 +64,14 @@ public abstract class BasicDashboard extends GlobalView {
 
         content.removeAllComponents();
         setUpBasicDashboard(dashboardName);
+        setupUI(viewChangeEvent);
+
+
         DashboardPanel addedPanel = menuItems.get(menuItems.keySet().iterator().next());
         addedPanel.addStyleName("selected");
         content.addComponent(addedPanel);
         addedPanel.onEnter();
+
     }
 
 

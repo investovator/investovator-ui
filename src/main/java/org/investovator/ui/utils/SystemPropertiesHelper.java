@@ -1,5 +1,7 @@
 package org.investovator.ui.utils;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.investovator.core.commons.configuration.ConfigLoader;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.data.api.*;
@@ -45,27 +47,30 @@ public class SystemPropertiesHelper implements
 
         System.setProperty("DATA_FOL", context.getRealPath("data"));
 
-        System.setProperty("org.investovator.core.data.cassandra.url", "localhost:9160" );
-        System.setProperty("org.investovator.core.data.cassandra.username", "admin" );
-        System.setProperty("org.investovator.core.data.cassandra.password", "admin" );
+        try {
+            ConfigLoader.loadProperties(context.getRealPath("/WEB-INF/configuration/database.properties"));
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
 
-
-        System.setProperty("org.investovator.core.data.mysql.url", "localhost:3306" );
-        System.setProperty("org.investovator.core.data.mysql.username", "root" );
-        System.setProperty("org.investovator.core.data.mysql.password", "root" );
-        System.setProperty("org.investovator.core.data.mysql.database", "investovator_data" );
-        System.setProperty("org.investovator.core.data.mysql.driverclassname", "com.mysql.jdbc.Driver" );
-
-
+        //SQL Config
         String realPath = context.getRealPath("/WEB-INF/configuration/investovator.sql");
         System.setProperty("org.investovator.core.data.mysql.ddlscriptpath", realPath );
-        System.out.println("SQL Path : " + realPath);
 
-        //UnComment these once
-        //clearOldData();
-        //addTestConfig();
+
+        //Game Configuration
+        realPath = context.getRealPath("/WEB-INF/configuration/game.properties");
+        System.setProperty("game_properties_url", realPath );
+
+
+
+
+//        //UnComment these once
+//        clearOldData();
+//        addTestConfig();
 
     }
+
 
     private void clearOldData(){
 
@@ -97,6 +102,17 @@ public class SystemPropertiesHelper implements
             historyData.importCSV(CompanyStockTransactionsData.DataType.OHLC,"HASU","MM/dd/yyyy",new File(filePath));
             new CompanyDataImpl().addCompanyData("HASU", "HNB Assurance", 100000);
 
+
+
+            //sampath ticker data
+            filePath = context.getRealPath("/WEB-INF/testdata/SAMP_ticker.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"SAMP","MM/dd/yyyy HH:mm:ss.SSS",
+                    new File(filePath));
+
+            //HASU ticker data
+            filePath = context.getRealPath("/WEB-INF/testdata/HASU_ticker.csv");
+            historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"HASU","MM/dd/yyyy HH:mm:ss.SSS",
+                    new File(filePath));
 
         } catch (DataAccessException e) {
             e.printStackTrace();

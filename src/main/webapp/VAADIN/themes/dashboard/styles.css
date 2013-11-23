@@ -6145,10 +6145,23 @@ body .dashboard.v-app .v-app-loading {
 	box-shadow: 0 0 6px black;
 }
 
+.dashboard .v-caption-center-caption {
+	text-align: center;
+	font-weight: bolder;
+	margin: 10px 5px 5px 5px;
+	border-image: radial-gradient(circle, grey 10%, transparent 90%) 0 1 1;
+}
 
-.dashboard .v-caption-center-caption{
-    text-align: center;
-    font-weight: bolder;
-    margin: 10px 5px 5px 5px;
-    border-image:radial-gradient(circle, grey 10%, transparent 90%) 0 1 1;
+.dashboard .v-datefield-popupcalendar .v-datefield-button {
+	width: 24px;
+	margin-right: -24px;
+	height: 24px;
+	background: transparent;
+	border: none;
+	padding: 0;
+	background-image: url(../reindeer/datefield/img/popup-btn.png);/** sprite-ref: verticals */
+	cursor: pointer;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
 }

@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.user.components;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 
 import java.util.ArrayList;
 import java.util.Date;

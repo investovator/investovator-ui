@@ -3,6 +3,8 @@ package org.investovator.ui.authentication;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
+import org.investovator.core.auth.exceptions.AuthenticationException;
+import org.investovator.core.auth.utils.LdapUtils;
 import org.investovator.ui.utils.UIConstants;
 
 /**
@@ -13,64 +15,77 @@ import org.investovator.ui.utils.UIConstants;
  * To change this template use File | Settings | File Templates.
  */
 
-    @SuppressWarnings("serial")
-    public class LoginView extends VerticalLayout implements View {
-        Authenticator authenticator;
+@SuppressWarnings("serial")
+public class LoginView extends VerticalLayout implements View {
+    Authenticator authenticator;
 
-        public LoginView() {
-            authenticator = Authenticator.getInstance();
-            init();
-        }
+    public LoginView() {
+        authenticator = Authenticator.getInstance();
+        init();
+    }
 
-        private void init(){
+    private void init() {
 
-            final Label investovatorMain = new Label("investovator");
-            investovatorMain.setStyleName("login-label");
+        final Label investovatorMain = new Label("investovator");
+        investovatorMain.setStyleName("login-label");
 
-            setStyleName("login-view");
-            setSizeFull();
+        setStyleName("login-view");
+        setSizeFull();
 
-            addComponent(investovatorMain);
-            setComponentAlignment(investovatorMain,Alignment.MIDDLE_CENTER);
-
-
-            final Label userName = new Label("User Name");
-            final Label password = new Label("Password");
-            final com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
-            final PasswordField pwdField = new PasswordField();
-
-            userField.setWidth("95%");
-            pwdField.setWidth("95%");
+        addComponent(investovatorMain);
+        setComponentAlignment(investovatorMain, Alignment.MIDDLE_CENTER);
 
 
-            FormLayout layout = new FormLayout();
+        final Label userName = new Label("User Name");
+        final Label password = new Label("Password");
+        final com.vaadin.ui.TextField userField = new com.vaadin.ui.TextField();
+        final PasswordField pwdField = new PasswordField();
 
-            Button loginButton = new Button("Login",
-                    new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(Button.ClickEvent event) {
-                            boolean loginStatus = authenticator.authenticate(userField.getValue(), pwdField.getValue());
-                            if(loginStatus){
+        userField.setWidth("95%");
+        pwdField.setWidth("95%");
+
+
+        FormLayout layout = new FormLayout();
+
+        Button loginButton = new Button("Login",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        boolean loginStatus = false;
+                        try {
+                            loginStatus = authenticator.authenticate(userField.getValue(), pwdField.getValue());
+
+                            if (loginStatus) {
                                 getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
-                            }
-                            else{
+                            } else {
                                 Notification.show("Incorrect UserName or Password");
                             }
+
+
+                        } catch (AuthenticationException e) {
+                            if (e.getMessage().equals(LdapUtils.ERROR_INVALID_PASSWORD) ||
+                                    e.getMessage().equals(LdapUtils.ERROR_INVALID_USER)) {
+                                Notification.show("Incorrect UserName or Password");
+                            } else {
+                                Notification.show("Error: LDAP server error", Notification.Type.TRAY_NOTIFICATION);
+                            }
                         }
-                    });
-            layout.addComponents(userName,userField,password,pwdField,loginButton);
-            layout.setComponentAlignment(loginButton,Alignment.MIDDLE_CENTER);
 
-            layout.setWidth("300px");
-            layout.setStyleName("login-area");
+                    }
+                });
+        layout.addComponents(userName, userField, password, pwdField, loginButton);
+        layout.setComponentAlignment(loginButton, Alignment.MIDDLE_CENTER);
 
-            addComponent(layout);
-            setComponentAlignment(layout, Alignment.TOP_CENTER);
+        layout.setWidth("300px");
+        layout.setStyleName("login-area");
 
-        }
+        addComponent(layout);
+        setComponentAlignment(layout, Alignment.TOP_CENTER);
 
-        @Override
-        public void enter(ViewChangeListener.ViewChangeEvent event) {
-//            Notification.show("Welcome to Investovator");
-        }
     }
+
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+//            Notification.show("Welcome to Investovator");
+    }
+}

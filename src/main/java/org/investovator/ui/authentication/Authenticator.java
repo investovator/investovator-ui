@@ -1,9 +1,19 @@
 package org.investovator.ui.authentication;
 
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Notification;
 import org.investovator.MyVaadinUI;
+import org.investovator.core.auth.DirectoryDAO;
+import org.investovator.core.auth.DirectoryDAOImpl;
+import org.investovator.core.auth.exceptions.AuthenticationException;
+import org.investovator.core.auth.utils.LdapUtils;
 
+import javax.jcr.SimpleCredentials;
 import javax.swing.*;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -23,6 +33,7 @@ public class Authenticator {
     private static Authenticator authenticator;
 
     private static String userName="userName";
+    private static String userType="userType";
     private static String isLoggedIn="loggedIn";
 
 
@@ -50,28 +61,41 @@ public class Authenticator {
 
     }
 
-    public boolean authenticate(String username, String password){
+    public boolean authenticate(String username, String password) throws AuthenticationException{
         boolean success=false;
 
-        if(username.isEmpty()){
-            if(password.isEmpty()){
+        //TODO: Test users, Remove after testing.
+        if(username.isEmpty() && password.isEmpty()){
                 //set the user as a standard user
                 setUser("testUser1");
-                success=true;
-
-            }
-
+                setLoggedIn(true);
+                return  true;
         }
         //user name for admin
         else if(username.equalsIgnoreCase("a")){
             setUser("admin");
-            success=true;
-        }
-
-        if(success){
-
             setLoggedIn(true);
+            return true;
         }
+        //End of Test code
+
+
+        if(username.isEmpty() || password.isEmpty()){
+            return false;
+        }
+
+        SimpleCredentials credentials = new SimpleCredentials(username, password.toCharArray());
+        DirectoryDAO directoryDAO = new DirectoryDAOImpl();
+
+        HashMap<Object, Object> userData = directoryDAO.bindUser(credentials);
+        if(userData!= null) {
+            success = true;
+            UserType type  = (boolean)userData.get(DirectoryDAO.UserRole.ADMIN) ? UserType.ADMIN  :UserType.ORDINARY;
+            setUser(username);
+            setUserType(type);
+        }
+
+        if(success){setLoggedIn(true);}
 
         return isLoggedIn();
 
@@ -94,14 +118,19 @@ public class Authenticator {
         if(user.equalsIgnoreCase("admin")){
             return UserType.ADMIN;
         }
-        else {
+        if(user.equalsIgnoreCase("testUser1")) {
             return UserType.ORDINARY;
         }
 
+       return (UserType) VaadinSession.getCurrent().getAttribute(userType);
     }
 
     public void setUser(String user) {
         VaadinSession.getCurrent().setAttribute(userName,user);
+    }
+
+    public void setUserType(UserType type){
+        VaadinSession.getCurrent().setAttribute(userType,type);
     }
 
     public void setLoggedIn(boolean loggedInStatus){

@@ -20,6 +20,8 @@ package org.investovator.ui.utils;
 
 import com.vaadin.server.VaadinService;
 
+import java.io.File;
+
 /**
  * @author Amila Surendra
  * @version $Revision
@@ -35,6 +37,18 @@ public class ConfigHelper {
 
     public static String getBasepath(){
         return basepath;
+    }
+
+    public static String getUploadPath(){
+
+        String path = basepath + "/uploads/";
+
+        File folder = new File(path);
+        if(!folder.exists()){
+            folder.mkdir();
+        }
+
+        return path;
     }
 
 }

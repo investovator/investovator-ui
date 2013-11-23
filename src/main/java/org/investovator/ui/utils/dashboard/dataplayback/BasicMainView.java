@@ -26,12 +26,17 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
+import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
+import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -43,22 +48,31 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 */
 public abstract class BasicMainView extends DashboardPanel {
 
+    //length of the profit chart
+    public static int PROFIT_CHART_LENGTH=5;
+
     //charts to be shown
     protected Chart mainChart;
     protected Chart stockPieChart;
     protected Chart quantityChart;
+    protected Chart profitChart;
 
     protected Table stockPriceTable;
     protected Table portfolioTable;
 
     //to store every component
-    GridLayout content;
+    VerticalLayout content;
+
+    //account balance label
+    public Label accBalance;
 
     protected BasicMainView() {
         //set a link to this class
 //        mySelf = this;
 
-        content = new GridLayout(4, 3);
+        content = new VerticalLayout();
+        //to show the scroll bar
+//        this.setHeight("100%");
         content.setSizeFull();
     }
 
@@ -83,64 +97,113 @@ public abstract class BasicMainView extends DashboardPanel {
             mainChart = buildMainChart();
             chartContainer.addComponent(mainChart);
             chartContainer.setComponentAlignment(mainChart, Alignment.MIDDLE_CENTER);
+            chartContainer.setCaption(mainChart.getCaption());
+//            chartContainer.setCaption("Price");
+//            chartContainer.addStyleName("center-caption");
 
-            content.addComponent(chartContainer, 0, 0, 3, 0);
+
+            content.addComponent(chartContainer);
+            content.setExpandRatio(chartContainer,1.3f);
             content.setComponentAlignment(chartContainer, Alignment.MIDDLE_CENTER);
 
             //Quantity chart
             HorizontalLayout quantityChartContainer = new HorizontalLayout();
             quantityChartContainer.setWidth(95, Unit.PERCENTAGE);
 //            quantityChartContainer.setMargin(true);
-            quantityChartContainer.setMargin(new MarginInfo(false,true,true,true));
+            quantityChartContainer.setMargin(new MarginInfo(true,true,false,true));
 //            quantityChartContainer.setHeight(30,Unit.PERCENTAGE);
             quantityChart = buildQuantityChart();
             quantityChartContainer.addComponent(quantityChart);
             quantityChartContainer.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
+//            quantityChartContainer.setCaption("Quantity");
+//            quantityChartContainer.addStyleName("center-caption");
 
-            content.addComponent(quantityChartContainer, 0, 1, 3, 1);
+            content.addComponent(quantityChartContainer);
+            content.setExpandRatio(quantityChartContainer,1.0f);
+
             content.setComponentAlignment(quantityChartContainer, Alignment.MIDDLE_CENTER);
+
+            //bottom row conatainer
+            HorizontalLayout bottowRow=new HorizontalLayout();
+            bottowRow.setWidth(100,Unit.PERCENTAGE);
+            content.addComponent(bottowRow);
+            content.setExpandRatio(bottowRow,1.0f);
+
 
             //Stock price table
             GridLayout stockPriceTableContainer = new GridLayout(1,2);
             //add a caption to the table
-            Label tableCaption=new Label("Stock Price Table");
-            stockPriceTableContainer.addComponent(tableCaption, 0, 0);
-            stockPriceTableContainer.setComponentAlignment(tableCaption,Alignment.MIDDLE_RIGHT);
+//            Label tableCaption=new Label("Stock Price Table");
+//            stockPriceTableContainer.addComponent(tableCaption, 0, 0);
+//            stockPriceTableContainer.setComponentAlignment(tableCaption,Alignment.MIDDLE_RIGHT);
             stockPriceTable=setupStockPriceTable();
             stockPriceTableContainer.addComponent(stockPriceTable, 0, 1);
             stockPriceTableContainer.setMargin(new MarginInfo(false, true, true, true));
+            stockPriceTableContainer.setCaption("Stock Price Table");
+            stockPriceTableContainer.addStyleName("center-caption");
 
             stockPriceTableContainer.setComponentAlignment(stockPriceTable,Alignment.MIDDLE_CENTER);
-            content.addComponent(stockPriceTableContainer, 0, 2);
+            bottowRow.addComponent(stockPriceTableContainer);
+//            bottowRow.setExpandRatio(stockPriceTableContainer,1.0f);
 
             //buy-sell window
             GridLayout buySellWindowContainer = new GridLayout(1,2);
-            //add a caption to the table
-            Label buySellWindowCaption=new Label("Buy/Sell Stocks");
-            buySellWindowContainer.addComponent(buySellWindowCaption,0,0);
-            buySellWindowContainer.setComponentAlignment(buySellWindowCaption,Alignment.MIDDLE_CENTER);
+//            //add a caption to the table
+//            Label buySellWindowCaption=new Label("Buy/Sell Stocks");
+//            buySellWindowContainer.addComponent(buySellWindowCaption,0,0);
+//            buySellWindowContainer.setComponentAlignment(buySellWindowCaption,Alignment.MIDDLE_CENTER);
             Component buySellWindow=setupBuySellForm();
             buySellWindowContainer.addComponent(buySellWindow,0,1);
             buySellWindowContainer.setMargin(new MarginInfo(false,false,true,false));
+            buySellWindowContainer.setCaption("Buy/Sell Stocks");
+            buySellWindowContainer.addStyleName("center-caption");
 
             buySellWindowContainer.setComponentAlignment(buySellWindow,Alignment.MIDDLE_CENTER);
-            content.addComponent(buySellWindowContainer, 1, 2);
+            bottowRow.addComponent(buySellWindowContainer);
+//            bottowRow.setExpandRatio(buySellWindowContainer,1.0f);
+
 
             //portfolio data
-            GridLayout portfolioContainer = new GridLayout(2,2);
-            portfolioContainer.setMargin(new MarginInfo(false,true,true,true));
+//            VerticalLayout myPortfolioLayout=new VerticalLayout();
+//            myPortfolioLayout.setMargin(new MarginInfo(false,true,true,true));
+//            bottowRow.addComponent(myPortfolioLayout);
             //add a caption to the table
-            Label portfolioCaption=new Label("My Portfolio");
-            portfolioContainer.addComponent(portfolioCaption,0,0,1,0);
-            portfolioContainer.setComponentAlignment(portfolioCaption,Alignment.MIDDLE_CENTER);
-            //pie-chart
-            stockPieChart =setupPieChart();
-            portfolioContainer.addComponent(stockPieChart,1,1);
-            portfolioContainer.setComponentAlignment(stockPieChart,Alignment.TOP_RIGHT);
+//            Label portfolioCaption=new Label("My Portfolio");
+//            myPortfolioLayout.addComponent(portfolioCaption);
+//            myPortfolioLayout.setComponentAlignment(portfolioCaption,Alignment.MIDDLE_CENTER);
+
+
+            HorizontalLayout portfolioContainer = new HorizontalLayout();
+            portfolioContainer.setMargin(new MarginInfo(false,true,true,true));
+            portfolioContainer.setCaption("My Portfolio");
+            portfolioContainer.addStyleName("center-caption");
+            bottowRow.addComponent(portfolioContainer);
+//            bottowRow.setExpandRatio(portfolioContainer,1.0f);
+
+
             //portfolio table
             portfolioTable=setupPortfolioTable();
-            portfolioContainer.addComponent(portfolioTable,0,1);
-            content.addComponent(portfolioContainer,2,2,3,2);
+            portfolioContainer.addComponent(portfolioTable);
+//            portfolioContainer.setExpandRatio(portfolioTable,1.0f);
+
+            //profit chart
+//            HorizontalLayout profitContainer = new HorizontalLayout();
+//            bottowRow.addComponent(profitContainer);
+
+            profitChart=setupProfitChart();
+            profitChart.setCaption("Profit Chart");
+            profitChart.addStyleName("center-caption");
+            bottowRow.addComponent(profitChart);
+            bottowRow.setExpandRatio(profitChart,1.3f);
+
+//            Component accountInfo=setUpAccountInfoForm();
+//            accountInfo.setCaption("Profit Chart");
+//            accountInfo.addStyleName("center-caption");
+//
+//            bottowRow.addComponent(accountInfo);
+//            bottowRow.setExpandRatio(accountInfo,1.3f);
+
+
 
             this.setContent(content);
         }
@@ -164,6 +227,8 @@ public abstract class BasicMainView extends DashboardPanel {
         }
         Table table=new Table("Stock Prices",beans);
         table.setCaption(null);
+        //restrict the maximum number of viewable entries to 5
+        table.setPageLength(5);
 
         //set the column order
         table.setVisibleColumns(new Object[]{"stockID", "price"});
@@ -181,6 +246,8 @@ public abstract class BasicMainView extends DashboardPanel {
 
         Table table=new Table("Stock Prices",beans);
         table.setCaption(null);
+        //restrict the maximum number of viewable entries to 5
+        table.setPageLength(5);
 
         //set the column order
         table.setVisibleColumns(new Object[]{"stockID", "numOfStocks","averageCost","totCost"});
@@ -192,10 +259,78 @@ public abstract class BasicMainView extends DashboardPanel {
         return table;
     }
 
+    abstract public Chart setupProfitChart();
+//    {
+//        Chart chart = new Chart();
+//        chart.setHeight(40,Unit.MM);
+//        chart.setWidth(10,Unit.PERCENTAGE);
+//
+////        chart.setSizeFull();
+//
+//        Tooltip tooltip = new Tooltip();
+//        tooltip.setShared(true);
+//        tooltip.setUseHTML(true);
+//        tooltip.setHeaderFormat("{point.key}");
+//        tooltip.setPointFormat("");
+//        tooltip.setFooterFormat("{series.name}: 	{point.y} EUR");
+//
+//        Configuration configuration = new Configuration();
+//        configuration.setTooltip(tooltip);
+//        configuration.getChart().setType(ChartType.LINE);
+//        configuration.getLegend().setEnabled(false);
+//        configuration.getyAxis().setTitle("");
+//
+//        PlotOptionsLine plotOptions = new PlotOptionsLine();
+////        plotOptions.setDataLabels(new Labels(true));
+//        plotOptions.setEnableMouseTracking(false);
+//        //performance related
+//        plotOptions.setShadow(false);
+//
+//        configuration.setPlotOptions(plotOptions);
+//
+//        configuration.getxAxis().setType(AxisType.DATETIME);
+//        configuration.getxAxis().setDateTimeLabelFormats(
+//                new DateTimeLabelFormats("%e. %b", "%b"));
+//
+//
+////        configuration.getyAxis().getTitle().setText(null);
+//
+////        if (DataPlaybackEngineStates.playingSymbols != null) {
+////            for (String stock : DataPlaybackEngineStates.playingSymbols) {
+//                DataSeries ls = new DataSeries();
+////                ls.setName(stock);
+//
+//                //add dummy points to fill it up
+//                for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
+//                    ls.add(new DataSeriesItem
+//                            (DateUtils.decrementTimeBySeconds((PROFIT_CHART_LENGTH - counter),
+//                                    DataPlaybackEngineStates.gameStartDate),0));
+//                }
+//
+//                configuration.addSeries(ls);
+//
+////            }
+////        }
+//
+//        chart.setImmediate(true);
+//        chart.drawChart(configuration);
+//        //disable trademark
+//        chart.getConfiguration().disableCredits();
+//
+//        chart.getConfiguration().getTitle().setText(null);
+//        return chart;
+//    }
+
+    abstract public Component setUpAccountInfoForm();
+
     private Component setupBuySellForm(){
         VerticalLayout formContent=new VerticalLayout();
 
         FormLayout form=new FormLayout();
+
+        //account balance
+        this.accBalance=new Label("");
+        this.accBalance.setCaption("Account Balance");
 
         //stocks list
         final ComboBox stocksList=new ComboBox();
@@ -221,7 +356,7 @@ public abstract class BasicMainView extends DashboardPanel {
         final TextField quantity=new TextField("Amount");
         //quantity.setWidth("75%");
 
-
+        form.addComponent(accBalance);
         form.addComponent(stocksList);
         form.addComponent(orderSide);
         form.addComponent(quantity);
@@ -247,7 +382,7 @@ public abstract class BasicMainView extends DashboardPanel {
         PlotOptionsPie plotOptions = new PlotOptionsPie();
         plotOptions.setCursor(Cursor.POINTER);
         plotOptions.setShowInLegend(true);
-        plotOptions.setSize("120%");
+//        plotOptions.setSize("120%");
 
         Labels dataLabels = new Labels();
         dataLabels.setEnabled(false);
@@ -275,6 +410,9 @@ public abstract class BasicMainView extends DashboardPanel {
         conf.getChart().setAnimation(false);
         chart.setWidth(115,Unit.MM);
         chart.setHeight(55,Unit.MM);
+
+//        chart.setWidth(75,Unit.PERCENTAGE);
+//        chart.setHeight(55,Unit.MM);
 
 
         return chart;

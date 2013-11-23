@@ -16,14 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.agentgaming;
+package org.investovator.ui.agentgaming.events;
 
 import net.sourceforge.jabm.event.EventListener;
 import net.sourceforge.jabm.event.SimEvent;
-import net.sourceforge.jasa.event.OrderPlacedEvent;
 import net.sourceforge.jasa.event.TransactionExecutedEvent;
-import net.sourceforge.jasa.market.Order;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.investovator.ui.agentgaming.ReportHelper;
+import org.investovator.ui.agentgaming.beans.StockItemBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -28,9 +28,9 @@ import org.investovator.agentsimulation.api.JASAFacade;
 
 import java.util.*;
 
-import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.agentsimulation.api.MarketFacade;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.investovator.ui.agentgaming.beans.StockItemBean;
+import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 
 /**
  * @author Amila Surendra
@@ -39,7 +39,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class ReportHelper {
 
     int lastIndex = 0;
-    boolean reportsReady = false;
+    public boolean reportsReady = false;
     HashMap<String,ArrayList<Report>> reports;
 
     HashMap<String,CurrentPriceReportVariables> currentPriceReports = new HashMap<String, CurrentPriceReportVariables>();
@@ -203,7 +203,15 @@ public class ReportHelper {
 
         PriceReportTimeseriesVariables reportVar =  getTimeSeriesReports(stockId).get(report);
 
-        for (int index = 0; index < reportVar.getTimeseriesVariableBindings().get(reportVar.getName() + ".t").size(); index++) {
+        int startIndex  = 0;
+
+        int dataPoints = reportVar.getTimeseriesVariableBindings().get(reportVar.getName() + ".t").size();
+
+        if(dataPoints>maxRecords){
+             startIndex = dataPoints-1 -maxRecords;
+        }
+
+        for (int index = startIndex; index < dataPoints; index++) {
             TimeSeriesNode tmp = new TimeSeriesNode();
             tmp.setDate(getDate((int)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".t").get(index)));
             tmp.setValue((double)reportVar.getTimeseriesVariableBindings().get(reportVar.getName()+".price").get(index));

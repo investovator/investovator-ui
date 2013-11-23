@@ -9,6 +9,17 @@
             <bean-name>currentPriceReportVariables$stockID</bean-name>
             <bean-name>currentPriceTimeSeriesReportVariables$stockID</bean-name>
             <bean-name>spreadTimeSeriesReportVariables$stockID</bean-name>
+            <bean-name>equilibriumPriceTimeSeriesReport$stockID</bean-name>
+
+            <bean-name>equilibriumPriceReportVariables$stockID</bean-name>
+            <bean-name>equilibriumPriceUpdater$stockID</bean-name>
+            <bean-name>currentPriceTimeSeriesReport$stockID</bean-name>
+            <bean-name>spreadTimeSeriesReport$stockID</bean-name>
+            <bean-name>reportedSupplyAndDemandGraph$stockID</bean-name>
+            <bean-name>auctionStateSupplyAndDemandGraph$stockID</bean-name>
+            <bean-name>orderBookView$stockID</bean-name>
+            <bean-name>transactionPriceReportVariables$stockID</bean-name>
+            <bean-name>transactionPriceTimeSeriesReport$stockID</bean-name>
         </report>
     </reports>
 
