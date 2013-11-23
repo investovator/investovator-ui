@@ -4,7 +4,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.MyVaadinUI;
-import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.GlobalView;
@@ -35,9 +34,9 @@ public class MainGamingView extends DashboardPanel{
      */
     private void setWindowContent(){
 
-        GameModes gameMode=GameControllerFacade.getInstance().getCurrentGameMode();
+        /*GameModes gameMode=GameControllerFacade.getInstance().getCurrentGameMode();
         GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
-
+*/
 
 
         //if the user is an admin
@@ -58,7 +57,8 @@ public class MainGamingView extends DashboardPanel{
             content.addComponent(new AdminGameConfigLayout());
         }
         else if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ORDINARY){
-            //if no game is running
+
+            /*//if no game is running
             if(gameState==GameStates.NEW){
                 Notification.show("No deployed game found. Contact Admin", Notification.Type.ERROR_MESSAGE);
 
@@ -78,7 +78,8 @@ public class MainGamingView extends DashboardPanel{
                 if ((gameMode==GameModes.AGENT_GAME)){
                     getUI().getNavigator().navigateTo(UIConstants.AGENT_DASH_VIEW);
                 }
-            }
+            }*/
+
         }
 
 
