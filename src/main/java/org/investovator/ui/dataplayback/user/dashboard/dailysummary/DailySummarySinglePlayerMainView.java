@@ -28,6 +28,7 @@ import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
@@ -308,13 +309,13 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             }
             //update the account balance
             this.updateAccountBalance();
-        } catch (UserAlreadyJoinedException e) {
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch (PlayerStateException e) {
+        }
+        catch (PlayerStateException e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
 
             e.printStackTrace();
+        } catch (DataAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 

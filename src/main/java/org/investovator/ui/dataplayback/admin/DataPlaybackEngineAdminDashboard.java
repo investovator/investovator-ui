@@ -224,14 +224,20 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
                 new BeanContainer<String,PlayerInformationBean>(PlayerInformationBean.class);
         beans.setBeanIdProperty("userName");
 
-        HashMap<String,Portfolio> portfolios=player.getAllPortfolios();
-        Iterator it=portfolios.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry=(Map.Entry)it.next();
-            Portfolio portfolio =(Portfolio)entry.getValue();
+//        HashMap<String,Portfolio> portfolios=player.getAllPortfolios();
+//        Iterator it=portfolios.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry entry=(Map.Entry)it.next();
+//            Portfolio portfolio =(Portfolio)entry.getValue();
+//
+//            beans.addBean(new PlayerInformationBean(portfolio,player));
+//        }
 
+        ArrayList<Portfolio> portfolios=player.getAllPortfolios();
+        for(Portfolio portfolio:portfolios){
             beans.addBean(new PlayerInformationBean(portfolio,player));
         }
+
 
 
         Table table=new Table("Player Information",beans);

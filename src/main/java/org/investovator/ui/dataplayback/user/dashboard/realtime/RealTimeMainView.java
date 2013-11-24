@@ -38,6 +38,7 @@ import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
+import org.investovator.dataplaybackengine.player.DataPlayer;
 import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
@@ -61,7 +62,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     private String userName;
 
-    private RealTimeDataPlayer player;
+    private DataPlayer player;
 
     //used to keep track of the date of the last update
     public Date lastUpdateTime;
@@ -203,7 +204,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void onEnterMainView() {
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
-            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getRealTimeDataPlayer();
+            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getCurrentPlayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this,this.userName);
@@ -214,11 +215,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         } catch (UserAlreadyJoinedException e) {
             e.printStackTrace();
-        } catch (PlayerStateException e) {
-            e.printStackTrace();
-        } catch (UserJoinException e) {
-            e.printStackTrace();
         }
+//        catch (PlayerStateException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
@@ -299,7 +299,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     @Override
     public void eventOccurred(PlaybackEvent arg) {
-         Notification.show("DED");
+//         Notification.show("DED");
 
         //if this is a stock price update
         if (arg instanceof StockUpdateEvent) {
@@ -445,12 +445,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             try {
                 //if this is a game based on the real time data player
                 if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
-                    portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
-                            getRealTimeDataPlayer().getMyPortfolio(this.userName);
+                    portfolio= player.getMyPortfolio(this.userName);
                 }
                 else if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
-                    portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
-                            getDailySummaryDataPLayer().getMyPortfolio(this.userName);
+                    portfolio= player.getMyPortfolio(this.userName);
                 }
 
                 //get the current prices of all the stocks
@@ -475,9 +473,11 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 ds.add(new DataSeriesItem(event.getTime(),floatProfit),true,true);
 
 
-            } catch (PlayerStateException e) {
-                e.printStackTrace();
-            } catch (UserJoinException e) {
+            }
+//            catch (PlayerStateException e) {
+//                e.printStackTrace();
+//            }
+            catch (UserJoinException e) {
                 e.printStackTrace();
             }
 
@@ -541,38 +541,35 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         try {
             if(this.userName==null){
 
-                int bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getRealTimeDataPlayer().getInitialCredit();
+                int bal=player.getInitialCredit();
                 Label accountBalance=new Label(Integer.toString(bal));
                 this.accBalance=accountBalance;
                 accountBalance.setCaption("Account Balance");
                 form.addComponent(accountBalance);
 
-                int max=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getRealTimeDataPlayer().getMaxOrderSize();
+                int max=player.getMaxOrderSize();
                 Label maxOrderSize=new Label(Integer.toString(max));
                 maxOrderSize.setCaption("Max. Order Size");
                 form.addComponent(maxOrderSize);
             }
             else{
-                Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getRealTimeDataPlayer().getMyPortfolio(this.userName).getCashBalance();
+                Double bal=player.getMyPortfolio(this.userName).getCashBalance();
                 Label accountBalance=new Label(bal.toString());
                 this.accBalance=accountBalance;
                 accountBalance.setCaption("Account Balance");
                 form.addComponent(accountBalance);
 
-                int max=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getRealTimeDataPlayer().getMaxOrderSize();
+                int max=player.getMaxOrderSize();
                 Label maxOrderSize=new Label(Integer.toString(max));
                 maxOrderSize.setCaption("Max. Order Size");
                 form.addComponent(maxOrderSize);
             }
         } catch (UserJoinException e) {
             e.printStackTrace();
-        } catch (PlayerStateException e) {
-            e.printStackTrace();
         }
+//        catch (PlayerStateException e) {
+//            e.printStackTrace();
+//        }
 
 
         return form;
