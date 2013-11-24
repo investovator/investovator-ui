@@ -29,6 +29,7 @@ import org.investovator.ann.nngaming.events.DayChangedEvent;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
+import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -40,7 +41,6 @@ import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 import java.util.*;
-import java.util.EventListener;
 
 /**
  * @author: Hasala Surasinghe
@@ -60,8 +60,6 @@ public class EventBroadcaster implements EventListener,Observer{
     private PlayableStockManager playableStockManager;
     private ArrayList<DataSeries> stockDataSeriesList;
     private UserData userData;
-    private double USERCASH = 1000000.0;
-    private double USERBLOCKEDCASH = 0.0;
     private boolean tableUpdateStatus;
 
     private EventBroadcaster(){
@@ -145,6 +143,23 @@ public class EventBroadcaster implements EventListener,Observer{
                         buyBeanList = sortOrderBeanList(buyBeanList, false);
 
                         stockBeanListBuy.set(stockIndex, buyBeanList);
+
+                        String username = ((Order) object).getUserName();
+                        double blockedAmount = ((Order) object).getOrderPrice() * ((Order) object).getOrderStockCount();
+                        double cashBalance = 0;
+                        try {
+                            cashBalance = userData.getUserPortfolio(username).getCashBalance() - blockedAmount;
+                        } catch (DataAccessException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            userData.updateUserPortfolio(username,new PortfolioImpl(username,cashBalance,blockedAmount));
+                        } catch (DataAccessException e) {
+                            e.printStackTrace();
+                        }
+
+                        //todo notifying to update UI
                     }
 
                     else if(status == 1){
@@ -154,15 +169,15 @@ public class EventBroadcaster implements EventListener,Observer{
                                 ((Order) object).getOrderPrice(), ((Order) object).getOrderStockCount());
                         marketEventReceiver.addObserver(this);
 
-                        String buyingUser = (((Order) object).getUserName());
+                        String username = (((Order) object).getUserName());
 
                         try {
-                            Portfolio buyerPortfolio = userData.getUserPortfolio(buyingUser);
+                            Portfolio portfolio = userData.getUserPortfolio(username);
                             String stockID = ((Order) object).getSelectedStock();
-                            buyerPortfolio.boughtShares(stockID,((Order) object).getOrderStockCount(), avgPrice);
+                            portfolio.boughtShares(stockID,((Order) object).getOrderStockCount(), avgPrice);
 
-                            userData.updateUserPortfolio(buyingUser, buyerPortfolio);
-                            notifyListeners(new PortfolioChangedEvent(buyerPortfolio));
+                            userData.updateUserPortfolio(username, portfolio);
+                            notifyListeners(new PortfolioChangedEvent(portfolio));
 
                         } catch (DataAccessException e) {
                             e.printStackTrace();
@@ -178,6 +193,13 @@ public class EventBroadcaster implements EventListener,Observer{
             }
 
             else {
+
+                boolean orderPlacing = checkOrderPlacingFeasibility((Order) object, ((Order) object).isBuy());
+
+                if(!orderPlacing){
+                    showNotification("You do not possess sufficient shares to place the Order");
+                    return;
+                }
 
                 if(stockBeanListSell.size() <= stockIndex){
                     showNotification("Order placing was not successful");
@@ -197,6 +219,30 @@ public class EventBroadcaster implements EventListener,Observer{
                         sellBeanList = sortOrderBeanList(sellBeanList, true);
 
                         stockBeanListSell.set(stockIndex, sellBeanList);
+
+                        String username = ((Order) object).getUserName();
+                        String stock = ((Order) object).getSelectedStock();
+                        Portfolio portfolio = null;
+                        try {
+                            portfolio = userData.getUserPortfolio(username);
+                        } catch (DataAccessException e) {
+                            e.printStackTrace();
+                        }
+
+                        HashMap<String, HashMap<String, Double>> shares = portfolio.getShares();
+                        double newQuantity = shares.get(stock).get(Terms.QNTY) - ((Order) object).getOrderStockCount();
+                        shares.get(stock).put(Terms.QNTY, newQuantity);
+
+                        portfolio.setShares(shares);
+
+                        try {
+                            userData.updateUserPortfolio(username, portfolio);
+                        } catch (DataAccessException e) {
+                            e.printStackTrace();
+                        }
+
+                        //todo notifying to update UI
+
                     }
                     else if(status == 1){
 
@@ -655,7 +701,10 @@ public class EventBroadcaster implements EventListener,Observer{
 
         Portfolio portfolio;
         String username = order.getUserName();
-        try {
+
+        if(isBuy){
+
+            try {
                 portfolio = userData.getUserPortfolio(username);
                 double userActualCash = portfolio.getCashBalance() + portfolio.getBlockedCash();
                 double orderAmount = order.getOrderPrice() * order.getOrderStockCount();
@@ -668,25 +717,45 @@ public class EventBroadcaster implements EventListener,Observer{
                     return true;
                 }
 
-        } catch (DataAccessException e) {
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        else {
+
+            HashMap<String, HashMap<String, Double>> shares;
+            String stock = order.getSelectedStock();
             try {
-                portfolio = new PortfolioImpl(username, USERCASH, USERBLOCKEDCASH);
-                userData.updateUserPortfolio(username, portfolio);
+                portfolio = userData.getUserPortfolio(username);
+                shares = portfolio.getShares();
 
-                double orderAmount = order.getOrderPrice() * order.getOrderStockCount();
+                boolean hasStock = shares.containsKey(stock);
 
-                if(orderAmount > USERCASH){
-                    return false;
+                if(hasStock){
+
+                    int quantity = shares.get(stock).get(Terms.QNTY).intValue();
+
+                    if(quantity < order.getOrderStockCount()){
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+
                 }
 
                 else {
-                    return true;
+                      return false;
                 }
 
-            } catch (DataAccessException e1) {
-                e1.printStackTrace();
+            } catch (DataAccessException e) {
+                e.printStackTrace();
             }
+
         }
+
         return false;
     }
 

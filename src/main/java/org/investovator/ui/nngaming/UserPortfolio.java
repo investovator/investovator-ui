@@ -22,6 +22,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.utils.Portfolio;
+import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
@@ -45,6 +46,9 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     Label accountBalance;
     Label blockedAmount;
     Table stocksSummaryTable;
+
+    private double USERCASH = 1000000.0;
+    private double USERBLOCKEDCASH = 0.0;
 
     private EventBroadcaster eventBroadcaster;
 
@@ -83,15 +87,34 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
 
     public void update(){
+        String currentUser = Authenticator.getInstance().getCurrentUser();
+        Portfolio portfolio = null;
 
-        if(userData == null) try {
-            userData = new UserDataImpl();
+        if(userData == null){
+            try {
+                userData = new UserDataImpl();
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            portfolio = userData.getUserPortfolio(currentUser);
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
 
+        if(portfolio == null) {
+            try {
+                portfolio = new PortfolioImpl(currentUser, USERCASH, USERBLOCKEDCASH);
+                userData.updateUserPortfolio(currentUser, portfolio);
+            } catch (DataAccessException e1) {
+                e1.printStackTrace();
+            }
+        }
+
         try {
-            String currentUser = Authenticator.getInstance().getCurrentUser();
+            currentUser = Authenticator.getInstance().getCurrentUser();
             accountBalance.setValue(Double.toString(userData.getUserPortfolio(currentUser).getCashBalance()));
             blockedAmount.setValue(Double.toString(userData.getUserPortfolio(currentUser).getBlockedCash()));
         } catch (DataAccessException e) {
