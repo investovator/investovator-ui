@@ -28,7 +28,6 @@ import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
-
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
@@ -85,7 +84,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         row2.setHeight(50,Unit.MM);
         row3.setHeight(45,Unit.MM);
 
-        row3.setMargin(new MarginInfo(true, true, false, true));
+        row1.setMargin(new MarginInfo(true, true, false, true));
         row2.setMargin(new MarginInfo(true, true, false, true));
         row3.setMargin(new MarginInfo(true, true, true, true));
 
@@ -170,7 +169,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
     @Override
     public void onEnter() {
 
-        if (currentPriceChart.isConnectorEnabled()) {
+       /* if (currentPriceChart.isConnectorEnabled()) {
             getSession().lock();
             try {
 
@@ -179,7 +178,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
             } finally {
                 getSession().unlock();
             }
-        }
+        }*/
 
         quoteUI.update();
         userPortfolio.update();
@@ -295,6 +294,17 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
                 try {
 
                     currentPriceChart.addPointToChart(currentIndex);
+
+                } finally {
+                    getSession().unlock();
+                }
+            }
+
+            if (quantityChart.isConnectorEnabled()) {
+                getSession().lock();
+                try {
+
+                    quantityChart.addPointToChart(currentIndex);
 
                 } finally {
                     getSession().unlock();

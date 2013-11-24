@@ -28,6 +28,7 @@ import org.investovator.ann.nngaming.events.AddBidEvent;
 import org.investovator.ann.nngaming.events.DayChangedEvent;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.utils.Portfolio;
+import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -58,7 +59,10 @@ public class EventBroadcaster implements EventListener,Observer{
     private MarketEventReceiver marketEventReceiver;
     private PlayableStockManager playableStockManager;
     private ArrayList<DataSeries> stockDataSeriesList;
-    private  UserData userData;
+    private UserData userData;
+    private double USERCASH = 1000000.0;
+    private double USERBLOCKEDCASH = 0.0;
+    private boolean tableUpdateStatus;
 
     private EventBroadcaster(){
 
@@ -83,6 +87,8 @@ public class EventBroadcaster implements EventListener,Observer{
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
+
+        tableUpdateStatus = false;
     }
 
     public static EventBroadcaster getInstance() {
@@ -113,8 +119,16 @@ public class EventBroadcaster implements EventListener,Observer{
 
             if(((Order) object).isBuy()){
 
+                boolean orderPlacing = checkOrderPlacingFeasibility((Order) object, ((Order) object).isBuy());
+
+                if(!orderPlacing){
+                    showNotification("You do not have sufficient balance to place the Order");
+                    return;
+                }
+
                 if(stockBeanListBuy.size() <= stockIndex){
                     showNotification("Order placing was not successful");
+                    return;
                 }
 
                 else{
@@ -158,6 +172,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
                     else{
                          showNotification("Order placing was not successful");
+                         return;
                     }
                 }
             }
@@ -166,6 +181,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
                 if(stockBeanListSell.size() <= stockIndex){
                     showNotification("Order placing was not successful");
+                    return;
                 }
 
                 else {
@@ -207,6 +223,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
                     else{
                         showNotification("Order placing was not successful");
+                        return;
                     }
 
                 }
@@ -218,9 +235,14 @@ public class EventBroadcaster implements EventListener,Observer{
 
         if(object instanceof Object){
 
-            notifyListeners(new TableData(stockBeanListBuy, stockBeanListSell, playableStocks));
-
-        }
+                if(tableUpdateStatus) {
+                    notifyListeners(new TableData(stockBeanListBuy, stockBeanListSell, playableStocks));
+                }
+                else {
+                    tableUpdateStatus = true;
+                    return;
+                }
+            }
 
     }
 
@@ -280,9 +302,6 @@ public class EventBroadcaster implements EventListener,Observer{
 
             stockBeanListSell.add(beanListSell);
 
-            System.out.println("Working");
-
-            System.out.println(stockBeanListBuy.size()+" "+stockBeanListSell.size());
         }
 
     }
@@ -630,6 +649,45 @@ public class EventBroadcaster implements EventListener,Observer{
 
         return orderBeans;
 
+    }
+
+    private boolean checkOrderPlacingFeasibility(Order order, boolean isBuy){
+
+        Portfolio portfolio;
+        String username = order.getUserName();
+        try {
+                portfolio = userData.getUserPortfolio(username);
+                double userActualCash = portfolio.getCashBalance() + portfolio.getBlockedCash();
+                double orderAmount = order.getOrderPrice() * order.getOrderStockCount();
+
+                if(orderAmount > userActualCash){
+                    return false;
+                }
+
+                else {
+                    return true;
+                }
+
+        } catch (DataAccessException e) {
+            try {
+                portfolio = new PortfolioImpl(username, USERCASH, USERBLOCKEDCASH);
+                userData.updateUserPortfolio(username, portfolio);
+
+                double orderAmount = order.getOrderPrice() * order.getOrderStockCount();
+
+                if(orderAmount > USERCASH){
+                    return false;
+                }
+
+                else {
+                    return true;
+                }
+
+            } catch (DataAccessException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return false;
     }
 
 }

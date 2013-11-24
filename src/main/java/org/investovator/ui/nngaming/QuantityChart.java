@@ -91,7 +91,7 @@ public class QuantityChart extends Chart {
         legend.setBorderWidth(1);
 
         Tooltip tooltip = configuration.getTooltip();
-        tooltip.setFormatter("this.x +': '+ this.y");
+        tooltip.setFormatter(" +': '+ this.y");
         configuration.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
@@ -124,7 +124,6 @@ public class QuantityChart extends Chart {
         }
 
         final int stockListSize = stockList.size();
-        stockDataSeriesList = eventBroadcaster.getStockDataSeriesList();
 
         for(int i = 0; i < stockListSize; i++){
 
@@ -148,8 +147,6 @@ public class QuantityChart extends Chart {
 
         }
 
-        eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
-
     }
 
     private void prepareChartData(){
@@ -159,7 +156,7 @@ public class QuantityChart extends Chart {
         Date[] dateArray;
 
         for(int i = 0; i < stockListSize; i++){
-            stockPrices = nnGamingFacade.getPredictedPrices(stockList.get(i));
+            stockPrices = nnGamingFacade.getPredictedPrices(stockList.get(i), TradingDataAttribute.TRADES);
             predictedValues.add(stockPrices);
 
             int stockPriceLength = stockPrices.length;

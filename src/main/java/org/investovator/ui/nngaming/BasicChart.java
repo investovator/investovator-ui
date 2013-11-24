@@ -152,8 +152,10 @@ public class BasicChart extends Chart{
 
         }
 
+        System.out.println("Executed");
+
         final int stockListSize = stockList.size();
-        stockDataSeriesList = eventBroadcaster.getStockDataSeriesList();
+       // stockDataSeriesList = eventBroadcaster.getStockDataSeriesList();
 
         for(int i = 0; i < stockListSize; i++){
 
@@ -177,7 +179,7 @@ public class BasicChart extends Chart{
 
         }
 
-        eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
+       // eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
 
     }
 
@@ -188,7 +190,7 @@ public class BasicChart extends Chart{
         Date[] dateArray;
 
         for(int i = 0; i < stockListSize; i++){
-            stockPrices = nnGamingFacade.getPredictedPrices(stockList.get(i));
+            stockPrices = nnGamingFacade.getPredictedPrices(stockList.get(i), TradingDataAttribute.CLOSING_PRICE);
             predictedValues.add(stockPrices);
 
             int stockPriceLength = stockPrices.length;
