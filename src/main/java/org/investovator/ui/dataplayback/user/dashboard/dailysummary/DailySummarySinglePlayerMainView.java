@@ -29,6 +29,9 @@ import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.dataplaybackengine.events.PlaybackEvent;
+import org.investovator.dataplaybackengine.events.PlaybackEventListener;
+import org.investovator.dataplaybackengine.events.PlaybackFinishedEvent;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
@@ -43,6 +46,7 @@ import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
+import org.investovator.ui.dataplayback.util.DataPlaybackGameOverWindow;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 import java.util.Date;
@@ -51,7 +55,7 @@ import java.util.Date;
  * @author: ishan
  * @version: ${Revision}
  */
-public class DailySummarySinglePlayerMainView extends BasicMainView {
+public class DailySummarySinglePlayerMainView extends BasicMainView implements PlaybackEventListener {
 
     //decides the number of points shown in the OHLC chart
     private static int OHLC_CHART_LENGTH = 10;
@@ -186,60 +190,61 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                 //get the events
-                try {
-                    StockUpdateEvent[] events = player.playNextDay();
+//                try {
+//                    StockUpdateEvent[] events =
+                            player.playNextDay();
                     //iterate every event
-                    for (final StockUpdateEvent event : events) {
+//                    for (final StockUpdateEvent event : events) {
                         //iterate every series in the chart at the moment
-                        for (Series series : mainChart.getConfiguration().getSeries()) {
-                            final DataSeries dSeries = (DataSeries) series;
-                            //if there's a match
-                            if (event.getStockId().equals(dSeries.getName()) && (event.getData()!=null)) {
-                                final float value;
-                                //if new data is available
-                                if(event.getData()!=null ){
-                                    value=event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
-                                }
-                                else {
-                                    //get the value of the last stock
-                                    value=dSeries.get(dSeries.size()-1).getY().floatValue();
-                                    System.out.println("missing - "+event.getTime()+" - "+value);
-                                }
-
-                                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
-
-                                            dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
-
-                                        } else {
-                                            dSeries.add(new DataSeriesItem(event.getTime(),value));
-
-                                        }
-
-                            }
-
-                        }
-
-                        //update the table
-                        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
-                                stockPriceTable.getContainerDataSource();
-
-
-                        if (stockPriceTable.isConnectorEnabled() && (event.getData()!=null)) {
-                            getSession().lock();
-                            try {
-                                beans.removeItem(event.getStockId());
-                                beans.addBean(new StockNamePriceBean(event.getStockId(),
-                                        event.getData().get(DataPlaybackEngineStates.
-                                                gameConfig.getAttributeToMatch())));
-                            } finally {
-                                getSession().unlock();
-                            }
-                        }
-
-                        //update the quantity chart
-                        updateQuantityChart(event);
-
-                    }
+//                        for (Series series : mainChart.getConfiguration().getSeries()) {
+//                            final DataSeries dSeries = (DataSeries) series;
+//                            //if there's a match
+//                            if (event.getStockId().equals(dSeries.getName()) && (event.getData()!=null)) {
+//                                final float value;
+//                                //if new data is available
+//                                if(event.getData()!=null ){
+//                                    value=event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
+//                                }
+//                                else {
+//                                    //get the value of the last stock
+//                                    value=dSeries.get(dSeries.size()-1).getY().floatValue();
+//                                    System.out.println("missing - "+event.getTime()+" - "+value);
+//                                }
+//
+//                                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
+//
+//                                            dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
+//
+//                                        } else {
+//                                            dSeries.add(new DataSeriesItem(event.getTime(),value));
+//
+//                                        }
+//
+//                            }
+//
+//                        }
+//
+//                        //update the table
+//                        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+//                                stockPriceTable.getContainerDataSource();
+//
+//
+//                        if (stockPriceTable.isConnectorEnabled() && (event.getData()!=null)) {
+//                            getSession().lock();
+//                            try {
+//                                beans.removeItem(event.getStockId());
+//                                beans.addBean(new StockNamePriceBean(event.getStockId(),
+//                                        event.getData().get(DataPlaybackEngineStates.
+//                                                gameConfig.getAttributeToMatch())));
+//                            } finally {
+//                                getSession().unlock();
+//                            }
+//                        }
+//
+//                        //update the quantity chart
+//                        updateQuantityChart(event);
+//
+//                    }
 
                     //update the profit chart
                     updateProfitChart(player.getCurrentTime());
@@ -253,9 +258,9 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
                     });
 
 
-                } catch (GameFinishedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+//                } catch (GameFinishedException e) {
+//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                }
 
             }
         });
@@ -305,7 +310,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
-                this.player.joinSingleplayerGame(this.userName);
+                this.player.joinGame(this, this.userName);
             }
             //update the account balance
             this.updateAccountBalance();
@@ -314,7 +319,11 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
 
             e.printStackTrace();
-        } catch (DataAccessException e) {
+        }
+//        catch (DataAccessException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+        catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
@@ -578,4 +587,81 @@ public class DailySummarySinglePlayerMainView extends BasicMainView {
 
     }
 
+    @Override
+    public void eventOccurred(PlaybackEvent arg) {
+        //if this is a stock price update
+        if (arg instanceof StockUpdateEvent) {
+            final StockUpdateEvent event = (StockUpdateEvent) arg;
+            updateTickerChart(event);
+
+            //if event contains data
+            if(event.getData()!=null){
+
+                //update quantity chart
+                updateQuantityChart(event);
+
+                //update the table
+                updateStockPriceTable(event);
+            }
+
+        }
+        //if the game has stopped
+        else if (arg instanceof PlaybackFinishedEvent) {
+            getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+        }
+
+        //push the changes
+        UI.getCurrent().access(new Runnable() {
+            @Override
+            public void run() {
+                getUI().push();
+            }
+        });
+
+    }
+
+    private void updateTickerChart(final StockUpdateEvent event)  {
+
+        //iterate every series in the chart at the moment
+        for (Series series : mainChart.getConfiguration().getSeries()) {
+            final DataSeries dSeries = (DataSeries) series;
+            //if this series matches the stock events stock
+            if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
+
+                final float value;
+                //if new data is available
+                if(event.getData()!=null ){
+                    value=event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
+                }
+                else {
+                    //get the value of the last stock
+                    BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                            stockPriceTable.getContainerDataSource();
+                    value=beans.getItem(event.getStockId()).getBean().getPrice();
+                }
+
+                if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
+
+                    dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
+
+                } else {
+                    dSeries.add(new DataSeriesItem(event.getTime(),value));
+
+                }
+
+            }
+
+        }
+
+    }
+
+    private void updateStockPriceTable(final StockUpdateEvent event){
+
+        final BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
+                stockPriceTable.getContainerDataSource();
+
+        beans.removeItem(event.getStockId());
+        beans.addBean(new StockNamePriceBean(event.getStockId(),
+                event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch())));
+    }
 }
