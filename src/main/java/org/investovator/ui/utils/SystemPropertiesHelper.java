@@ -68,8 +68,8 @@ public class SystemPropertiesHelper implements
 
 
 //        //UnComment these once
-//        clearOldData();
-//        addTestConfig();
+        clearOldData();
+        addTestConfig();
 
     }
 
