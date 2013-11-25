@@ -3,7 +3,7 @@ package org.investovator.ui.agentgaming.user;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import org.investovator.agentsimulation.api.JASAFacade;
-import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.GameFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.authentication.Authenticator;
@@ -35,14 +35,15 @@ public class AgentDashboard extends BasicDashboard {
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        GameControllerFacade instance =   GameControllerFacade.getInstance();
+
+       /* GameFacade instance =   GameControllerFacade.getInstance();
 
         if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN) getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
 
         if(instance.getCurrentGameMode()!= GameModes.AGENT_GAME || instance.getCurrentGameState()!= GameStates.RUNNING){
            Notification.show("No Agent Game is Configured");
            getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
-        }
+        }*/
 
 
         JASAFacade facade = JASAFacade.getMarketFacade();
