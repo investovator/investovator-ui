@@ -122,7 +122,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
 
-            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getCurrentPlayer();
+            //todo - uncomment
+//            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getCurrentPlayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this, this.userName);

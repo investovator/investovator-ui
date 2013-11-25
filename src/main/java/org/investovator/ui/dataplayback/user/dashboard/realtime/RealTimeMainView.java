@@ -204,7 +204,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void onEnterMainView() {
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
-            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getCurrentPlayer();
+            //todo - uncomment
+//            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getCurrentPlayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this,this.userName);
@@ -577,14 +578,14 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     public void updateAccountBalance(){
         try {
-            Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                    getRealTimeDataPlayer().getMyPortfolio(this.userName).getCashBalance();
+            Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
             this.accBalance.setValue(bal.toString());
         } catch (UserJoinException e) {
             e.printStackTrace();
-        } catch (PlayerStateException e) {
-            e.printStackTrace();
         }
+//        catch (PlayerStateException e) {
+//            e.printStackTrace();
+//        }
 
     }
 }

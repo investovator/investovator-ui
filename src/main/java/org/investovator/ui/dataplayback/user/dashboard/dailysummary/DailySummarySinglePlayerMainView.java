@@ -24,6 +24,10 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.GameController;
+import org.investovator.controller.GameControllerImpl;
+import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
+import org.investovator.controller.command.exception.CommandSettingsException;
 import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
@@ -307,7 +311,11 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         //join the game
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
-            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
+            GameController controller= GameControllerImpl.getInstance();
+            GetDataPlayerCommand command=new GetDataPlayerCommand();
+            controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
+            this.player=(DailySummaryDataPLayer)command.getPlayer();
+//            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this, this.userName);
@@ -315,15 +323,17 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             //update the account balance
             this.updateAccountBalance();
         }
-        catch (PlayerStateException e) {
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-
-            e.printStackTrace();
-        }
+//        catch (PlayerStateException e) {
+//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+//
+//            e.printStackTrace();
+//        }
 //        catch (DataAccessException e) {
 //            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 //        }
         catch (UserAlreadyJoinedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (CommandSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
@@ -492,12 +502,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         try {
             //if this is a game based on the real time data player
             if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
-                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
-                        getRealTimeDataPlayer().getMyPortfolio(this.userName);
+                portfolio= this.player.getMyPortfolio(this.userName);
             }
             else if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
-                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMyPortfolio(this.userName);
+                portfolio= this.player.getMyPortfolio(this.userName);
             }
 
             //get the current prices of all the stocks
@@ -522,9 +530,11 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             ds.add(new DataSeriesItem(today,floatProfit),true,true);
 
 
-        } catch (PlayerStateException e) {
-            e.printStackTrace();
-        } catch (UserJoinException e) {
+        }
+//        catch (PlayerStateException e) {
+//            e.printStackTrace();
+//        }
+        catch (UserJoinException e) {
             e.printStackTrace();
         }
 
@@ -537,38 +547,35 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         try {
             if(this.userName==null){
 
-                int bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getInitialCredit();
+                int bal=this.player.getInitialCredit();
                 Label accountBalance=new Label(Integer.toString(bal));
                 this.accBalance=accountBalance;
                 accountBalance.setCaption("Account Balance");
                 form.addComponent(accountBalance);
 
-                int max=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMaxOrderSize();
+                int max=this.player.getMaxOrderSize();
                 Label maxOrderSize=new Label(Integer.toString(max));
                 maxOrderSize.setCaption("Max. Order Size");
                 form.addComponent(maxOrderSize);
             }
             else{
-                Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+                Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
                 Label accountBalance=new Label(bal.toString());
                 this.accBalance=accountBalance;
                 accountBalance.setCaption("Account Balance");
                 form.addComponent(accountBalance);
 
-                int max=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMaxOrderSize();
+                int max=this.player.getMaxOrderSize();
                 Label maxOrderSize=new Label(Integer.toString(max));
                 maxOrderSize.setCaption("Max. Order Size");
                 form.addComponent(maxOrderSize);
             }
         } catch (UserJoinException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+//        catch (PlayerStateException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
 
 
         return form;
@@ -576,14 +583,14 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 
     public void updateAccountBalance(){
         try {
-            Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                    getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+            Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
             this.accBalance.setValue(bal.toString());
         } catch (UserJoinException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (PlayerStateException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+//        catch (PlayerStateException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
 
     }
 

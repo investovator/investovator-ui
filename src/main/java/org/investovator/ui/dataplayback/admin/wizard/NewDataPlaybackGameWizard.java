@@ -23,8 +23,11 @@ import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.time.DateUtils;
-import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.GameController;
+//import org.investovator.controller.GameControllerFacade;
+import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
@@ -84,53 +87,78 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
     public void wizardCompleted(WizardCompletedEvent wizardCompletedEvent) {
         Notification.show("Complete");
 
-        //initialize the necessary player
-        DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.gameConfig.getPlayerType(),
-                DataPlaybackEngineStates.playingSymbols,
-                DataPlaybackEngineStates.gameStartDate,
-                DataPlaybackEngineStates.gameConfig.getInterestedAttributes(),
-                DataPlaybackEngineStates.gameConfig.getAttributeToMatch(),
-                DataPlaybackEngineStates.isMultiplayer);
+        //initialize the player via controller
+        GameController controller= GameControllerImpl.getInstance();
+        try {
+            DataPlaybackEngineStates.gameInstance=controller.createGameInstance(GameModes.PAYBACK_ENG);
+
+            //setup the game
+            Object[] arr=new Object[6];
+            arr[0]=DataPlaybackEngineStates.gameConfig.getPlayerType();
+            arr[1]=DataPlaybackEngineStates.playingSymbols;
+            arr[2]=DataPlaybackEngineStates.gameStartDate;
+            arr[3]=DataPlaybackEngineStates.gameConfig.getInterestedAttributes();
+            arr[4]=DataPlaybackEngineStates.gameConfig.getAttributeToMatch();
+            arr[5]=DataPlaybackEngineStates.isMultiplayer;
+
+            controller.setupGame(DataPlaybackEngineStates.gameInstance,arr);
+
+            //start the game
+            controller.startGame(DataPlaybackEngineStates.gameInstance);
+
+        } catch (GameCreationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (GameProgressingException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+//        //initialize the necessary player
+//        DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.gameConfig.getPlayerType(),
+//                DataPlaybackEngineStates.playingSymbols,
+//                DataPlaybackEngineStates.gameStartDate,
+//                DataPlaybackEngineStates.gameConfig.getInterestedAttributes(),
+//                DataPlaybackEngineStates.gameConfig.getAttributeToMatch(),
+//                DataPlaybackEngineStates.isMultiplayer);
 
         //start the game now
-        if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
-            try {
-                DataPlayerFacade.getInstance().getRealTimeDataPlayer().startGame(3);
-                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
-            } catch (PlayerStateException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (GameProgressingException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (GameAlreadyStartedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-        else {
-            try {
-                //if this is a multiplayer game
-                if(DataPlaybackEngineStates.isMultiplayer==true){
-
-                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame(3);
-                }
-                else{
-                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
-
-                }
-                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
-
-            }  catch (PlayerStateException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-
-            } catch (GameProgressingException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-
-            } catch (GameAlreadyStartedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            }
-        }
+//        if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
+//            try {
+//                DataPlayerFacade.getInstance().getRealTimeDataPlayer().startGame(3);
+////                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
+//            } catch (PlayerStateException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            } catch (GameProgressingException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            } catch (GameAlreadyStartedException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+//        }
+//        else {
+//            try {
+//                //if this is a multiplayer game
+//                if(DataPlaybackEngineStates.isMultiplayer==true){
+//
+//                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame(3);
+//                }
+//                else{
+//                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
+//
+//                }
+//                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
+//
+//            }  catch (PlayerStateException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+//
+//            } catch (GameProgressingException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+//
+//            } catch (GameAlreadyStartedException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+//            }
+//        }
 
         this.window.close();
     }

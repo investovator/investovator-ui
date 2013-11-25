@@ -40,6 +40,9 @@ public class DataPlaybackEngineStates {
     public static Date gameStartDate;
 
     public static boolean isMultiplayer;
+
+    //todo - a quick hack
+    public static String gameInstance;
 }
 
 

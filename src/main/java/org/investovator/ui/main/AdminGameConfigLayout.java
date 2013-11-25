@@ -34,7 +34,6 @@ import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
-import org.investovator.ui.nngaming.config.NNGamingView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.UIConstants;
 import org.vaadin.easyuploads.MultiFileUpload;
@@ -134,7 +133,8 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if(authenticator.isLoggedIn()){
-                    startNNCreateWizard();
+                    //todo - uncomment
+//                    startNNCreateWizard();
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -291,20 +291,21 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
     }
 
-    private void startNNCreateWizard() {
-        NNGamingView subWindow = new NNGamingView("Create New Game");
-
-        // set window characteristics
-        subWindow.setHeight("55%");
-        subWindow.setWidth("50%");
-        subWindow.center();
-        subWindow.setClosable(false);
-        subWindow.setDraggable(false);
-        subWindow.setResizable(false);
-        subWindow.setModal(true);
-
-        // Add it to the root component
-        UI.getCurrent().addWindow(subWindow);
-
-    }
+    //todo - uncomment
+//    private void startNNCreateWizard() {
+//        NNGamingView subWindow = new NNGamingView("Create New Game");
+//
+//        // set window characteristics
+//        subWindow.setHeight("55%");
+//        subWindow.setWidth("50%");
+//        subWindow.center();
+//        subWindow.setClosable(false);
+//        subWindow.setDraggable(false);
+//        subWindow.setResizable(false);
+//        subWindow.setModal(true);
+//
+//        // Add it to the root component
+//        UI.getCurrent().addWindow(subWindow);
+//
+//    }
 }
