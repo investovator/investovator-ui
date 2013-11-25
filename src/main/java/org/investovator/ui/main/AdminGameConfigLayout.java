@@ -183,7 +183,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                 if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
                     if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
                         try {
-                            DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopPlayback();
+                            DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopGame();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
                         } catch (PlayerStateException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -192,7 +192,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                     }
                     else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
                         try {
-                            DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopPlayback();
+                            DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopGame();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
                         } catch (PlayerStateException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

@@ -95,11 +95,13 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         //start the game now
         if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
             try {
-                DataPlayerFacade.getInstance().getRealTimeDataPlayer().startPlayback(3);
+                DataPlayerFacade.getInstance().getRealTimeDataPlayer().startGame(3);
                 GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
             } catch (PlayerStateException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (GameProgressingException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (GameAlreadyStartedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
@@ -108,7 +110,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
                 //if this is a multiplayer game
                 if(DataPlaybackEngineStates.isMultiplayer==true){
 
-                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startMultiplayerGame(3);
+                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame(3);
                 }
                 else{
                     DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();

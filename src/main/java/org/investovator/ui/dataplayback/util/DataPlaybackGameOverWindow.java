@@ -41,16 +41,18 @@ public class DataPlaybackGameOverWindow extends BasicGameOverWindow{
 
     @Override
     public Portfolio[] getPortfolios() {
-        ArrayList<Portfolio> portfolios=new ArrayList<>();
+//        ArrayList<Portfolio> portfolios=new ArrayList<>();
 
         DataPlayer player =DataPlayerFacade.getInstance().getCurrentPlayer();
-        Iterator itr=player.getAllPortfolios().entrySet().iterator();
-        while (itr.hasNext()){
-            Portfolio portfolio= (Portfolio) ((Map.Entry)itr.next()).getValue();
-            portfolios.add(portfolio);
-        }
+//        Iterator itr=player.getAllPortfolios().entrySet().iterator();
+//        while (itr.hasNext()){
+//            Portfolio portfolio= (Portfolio) ((Map.Entry)itr.next()).getValue();
+//            portfolios.add(portfolio);
+//        }
 
-        return portfolios.toArray(new Portfolio[portfolios.size()]);
+        ArrayList<Portfolio> portfolios=player.getAllPortfolios();
+        return  portfolios.toArray(new Portfolio[portfolios.size()]);
+//        return portfolios.toArray(new Portfolio[portfolios.size()]);
 //        return (Portfolio[])player.getAllPortfolios().entrySet().toArray();
     }
 
