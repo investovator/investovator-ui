@@ -41,6 +41,7 @@ import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.nngaming.utils.PlayableStockManager;
 
 import java.util.*;
+import java.util.EventListener;
 
 /**
  * @author: Hasala Surasinghe

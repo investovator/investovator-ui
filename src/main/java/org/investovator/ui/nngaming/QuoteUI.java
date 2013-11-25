@@ -74,7 +74,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setMargin(true);
         buttonLayout.setWidth("100%");
-        buttonLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        buttonLayout.setDefaultComponentAlignment(Alignment.BOTTOM_RIGHT);
 
         buttonLayout.addComponent(tradeButton);
 
@@ -104,7 +104,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         stockSelect = new ComboBox();
         stockSelect.setCaption("Select stock to trade");
         stockSelect.setNullSelectionAllowed(false);
-        stockSelect.setWidth("100%");
+        stockSelect.setWidth("50%");
         stockSelect.setImmediate(true);
         stockSelect.addValueChangeListener(selectSymbolValueChange);
 
@@ -117,6 +117,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         sideSelect.select("Buy Order");
         isBuy=true;
         sideSelect.setNullSelectionAllowed(false);
+        sideSelect.setWidth("50%");
         sideSelect.addValueChangeListener(sideSelectValueChangeListener);
         sideSelect.setImmediate(true);
 

@@ -75,14 +75,18 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         createStocksTable();
 
-        VerticalLayout portSummary = new VerticalLayout();
+        HorizontalLayout portSummary = new HorizontalLayout();
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
+        portSummary.setSpacing(true);
 
-        this.addComponent(portSummary);
-        this.addComponent(stocksSummaryTable);
-        this.setExpandRatio(portSummary,1);
-        this.setExpandRatio(stocksSummaryTable,1);
+        VerticalLayout component = new VerticalLayout();
+        component.addComponent(portSummary);
+        component.addComponent(stocksSummaryTable);
+        component.setExpandRatio(portSummary, 1);
+        component.setExpandRatio(stocksSummaryTable, 1);
+
+        this.addComponent(component);
     }
 
 
@@ -115,8 +119,10 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         try {
             currentUser = Authenticator.getInstance().getCurrentUser();
-            accountBalance.setValue(Double.toString(userData.getUserPortfolio(currentUser).getCashBalance()));
-            blockedAmount.setValue(Double.toString(userData.getUserPortfolio(currentUser).getBlockedCash()));
+            Double balance = userData.getUserPortfolio(currentUser).getCashBalance();
+            accountBalance.setValue(String.format("%.2f", balance));
+            Double blocked = userData.getUserPortfolio(currentUser).getBlockedCash();
+            blockedAmount.setValue(String.format("%.2f", blocked));
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -129,8 +135,8 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         if (this.isConnectorEnabled()) {
             getSession().lock();
             try {
-                accountBalance.setValue(Double.toString(portfolio.getCashBalance()));
-                blockedAmount.setValue(Double.toString(portfolio.getBlockedCash()));
+                accountBalance.setValue(String.format("%.2f", portfolio.getCashBalance()));
+                blockedAmount.setValue(String.format("%.2f", portfolio.getBlockedCash()));
             } finally {
                 getSession().unlock();
             }

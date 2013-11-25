@@ -94,7 +94,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         content.setExpandRatio(row1, 1.3f);
         content.setExpandRatio(row2, 1.3f);
-        content.setExpandRatio(row3, 1.0f);
+        content.setExpandRatio(row3, 1.3f);
 
         GridLayout orderBookLayout = new GridLayout(2,1);
 

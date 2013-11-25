@@ -19,9 +19,7 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
@@ -39,6 +37,7 @@ import java.util.LinkedHashMap;
 public class NNGamingDashBoard extends BasicDashboard{
 
     DashboardPlayingView mainDashView;
+    DashboardAnalysisView analysisView;
 
     public NNGamingDashBoard() {
         super("<span><center>investovator</center></span>Dashboard");
@@ -63,17 +62,11 @@ public class NNGamingDashBoard extends BasicDashboard{
         mainDashView = new DashboardPlayingView();
         menuList.put("my dashboard", mainDashView);
 
-        VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));
+       /* VerticalLayout panelContent2 = new VerticalLayout();
+        panelContent2.addComponent(new Button("Test 2"));*/
 
-        DashboardPanel panel2 = new DashboardPanel() {
-            @Override
-            public void onEnter() {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
-        panel2.setContent(panelContent2);
-        menuList.put("test 2", panel2);
+        analysisView = new DashboardAnalysisView();
+        menuList.put("Analysis", analysisView);
 
 
         return menuList;
