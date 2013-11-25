@@ -45,6 +45,7 @@ import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
+import org.investovator.ui.dataplayback.util.DataPlaybackGameOverWindow;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 import java.util.Date;
@@ -298,7 +299,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     @Override
     public void eventOccurred(PlaybackEvent arg) {
-
+         Notification.show("DED");
 
         //if this is a stock price update
         if (arg instanceof StockUpdateEvent) {
@@ -338,7 +339,22 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         }
         //if the game has stopped
         else if (arg instanceof PlaybackFinishedEvent) {
-            //TODO - how to handle this?
+//            System.out.println("Game over");
+//            Notification.show("DDDDd", Notification.Type.ERROR_MESSAGE);
+
+            getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+
+//            this.setContent(new DataPlaybackGameOverWindow(this.userName));
+
+            //push the changes
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    getUI().push();
+                }
+            });
+
+
         }
     }
 
