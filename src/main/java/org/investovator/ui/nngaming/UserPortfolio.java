@@ -20,7 +20,6 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
-import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
@@ -30,6 +29,7 @@ import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.nngaming.beans.StockSummaryBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
+import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 
 import java.util.HashMap;
 
@@ -161,8 +161,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
                     for (String stock : shares.keySet()) {
 
                         int quantity = shares.get(stock).get(Terms.QNTY).intValue();
-                        double avgPrice = shares.get(stock).get(Terms.PRICE);
-                        StockSummaryBean tmp = new StockSummaryBean(stock, quantity, avgPrice);
+                        StockSummaryBean tmp = new StockSummaryBean(stock, quantity);
 
                         shownStocks.addBean(tmp);
                     }
@@ -193,9 +192,8 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         stocksSummaryTable.setColumnHeader("stockID", "Stock");
         stocksSummaryTable.setColumnHeader("stocks", "Shares");
-        stocksSummaryTable.setColumnHeader("value", "Total Value");
 
-        stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks","value"});
+        stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks"});
 
 
         updateStocksTable();
@@ -204,9 +202,24 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     @Override
     public void onBroadcast(Object object) {
 
-        if (object instanceof PortfolioChangedEvent){
-            updatePortfolio(((PortfolioChangedEvent) object).getPortfolio());
-            updateStocksTable();
+        String userName = Authenticator.getInstance().getCurrentUser();
+
+        if (object instanceof PortfolioData){
+
+            if(((PortfolioData) object).getUserName().equals(userName)){
+
+                if(((PortfolioData) object).isOrderExecuted()){
+                    updatePortfolio(((PortfolioData) object).getPortfolio());
+                    updateStocksTable();
+                }
+                else {
+                    updatePortfolio(((PortfolioData) object).getPortfolio());
+                }
+            }
+            else {
+                return;
+            }
+
         }
 
     }

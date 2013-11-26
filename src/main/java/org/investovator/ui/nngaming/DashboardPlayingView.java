@@ -26,6 +26,7 @@ import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
+import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 /**
@@ -142,7 +143,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         orderBookSell.setPageLength(4);
         orderBookSell.setImmediate(true);
 
-        orderBookSell.setColumnHeader("orderValue", "Order Value" );
+        orderBookSell.setColumnHeader("orderValue", "Order Price" );
         orderBookSell.setColumnHeader("quantity", "Quantity");
 
         return orderBookSell;
@@ -160,7 +161,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         orderBookBuy.setPageLength(4);
         orderBookBuy.setImmediate(true);
 
-        orderBookBuy.setColumnHeader("orderValue", "Order Value" );
+        orderBookBuy.setColumnHeader("orderValue", "Order Price" );
         orderBookBuy.setColumnHeader("quantity", "Quantity");
 
         return orderBookBuy;
@@ -260,8 +261,8 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
 
             if(((TableData) object).getStockBeanListBuy().isEmpty() || ((TableData) object).getStockBeanListSell().isEmpty()
-                    || ((TableData) object).getStockBeanListBuy().size() <= stockIndex || ((TableData) object).getStockBeanListSell()
-                    .size() <= stockIndex){
+                    || ((TableData) object).getStockBeanListBuy().size() <= stockIndex ||
+                    ((TableData) object).getStockBeanListSell().size() <= stockIndex){
 
                 updateTables(buyBeans, sellBeans);
 
@@ -310,6 +311,10 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
                     getSession().unlock();
                 }
             }
+        }
+
+        if(object instanceof PortfolioData){
+            return;
         }
 
     }
