@@ -19,8 +19,8 @@
 
 package org.investovator.ui.dataplayback.util;
 
+import org.investovator.dataplaybackengine.configuration.GameTypes;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
-import org.investovator.ui.dataplayback.gametype.GameTypes;
 
 import java.util.Date;
 

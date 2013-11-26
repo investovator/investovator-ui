@@ -29,6 +29,12 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.*;
+import org.investovator.controller.GameController;
+import org.investovator.controller.GameControllerImpl;
+import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
+import org.investovator.controller.command.dataplayback.GetDataUpToTodayCommand;
+import org.investovator.controller.command.exception.CommandExecutionException;
+import org.investovator.controller.command.exception.CommandSettingsException;
 import org.investovator.core.data.api.utils.StockTradingData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -197,9 +203,19 @@ public abstract class BasicStockDataView extends DashboardPanel {
         attributes.add((TradingDataAttribute)dataItems.getValue());
 
         try {
-            StockTradingData stockTradingData= DataPlayerFacade.getInstance().getDataUpToToday(
-                    stocksList.getValue().toString(),DataPlaybackEngineStates.gameStartDate,
+            //todo - remove quick hack
+            GameController controller= GameControllerImpl.getInstance();
+            //set the data player
+            GetDataUpToTodayCommand command=new GetDataUpToTodayCommand(stocksList.getValue().toString(),
+                    DataPlaybackEngineStates.gameStartDate,
                     attributes);
+            controller.runCommand(DataPlaybackEngineStates.gameInstance,command);
+
+            StockTradingData stockTradingData = command.getResult();
+
+//            StockTradingData stockTradingData= DataPlayerFacade.getInstance().getDataUpToToday(
+//                    stocksList.getValue().toString(),DataPlaybackEngineStates.gameStartDate,
+//                    attributes);
 
             //add the data
             //sort first
@@ -225,12 +241,18 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
 
             }
-        } catch (DataAccessException e) {
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch (DataNotFoundException e) {
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            e.printStackTrace();
+        }
+//        catch (DataAccessException e) {
+//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+//            e.printStackTrace();
+//        } catch (DataNotFoundException e) {
+//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+//            e.printStackTrace();
+//        }
+        catch (CommandSettingsException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (CommandExecutionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         return container;

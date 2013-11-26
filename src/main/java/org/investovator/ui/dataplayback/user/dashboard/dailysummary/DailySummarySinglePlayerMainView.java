@@ -27,13 +27,15 @@ import com.vaadin.ui.*;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
+import org.investovator.controller.command.exception.CommandExecutionException;
 import org.investovator.controller.command.exception.CommandSettingsException;
 import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
+import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.dataplaybackengine.events.PlaybackEvent;
+//import org.investovator.dataplaybackengine.events.PlaybackEvent;
 import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.events.PlaybackFinishedEvent;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
@@ -335,6 +337,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (CommandSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (CommandExecutionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
@@ -595,7 +599,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
     }
 
     @Override
-    public void eventOccurred(PlaybackEvent arg) {
+    public void eventOccurred(GameEvent arg) {
         //if this is a stock price update
         if (arg instanceof StockUpdateEvent) {
             final StockUpdateEvent event = (StockUpdateEvent) arg;

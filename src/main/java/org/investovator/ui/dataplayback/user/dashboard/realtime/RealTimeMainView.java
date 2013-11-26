@@ -25,10 +25,11 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
 import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
+import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.events.PlaybackEvent;
+//import org.investovator.dataplaybackengine.events.PlaybackEvent;
 import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.events.PlaybackFinishedEvent;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
@@ -299,7 +300,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
 
     @Override
-    public void eventOccurred(PlaybackEvent arg) {
+    public void eventOccurred(GameEvent arg) {
 //         Notification.show("DED");
 
         //if this is a stock price update

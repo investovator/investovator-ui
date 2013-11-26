@@ -33,11 +33,16 @@ import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
+import org.investovator.dataplaybackengine.configuration.GameConfiguration;
+import org.investovator.dataplaybackengine.configuration.GameConfigurationImpl;
+import org.investovator.dataplaybackengine.configuration.GameTypes;
+import org.investovator.dataplaybackengine.configuration.GameTypesImpl;
 import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
-import org.investovator.ui.dataplayback.gametype.GameTypes;
+//import org.investovator.ui.dataplayback.gametype.GameConfiguration;
+//import org.investovator.ui.dataplayback.gametype.GameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -93,15 +98,20 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             DataPlaybackEngineStates.gameInstance=controller.createGameInstance(GameModes.PAYBACK_ENG);
 
             //setup the game
-            Object[] arr=new Object[6];
-            arr[0]=DataPlaybackEngineStates.gameConfig.getPlayerType();
-            arr[1]=DataPlaybackEngineStates.playingSymbols;
-            arr[2]=DataPlaybackEngineStates.gameStartDate;
-            arr[3]=DataPlaybackEngineStates.gameConfig.getInterestedAttributes();
-            arr[4]=DataPlaybackEngineStates.gameConfig.getAttributeToMatch();
-            arr[5]=DataPlaybackEngineStates.isMultiplayer;
+//            Object[] arr=new Object[6];
+//            arr[0]=DataPlaybackEngineStates.gameConfig.getPlayerType();
+//            arr[1]=DataPlaybackEngineStates.playingSymbols;
+//            arr[2]=DataPlaybackEngineStates.gameStartDate;
+//            arr[3]=DataPlaybackEngineStates.gameConfig.getInterestedAttributes();
+//            arr[4]=DataPlaybackEngineStates.gameConfig.getAttributeToMatch();
+//            arr[5]=DataPlaybackEngineStates.isMultiplayer;
 
-            controller.setupGame(DataPlaybackEngineStates.gameInstance,arr);
+            GameConfiguration config=new GameConfigurationImpl(DataPlaybackEngineStates.gameStartDate,
+                    DataPlaybackEngineStates.playingSymbols,
+                    DataPlaybackEngineStates.isMultiplayer,
+                   DataPlaybackEngineStates.gameConfig);
+
+            controller.setupGame(DataPlaybackEngineStates.gameInstance,new GameConfiguration[]{config});
 
             //start the game
             controller.startGame(DataPlaybackEngineStates.gameInstance);
@@ -197,7 +207,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             gameTypes.setMultiSelect(false);
             gameTypes.setHtmlContentAllowed(true);
 
-            for(GameTypes type:GameTypes.values()){
+            for(GameTypes type: GameTypesImpl.values()){
                 gameTypes.addItem(type);
                 gameTypes.setItemCaption(type,
                         type.getDescription());
@@ -205,7 +215,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
             //default item
-            gameTypes.select(GameTypes.values()[0]);
+            gameTypes.select(GameTypesImpl.values()[0]);
 
             //fire value change events immediately
             gameTypes.setImmediate(true);
@@ -222,7 +232,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         @Override
         public boolean onAdvance() {
             //set the selected state
-            for(GameTypes type:GameTypes.values()){
+            for(GameTypes type:GameTypesImpl.values()){
                 if(gameTypes.getValue()==type){
                     DataPlaybackEngineStates.gameConfig=type;
                     break;
