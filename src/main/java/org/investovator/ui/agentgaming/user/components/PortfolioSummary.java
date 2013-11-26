@@ -24,9 +24,9 @@ import com.vaadin.ui.*;
 import net.sourceforge.jabm.event.EventListener;
 import net.sourceforge.jabm.event.SimEvent;
 import net.sourceforge.jasa.event.TransactionExecutedEvent;
-import org.investovator.controller.utils.events.GameEvent;
-import org.investovator.controller.utils.events.GameEventListener;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
+import org.investovator.core.commons.events.GameEvent;
+import org.investovator.core.commons.events.GameEventListener;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.UserData;
@@ -40,7 +40,7 @@ import java.util.HashMap;
  * @author Amila Surendra
  * @version $Revision
  */
-public class PortfolioSummary extends HorizontalLayout implements GameEventListener{
+public class PortfolioSummary extends HorizontalLayout implements GameEventListener {
 
     //External Data
     UserData userData;
