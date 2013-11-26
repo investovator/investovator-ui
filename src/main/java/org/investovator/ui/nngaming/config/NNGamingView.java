@@ -43,7 +43,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
     Wizard nnWiz = new Wizard();
 
     StockSelectView stockSelect;
-    ParameterSelectView parameterSelect;
+    GameSettingsView settingsView;
     ParameterAddView parameterAdd;
 
     public NNGamingView(String caption) {
@@ -53,11 +53,11 @@ public class NNGamingView extends Window implements WizardProgressListener{
         nnWiz.setWidth(50, Unit.PERCENTAGE);
 
         stockSelect = new StockSelectView();
-        parameterSelect = new ParameterSelectView();
+        settingsView = new GameSettingsView();
         parameterAdd = new ParameterAddView();
        
         nnWiz.addStep(stockSelect);
-        nnWiz.addStep(parameterSelect);
+        nnWiz.addStep(settingsView);
         nnWiz.addStep(parameterAdd);
 
         stockSelect.update();
