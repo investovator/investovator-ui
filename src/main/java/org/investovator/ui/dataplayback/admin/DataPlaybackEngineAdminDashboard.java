@@ -28,17 +28,22 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import org.investovator.controller.GameController;
+import org.investovator.controller.GameControllerImpl;
+import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
+import org.investovator.controller.command.exception.CommandExecutionException;
+import org.investovator.controller.command.exception.CommandSettingsException;
+import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.events.PlaybackEvent;
+import org.investovator.dataplaybackengine.configuration.GameTypes;
 import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.player.DataPlayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.beans.PlayerInformationBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
-import org.investovator.ui.dataplayback.gametype.GameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -64,14 +69,26 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
     @Override
     public void onEnter() {
+        GameController controller= GameControllerImpl.getInstance();
         //set the data player
-        this.player= DataPlayerFacade.getInstance().getCurrentPlayer();
+        GetDataPlayerCommand command=new GetDataPlayerCommand();
+        try {
+            controller.runCommand(DataPlaybackEngineStates.gameInstance, command);
+            this.player=command.getPlayer();
+            //add the UI elements
+            addUIElements();
 
-        //add the UI elements
-        addUIElements();
+            //set as an observer
+            player.setObserver(this);
 
-        //set as an observer
-        player.setObserver(this);
+
+        } catch (CommandSettingsException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            //todo - add a forwarder and an error tip
+        } catch (CommandExecutionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
 
     }
 
@@ -372,7 +389,7 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
     }
 
     @Override
-    public void eventOccurred(PlaybackEvent event) {
+    public void eventOccurred(GameEvent event) {
 //        this.content.removeAllComponents();
 //
 //        addUIElements();
