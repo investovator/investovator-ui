@@ -12,7 +12,7 @@ public class Session {
     private static String userName="userName";
     private static String userType="userType";
     private static String isLoggedIn="loggedIn";
-    private static String instance="loggedIn";
+    private static String instance="instance";
 
 
     public static void setCurrentGameInstance(String gameInstance){
