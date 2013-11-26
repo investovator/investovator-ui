@@ -49,6 +49,7 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
     Label accountBalance;
     Label blockedAmount;
     Table stocksSummaryTable;
+    OrderView unmatchedOrders;
 
     public PortfolioSummary() {
         setupUI();
@@ -70,14 +71,25 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
 
         createStocksTable();
 
+        unmatchedOrders = new OrderView();
+        unmatchedOrders.setWidth("95%");
+        unmatchedOrders.setHeight("200px");
+        unmatchedOrders.setCaption("My Orders");
+
         VerticalLayout portSummary = new VerticalLayout();
+        portSummary.setHeight("100%");
+
+        portSummary.addComponent(stocksSummaryTable);
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
+        portSummary.setExpandRatio(stocksSummaryTable,2);
+        portSummary.setExpandRatio(accountBalance,0.5f);
+        portSummary.setExpandRatio(accountBalance,0.5f);
 
         this.addComponent(portSummary);
-        this.addComponent(stocksSummaryTable);
+        this.addComponent(unmatchedOrders);
         this.setExpandRatio(portSummary,1);
-        this.setExpandRatio(stocksSummaryTable,1);
+        this.setExpandRatio(unmatchedOrders,1);
     }
 
 
@@ -98,9 +110,19 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         }
 
         updateStocksTable();
+        unmatchedOrders.update();
 
     }
 
+
+    @Override
+    public void eventOccurred(GameEvent event) {
+        if (event instanceof PortfolioChangedEvent){
+            updatePortfolio(((PortfolioChangedEvent) event).getPortfolio());
+            updateStocksTable();
+            unmatchedOrders.update();
+        }
+    }
 
     public void updatePortfolio(Portfolio portfolio){
 
@@ -112,14 +134,6 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
             } finally {
                 getSession().unlock();
             }
-        }
-    }
-
-    @Override
-    public void eventOccurred(GameEvent event) {
-        if (event instanceof PortfolioChangedEvent){
-            updatePortfolio(((PortfolioChangedEvent) event).getPortfolio());
-            updateStocksTable();
         }
     }
 

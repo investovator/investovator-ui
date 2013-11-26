@@ -2,8 +2,8 @@ package org.investovator.ui.dataplayback.util;
 
 import com.vaadin.ui.*;
 import org.investovator.controller.utils.events.GameCreationProgressChanged;
-import org.investovator.controller.utils.events.GameEvent;
-import org.investovator.controller.utils.events.GameEventListener;
+import org.investovator.core.commons.events.GameEvent;
+import org.investovator.core.commons.events.GameEventListener;
 
 /**
  * @author Amila Surendra

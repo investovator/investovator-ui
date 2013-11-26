@@ -8,6 +8,7 @@ import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.GameFacade;
 import org.investovator.controller.command.agent.UnmatchedOrdersCommand;
+import org.investovator.controller.command.exception.CommandExecutionException;
 import org.investovator.controller.command.exception.CommandSettingsException;
 import org.investovator.core.commons.simulationengine.MarketOrder;
 import org.investovator.ui.authentication.Authenticator;
@@ -15,6 +16,7 @@ import org.investovator.ui.utils.Session;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Amila Surendra
@@ -47,6 +49,8 @@ public class OrderView extends Table {
             orders = command.getOrders();
         } catch (CommandSettingsException e) {
             e.printStackTrace();
+        } catch (CommandExecutionException e) {
+            e.printStackTrace();
         }
         return orders;
     }
@@ -64,16 +68,35 @@ public class OrderView extends Table {
         setColumnExpandRatio("Side", 1);
     }
 
+    public void addOrder(String stock, MarketOrder order){
+        String side = order.isBid() ? "Bid" : "Ask";
+        addItem(new Object[]{stock,order.getPrice(),order.getQuantity(),side},null);
+    }
+
     private void calculateColumns(){
         removeAllItems();
 
         HashMap<String,ArrayList<MarketOrder>> orders = getOrders();
 
-    }
+        if(orders == null) return;
 
+        for(Map.Entry entry : orders.entrySet()){
+            for(MarketOrder order : (ArrayList<MarketOrder>)entry.getValue())   {
+                addOrder((String)entry.getKey(), order);
+            }
+        }
+
+    }
 
     public void update(){
 
+        calculateColumns();
+        getUI().access(new Runnable() {
+            @Override
+            public void run() {
+                getUI().push();
+            }
+        });
     }
 
 
