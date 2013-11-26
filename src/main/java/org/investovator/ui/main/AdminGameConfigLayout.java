@@ -21,7 +21,6 @@ package org.investovator.ui.main;
 
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
-import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
@@ -35,7 +34,6 @@ import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
-import org.investovator.ui.nngaming.config.NNGamingView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.UIConstants;
 import org.vaadin.easyuploads.MultiFileUpload;
@@ -63,8 +61,8 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
     private void init(){
 
-        final GameModes gameMode= GameControllerFacade.getInstance().getCurrentGameMode();
-        final GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
+        //final GameModes gameMode= GameControllerFacade.getInstance().getCurrentGameMode();
+        //final GameStates gameState=GameControllerFacade.getInstance().getCurrentGameState();
 
         Button agentGames = new Button("Agent Gaming Engine", new Button.ClickListener() {
             @Override
@@ -82,7 +80,10 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                //if there is no game running
+
+                startDailySummaryAddGameWizard();
+
+                /*//if there is no game running
                 if(gameState==GameStates.NEW){
                     startDailySummaryAddGameWizard();
 
@@ -123,7 +124,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
 //                        }
                     }
 
-                }
+                }*/
 
             }
         });
@@ -132,7 +133,8 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if(authenticator.isLoggedIn()){
-                    startNNCreateWizard();
+                    //todo - uncomment
+//                    startNNCreateWizard();
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -143,7 +145,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
         Label agentGamesStatusLabel=new Label("Not Running");
         Label dataPlaybackGamesStatusLabel=new Label("Not Running");
         Label annGamesStatusLabel=new Label("Not Running");
-        if(gameMode==GameModes.AGENT_GAME && gameState==GameStates.RUNNING){
+        /*if(gameMode==GameModes.AGENT_GAME && gameState==GameStates.RUNNING){
             agentGamesStatusLabel.setValue("<b> <p style=\"color:red\">Running<b>");
             agentGamesStatusLabel.setContentMode(ContentMode.HTML);
             dataPlaybackGamesStatusLabel.setValue("Not Running");
@@ -151,22 +153,22 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
 
 
-        }
+        }*/
 
 
         Label dataPlaybackGamesLabel=new Label("Data Playback based game");
-        if(gameMode==GameModes.PAYBACK_ENG && gameState==GameStates.RUNNING){
+        /*if(gameMode==GameModes.PAYBACK_ENG && gameState==GameStates.RUNNING){
             dataPlaybackGamesStatusLabel.setValue("<b> <p style=\"color:red\">Running<b>");
             dataPlaybackGamesStatusLabel.setContentMode(ContentMode.HTML);
             annGamesStatusLabel.setValue("Not Running");
             agentGamesStatusLabel.setValue("Not Running");
 
 
-        }
+        }*/
 
 
         Label annGamesLabel=new Label("ANN based game");
-        if(gameMode==GameModes.NN_GAME && gameState==GameStates.RUNNING){
+       /* if(gameMode==GameModes.NN_GAME && gameState==GameStates.RUNNING){
             annGamesStatusLabel.setValue("<b> <p style=\"color:red\">Running<b>");
             annGamesStatusLabel.setContentMode(ContentMode.HTML);
             dataPlaybackGamesStatusLabel.setValue("Not Running");
@@ -174,16 +176,16 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
 
 
-        }
+        }*/
 
         //add a stop button for DPE
         Button stopDpeButton=new Button("Stop DPE",new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
+               /* if(gameState==GameStates.RUNNING && gameMode==GameModes.PAYBACK_ENG){
                     if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
                         try {
-                            DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopPlayback();
+                            DataPlaybackGameFacade.getDataPlayerFacade().getRealTimeDataPlayer().stopGame();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
                         } catch (PlayerStateException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -192,14 +194,14 @@ public class AdminGameConfigLayout extends VerticalLayout {
                     }
                     else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
                         try {
-                            DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopPlayback();
+                            DataPlaybackGameFacade.getDataPlayerFacade().getDailySummaryDataPLayer().stopGame();
                             GameControllerFacade.getInstance().stopGame(GameModes.PAYBACK_ENG);
                         } catch (PlayerStateException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
                     }
 
-                }
+                }*/
 
 
             }
@@ -208,14 +210,14 @@ public class AdminGameConfigLayout extends VerticalLayout {
         HorizontalLayout agentLayout = new HorizontalLayout(agentGamesLabel,agentGames,agentGamesStatusLabel);
         agentLayout.setSizeFull();
         HorizontalLayout dataPlaybackLayout;
-        if(GameControllerFacade.getInstance().getCurrentGameState()==GameStates.RUNNING){
-            dataPlaybackLayout=new HorizontalLayout(dataPlaybackGamesLabel,
-                    dataPlayback,stopDpeButton,dataPlaybackGamesStatusLabel);
-        }
-        else{
+        //if(GameControllerFacade.getInstance().getCurrentGameState()==GameStates.RUNNING){
+        //    dataPlaybackLayout=new HorizontalLayout(dataPlaybackGamesLabel,
+        //            dataPlayback,stopDpeButton,dataPlaybackGamesStatusLabel);
+        //}
+        //else{
             dataPlaybackLayout= new HorizontalLayout(dataPlaybackGamesLabel,
                     dataPlayback,dataPlaybackGamesStatusLabel);
-        }
+       // }
 
         dataPlaybackLayout.setSizeFull();
         HorizontalLayout annLayout = new HorizontalLayout(annGamesLabel,nnGames,annGamesStatusLabel);
@@ -289,20 +291,21 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
     }
 
-    private void startNNCreateWizard() {
-        NNGamingView subWindow = new NNGamingView("Create New Game");
-
-        // set window characteristics
-        subWindow.setHeight("55%");
-        subWindow.setWidth("50%");
-        subWindow.center();
-        subWindow.setClosable(false);
-        subWindow.setDraggable(false);
-        subWindow.setResizable(false);
-        subWindow.setModal(true);
-
-        // Add it to the root component
-        UI.getCurrent().addWindow(subWindow);
-
-    }
+    //todo - uncomment
+//    private void startNNCreateWizard() {
+//        NNGamingView subWindow = new NNGamingView("Create New Game");
+//
+//        // set window characteristics
+//        subWindow.setHeight("55%");
+//        subWindow.setWidth("50%");
+//        subWindow.center();
+//        subWindow.setClosable(false);
+//        subWindow.setDraggable(false);
+//        subWindow.setResizable(false);
+//        subWindow.setModal(true);
+//
+//        // Add it to the root component
+//        UI.getCurrent().addWindow(subWindow);
+//
+//    }
 }

@@ -179,8 +179,6 @@ public class BasicChart extends Chart{
 
         }
 
-       // eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
-
     }
 
     private void prepareChartData(){

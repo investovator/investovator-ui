@@ -14,7 +14,8 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ *//*
+
 
 
 package org.investovator.ui.dataplayback.admin;
@@ -45,10 +46,12 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+*/
 /**
  * @author: ishan
  * @version: ${Revision}
- */
+ *//*
+
 public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements PlaybackEventListener {
 
     GridLayout content;
@@ -224,14 +227,20 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
                 new BeanContainer<String,PlayerInformationBean>(PlayerInformationBean.class);
         beans.setBeanIdProperty("userName");
 
-        HashMap<String,Portfolio> portfolios=player.getAllPortfolios();
-        Iterator it=portfolios.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry=(Map.Entry)it.next();
-            Portfolio portfolio =(Portfolio)entry.getValue();
+//        HashMap<String,Portfolio> portfolios=player.getAllPortfolios();
+//        Iterator it=portfolios.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry entry=(Map.Entry)it.next();
+//            Portfolio portfolio =(Portfolio)entry.getValue();
+//
+//            beans.addBean(new PlayerInformationBean(portfolio,player));
+//        }
 
+        ArrayList<Portfolio> portfolios=player.getAllPortfolios();
+        for(Portfolio portfolio:portfolios){
             beans.addBean(new PlayerInformationBean(portfolio,player));
         }
+
 
 
         Table table=new Table("Player Information",beans);
@@ -373,3 +382,4 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
     }
 }
+*/

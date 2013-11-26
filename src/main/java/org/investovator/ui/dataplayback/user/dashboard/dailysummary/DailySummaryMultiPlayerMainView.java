@@ -28,6 +28,7 @@ import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
@@ -35,6 +36,7 @@ import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
+import org.investovator.dataplaybackengine.player.DataPlayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
@@ -53,7 +55,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
     private String userName;
 
-    private DailySummaryDataPLayer player;
+    private DataPlayer player;
 
 
     @Override
@@ -120,16 +122,16 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
 
-            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
+            //todo - uncomment
+//            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getCurrentPlayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
-                this.player.joinMultiplayerGame(this,this.userName);
+                this.player.joinGame(this, this.userName);
             }
             //update the account balance
             this.updateAccountBalance();
-        } catch (UserAlreadyJoinedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (PlayerStateException e) {
+        }
+        catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
@@ -335,12 +337,10 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         try {
             //if this is a game based on the real time data player
             if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
-                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
-                        getRealTimeDataPlayer().getMyPortfolio(this.userName);
+                portfolio= player.getMyPortfolio(this.userName);
             }
             else if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
-                portfolio= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMyPortfolio(this.userName);
+                portfolio= player.getMyPortfolio(this.userName);
             }
 
             //get the current prices of all the stocks
@@ -367,9 +367,8 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
 
 
-        } catch (PlayerStateException e) {
-            e.printStackTrace();
-        } catch (UserJoinException e) {
+        }
+        catch (UserJoinException e) {
             e.printStackTrace();
         }
 
@@ -381,36 +380,30 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
         try {
             if(this.userName==null){
 
-                int bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getInitialCredit();
+                int bal=player.getInitialCredit();
                 Label accountBalance=new Label(Integer.toString(bal));
                 this.accBalance=accountBalance;
                 accountBalance.setCaption("Account Balance");
                 form.addComponent(accountBalance);
 
-                int max=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMaxOrderSize();
+                int max=player.getMaxOrderSize();
                 Label maxOrderSize=new Label(Integer.toString(max));
                 maxOrderSize.setCaption("Max. Order Size");
                 form.addComponent(maxOrderSize);
             }
             else{
-                Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+                Double bal=player.getMyPortfolio(this.userName).getCashBalance();
                 Label accountBalance=new Label(bal.toString());
                 this.accBalance=accountBalance;
                 accountBalance.setCaption("Account Balance");
                 form.addComponent(accountBalance);
 
-                int max=DataPlaybackGameFacade.getDataPlayerFacade().
-                        getDailySummaryDataPLayer().getMaxOrderSize();
+                int max=player.getMaxOrderSize();
                 Label maxOrderSize=new Label(Integer.toString(max));
                 maxOrderSize.setCaption("Max. Order Size");
                 form.addComponent(maxOrderSize);
             }
         } catch (UserJoinException e) {
-            e.printStackTrace();
-        } catch (PlayerStateException e) {
             e.printStackTrace();
         }
 
@@ -420,12 +413,9 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
     public void updateAccountBalance(){
         try {
-            Double bal=DataPlaybackGameFacade.getDataPlayerFacade().
-                    getDailySummaryDataPLayer().getMyPortfolio(this.userName).getCashBalance();
+            Double bal=player.getMyPortfolio(this.userName).getCashBalance();
             this.accBalance.setValue(bal.toString());
         } catch (UserJoinException e) {
-            e.printStackTrace();
-        } catch (PlayerStateException e) {
             e.printStackTrace();
         }
 
