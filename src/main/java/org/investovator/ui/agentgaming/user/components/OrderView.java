@@ -2,6 +2,7 @@ package org.investovator.ui.agentgaming.user.components;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.controller.GameController;
@@ -91,7 +92,7 @@ public class OrderView extends Table {
     public void update(){
 
         calculateColumns();
-        getUI().access(new Runnable() {
+        UI.getCurrent().access(new Runnable() {
             @Override
             public void run() {
                 getUI().push();
