@@ -56,7 +56,14 @@ public class LoginView extends VerticalLayout implements View {
                             loginStatus = authenticator.authenticate(userField.getValue(), pwdField.getValue());
 
                             if (loginStatus) {
-                                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                                Authenticator.UserType type =  authenticator.getMyPrivileges();
+
+                                if(type== Authenticator.UserType.ADMIN){
+                                    getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                                }else if(type== Authenticator.UserType.ORDINARY){
+                                    getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
+                                }
+
                             } else {
                                 Notification.show("Incorrect UserName or Password");
                             }
