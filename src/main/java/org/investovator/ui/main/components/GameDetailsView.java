@@ -48,11 +48,14 @@ public abstract class GameDetailsView extends HorizontalLayout {
     public GameDetailsView(String instanceID, GameController controller){
         gameInstance = instanceID;
         this.controller = controller;
+        setupLayout();
     }
 
     private void setupLayout(){
 
         gameImage = getImage(controller.getGameMode(gameInstance));
+        gameImage.setHeight("150px");
+        gameImage.setWidth("150px");
 
         buttonLayout = new VerticalLayout();
         for(Button button : getButtons()){
@@ -71,11 +74,15 @@ public abstract class GameDetailsView extends HorizontalLayout {
         this.addComponent(descriptionLayout);
         this.addComponent(buttonLayout);
 
+        this.setComponentAlignment(gameImage,Alignment.MIDDLE_CENTER);
+        this.setComponentAlignment(descriptionLayout,Alignment.MIDDLE_LEFT);
+        this.setComponentAlignment(buttonLayout,Alignment.MIDDLE_CENTER);
+
     }
 
     private Image getImage(GameModes type){
-        FileResource resource = new FileResource(new File(ConfigHelper.getImagePath()+"gameIcon.png"));
-        return new Image();
+        FileResource resource = new FileResource(new File(ConfigHelper.getImagePath()+"game_icon.jpg"));
+        return new Image(null,resource);
     }
 
 

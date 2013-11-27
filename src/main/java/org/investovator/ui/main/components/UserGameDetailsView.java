@@ -21,6 +21,7 @@ package org.investovator.ui.main.components;
 import com.vaadin.ui.Button;
 import org.investovator.controller.GameController;
 import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 
 import java.util.ArrayList;
@@ -49,10 +50,12 @@ public class UserGameDetailsView extends GameDetailsView {
                     //TODO:Add notification
                    return;
                 }
+                Session.setCurrentGameInstance(gameInstance);
                 getUI().getNavigator().navigateTo(UIConstants.getUserDashboardURL(mode));
             }
         });
 
+        buttons.add(gotoGame);
 
         return buttons;
     }

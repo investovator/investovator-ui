@@ -1,5 +1,9 @@
 package org.investovator.ui.main;
 
+import com.vaadin.ui.VerticalLayout;
+import org.investovator.controller.GameController;
+import org.investovator.controller.GameControllerImpl;
+import org.investovator.ui.main.components.UserGameDetailsView;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 /**
@@ -8,8 +12,39 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
  */
 public class MyGamesPanel extends DashboardPanel {
 
+    VerticalLayout content;
+
+    VerticalLayout myGamesLayout;
+
+    public MyGamesPanel(){
+        content = new VerticalLayout();
+        content.setSizeFull();
+        setLayout();
+        this.setContent(content);
+    }
+
+    public void setLayout(){
+
+        myGamesLayout = new VerticalLayout();
+        myGamesLayout.setWidth("100%");
+        myGamesLayout.setCaption("My Games");
+        myGamesLayout.addStyleName("center-caption");
+
+        content.addComponent(myGamesLayout);
+    }
+
     @Override
     public void onEnter() {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        myGamesLayout.removeAllComponents();
+
+        GameController controller = GameControllerImpl.getInstance();
+
+        for(String instance : controller.getGameInstances()){
+            UserGameDetailsView view = new UserGameDetailsView(instance, controller);
+            myGamesLayout.addComponent(view);
+            view.update();
+        }
+
     }
 }
