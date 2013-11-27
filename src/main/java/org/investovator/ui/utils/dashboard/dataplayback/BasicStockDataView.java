@@ -26,20 +26,16 @@ package org.investovator.ui.utils.dashboard.dataplayback;
 
 import com.vaadin.addon.timeline.Timeline;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
-import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
 import org.investovator.controller.command.dataplayback.GetDataUpToTodayCommand;
 import org.investovator.controller.command.exception.CommandExecutionException;
 import org.investovator.controller.command.exception.CommandSettingsException;
 import org.investovator.core.data.api.utils.StockTradingData;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.core.data.exeptions.DataNotFoundException;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
@@ -47,7 +43,6 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.awt.*;
 import java.util.*;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -60,24 +55,39 @@ public abstract class BasicStockDataView extends DashboardPanel {
     //charts to be shown
     protected Timeline mainChart;
 
-    //
-    private ComboBox stocksList;
-    private NativeSelect dataItems;
+    //shows the stocks list
+    private ComboBox availableStocksList;
+    //shows the attribute list
+    private NativeSelect availableDataItems;
+
+    //shows the already plotted stocks list
+    private ComboBox plottedItemsList;
+
+    //to keep track of the added graphs
+    //stock - [attribute - data sink]
+    HashMap<String,HashMap<String,IndexedContainer>> graphs;
 
     public BasicStockDataView() {
         this.content = new VerticalLayout();
         this.setHeight("100%");
+        this.graphs=new HashMap<>();
 //        content.setSizeFull();
     }
 
 
     @Override
     public void onEnter() {
+        //if this is first time entering this view
+        if(this.graphs==null){
+            this.graphs=new HashMap<>();
+        }
+
         content.removeAllComponents();
 
         content.addComponent(setUpTopBar());
         mainChart=setUpChart();
         content.addComponent(mainChart);
+
 
 //        this.setSizeFull();
         this.setContent(content);
@@ -85,47 +95,71 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
     private HorizontalLayout setUpTopBar(){
         HorizontalLayout components=new HorizontalLayout();
-//        components.setSizeFull();
+        components.setWidth("100%");
 
         //create the stocks drop down list
-         stocksList=new ComboBox();
-        components.addComponent(stocksList);
-        stocksList.setImmediate(true);
+         availableStocksList =new ComboBox();
+        components.addComponent(availableStocksList);
+        availableStocksList.setImmediate(true);
 
-        stocksList.setCaption("Stock");
-        stocksList.setNullSelectionAllowed(false);
+        availableStocksList.setCaption("Stock");
+        availableStocksList.setNullSelectionAllowed(false);
         for(String stock: DataPlaybackEngineStates.playingSymbols){
-            stocksList.addItem(stock);
+            availableStocksList.addItem(stock);
         }
-        stocksList.select(stocksList.getItemIds().toArray()[0]);
+        availableStocksList.select(availableStocksList.getItemIds().toArray()[0]);
 
-        stocksList.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                updateChart();
-
-            }
-        });
-
-        //Data items list
-        dataItems=new NativeSelect();
-        components.addComponent(dataItems);
-        dataItems.setCaption("Data: ");
+        availableDataItems =new NativeSelect();
+        components.addComponent(availableDataItems);
+        availableDataItems.setCaption("Data: ");
 
         for(TradingDataAttribute attr:setSelectableAttributes()){
-            dataItems.addItem(attr);
+            availableDataItems.addItem(attr);
         }
-        dataItems.setNullSelectionAllowed(false);
-        dataItems.select(dataItems.getItemIds().toArray()[0]);
-        dataItems.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                updateChart();
+        availableDataItems.setNullSelectionAllowed(false);
+        availableDataItems.select(availableDataItems.getItemIds().toArray()[0]);
 
+        availableDataItems.setImmediate(true);
+
+        //add chart button
+        Button addChartButton=new Button("Add");
+        components.addComponent(addChartButton);
+        addChartButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                addPlotToChart();
             }
         });
 
-        dataItems.setImmediate(true);
+        //plotted charts list
+        this.plottedItemsList=new ComboBox();
+        components.addComponent(this.plottedItemsList);
+        this.plottedItemsList.setImmediate(true);
+        this.plottedItemsList.setCaption("Drawn Charts");
+        this.plottedItemsList.setNullSelectionAllowed(true);
+
+        //remove plot button
+        Button removeChartButton=new Button("Remove");
+        components.addComponent(removeChartButton);
+        removeChartButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                removePlotFromChart();
+            }
+        });
+
+        //clear all button
+        Button clearAllButton=new Button("Clear All");
+        components.addComponent(clearAllButton);
+
+        clearAllButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                clearTimeline();
+            }
+        });
+
+
 
         return components;
     }
@@ -150,14 +184,27 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
 
         IndexedContainer data;
-        data = createIndexedContainer();
-//
-        // Add data sources
+        String stock= availableStocksList.getValue().toString();
+        TradingDataAttribute attr=(TradingDataAttribute) availableDataItems.getValue();
+        data = createIndexedContainer(stock,attr );
+////
+//        // Add data sources
         timeline.addGraphDataSource(data,Timeline.PropertyId.TIMESTAMP,Timeline.PropertyId.VALUE);
-        timeline.setGraphCaption(data, "Stock");
-        timeline.setGraphOutlineColor(data, new Color(0x00, 0xb4, 0xf0));
+        timeline.setGraphCaption(data, stock+"-"+attr);
+        Color color=createRandomColour();
+        timeline.setGraphOutlineColor(data, color);
         timeline.setGraphFillColor(data, null);
-//        timeline.setVerticalAxisLegendUnit(data, "Price");
+        timeline.setBrowserOutlineColor(data,color);
+        timeline.setBrowserFillColor(data,null);
+        timeline.setVerticalAxisLegendUnit(data, "Price");
+
+        //set the already plotted items
+        this.plottedItemsList.addItem(stock+"-"+attr);
+
+        //mark as added
+        HashMap<String, IndexedContainer> map=new HashMap<>();
+        map.put(attr.toString(),data);
+        this.graphs.put(stock,map);
 
         // Set the date range
         if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
@@ -186,7 +233,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
      *
      * @return a container with "value, timestamp" items.
      */
-    private IndexedContainer createIndexedContainer() {
+    private IndexedContainer createIndexedContainer(String stock,TradingDataAttribute attribute) {
         IndexedContainer container = new IndexedContainer();
         container.addContainerProperty(Timeline.PropertyId.VALUE, Float.class,
                 new Float(0));
@@ -197,16 +244,12 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
         //define the attributes needed
         ArrayList<TradingDataAttribute> attributes=new ArrayList<TradingDataAttribute>();
-
-
-        //just the closing price is enough for now
-        attributes.add((TradingDataAttribute)dataItems.getValue());
+        attributes.add(attribute);
 
         try {
-            //todo - remove quick hack
             GameController controller= GameControllerImpl.getInstance();
             //set the data player
-            GetDataUpToTodayCommand command=new GetDataUpToTodayCommand(stocksList.getValue().toString(),
+            GetDataUpToTodayCommand command=new GetDataUpToTodayCommand(stock,
                     DataPlaybackEngineStates.gameStartDate,
                     attributes);
             controller.runCommand(DataPlaybackEngineStates.gameInstance,command);
@@ -214,7 +257,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
             StockTradingData stockTradingData = command.getResult();
 
 //            StockTradingData stockTradingData= DataPlayerFacade.getInstance().getDataUpToToday(
-//                    stocksList.getValue().toString(),DataPlaybackEngineStates.gameStartDate,
+//                    availableStocksList.getValue().toString(),DataPlaybackEngineStates.gameStartDate,
 //                    attributes);
 
             //add the data
@@ -235,7 +278,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
                 // Set the value property
                 item.getItemProperty(Timeline.PropertyId.VALUE)
                         .setValue(Float.parseFloat(stockTradingData.getTradingData().get(date).
-                                get(dataItems.getValue())));
+                                get(availableDataItems.getValue())));
 
 
 
@@ -258,24 +301,109 @@ public abstract class BasicStockDataView extends DashboardPanel {
         return container;
     }
 
-    public  void updateChart(){
-
-        mainChart.removeAllGraphDataSources();
-
-        //recreate a data source
-        IndexedContainer data;
-        data = createIndexedContainer();
+//    public  void updateChart(){
 //
-        // Add data sources
+//        mainChart.removeAllGraphDataSources();
+//
+//        //recreate a data source
+//        IndexedContainer data;
+//        data = createIndexedContainer();
+////
+//        // Add data sources
+//        mainChart.addGraphDataSource(data,Timeline.PropertyId.TIMESTAMP,Timeline.PropertyId.VALUE);
+//        mainChart.setGraphCaption(data, "Stock");
+//        mainChart.setGraphOutlineColor(data, new Color(0x00, 0xb4, 0xf0));
+//        mainChart.setGraphFillColor(data, null);
+//        mainChart.setVerticalAxisLegendUnit(data, "Price");
+//
+////        mainChart.setImmediate(true);
+//
+//
+//    }
+
+    /**
+     * Adds the current selected
+     */
+    public void addPlotToChart(){
+
+        //selected stock
+        String stock= availableStocksList.getValue().toString();
+        //selected attribute
+        TradingDataAttribute attr=(TradingDataAttribute) availableDataItems.getValue();
+
+        //do nothing if the graph is already added
+        if(this.graphs.containsKey(stock) && this.graphs.get(stock).containsKey(attr.toString())){
+            return;
+        }
+
+        IndexedContainer data=createIndexedContainer(stock,attr);
+
         mainChart.addGraphDataSource(data,Timeline.PropertyId.TIMESTAMP,Timeline.PropertyId.VALUE);
-        mainChart.setGraphCaption(data, "Stock");
-        mainChart.setGraphOutlineColor(data, new Color(0x00, 0xb4, 0xf0));
+        mainChart.setGraphCaption(data, stock+"-"+attr);
+        Color color=createRandomColour();
+        mainChart.setGraphOutlineColor(data,color );
         mainChart.setGraphFillColor(data, null);
+        mainChart.setBrowserOutlineColor(data,color);
+        mainChart.setBrowserFillColor(data,null);
         mainChart.setVerticalAxisLegendUnit(data, "Price");
 
-//        mainChart.setImmediate(true);
+        //mark as added
+        HashMap<String, IndexedContainer> map=new HashMap<>();
+        map.put(attr.toString(),data);
+        this.graphs.put(stock,map);
+
+        //set the already plotted items
+        this.plottedItemsList.addItem(stock+"-"+attr);
+    }
+
+    /**
+     * removes the selected plot from timeline
+     */
+    public void removePlotFromChart(){
+        //do nothing if no chart is selected
+        if(this.plottedItemsList.getValue()==null){
+            return;
+        }
+
+        //only break to two parts
+        String value=this.plottedItemsList.getValue().toString();
+        String selected[]=value.split("-");
+        IndexedContainer container=this.graphs.get(selected[0]).get(selected[1]);
+
+        //remove from chart
+        this.mainChart.removeGraphDataSource(container);
+
+        //remove from the map
+        this.graphs.get(selected[0]).remove(selected[1]);
+        //remove from list
+        this.plottedItemsList.removeItem(value);
 
 
     }
+
+    /**
+     * Returns a random colour
+     * @return
+     */
+    private Color createRandomColour(){
+        Random rand = new Random();
+        // Java 'Color' class takes 3 floats, from 0 to 1.
+        float r = rand.nextFloat();
+        float g = rand.nextFloat();
+        float b = rand.nextFloat();
+
+        return new Color(r, g, b);
+
+    }
+
+    /**
+     * clears the timeline
+     */
+    private void clearTimeline(){
+        this.mainChart.removeAllGraphDataSources();
+        this.graphs.clear();
+        this.plottedItemsList.removeAllItems();
+    }
+
 
 }
