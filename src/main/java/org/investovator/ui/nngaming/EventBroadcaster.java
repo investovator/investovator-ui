@@ -19,8 +19,6 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.server.Page;
-import com.vaadin.shared.Position;
 import com.vaadin.ui.Notification;
 import org.investovator.ann.nngaming.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
@@ -38,10 +36,10 @@ import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.Order;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
-import org.investovator.ui.nngaming.utils.PlayableStockManager;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 
-import java.util.*;
 import java.util.EventListener;
+import java.util.*;
 
 /**
  * @author: Hasala Surasinghe
@@ -58,7 +56,7 @@ public class EventBroadcaster implements EventListener,Observer{
     private int currentDay;
     private int currentIndex;
     private MarketEventReceiver marketEventReceiver;
-    private PlayableStockManager playableStockManager;
+    private GameDataHelper gameDataHelper;
     private ArrayList<DataSeries> stockDataSeriesList;
     private UserData userData;
     private boolean tableUpdateStatus;
@@ -77,7 +75,7 @@ public class EventBroadcaster implements EventListener,Observer{
         marketEventReceiver = MarketEventReceiver.getInstance();
         marketEventReceiver.addObserver(this);
 
-        playableStockManager = PlayableStockManager.getInstance();
+        gameDataHelper = GameDataHelper.getInstance();
 
         stockDataSeriesList = new ArrayList<>();
 
@@ -329,7 +327,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
     @Override
     public void update(Observable o, Object arg) {
-        playableStocks = playableStockManager.getStockList();
+        playableStocks = gameDataHelper.getStockList();
 
         if(arg instanceof DayChangedEvent){
             System.out.println("DayChanged");
@@ -695,9 +693,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
     private void showNotification(String message){
 
-        Notification notification = new Notification(message, Notification.Type.ERROR_MESSAGE);
-        notification.setPosition(Position.BOTTOM_RIGHT);
-        notification.show(Page.getCurrent());
+        Notification.show(message, Notification.Type.TRAY_NOTIFICATION);
 
     }
 
@@ -706,7 +702,7 @@ public class EventBroadcaster implements EventListener,Observer{
         ArrayList<OrderBean> orderBeans = arrayList;
         OrderBean comparator = new OrderBean(new Float(12.50),12);
 
-        if(true){
+        if(ascending){
 
             Collections.sort(orderBeans, comparator);
 

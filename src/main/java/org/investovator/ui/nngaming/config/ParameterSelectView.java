@@ -21,6 +21,7 @@ package org.investovator.ui.nngaming.config;
 import com.vaadin.data.Property;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
+import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -33,47 +34,48 @@ import java.util.Set;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class StockSelectView implements WizardStep{
+public class ParameterSelectView implements WizardStep{
 
-    private ArrayList<String> selectedStocks = null;
-    private CompanyDataImpl companyData;
-    private ArrayList<String> stockIDList;
-
-    TwinColSelect stockSelectList;
+    TwinColSelect parameterSelectList;
     VerticalLayout content;
 
-    public StockSelectView() {
+    private ArrayList<String> selectedParameters = null;
+    private ArrayList<String> stockIDList;
 
-        stockSelectList = new TwinColSelect("Select Stocks for Game");
+    private CompanyData companyData;
 
-        stockSelectList.setHeight(28, Sizeable.Unit.MM);
 
-        stockSelectList.setNullSelectionAllowed(false);
+    public ParameterSelectView() {
 
-        stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
+        parameterSelectList = new TwinColSelect("Select Analysis Parameters for Game");
+        parameterSelectList.setHeight(28, Sizeable.Unit.MM);
+        parameterSelectList.setNullSelectionAllowed(false);
+
+        parameterSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
 
                 Set<String> results = (Set<String>) valueChangeEvent.getProperty().getValue();
 
-                selectedStocks = new ArrayList<>();
+                selectedParameters = new ArrayList<>();
 
                 for (Iterator<String> iterator = results.iterator(); iterator.hasNext(); ) {
                     String next = iterator.next();
-                    selectedStocks.add(next);
+                    selectedParameters.add(next);
                 }
+
             }
         });
 
         content = new VerticalLayout();
-        content.addComponent(stockSelectList);
-        content.setComponentAlignment(stockSelectList, Alignment.MIDDLE_CENTER);
+        content.addComponents(parameterSelectList);
+        content.setComponentAlignment(parameterSelectList, Alignment.MIDDLE_CENTER);
         content.setMargin(true);
     }
 
     public void update(){
 
-        stockSelectList.removeAllItems();
+        parameterSelectList.removeAllItems();
 
         try {
             companyData = new CompanyDataImpl();
@@ -90,16 +92,16 @@ public class StockSelectView implements WizardStep{
         for (Iterator<String> iterator = stockIDList.iterator(); iterator.hasNext(); ) {
 
             String next = iterator.next();
-            stockSelectList.addItem(next);
+            parameterSelectList.addItem(next+" "+"Stock Price");
 
         }
 
-        stockSelectList.setValue(stockIDList.get(0));
+        parameterSelectList.setValue(stockIDList.get(0)+" "+"Stock Price");
     }
 
     @Override
     public String getCaption() {
-        return "Select Stock";
+        return "Select Analysis Parameters";
     }
 
     @Override
@@ -109,9 +111,9 @@ public class StockSelectView implements WizardStep{
 
     @Override
     public boolean onAdvance() {
-        if(selectedStocks == null)
+        if(selectedParameters == null)
         {
-            Notification.show("Please Select Stocks for the Game", Notification.Type.TRAY_NOTIFICATION);
+            Notification.show("Please Select Analysis Parameters", Notification.Type.TRAY_NOTIFICATION);
             return false;
         }
         else{
@@ -121,10 +123,10 @@ public class StockSelectView implements WizardStep{
 
     @Override
     public boolean onBack() {
-        return false;
+        return true;
     }
 
-    public ArrayList<String> getSelectedStocks(){
-        return selectedStocks;
+    public ArrayList<String> getSelectedParameters(){
+        return selectedParameters;
     }
 }

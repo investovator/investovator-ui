@@ -14,8 +14,7 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *//*
-
+ */
 
 
 package org.investovator.ui.dataplayback.admin;
@@ -23,7 +22,6 @@ package org.investovator.ui.dataplayback.admin;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.shared.ui.MarginInfo;
@@ -36,9 +34,7 @@ import org.investovator.dataplaybackengine.events.PlaybackEvent;
 import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.player.DataPlayer;
-import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.beans.PlayerInformationBean;
-import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.gametype.GameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
@@ -46,12 +42,10 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-*/
 /**
  * @author: ishan
  * @version: ${Revision}
- *//*
-
+ */
 public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements PlaybackEventListener {
 
     GridLayout content;
@@ -382,4 +376,3 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
     }
 }
-*/

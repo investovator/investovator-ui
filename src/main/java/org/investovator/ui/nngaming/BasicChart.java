@@ -22,7 +22,7 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.ui.nngaming.utils.PlayableStockManager;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 
 import java.util.*;
 
@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class BasicChart extends Chart{
 
-    private PlayableStockManager playableStockManager;
+    private GameDataHelper gameDataHelper;
     private EventBroadcaster eventBroadcaster;
     private ArrayList<String> stockList;
     private NNGamingFacade nnGamingFacade;
@@ -51,9 +51,9 @@ public class BasicChart extends Chart{
         predictedValues = new ArrayList<>();
         dateValues = new ArrayList<>();
 
-        playableStockManager = PlayableStockManager.getInstance();
+        gameDataHelper = GameDataHelper.getInstance();
 
-        stockList = playableStockManager.getStockList();
+        stockList = gameDataHelper.getStockList();
 
         if(!(stockList.isEmpty())){
             initChart();

@@ -19,13 +19,7 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Notification;
-import org.investovator.controller.GameControllerFacade;
-import org.investovator.controller.utils.enums.GameModes;
-import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.analysis.AnalysisPanel;
-import org.investovator.ui.authentication.Authenticator;
-import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -48,14 +42,14 @@ public class NNGamingDashBoard extends BasicDashboard{
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        GameControllerFacade instance =   GameControllerFacade.getInstance();
+       /* GameController controller = GameControllerImpl.getInstance();
 
         if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN) getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
 
-        if(instance.getCurrentGameMode()!= GameModes.NN_GAME || instance.getCurrentGameState()!= GameStates.RUNNING){
+        if(controller.getCurrentGameMode()!= GameModes.NN_GAME || controller.getCurrentGameState()!= GameStates.RUNNING){
             Notification.show("No Neural Network Game is Configured");
             getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
-        }
+        }*/
     }
 
     @Override
@@ -67,8 +61,8 @@ public class NNGamingDashBoard extends BasicDashboard{
        /* VerticalLayout panelContent2 = new VerticalLayout();
         panelContent2.addComponent(new Button("Test 2"));*/
 
-        analysisView = new DashboardAnalysisView();
-        menuList.put("DATA OVERVIEW", analysisView);
+    /*    analysisView = new DashboardAnalysisView();
+        menuList.put("DATA OVERVIEW", analysisView);*/
 
         analysisPanel = new AnalysisPanel();
         menuList.put("ANALYSIS", analysisPanel);

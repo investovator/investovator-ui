@@ -27,21 +27,16 @@ import com.vaadin.ui.*;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
-import org.investovator.controller.command.exception.CommandSettingsException;
-import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.dataplaybackengine.events.PlaybackEvent;
 import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.events.PlaybackFinishedEvent;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
-import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
-import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
@@ -313,7 +308,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             this.userName=Authenticator.getInstance().getCurrentUser();
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
-            controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
+           // controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
             this.player=(DailySummaryDataPLayer)command.getPlayer();
 //            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
             //join the game if the user has not already done so
@@ -333,9 +328,9 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 //        }
         catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (CommandSettingsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        } //catch (CommandSettingsException e) {
+          //  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+       // }
     }
 
     public Chart buildQuantityChart(){
