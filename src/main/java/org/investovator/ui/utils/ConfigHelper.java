@@ -39,6 +39,10 @@ public class ConfigHelper {
         return basepath;
     }
 
+    public static String getImagePath(){
+        return basepath +"/WEB-INF/images/";
+    }
+
     public static String getUploadPath(){
 
         String path = basepath + "/uploads/";
