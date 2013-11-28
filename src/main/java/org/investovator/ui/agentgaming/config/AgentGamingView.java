@@ -46,7 +46,6 @@ public class AgentGamingView extends Window implements WizardProgressListener {
 
     public AgentGamingView() {
 
-        agentWiz.getCancelButton().setVisible(false);
         agentWiz.setWidth("90%");
         agentWiz.setHeight("90%");
 
@@ -183,7 +182,7 @@ public class AgentGamingView extends Window implements WizardProgressListener {
 
     @Override
     public void wizardCancelled(WizardCancelledEvent event) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        closeWindow();
     }
 }
 
