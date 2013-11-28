@@ -70,10 +70,13 @@ public abstract class GameDetailsView extends HorizontalLayout {
 
         descriptionLayout = new VerticalLayout();
 
-        nameLabel = new Label(getName());
-        descriptionLabel = new Label(getDescription());
 
-        descriptionLayout.addComponent(nameLabel);
+        if(getName()!=null){
+            nameLabel = new Label(getName());
+            descriptionLayout.addComponent(nameLabel);
+        }
+
+        descriptionLabel = new Label(getDescription());
         descriptionLayout.addComponent(descriptionLabel);
 
         this.addComponent(gameImage);

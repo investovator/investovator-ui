@@ -71,4 +71,9 @@ public class AdminGameDetailView extends GameDetailsView {
         img.setWidth("30px");
         return img;
     }
+
+    @Override
+    public String getName() {
+        return  null;
+    }
 }

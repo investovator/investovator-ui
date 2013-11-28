@@ -36,6 +36,27 @@ public class AdminGameCreateView extends GameDetailsView {
 
     public AdminGameCreateView(GameModes gameMode, GameController controller) {
         super(gameMode, controller);
+        setWidth("100%");
+        setCaption(getCaption(gameMode));
+        addStyleName("center-caption");
+    }
+
+
+    private String getCaption(GameModes mode){
+
+        switch (mode){
+            case AGENT_GAME:return "Artificial players based games";
+            case NN_GAME:return "Prediction Based Games";
+            case PAYBACK_ENG:return "Past data replay games";
+        }
+
+        return  null;
+    }
+
+
+    @Override
+    public String getName() {
+        return null;
     }
 
     @Override

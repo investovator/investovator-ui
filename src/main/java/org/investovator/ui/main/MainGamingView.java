@@ -31,9 +31,6 @@ public class MainGamingView extends DashboardPanel {
     VerticalLayout nnView;
     VerticalLayout playbackView;
 
-
-    VerticalLayout instancesView = new VerticalLayout();
-
     public MainGamingView() {
         setSizeFull();
         content.setSizeFull();
@@ -50,21 +47,12 @@ public class MainGamingView extends DashboardPanel {
         nnView = new VerticalLayout();
         playbackView = new VerticalLayout();
 
-        instancesView = new VerticalLayout();
-        instancesView.setWidth("100%");
-        instancesView.setCaption("Deployed Game Instances");
-        instancesView.addStyleName("center-caption");
-
-        //content.addComponent(new AdminGameConfigLayout());
-
         content.addComponent(new AdminGameCreateView(GameModes.AGENT_GAME, controller));
         content.addComponent(agentView);
         content.addComponent(new AdminGameCreateView(GameModes.NN_GAME, controller));
         content.addComponent(nnView);
         content.addComponent(new AdminGameCreateView(GameModes.PAYBACK_ENG, controller));
         content.addComponent(playbackView);
-
-        //content.addComponent(instancesView);
 
     }
 
@@ -76,8 +64,6 @@ public class MainGamingView extends DashboardPanel {
         if (!Authenticator.getInstance().isLoggedIn()) {
             ((MyVaadinUI) MyVaadinUI.getCurrent()).getNavigator().navigateTo("");
         }
-
-        instancesView.removeAllComponents();
 
         GameController controller = GameControllerImpl.getInstance();
 
