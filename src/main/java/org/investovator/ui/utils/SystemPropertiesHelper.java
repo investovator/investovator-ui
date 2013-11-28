@@ -122,11 +122,11 @@ public class SystemPropertiesHelper implements
 
         try {
             UserData userData =  new UserDataImpl();
-            userData.addToWatchList("testUser1", "SAMP");
-            userData.addToWatchList("testUser1", "RCL");
-
-            Portfolio portfolio = new PortfolioImpl("testUser1", 1000000, 0);
-            userData.updateUserPortfolio("testUser1",portfolio);
+//            userData.addToWatchList("testUser1", "SAMP");
+//            userData.addToWatchList("testUser1", "RCL");
+//
+//            Portfolio portfolio = new PortfolioImpl("testUser1", 1000000, 0);
+//            userData.updateUserPortfolio("testUser1",portfolio);
 
 
         } catch (DataAccessException e) {
