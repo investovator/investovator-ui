@@ -36,6 +36,7 @@ public abstract class GameDetailsView extends HorizontalLayout {
 
     protected String gameInstance;
     protected GameController controller;
+    protected GameModes gameMode;
 
     private Image gameImage;
     private VerticalLayout buttonLayout;
@@ -51,11 +52,16 @@ public abstract class GameDetailsView extends HorizontalLayout {
         setupLayout();
     }
 
+    public GameDetailsView(GameModes gameMode, GameController controller){
+        this.gameMode = gameMode;
+        this.controller = controller;
+        setupLayout();
+    }
+
     private void setupLayout(){
 
-        gameImage = getImage(controller.getGameMode(gameInstance));
-        gameImage.setHeight("150px");
-        gameImage.setWidth("150px");
+        gameImage = getImage();
+
 
         buttonLayout = new VerticalLayout();
         for(Button button : getButtons()){
@@ -64,8 +70,8 @@ public abstract class GameDetailsView extends HorizontalLayout {
 
         descriptionLayout = new VerticalLayout();
 
-        nameLabel = new Label(controller.getName(gameInstance));
-        descriptionLabel = new Label(controller.getDescription(gameInstance));
+        nameLabel = new Label(getName());
+        descriptionLabel = new Label(getDescription());
 
         descriptionLayout.addComponent(nameLabel);
         descriptionLayout.addComponent(descriptionLabel);
@@ -80,9 +86,20 @@ public abstract class GameDetailsView extends HorizontalLayout {
 
     }
 
-    private Image getImage(GameModes type){
+    public String getName(){
+        return controller.getName(gameInstance);
+    }
+
+    public String getDescription(){
+        return controller.getDescription(gameInstance);
+    }
+
+    public Image getImage(){
         FileResource resource = new FileResource(new File(ConfigHelper.getImagePath()+"game_icon.jpg"));
-        return new Image(null,resource);
+        Image img = new Image(null,resource);
+        img.setHeight("50px");
+        img.setWidth("50px");
+        return img;
     }
 
 

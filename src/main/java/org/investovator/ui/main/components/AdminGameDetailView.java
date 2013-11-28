@@ -1,11 +1,15 @@
 package org.investovator.ui.main.components;
 
+import com.vaadin.server.FileResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Image;
 import org.investovator.controller.GameController;
 import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.ui.utils.ConfigHelper;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,5 +63,12 @@ public class AdminGameDetailView extends GameDetailsView {
         return buttons;
     }
 
-
+    @Override
+    public Image getImage() {
+        FileResource resource = new FileResource(new File(ConfigHelper.getImagePath()+"bullet-icon.png"));
+        Image img = new Image(null,resource);
+        img.setHeight("30px");
+        img.setWidth("30px");
+        return img;
+    }
 }
