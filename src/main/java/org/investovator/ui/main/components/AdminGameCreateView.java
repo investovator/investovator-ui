@@ -63,8 +63,8 @@ public class AdminGameCreateView extends GameDetailsView {
     @Override
     public String getDescription() {
         switch (gameMode){
-            case AGENT_GAME: return "This game mode allows users to play with set of configured artificial players " +
-                    "along with other human players. The admin can configure the behaviour of the game using different " +
+            case AGENT_GAME: return "This game mode allows users to play with a set of configured artificial players " +
+                    "along with other human players. The game creator can configure the behaviour of the game using different " +
                     "agent populations in the configuration window. This game mode allows the user to get full stock " +
                     "market trading experience and test trading strategies with set of intelligent players.";
 
@@ -73,10 +73,10 @@ public class AdminGameCreateView extends GameDetailsView {
                     "description description description description description description description " +
                     "description description description";
 
-            case PAYBACK_ENG: return "Generic playback engine based game - description description description description " +
-                    "description description description description description description description description " +
-                    "description description description description description description description description " +
-                    "description description description";
+            case PAYBACK_ENG: return "This game mode allows the users to play back past data sets of users' convenience. "+
+                    "The game creator can select the securities he desires and select a start date. The game modes can "+
+                    "either be single player or multiplayer. In multiplayer games the game administrator will be provided"+
+                    " with a dashboard to monitor the activity of the game to carry out analytics";
         }
         return null;
     }
