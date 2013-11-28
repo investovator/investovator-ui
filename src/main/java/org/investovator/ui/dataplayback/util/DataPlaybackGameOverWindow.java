@@ -84,7 +84,7 @@ public class DataPlaybackGameOverWindow extends BasicGameOverWindow{
 //        DataPlayer player =DataPlayerFacade.getInstance().getCurrentPlayer();
         try {
             controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
-            DataPlayer player=(DailySummaryDataPLayer)command.getPlayer();
+            DataPlayer player=command.getPlayer();
             return player.getMyPortfolio(username);
         } catch (UserJoinException e) {
             e.printStackTrace();

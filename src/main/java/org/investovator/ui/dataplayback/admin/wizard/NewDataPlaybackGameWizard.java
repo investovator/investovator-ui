@@ -44,6 +44,7 @@ import org.investovator.dataplaybackengine.utils.StockUtils;
 //import org.investovator.ui.dataplayback.gametype.GameConfiguration;
 //import org.investovator.ui.dataplayback.gametype.GameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
+import org.investovator.ui.utils.Session;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
@@ -96,6 +97,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         GameController controller= GameControllerImpl.getInstance();
         try {
             DataPlaybackEngineStates.gameInstance=controller.createGameInstance(GameModes.PAYBACK_ENG);
+            Session.setCurrentGameInstance(DataPlaybackEngineStates.gameInstance);
 
             //setup the game
 //            Object[] arr=new Object[6];
@@ -108,7 +110,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
             GameConfiguration config=new GameConfigurationImpl(DataPlaybackEngineStates.gameStartDate,
                     DataPlaybackEngineStates.playingSymbols,
-                    DataPlaybackEngineStates.isMultiplayer,
+                    DataPlaybackEngineStates.isMultiplayer, Session.getCurrentGameInstance(),
                    DataPlaybackEngineStates.gameConfig);
 
             controller.setupGame(DataPlaybackEngineStates.gameInstance,new GameConfiguration[]{config});
