@@ -32,6 +32,7 @@ import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.agentsimulation.api.utils.HollowTradingAgent;
+import org.investovator.ui.utils.Session;
 
 import java.util.ArrayList;
 
@@ -102,11 +103,11 @@ public class AgentUIUpdater implements EventListener {
                 String buyingUser = ((HollowTradingAgent) buyer).getUserName();
 
                 try {
-                    Portfolio buyerPortfolio = userData.getUserPortfolio(buyingUser);
+                    Portfolio buyerPortfolio = userData.getUserPortfolio(Session.getCurrentGameInstance(),buyingUser);
                     String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
                     buyerPortfolio.boughtShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
 
-                    userData.updateUserPortfolio(buyingUser, buyerPortfolio);
+                    userData.updateUserPortfolio(Session.getCurrentGameInstance(),buyingUser, buyerPortfolio);
                     notifyListeners(new PortfolioChangedEvent(buyerPortfolio));
 
                 } catch (DataAccessException e) {
@@ -120,11 +121,11 @@ public class AgentUIUpdater implements EventListener {
                 String sellingUser = ((HollowTradingAgent) seller).getUserName();
 
                 try {
-                    Portfolio sellerPortfolio = userData.getUserPortfolio(sellingUser);
+                    Portfolio sellerPortfolio = userData.getUserPortfolio(Session.getCurrentGameInstance(),sellingUser);
                     String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
                     sellerPortfolio.soldShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
 
-                    userData.updateUserPortfolio(sellingUser, sellerPortfolio);
+                    userData.updateUserPortfolio(Session.getCurrentGameInstance(),sellingUser, sellerPortfolio);
                     notifyListeners(new PortfolioChangedEvent(sellerPortfolio));
 
                 } catch (DataAccessException e) {
@@ -146,7 +147,7 @@ public class AgentUIUpdater implements EventListener {
                 Portfolio portfolio = null;
 
                 try {
-                    portfolio = userData.getUserPortfolio(user);
+                    portfolio = userData.getUserPortfolio(Session.getCurrentGameInstance(),user);
 
                     if (((OrderPlacedEvent) simEvent).getOrder().isBid()) {
                         portfolio.setCashBalance(portfolio.getCashBalance() - order.getPrice()*order.getQuantity());
@@ -155,7 +156,7 @@ public class AgentUIUpdater implements EventListener {
 
                     }
 
-                    userData.updateUserPortfolio(user, portfolio);
+                    userData.updateUserPortfolio(Session.getCurrentGameInstance(),user, portfolio);
                     notifyListeners(new PortfolioChangedEvent(portfolio));
 
                 } catch (DataAccessException e) {
