@@ -90,13 +90,11 @@ public class QuantityChart extends Chart {
         legend.setVerticalAlign(VerticalAlign.BOTTOM);
         legend.setBorderWidth(1);
 
-        Tooltip tooltip = configuration.getTooltip();
-        tooltip.setFormatter(" +': '+ this.y");
-        configuration.setTooltip(tooltip);
-
         PlotOptionsColumn plot = new PlotOptionsColumn();
         plot.setPointPadding(0.2);
         plot.setBorderWidth(0);
+        plot.setDataLabels(new Labels(true));
+        configuration.setPlotOptions(plot);
 
         prepareDataSeriesLists();
 

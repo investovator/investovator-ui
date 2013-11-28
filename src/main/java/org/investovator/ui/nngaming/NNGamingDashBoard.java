@@ -19,7 +19,6 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
-import org.investovator.ui.analysis.AnalysisPanel;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -32,41 +31,26 @@ import java.util.LinkedHashMap;
 public class NNGamingDashBoard extends BasicDashboard{
 
     DashboardPlayingView mainDashView;
-    DashboardAnalysisView analysisView;
-    AnalysisPanel analysisPanel;
+    StockAnalysisView stockAnalysisView;
 
     public NNGamingDashBoard() {
         super("<span><center>investovator</center></span>Dashboard");
-    }
-
-
-    @Override
-    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-       /* GameController controller = GameControllerImpl.getInstance();
-
-        if(Authenticator.getInstance().getMyPrivileges()== Authenticator.UserType.ADMIN) getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
-
-        if(controller.getCurrentGameMode()!= GameModes.NN_GAME || controller.getCurrentGameState()!= GameStates.RUNNING){
-            Notification.show("No Neural Network Game is Configured");
-            getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
-        }*/
     }
 
     @Override
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
         LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
         mainDashView = new DashboardPlayingView();
-        menuList.put("MAIN VIEW", mainDashView);
+        stockAnalysisView = new StockAnalysisView();
 
-       /* VerticalLayout panelContent2 = new VerticalLayout();
-        panelContent2.addComponent(new Button("Test 2"));*/
-
-    /*    analysisView = new DashboardAnalysisView();
-        menuList.put("DATA OVERVIEW", analysisView);*/
-
-        analysisPanel = new AnalysisPanel();
-        menuList.put("ANALYSIS", analysisPanel);
+        menuList.put("main view", mainDashView);
+        menuList.put("stock analysis",stockAnalysisView);
 
         return menuList;
+    }
+
+    @Override
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+
     }
 }

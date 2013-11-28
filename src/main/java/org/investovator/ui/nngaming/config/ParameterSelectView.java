@@ -61,7 +61,7 @@ public class ParameterSelectView implements WizardStep{
 
                 for (Iterator<String> iterator = results.iterator(); iterator.hasNext(); ) {
                     String next = iterator.next();
-                    selectedParameters.add(next);
+                    selectedParameters.add(next.substring(0,next.indexOf(" ")));
                 }
 
             }

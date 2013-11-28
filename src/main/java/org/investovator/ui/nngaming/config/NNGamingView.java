@@ -29,6 +29,7 @@ import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.utils.ConfigHelper;
+import org.investovator.ui.utils.Session;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
@@ -83,10 +84,6 @@ public class NNGamingView extends Window implements WizardProgressListener{
         //To change body of implemented methods use File | Settings | File Templates.
         WizardStep step = event.getActivatedStep();
 
-        if (step instanceof StockSelectView) {
-            //TODO
-        }
-
 
     }
 
@@ -137,10 +134,10 @@ public class NNGamingView extends Window implements WizardProgressListener{
         setUpParams[2] = analysisParameters;
         setUpParams[3] = daysCount;
         setUpParams[4] = speedFactor;
-        //todo
 
         try {
             String instance = gameController.createGameInstance(GameModes.NN_GAME);
+            Session.setCurrentGameInstance(instance);
 
             gameController.setupGame(instance, setUpParams);
 

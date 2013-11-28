@@ -3,10 +3,7 @@ package org.investovator.ui.main;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.MyVaadinUI;
-import org.investovator.controller.utils.enums.GameModes;
-import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.authentication.Authenticator;
-import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -81,6 +78,8 @@ public class MainGamingView extends DashboardPanel{
                 }
             }
             }*/
+
+            getUI().getNavigator().navigateTo(UIConstants.NN_DASH_VIEW);
 
         }
 

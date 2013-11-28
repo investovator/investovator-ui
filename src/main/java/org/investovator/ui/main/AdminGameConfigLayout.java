@@ -19,26 +19,11 @@
 
 package org.investovator.ui.main;
 
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
-import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
-import org.investovator.controller.utils.enums.GameModes;
-import org.investovator.controller.utils.enums.GameStates;
-import org.investovator.core.data.api.CompanyDataImpl;
-import org.investovator.core.data.api.CompanyStockTransactionsData;
-import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
-import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
-import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
-import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
-import org.investovator.ui.utils.UIConstants;
-import org.vaadin.easyuploads.MultiFileUpload;
-
-import java.io.File;
+import org.investovator.ui.nngaming.config.NNGamingView;
 
 /**
  * @author: ishan
@@ -133,8 +118,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if(authenticator.isLoggedIn()){
-                    //todo - uncomment
-//                    startNNCreateWizard();
+                    startNNCreateWizard();
                 }
                 else {
                     getUI().getNavigator().navigateTo("");
@@ -291,21 +275,28 @@ public class AdminGameConfigLayout extends VerticalLayout {
 
     }
 
-    //todo - uncomment
-//    private void startNNCreateWizard() {
-//        NNGamingView subWindow = new NNGamingView("Create New Game");
-//
-//        // set window characteristics
-//        subWindow.setHeight("55%");
-//        subWindow.setWidth("50%");
-//        subWindow.center();
-//        subWindow.setClosable(false);
-//        subWindow.setDraggable(false);
-//        subWindow.setResizable(false);
-//        subWindow.setModal(true);
-//
-//        // Add it to the root component
-//        UI.getCurrent().addWindow(subWindow);
-//
-//    }
+
+    private void startNNCreateWizard() {
+        NNGamingView subWindow = new NNGamingView("Create New Game");
+
+        // set window characteristics
+        subWindow.setHeight("50%");
+        subWindow.setWidth("40%");
+        subWindow.center();
+        subWindow.setClosable(false);
+        subWindow.setDraggable(false);
+        subWindow.setResizable(false);
+        subWindow.setModal(true);
+
+        subWindow.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                getUI().getPage().reload();
+            }
+        });
+
+        // Add it to the root component
+        UI.getCurrent().addWindow(subWindow);
+
+    }
 }
