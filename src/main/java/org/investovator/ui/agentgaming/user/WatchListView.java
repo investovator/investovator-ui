@@ -12,6 +12,7 @@ import org.investovator.ui.agentgaming.user.components.TimeSeriesChart;
 import org.investovator.ui.agentgaming.user.components.WatchListTable;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.main.components.StockSelectComboBox;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 /**
@@ -89,7 +90,7 @@ public class WatchListView extends DashboardPanel {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 try {
                     UserData userData = new UserDataImpl();
-                    userData.addToWatchList(Authenticator.getInstance().getCurrentUser(), stockSelect.getSelectedStock());
+                    userData.addToWatchList(Session.getCurrentGameInstance(),Authenticator.getInstance().getCurrentUser(), stockSelect.getSelectedStock());
                     watchListTable.updateTable();
                 } catch (DataAccessException e) {
                     e.printStackTrace();

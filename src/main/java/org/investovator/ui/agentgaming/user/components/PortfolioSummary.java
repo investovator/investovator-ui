@@ -33,6 +33,7 @@ import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.Session;
 
 import java.util.HashMap;
 
@@ -103,8 +104,8 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
 
         try {
             String currentUser = Authenticator.getInstance().getCurrentUser();
-            accountBalance.setValue(Double.toString(userData.getUserPortfolio(currentUser).getCashBalance()));
-            blockedAmount.setValue(Double.toString(userData.getUserPortfolio(currentUser).getBlockedCash()));
+            accountBalance.setValue(Double.toString(userData.getUserPortfolio(Session.getCurrentGameInstance(),currentUser).getCashBalance()));
+            blockedAmount.setValue(Double.toString(userData.getUserPortfolio(Session.getCurrentGameInstance(),currentUser).getBlockedCash()));
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -144,7 +145,7 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
 
         try {
             UserData userData = new UserDataImpl();
-            Portfolio userPortfolio =   userData.getUserPortfolio(Authenticator.getInstance().getCurrentUser());
+            Portfolio userPortfolio =   userData.getUserPortfolio(Session.getCurrentGameInstance(),Authenticator.getInstance().getCurrentUser());
             final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
 
             UI.getCurrent().access(new Runnable() {

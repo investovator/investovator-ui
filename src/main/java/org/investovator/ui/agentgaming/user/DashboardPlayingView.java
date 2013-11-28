@@ -37,6 +37,7 @@ import org.investovator.ui.agentgaming.user.components.MultiStockChart;
 import org.investovator.ui.agentgaming.user.components.PortfolioSummary;
 import org.investovator.ui.agentgaming.user.components.QuoteUI;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.Collection;
@@ -186,7 +187,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
             currentPriceChart.insertDataPoint(stockChanged.getStockID(),stockChanged.getTimeStamp(), stockChanged.getMarketPrice());
 
             try {
-                Collection<String> availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
+                Collection<String> availableStocks = new UserDataImpl().getWatchList(Session.getCurrentGameInstance(), Authenticator.getInstance().getCurrentUser());
 
                 for(String stock: availableStocks){
                     if(!stock.equals(changedStockID)){
@@ -221,7 +222,7 @@ public class DashboardPlayingView extends DashboardPanel implements StockChanged
 
         Collection<String> availableStocks = null;
         try {
-            availableStocks = new UserDataImpl().getWatchList(Authenticator.getInstance().getCurrentUser());
+            availableStocks = new UserDataImpl().getWatchList(Session.getCurrentGameInstance(),Authenticator.getInstance().getCurrentUser());
             for(String stock : availableStocks){
                 simulationFacade.addListener(stock,watchList);
                 simulationFacade.addListener(stock, AgentUIUpdater.getInstance());

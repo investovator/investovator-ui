@@ -12,6 +12,7 @@ import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.main.beans.CompanyDataBean;
 import org.investovator.ui.main.components.StockSelectComboBox;
+import org.investovator.ui.utils.Session;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class WatchListTable extends Table implements Button.ClickListener {
 
         try {
             UserData userData = new UserDataImpl();
-            userData.deleteFromWatchList(Authenticator.getInstance().getCurrentUser(), removedStock);
+            userData.deleteFromWatchList(Session.getCurrentGameInstance(),Authenticator.getInstance().getCurrentUser(), removedStock);
             updateTable();
         } catch (DataAccessException e) {
             e.printStackTrace();
@@ -88,7 +89,7 @@ public class WatchListTable extends Table implements Button.ClickListener {
             CompanyData companyData =new CompanyDataImpl();
             HashMap<String,String> companyNames = companyData.getCompanyIDsNames();
 
-            ArrayList<String> watchlist =  userData.getWatchList(Authenticator.getInstance().getCurrentUser());
+            ArrayList<String> watchlist =  userData.getWatchList(Session.getCurrentGameInstance(),Authenticator.getInstance().getCurrentUser());
 
             if(watchlist != null){
                 for(String stock : watchlist){
