@@ -29,6 +29,7 @@ import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.DataPlayer;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicGameOverWindow;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class DataPlaybackGameOverWindow extends BasicGameOverWindow{
         GameController controller= GameControllerImpl.getInstance();
         GetDataPlayerCommand command=new GetDataPlayerCommand();
         try {
-            controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
+            controller.runCommand(Session.getCurrentGameInstance(),command );
             DataPlayer player=command.getPlayer();
             ArrayList<Portfolio> portfolios=player.getAllPortfolios();
             return  portfolios.toArray(new Portfolio[portfolios.size()]);
@@ -83,7 +84,7 @@ public class DataPlaybackGameOverWindow extends BasicGameOverWindow{
 
 //        DataPlayer player =DataPlayerFacade.getInstance().getCurrentPlayer();
         try {
-            controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
+            controller.runCommand(Session.getCurrentGameInstance(),command );
             DataPlayer player=command.getPlayer();
             return player.getMyPortfolio(username);
         } catch (UserJoinException e) {

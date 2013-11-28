@@ -42,7 +42,7 @@ public class DataPlaybackEngineStates {
     public static boolean isMultiplayer;
 
     //todo - a quick hack
-    public static String gameInstance;
+//    public static String gameInstance;
 }
 
 

@@ -53,6 +53,8 @@ import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.dataplayback.util.DataPlaybackGameOverWindow;
+import org.investovator.ui.utils.Session;
+import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 import java.util.Date;
@@ -310,12 +312,18 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 
     @Override
     public void onEnterMainView() {
+        //check if a game instance exists
+        if((Session.getCurrentGameInstance()==null)){
+            getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
+            return;
+        }
+
         //join the game
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
-            controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
+            controller.runCommand(Session.getCurrentGameInstance(),command );
             this.player=(DailySummaryDataPLayer)command.getPlayer();
 //            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
             //join the game if the user has not already done so

@@ -39,6 +39,8 @@ import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
+import org.investovator.ui.utils.Session;
+import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.awt.*;
@@ -77,6 +79,12 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
     @Override
     public void onEnter() {
+
+        //check if a game instance exists
+        if((Session.getCurrentGameInstance()==null)){
+            getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
+            return;
+        }
         //if this is first time entering this view
         if(this.graphs==null){
             this.graphs=new HashMap<>();
@@ -265,7 +273,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
             GetDataUpToTodayCommand command=new GetDataUpToTodayCommand(stock,
                     DataPlaybackEngineStates.gameStartDate,
                     attributes);
-            controller.runCommand(DataPlaybackEngineStates.gameInstance,command);
+            controller.runCommand(Session.getCurrentGameInstance(),command);
 
             StockTradingData stockTradingData = command.getResult();
 

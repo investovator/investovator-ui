@@ -45,6 +45,7 @@ import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.beans.PlayerInformationBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.text.SimpleDateFormat;
@@ -73,7 +74,7 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         //set the data player
         GetDataPlayerCommand command=new GetDataPlayerCommand();
         try {
-            controller.runCommand(DataPlaybackEngineStates.gameInstance, command);
+            controller.runCommand(Session.getCurrentGameInstance(), command);
             this.player=command.getPlayer();
             //add the UI elements
             addUIElements();

@@ -49,6 +49,8 @@ import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
+import org.investovator.ui.utils.Session;
+import org.investovator.ui.utils.UIConstants;
 
 /**
  * @author: ishan
@@ -124,13 +126,20 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
     @Override
     public void onEnterMainView() {
+
+        //check if a game instance exists
+        if((Session.getCurrentGameInstance()==null)){
+            getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
+            return;
+        }
+
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
 
 
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
-            controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
+            controller.runCommand(Session.getCurrentGameInstance(),command );
             this.player=(DailySummaryDataPLayer)command.getPlayer();
 
             //join the game if the user has not already done so

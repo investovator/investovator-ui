@@ -96,8 +96,8 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         //initialize the player via controller
         GameController controller= GameControllerImpl.getInstance();
         try {
-            DataPlaybackEngineStates.gameInstance=controller.createGameInstance(GameModes.PAYBACK_ENG);
-            Session.setCurrentGameInstance(DataPlaybackEngineStates.gameInstance);
+            Session.setCurrentGameInstance(controller.createGameInstance(GameModes.PAYBACK_ENG));
+            String gameId=Session.getCurrentGameInstance();
 
             //setup the game
 //            Object[] arr=new Object[6];
@@ -110,13 +110,13 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
             GameConfiguration config=new GameConfigurationImpl(DataPlaybackEngineStates.gameStartDate,
                     DataPlaybackEngineStates.playingSymbols,
-                    DataPlaybackEngineStates.isMultiplayer, Session.getCurrentGameInstance(),
+                    DataPlaybackEngineStates.isMultiplayer, gameId,
                    DataPlaybackEngineStates.gameConfig);
 
-            controller.setupGame(DataPlaybackEngineStates.gameInstance,new GameConfiguration[]{config});
+            controller.setupGame(gameId,new GameConfiguration[]{config});
 
             //start the game
-            controller.startGame(DataPlaybackEngineStates.gameInstance);
+            controller.startGame(gameId);
 
         } catch (GameCreationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
