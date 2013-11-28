@@ -1,5 +1,6 @@
 package org.investovator.ui.main;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
@@ -26,6 +27,8 @@ public class MyGamesPanel extends DashboardPanel {
     public void setLayout(){
 
         myGamesLayout = new VerticalLayout();
+        myGamesLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        myGamesLayout.setSpacing(true);
         myGamesLayout.setWidth("100%");
         myGamesLayout.setCaption("My Games");
         myGamesLayout.addStyleName("center-caption");

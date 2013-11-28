@@ -35,6 +35,10 @@ public class UserGameDetailsView extends GameDetailsView {
 
     public UserGameDetailsView(String instanceID, GameController controller) {
         super(instanceID, controller);
+        addStyleName("user-mygame-view");
+        setRatios(1,6,2);
+        setWidth("90%");
+
     }
 
     @Override
