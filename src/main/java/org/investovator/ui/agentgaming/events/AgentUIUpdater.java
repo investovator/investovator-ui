@@ -24,14 +24,13 @@ import net.sourceforge.jasa.agent.TradingAgent;
 import net.sourceforge.jasa.event.OrderPlacedEvent;
 import net.sourceforge.jasa.event.TransactionExecutedEvent;
 import net.sourceforge.jasa.market.Order;
-import org.investovator.controller.utils.events.GameEvent;
-import org.investovator.controller.utils.events.GameEventListener;
-import org.investovator.controller.utils.events.PortfolioChangedEvent;
+import org.investovator.agentsimulation.api.utils.HollowTradingAgent;
+import org.investovator.core.commons.events.GameEvent;
+import org.investovator.core.commons.events.GameEventListener;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.agentsimulation.api.utils.HollowTradingAgent;
 
 import java.util.ArrayList;
 
@@ -101,38 +100,38 @@ public class AgentUIUpdater implements EventListener {
 
                 String buyingUser = ((HollowTradingAgent) buyer).getUserName();
 
-                try {
-                    Portfolio buyerPortfolio = userData.getUserPortfolio(buyingUser);
-                    String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
-                    buyerPortfolio.boughtShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
-
-                    userData.updateUserPortfolio(buyingUser, buyerPortfolio);
-                    notifyListeners(new PortfolioChangedEvent(buyerPortfolio));
-
-                } catch (DataAccessException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Portfolio buyerPortfolio = userData.getUserPortfolio(buyingUser);
+//                    String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
+//                    buyerPortfolio.boughtShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
+//
+//                    userData.updateUserPortfolio(buyingUser, buyerPortfolio);
+//                    notifyListeners(new PortfolioChangedEvent(buyerPortfolio));
+//
+//                } catch (DataAccessException e) {
+//                    e.printStackTrace();
+//                }
             }
 
 
-            if (seller instanceof HollowTradingAgent) {
-
-                String sellingUser = ((HollowTradingAgent) seller).getUserName();
-
-                try {
-                    Portfolio sellerPortfolio = userData.getUserPortfolio(sellingUser);
-                    String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
-                    sellerPortfolio.soldShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
-
-                    userData.updateUserPortfolio(sellingUser, sellerPortfolio);
-                    notifyListeners(new PortfolioChangedEvent(sellerPortfolio));
-
-                } catch (DataAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
+//            if (seller instanceof HollowTradingAgent) {
+//
+//                String sellingUser = ((HollowTradingAgent) seller).getUserName();
+//
+//                try {
+//                    Portfolio sellerPortfolio = userData.getUserPortfolio(sellingUser);
+//                    String stockID = ((TransactionExecutedEvent) simEvent).getAuction().getStockID();
+//                    sellerPortfolio.soldShares(stockID, transactionEvent.getQuantity(), (float) transactionEvent.getPrice());
+//
+//                    userData.updateUserPortfolio(sellingUser, sellerPortfolio);
+//                    notifyListeners(new PortfolioChangedEvent(sellerPortfolio));
+//
+//                } catch (DataAccessException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
 
 
         if (simEvent instanceof OrderPlacedEvent) {
@@ -145,25 +144,25 @@ public class AgentUIUpdater implements EventListener {
                 String user = ((HollowTradingAgent) agent).getUserName();
                 Portfolio portfolio = null;
 
-                try {
-                    portfolio = userData.getUserPortfolio(user);
-
-                    if (((OrderPlacedEvent) simEvent).getOrder().isBid()) {
-                        portfolio.setCashBalance(portfolio.getCashBalance() - order.getPrice()*order.getQuantity());
-                        portfolio.setBlockedCash(portfolio.getBlockedCash() + order.getPrice()*order.getQuantity());
-                    } else {
-
-                    }
-
-                    userData.updateUserPortfolio(user, portfolio);
-                    notifyListeners(new PortfolioChangedEvent(portfolio));
-
-                } catch (DataAccessException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    portfolio = userData.getUserPortfolio(user);
+//
+//                    if (((OrderPlacedEvent) simEvent).getOrder().isBid()) {
+//                        portfolio.setCashBalance(portfolio.getCashBalance() - order.getPrice()*order.getQuantity());
+//                        portfolio.setBlockedCash(portfolio.getBlockedCash() + order.getPrice()*order.getQuantity());
+//                    } else {
+//
+//                    }
+//
+//                    userData.updateUserPortfolio(user, portfolio);
+//                    notifyListeners(new PortfolioChangedEvent(portfolio));
+//
+//                } catch (DataAccessException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
-
+        }
 
     }
 }

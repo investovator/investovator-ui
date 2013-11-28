@@ -746,4 +746,21 @@
     border-radius: 0;
   }
 
+  .admin-game-instance{
+    background:#F0F0F0;
+  }
+
+  .admin-game-create{
+    background: #C0C0C0;
+  }
+
+  .user-mygame-view{
+    background: #C0C0C0;
+    box-shadow: 0 0 1px black;
+    border-radius:5px;
+  }
+
+  .user-mygame-view .game-name{
+    font-size:15pt;
+  }
 }

@@ -51,6 +51,7 @@ public abstract class BasicGameOverWindow extends Window {
         this.username=username;
 
         setupUI();
+
     }
 
     public void setupUI(){

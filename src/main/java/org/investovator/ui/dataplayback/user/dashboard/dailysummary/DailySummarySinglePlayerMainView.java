@@ -27,16 +27,23 @@ import com.vaadin.ui.*;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
+import org.investovator.controller.command.exception.CommandExecutionException;
+import org.investovator.controller.command.exception.CommandSettingsException;
+import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
+import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.dataplaybackengine.events.PlaybackEvent;
+import org.investovator.core.data.exeptions.DataAccessException;
+//import org.investovator.dataplaybackengine.events.PlaybackEvent;
 import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.events.PlaybackFinishedEvent;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
+import org.investovator.dataplaybackengine.exceptions.GameFinishedException;
 import org.investovator.dataplaybackengine.exceptions.InvalidOrderException;
 import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
+import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
 import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
@@ -46,6 +53,8 @@ import org.investovator.ui.dataplayback.beans.PortfolioBean;
 import org.investovator.ui.dataplayback.beans.StockNamePriceBean;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.dataplayback.util.DataPlaybackGameOverWindow;
+import org.investovator.ui.utils.Session;
+import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 import java.util.Date;
@@ -303,12 +312,18 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 
     @Override
     public void onEnterMainView() {
+        //check if a game instance exists
+        if((Session.getCurrentGameInstance()==null)){
+            getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
+            return;
+        }
+
         //join the game
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
-           // controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
+            controller.runCommand(Session.getCurrentGameInstance(),command );
             this.player=(DailySummaryDataPLayer)command.getPlayer();
 //            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
             //join the game if the user has not already done so
@@ -328,9 +343,11 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 //        }
         catch (UserAlreadyJoinedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } //catch (CommandSettingsException e) {
-          //  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-       // }
+        } catch (CommandSettingsException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (CommandExecutionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     public Chart buildQuantityChart(){
@@ -590,7 +607,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
     }
 
     @Override
-    public void eventOccurred(PlaybackEvent arg) {
+    public void eventOccurred(GameEvent arg) {
         //if this is a stock price update
         if (arg instanceof StockUpdateEvent) {
             final StockUpdateEvent event = (StockUpdateEvent) arg;

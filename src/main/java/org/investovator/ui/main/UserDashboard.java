@@ -16,43 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.investovator.ui.utils;
+package org.investovator.ui.main;
 
-import com.vaadin.server.VaadinService;
+import com.vaadin.navigator.ViewChangeListener;
+import org.investovator.ui.utils.dashboard.BasicDashboard;
+import org.investovator.ui.utils.dashboard.DashboardPanel;
 
-import java.io.File;
+import java.util.LinkedHashMap;
 
 /**
  * @author Amila Surendra
  * @version $Revision
  */
-public class ConfigHelper {
+public class UserDashboard extends BasicDashboard {
 
-    static String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-
-
-    public static String getDatabaseConfigProperties(){
-        return basepath + "/WEB-INF/configuration/database.properties";
+    public UserDashboard(){
+        super("<span><center>Investovator</center></span>Dashboard");
     }
 
-    public static String getBasepath(){
-        return basepath;
+    @Override
+    public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+
     }
 
-    public static String getImagePath(){
-        return basepath +"/WEB-INF/images/";
+    @Override
+    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
+
+        LinkedHashMap<String, DashboardPanel> panels = new LinkedHashMap<>();
+        panels.put("my games", new MyGamesPanel());
+        return panels;
     }
-
-    public static String getUploadPath(){
-
-        String path = basepath + "/uploads/";
-
-        File folder = new File(path);
-        if(!folder.exists()){
-            folder.mkdir();
-        }
-
-        return path;
-    }
-
 }

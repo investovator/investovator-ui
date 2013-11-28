@@ -24,30 +24,30 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.time.DateUtils;
 import org.investovator.controller.GameController;
-//import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
-import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
-import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
+import org.investovator.dataplaybackengine.configuration.GameConfiguration;
+import org.investovator.dataplaybackengine.configuration.GameConfigurationImpl;
+import org.investovator.dataplaybackengine.configuration.GameTypes;
+import org.investovator.dataplaybackengine.configuration.GameTypesImpl;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
-import org.investovator.ui.dataplayback.gametype.GameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
+import org.investovator.ui.utils.Session;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
+
+//import org.investovator.controller.GameControllerFacade;
+//import org.investovator.ui.dataplayback.gametype.GameConfiguration;
+//import org.investovator.ui.dataplayback.gametype.GameTypes;
 
 /**
  * @author: ishan
@@ -90,21 +90,27 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         //initialize the player via controller
         GameController controller= GameControllerImpl.getInstance();
         try {
-            DataPlaybackEngineStates.gameInstance=controller.createGameInstance(GameModes.PAYBACK_ENG);
+            Session.setCurrentGameInstance(controller.createGameInstance(GameModes.PAYBACK_ENG));
+            String gameId=Session.getCurrentGameInstance();
 
             //setup the game
-            Object[] arr=new Object[6];
-            arr[0]=DataPlaybackEngineStates.gameConfig.getPlayerType();
-            arr[1]=DataPlaybackEngineStates.playingSymbols;
-            arr[2]=DataPlaybackEngineStates.gameStartDate;
-            arr[3]=DataPlaybackEngineStates.gameConfig.getInterestedAttributes();
-            arr[4]=DataPlaybackEngineStates.gameConfig.getAttributeToMatch();
-            arr[5]=DataPlaybackEngineStates.isMultiplayer;
+//            Object[] arr=new Object[6];
+//            arr[0]=DataPlaybackEngineStates.gameConfig.getPlayerType();
+//            arr[1]=DataPlaybackEngineStates.playingSymbols;
+//            arr[2]=DataPlaybackEngineStates.gameStartDate;
+//            arr[3]=DataPlaybackEngineStates.gameConfig.getInterestedAttributes();
+//            arr[4]=DataPlaybackEngineStates.gameConfig.getAttributeToMatch();
+//            arr[5]=DataPlaybackEngineStates.isMultiplayer;
 
-            controller.setupGame(DataPlaybackEngineStates.gameInstance,arr);
+            GameConfiguration config=new GameConfigurationImpl(DataPlaybackEngineStates.gameStartDate,
+                    DataPlaybackEngineStates.playingSymbols,
+                    DataPlaybackEngineStates.isMultiplayer, gameId,
+                   DataPlaybackEngineStates.gameConfig);
+
+            controller.setupGame(gameId,new GameConfiguration[]{config});
 
             //start the game
-            controller.startGame(DataPlaybackEngineStates.gameInstance);
+            controller.startGame(gameId);
 
         } catch (GameCreationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -197,7 +203,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             gameTypes.setMultiSelect(false);
             gameTypes.setHtmlContentAllowed(true);
 
-            for(GameTypes type:GameTypes.values()){
+            for(GameTypes type: GameTypesImpl.values()){
                 gameTypes.addItem(type);
                 gameTypes.setItemCaption(type,
                         type.getDescription());
@@ -205,7 +211,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
 
             //default item
-            gameTypes.select(GameTypes.values()[0]);
+            gameTypes.select(GameTypesImpl.values()[0]);
 
             //fire value change events immediately
             gameTypes.setImmediate(true);
@@ -222,7 +228,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
         @Override
         public boolean onAdvance() {
             //set the selected state
-            for(GameTypes type:GameTypes.values()){
+            for(GameTypes type:GameTypesImpl.values()){
                 if(gameTypes.getValue()==type){
                     DataPlaybackEngineStates.gameConfig=type;
                     break;

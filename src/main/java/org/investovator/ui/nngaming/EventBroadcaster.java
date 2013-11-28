@@ -37,6 +37,7 @@ import org.investovator.ui.nngaming.eventobjects.Order;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
+import org.investovator.ui.utils.Session;
 
 import java.util.EventListener;
 import java.util.*;
@@ -60,6 +61,7 @@ public class EventBroadcaster implements EventListener,Observer{
     private ArrayList<DataSeries> stockDataSeriesList;
     private UserData userData;
     private boolean tableUpdateStatus;
+    private String currentInstance;
 
     private EventBroadcaster(){
 
@@ -86,6 +88,7 @@ public class EventBroadcaster implements EventListener,Observer{
         }
 
         tableUpdateStatus = false;
+
     }
 
     public static EventBroadcaster getInstance() {
@@ -109,6 +112,8 @@ public class EventBroadcaster implements EventListener,Observer{
     }
 
     public void setEvent(Object object){
+
+        currentInstance = Session.getCurrentGameInstance();
 
         if(object instanceof Order) {
 
@@ -147,7 +152,7 @@ public class EventBroadcaster implements EventListener,Observer{
                         double blockedAmount = ((Order) object).getOrderPrice() * ((Order) object).getOrderStockCount();
                         double cashBalance = 0;
                         try {
-                            cashBalance = userData.getUserPortfolio(username).getCashBalance() - blockedAmount;
+                            cashBalance = userData.getUserPortfolio(currentInstance,username).getCashBalance() - blockedAmount;
                         } catch (DataAccessException e) {
                             e.printStackTrace();
                         }
@@ -155,7 +160,7 @@ public class EventBroadcaster implements EventListener,Observer{
                         Portfolio portfolio = new PortfolioImpl(username,cashBalance,blockedAmount);
 
                         try {
-                            userData.updateUserPortfolio(username, portfolio);
+                            userData.updateUserPortfolio(currentInstance,username, portfolio);
                         } catch (DataAccessException e) {
                             e.printStackTrace();
                         }
@@ -174,7 +179,7 @@ public class EventBroadcaster implements EventListener,Observer{
                         String username = (((Order) object).getUserName());
 
                         try {
-                            Portfolio portfolio = userData.getUserPortfolio(username);
+                            Portfolio portfolio = userData.getUserPortfolio(currentInstance,username);
                             String stockID = ((Order) object).getSelectedStock();
 
                             double balance = portfolio.getCashBalance();
@@ -196,7 +201,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
                             portfolio.setShares(shares);
 
-                            userData.updateUserPortfolio(username, portfolio);
+                            userData.updateUserPortfolio(currentInstance,username, portfolio);
                             notifyListeners(new PortfolioData(portfolio,true,username));
 
                         } catch (DataAccessException e) {
@@ -244,7 +249,7 @@ public class EventBroadcaster implements EventListener,Observer{
                         String stock = ((Order) object).getSelectedStock();
                         Portfolio portfolio = null;
                         try {
-                            portfolio = userData.getUserPortfolio(username);
+                            portfolio = userData.getUserPortfolio(currentInstance,username);
                         } catch (DataAccessException e) {
                             e.printStackTrace();
                         }
@@ -256,7 +261,7 @@ public class EventBroadcaster implements EventListener,Observer{
                         portfolio.setShares(shares);
 
                         try {
-                            userData.updateUserPortfolio(username, portfolio);
+                            userData.updateUserPortfolio(currentInstance,username, portfolio);
                         } catch (DataAccessException e) {
                             e.printStackTrace();
                         }
@@ -274,7 +279,7 @@ public class EventBroadcaster implements EventListener,Observer{
                         String userName = (((Order) object).getUserName());
 
                         try {
-                            Portfolio portfolio = userData.getUserPortfolio(userName);
+                            Portfolio portfolio = userData.getUserPortfolio(currentInstance,userName);
                             String stockID = ((Order) object).getSelectedStock();
 
                             double balance = portfolio.getCashBalance();
@@ -291,7 +296,7 @@ public class EventBroadcaster implements EventListener,Observer{
 
                             portfolio.setShares(shares);
 
-                            userData.updateUserPortfolio(userName, portfolio);
+                            userData.updateUserPortfolio(currentInstance,userName, portfolio);
                             notifyListeners(new PortfolioData(portfolio,true,userName));
 
                         } catch (DataAccessException e) {
@@ -727,7 +732,7 @@ public class EventBroadcaster implements EventListener,Observer{
         if(isBuy){
 
             try {
-                portfolio = userData.getUserPortfolio(username);
+                portfolio = userData.getUserPortfolio(currentInstance,username);
                 double userActualCash = portfolio.getCashBalance() + portfolio.getBlockedCash();
                 double orderAmount = order.getOrderPrice() * order.getOrderStockCount();
 
@@ -750,7 +755,7 @@ public class EventBroadcaster implements EventListener,Observer{
             HashMap<String, HashMap<String, Double>> shares;
             String stock = order.getSelectedStock();
             try {
-                portfolio = userData.getUserPortfolio(username);
+                portfolio = userData.getUserPortfolio(currentInstance, username);
                 shares = portfolio.getShares();
 
                 boolean hasStock = shares.containsKey(stock);

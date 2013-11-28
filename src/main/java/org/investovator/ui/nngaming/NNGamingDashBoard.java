@@ -19,6 +19,8 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
+import org.investovator.ui.utils.Session;
+import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -51,6 +53,9 @@ public class NNGamingDashBoard extends BasicDashboard{
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+
+        if(Session.getCurrentGameInstance() == null)
+            getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
 
     }
 }

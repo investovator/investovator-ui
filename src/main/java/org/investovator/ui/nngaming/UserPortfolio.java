@@ -30,6 +30,7 @@ import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.nngaming.beans.StockSummaryBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
+import org.investovator.ui.utils.Session;
 
 import java.util.HashMap;
 
@@ -51,12 +52,15 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     private double USERBLOCKEDCASH = 0.0;
 
     private EventBroadcaster eventBroadcaster;
+    private String currentInstance;
 
     public UserPortfolio() {
         setupUI();
 
         eventBroadcaster = EventBroadcaster.getInstance();
         eventBroadcaster.addListener(this);
+
+        currentInstance = Session.getCurrentGameInstance();
     }
 
     public void setupUI(){
@@ -103,7 +107,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         }
 
         try {
-            portfolio = userData.getUserPortfolio(currentUser);
+            portfolio = userData.getUserPortfolio(currentInstance,currentUser);
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -111,7 +115,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         if(portfolio == null) {
             try {
                 portfolio = new PortfolioImpl(currentUser, USERCASH, USERBLOCKEDCASH);
-                userData.updateUserPortfolio(currentUser, portfolio);
+                userData.updateUserPortfolio(currentInstance,currentUser, portfolio);
             } catch (DataAccessException e1) {
                 e1.printStackTrace();
             }
@@ -119,9 +123,9 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         try {
             currentUser = Authenticator.getInstance().getCurrentUser();
-            Double balance = userData.getUserPortfolio(currentUser).getCashBalance();
+            Double balance = userData.getUserPortfolio(currentInstance,currentUser).getCashBalance();
             accountBalance.setValue(String.format("%.2f", balance));
-            Double blocked = userData.getUserPortfolio(currentUser).getBlockedCash();
+            Double blocked = userData.getUserPortfolio(currentInstance,currentUser).getBlockedCash();
             blockedAmount.setValue(String.format("%.2f", blocked));
         } catch (DataAccessException e) {
             e.printStackTrace();
@@ -150,7 +154,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         try {
             UserData userData = new UserDataImpl();
-            Portfolio userPortfolio =   userData.getUserPortfolio(Authenticator.getInstance().getCurrentUser());
+            Portfolio userPortfolio =   userData.getUserPortfolio(currentInstance,Authenticator.getInstance().getCurrentUser());
             final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
 
             UI.getCurrent().access(new Runnable() {

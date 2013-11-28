@@ -18,29 +18,24 @@
 
 package org.investovator.ui.agentgaming.user.components;
 
-import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.ui.*;
-import net.sourceforge.jabm.event.EventListener;
-import net.sourceforge.jabm.event.SimEvent;
-import net.sourceforge.jasa.event.TransactionExecutedEvent;
-import org.investovator.controller.utils.events.GameEvent;
-import org.investovator.controller.utils.events.GameEventListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
+import org.investovator.core.commons.events.GameEvent;
+import org.investovator.core.commons.events.GameEventListener;
 import org.investovator.core.commons.utils.Portfolio;
-import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.authentication.Authenticator;
-
-import java.util.HashMap;
 
 /**
  * @author Amila Surendra
  * @version $Revision
  */
-public class PortfolioSummary extends HorizontalLayout implements GameEventListener{
+public class PortfolioSummary extends HorizontalLayout implements GameEventListener {
 
     //External Data
     UserData userData;
@@ -49,6 +44,7 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
     Label accountBalance;
     Label blockedAmount;
     Table stocksSummaryTable;
+    OrderView unmatchedOrders;
 
     public PortfolioSummary() {
         setupUI();
@@ -70,14 +66,25 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
 
         createStocksTable();
 
+        unmatchedOrders = new OrderView();
+        unmatchedOrders.setWidth("95%");
+        unmatchedOrders.setHeight("200px");
+        unmatchedOrders.setCaption("My Orders");
+
         VerticalLayout portSummary = new VerticalLayout();
+        portSummary.setHeight("100%");
+
+        portSummary.addComponent(stocksSummaryTable);
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
+        portSummary.setExpandRatio(stocksSummaryTable,2);
+        portSummary.setExpandRatio(accountBalance,0.5f);
+        portSummary.setExpandRatio(accountBalance,0.5f);
 
         this.addComponent(portSummary);
-        this.addComponent(stocksSummaryTable);
+        this.addComponent(unmatchedOrders);
         this.setExpandRatio(portSummary,1);
-        this.setExpandRatio(stocksSummaryTable,1);
+        this.setExpandRatio(unmatchedOrders,1);
     }
 
 
@@ -89,18 +96,28 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
             e.printStackTrace();
         }
 
-        try {
-            String currentUser = Authenticator.getInstance().getCurrentUser();
-            accountBalance.setValue(Double.toString(userData.getUserPortfolio(currentUser).getCashBalance()));
-            blockedAmount.setValue(Double.toString(userData.getUserPortfolio(currentUser).getBlockedCash()));
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            String currentUser = Authenticator.getInstance().getCurrentUser();
+//           // accountBalance.setValue(Double.toString(userData.getUserPortfolio(currentUser).getCashBalance()));
+//           // blockedAmount.setValue(Double.toString(userData.getUserPortfolio(currentUser).getBlockedCash()));
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//        }
 
         updateStocksTable();
+        unmatchedOrders.update();
 
     }
 
+
+    @Override
+    public void eventOccurred(GameEvent event) {
+        if (event instanceof PortfolioChangedEvent){
+            updatePortfolio(((PortfolioChangedEvent) event).getPortfolio());
+            updateStocksTable();
+            unmatchedOrders.update();
+        }
+    }
 
     public void updatePortfolio(Portfolio portfolio){
 
@@ -115,45 +132,37 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         }
     }
 
-    @Override
-    public void eventOccurred(GameEvent event) {
-        if (event instanceof PortfolioChangedEvent){
-            updatePortfolio(((PortfolioChangedEvent) event).getPortfolio());
-            updateStocksTable();
-        }
-    }
-
     private void updateStocksTable(){
 
         final BeanContainer<String, StockSummary> shownStocks = (BeanContainer<String, StockSummary>) stocksSummaryTable.getContainerDataSource();
 
 
-        try {
-            UserData userData = new UserDataImpl();
-            Portfolio userPortfolio =   userData.getUserPortfolio(Authenticator.getInstance().getCurrentUser());
-            final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
-
-            UI.getCurrent().access(new Runnable() {
-                @Override
-                public void run() {
-                    shownStocks.removeAllItems();
-
-                    for (String stock : shares.keySet()) {
-
-                        int quantity = shares.get(stock).get(Terms.QNTY).intValue();
-                        double avgPrice = shares.get(stock).get(Terms.PRICE);
-                        StockSummary tmp = new StockSummary(stock, quantity, avgPrice);
-
-                        shownStocks.addBean(tmp);
-                    }
-
-                    getUI().push();
-                }
-            });
-
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            UserData userData = new UserDataImpl();
+//           // Portfolio userPortfolio =   userData.getUserPortfolio(Authenticator.getInstance().getCurrentUser());
+//           // final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
+//
+//            UI.getCurrent().access(new Runnable() {
+//                @Override
+//                public void run() {
+//                    shownStocks.removeAllItems();
+//
+//                    for (String stock : shares.keySet()) {
+//
+//                        int quantity = shares.get(stock).get(Terms.QNTY).intValue();
+//                        double avgPrice = shares.get(stock).get(Terms.PRICE);
+//                        StockSummary tmp = new StockSummary(stock, quantity, avgPrice);
+//
+//                        shownStocks.addBean(tmp);
+//                    }
+//
+//                    getUI().push();
+//                }
+//            });
+//
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//        }
 
 
     }

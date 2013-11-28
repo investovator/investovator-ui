@@ -23,6 +23,8 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import org.investovator.controller.GameController;
+import org.investovator.controller.GameControllerImpl;
 import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
@@ -48,21 +50,25 @@ public class AdminDashboardLoader extends BasicDashboard{
     @Override
     public LinkedHashMap<String, DashboardPanel> getMenuItems() {
         LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
-        try{
-        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
-            if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
-//                Notification.show("Not implemented-load admin summary view");
+        //initialize the player via controller
+//        GameController controller= GameControllerImpl.getInstance();
 
-            }
-        }
-        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
-            if(DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
-//                Notification.show("Not implemented-load admin summary view");
-            }
-        }
-        }catch (PlayerStateException ex){
-            ex.printStackTrace();
-        }
+
+//        try{
+//        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
+//            if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
+////                Notification.show("Not implemented-load admin summary view");
+//
+//            }
+//        }
+//        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
+//            if(DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
+////                Notification.show("Not implemented-load admin summary view");
+//            }
+//        }
+//        }catch (PlayerStateException ex){
+//            ex.printStackTrace();
+//        }
 
 
 //        VerticalLayout panelContent2 = new VerticalLayout();
