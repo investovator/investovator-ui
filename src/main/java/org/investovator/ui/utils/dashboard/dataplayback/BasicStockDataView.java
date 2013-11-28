@@ -97,21 +97,25 @@ public abstract class BasicStockDataView extends DashboardPanel {
         HorizontalLayout components=new HorizontalLayout();
         components.setWidth("100%");
 
+        HorizontalLayout addChartComponents=new HorizontalLayout();
+        components.addComponent(addChartComponents);
+
         //create the stocks drop down list
          availableStocksList =new ComboBox();
-        components.addComponent(availableStocksList);
+        addChartComponents.addComponent(availableStocksList);
         availableStocksList.setImmediate(true);
 
-        availableStocksList.setCaption("Stock");
+//        availableStocksList.setCaption("Stock");
         availableStocksList.setNullSelectionAllowed(false);
         for(String stock: DataPlaybackEngineStates.playingSymbols){
             availableStocksList.addItem(stock);
         }
         availableStocksList.select(availableStocksList.getItemIds().toArray()[0]);
 
+        //available attributes list
         availableDataItems =new NativeSelect();
-        components.addComponent(availableDataItems);
-        availableDataItems.setCaption("Data: ");
+        addChartComponents.addComponent(availableDataItems);
+//        availableDataItems.setCaption("Data: ");
 
         for(TradingDataAttribute attr:setSelectableAttributes()){
             availableDataItems.addItem(attr);
@@ -123,7 +127,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
         //add chart button
         Button addChartButton=new Button("Add");
-        components.addComponent(addChartButton);
+        addChartComponents.addComponent(addChartButton);
         addChartButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -131,16 +135,20 @@ public abstract class BasicStockDataView extends DashboardPanel {
             }
         });
 
+        //Remove charts section
+        HorizontalLayout removeChartsComponents=new HorizontalLayout();
+        components.addComponent(removeChartsComponents);
+
         //plotted charts list
         this.plottedItemsList=new ComboBox();
-        components.addComponent(this.plottedItemsList);
+        removeChartsComponents.addComponent(this.plottedItemsList);
         this.plottedItemsList.setImmediate(true);
-        this.plottedItemsList.setCaption("Drawn Charts");
+//        this.plottedItemsList.setCaption("Drawn Charts");
         this.plottedItemsList.setNullSelectionAllowed(true);
 
         //remove plot button
         Button removeChartButton=new Button("Remove");
-        components.addComponent(removeChartButton);
+        removeChartsComponents.addComponent(removeChartButton);
         removeChartButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -150,7 +158,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
         //clear all button
         Button clearAllButton=new Button("Clear All");
-        components.addComponent(clearAllButton);
+        removeChartsComponents.addComponent(clearAllButton);
 
         clearAllButton.addClickListener(new Button.ClickListener() {
             @Override
@@ -158,6 +166,11 @@ public abstract class BasicStockDataView extends DashboardPanel {
                 clearTimeline();
             }
         });
+
+        //set the alignments
+        components.setComponentAlignment(addChartComponents,Alignment.MIDDLE_CENTER);
+        components.setComponentAlignment(removeChartsComponents,Alignment.MIDDLE_CENTER);
+        components.setHeight(50,Unit.PIXELS);
 
 
 
@@ -168,7 +181,7 @@ public abstract class BasicStockDataView extends DashboardPanel {
         Timeline timeline=new Timeline();
 
         timeline.setSizeFull();
-        timeline.setHeight(625,Unit.PIXELS);
+        timeline.setHeight(630,Unit.PIXELS);
 //        timeline.setWidth(100,Unit.PERCENTAGE);
         timeline.setId("timeline");
         timeline.setUniformBarThicknessEnabled(true);
@@ -256,10 +269,6 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
             StockTradingData stockTradingData = command.getResult();
 
-//            StockTradingData stockTradingData= DataPlayerFacade.getInstance().getDataUpToToday(
-//                    availableStocksList.getValue().toString(),DataPlaybackEngineStates.gameStartDate,
-//                    attributes);
-
             //add the data
             //sort first
             Collection<Date> unsorted = stockTradingData.getTradingData().keySet();
@@ -285,13 +294,6 @@ public abstract class BasicStockDataView extends DashboardPanel {
 
             }
         }
-//        catch (DataAccessException e) {
-//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//            e.printStackTrace();
-//        } catch (DataNotFoundException e) {
-//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//            e.printStackTrace();
-//        }
         catch (CommandSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (CommandExecutionException e) {
@@ -301,25 +303,6 @@ public abstract class BasicStockDataView extends DashboardPanel {
         return container;
     }
 
-//    public  void updateChart(){
-//
-//        mainChart.removeAllGraphDataSources();
-//
-//        //recreate a data source
-//        IndexedContainer data;
-//        data = createIndexedContainer();
-////
-//        // Add data sources
-//        mainChart.addGraphDataSource(data,Timeline.PropertyId.TIMESTAMP,Timeline.PropertyId.VALUE);
-//        mainChart.setGraphCaption(data, "Stock");
-//        mainChart.setGraphOutlineColor(data, new Color(0x00, 0xb4, 0xf0));
-//        mainChart.setGraphFillColor(data, null);
-//        mainChart.setVerticalAxisLegendUnit(data, "Price");
-//
-////        mainChart.setImmediate(true);
-//
-//
-//    }
 
     /**
      * Adds the current selected
