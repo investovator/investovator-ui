@@ -53,7 +53,7 @@ public class DataPlaybackGameOverWindow extends BasicGameOverWindow{
         GetDataPlayerCommand command=new GetDataPlayerCommand();
         try {
             controller.runCommand(DataPlaybackEngineStates.gameInstance,command );
-            DataPlayer player=(DailySummaryDataPLayer)command.getPlayer();
+            DataPlayer player=command.getPlayer();
             ArrayList<Portfolio> portfolios=player.getAllPortfolios();
             return  portfolios.toArray(new Portfolio[portfolios.size()]);
         } catch (CommandSettingsException e) {

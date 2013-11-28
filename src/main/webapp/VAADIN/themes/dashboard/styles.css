@@ -6166,33 +6166,20 @@ body .dashboard.v-app .v-app-loading {
 	border-radius: 0;
 }
 
-
-.dashboard .admin-game-instance{
-    background:#F0F0F0;
-    outline-style:gradient;
+.dashboard .admin-game-instance {
+	background: #F0F0F0;
 }
 
-.dashboard .admin-game-create{
-    background: #C0C0C0;
+.dashboard .admin-game-create {
+	background: #C0C0C0;
 }
 
-
-.dashboard .admin-game-instance{
-    background:#F0F0F0;
+.dashboard .user-mygame-view {
+	background: #C0C0C0;
+	box-shadow: 0 0 1px black;
+	border-radius: 5px;
 }
 
-.dashboard .admin-game-create{
-    background: #C0C0C0;
+.dashboard .user-mygame-view .game-name {
+	font-size: 15pt;
 }
-
-.dashboard .user-mygame-view{
-    background: #C0C0C0;
-    box-shadow: 0 0 1px black;
-    border-radius:5px;
-}
-
-.dashboard .user-mygame-view .game-name{
-    font-size:15pt;
-}
-
-
