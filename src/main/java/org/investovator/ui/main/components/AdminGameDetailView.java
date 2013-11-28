@@ -22,6 +22,9 @@ public class AdminGameDetailView extends GameDetailsView {
 
     public AdminGameDetailView(String instanceID, GameController controller) {
         super(instanceID, controller);
+        setWidth("90%");
+        addStyleName("admin-game-instance");
+        setRatios(1,6,2);
     }
 
     @Override

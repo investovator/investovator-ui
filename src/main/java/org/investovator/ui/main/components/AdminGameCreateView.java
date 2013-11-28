@@ -36,9 +36,10 @@ public class AdminGameCreateView extends GameDetailsView {
 
     public AdminGameCreateView(GameModes gameMode, GameController controller) {
         super(gameMode, controller);
-        setWidth("100%");
+        setWidth("90%");
         setCaption(getCaption(gameMode));
         addStyleName("center-caption");
+        addStyleName("admin-game-create");
     }
 
 
@@ -62,9 +63,20 @@ public class AdminGameCreateView extends GameDetailsView {
     @Override
     public String getDescription() {
         switch (gameMode){
-            case AGENT_GAME: return "Generic description of agent based game";
-            case NN_GAME: return "Generic description of NN based game";
-            case PAYBACK_ENG: return "Generic description of playback engine based game";
+            case AGENT_GAME: return "This game mode allows users to play with set of configured artificial players " +
+                    "along with other human players. The admin can configure the behaviour of the game using different " +
+                    "agent populations in the configuration window. This game mode allows the user to get full stock " +
+                    "market trading experience and test trading strategies with set of intelligent players.";
+
+            case NN_GAME: return "Generic NN based game - description description description description description " +
+                    "description description description description description description description description " +
+                    "description description description description description description description " +
+                    "description description description";
+
+            case PAYBACK_ENG: return "Generic playback engine based game - description description description description " +
+                    "description description description description description description description description " +
+                    "description description description description description description description description " +
+                    "description description description";
         }
         return null;
     }

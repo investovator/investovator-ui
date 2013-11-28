@@ -6165,3 +6165,22 @@ body .dashboard.v-app .v-app-loading {
 	-moz-border-radius: 0;
 	border-radius: 0;
 }
+
+
+.dashboard .admin-game-instance{
+    background:#F0F0F0;
+    outline-style:gradient;
+}
+
+.dashboard .admin-game-create{
+    background: #C0C0C0;
+}
+
+
+.dashboard .admin-game-instance{
+    background:#F0F0F0;
+}
+
+.dashboard .admin-game-create{
+    background: #C0C0C0;
+}

@@ -39,7 +39,7 @@ public abstract class GameDetailsView extends HorizontalLayout {
     protected GameModes gameMode;
 
     private Image gameImage;
-    private VerticalLayout buttonLayout;
+    private HorizontalLayout buttonLayout;
     private VerticalLayout descriptionLayout;
 
     private Label nameLabel;
@@ -60,10 +60,12 @@ public abstract class GameDetailsView extends HorizontalLayout {
 
     private void setupLayout(){
 
+        setMargin(true);
+
         gameImage = getImage();
 
 
-        buttonLayout = new VerticalLayout();
+        buttonLayout = new HorizontalLayout();
         for(Button button : getButtons()){
             buttonLayout.addComponent(button);
         }
@@ -87,6 +89,16 @@ public abstract class GameDetailsView extends HorizontalLayout {
         this.setComponentAlignment(descriptionLayout,Alignment.MIDDLE_LEFT);
         this.setComponentAlignment(buttonLayout,Alignment.MIDDLE_CENTER);
 
+        this.setExpandRatio(gameImage,1);
+        this.setExpandRatio(descriptionLayout,5);
+        this.setExpandRatio(buttonLayout,1);
+
+    }
+
+    public void setRatios(float icon, float description, float button){
+        this.setExpandRatio(gameImage,icon);
+        this.setExpandRatio(descriptionLayout,description);
+        this.setExpandRatio(buttonLayout,button);
     }
 
     public String getName(){

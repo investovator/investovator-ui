@@ -1,5 +1,6 @@
 package org.investovator.ui.main;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.MyVaadinUI;
@@ -33,7 +34,9 @@ public class MainGamingView extends DashboardPanel {
 
     public MainGamingView() {
         setSizeFull();
-        content.setSizeFull();
+        content.setSizeUndefined();
+        content.setWidth("100%");
+        content.setDefaultComponentAlignment(Alignment.TOP_CENTER);
         setWindowContent();
         this.setContent(content);
     }
@@ -44,8 +47,13 @@ public class MainGamingView extends DashboardPanel {
     private void setWindowContent() {
 
         agentView = new VerticalLayout();
+        agentView.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+
         nnView = new VerticalLayout();
+        nnView.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+
         playbackView = new VerticalLayout();
+        playbackView.setDefaultComponentAlignment(Alignment.TOP_CENTER);
 
         content.addComponent(new AdminGameCreateView(GameModes.AGENT_GAME, controller));
         content.addComponent(agentView);
