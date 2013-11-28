@@ -68,6 +68,10 @@ public class MainGamingView extends DashboardPanel {
     @Override
     public void onEnter() {
 
+        nnView.removeAllComponents();
+        agentView.removeAllComponents();
+        playbackView.removeAllComponents();
+
         //if not logged in
         if (!Authenticator.getInstance().isLoggedIn()) {
             ((MyVaadinUI) MyVaadinUI.getCurrent()).getNavigator().navigateTo("");
