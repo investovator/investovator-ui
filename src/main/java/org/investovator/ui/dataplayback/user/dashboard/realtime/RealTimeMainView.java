@@ -212,7 +212,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void onEnterMainView() {
 
         //check if a game instance exists
-        if((Session.getCurrentGameInstance()!=null)){
+        if((Session.getCurrentGameInstance()==null)){
             getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
             return;
         }
