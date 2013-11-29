@@ -25,7 +25,6 @@ import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.ui.utils.ConfigHelper;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

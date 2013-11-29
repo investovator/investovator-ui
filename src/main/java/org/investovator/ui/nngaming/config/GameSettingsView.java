@@ -18,7 +18,10 @@
 
 package org.investovator.ui.nngaming.config;
 
-import com.vaadin.ui.Component;
+import com.vaadin.data.Property;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.slider.SliderOrientation;
+import com.vaadin.ui.*;
 import org.vaadin.teemu.wizards.WizardStep;
 
 /**
@@ -26,23 +29,107 @@ import org.vaadin.teemu.wizards.WizardStep;
  * @version: ${Revision}
  */
 public class GameSettingsView implements WizardStep {
+
+    Label daysSliderValue = new Label();
+    Label speedSliderValue = new Label();
+    Slider daysSlider = new Slider(1, 20);
+    Slider speedSlider = new Slider(1,5);
+    HorizontalLayout speedLayout = new HorizontalLayout();
+    HorizontalLayout daysLayout = new HorizontalLayout();
+
+    double daysCount;
+    double speedFactor;
+
+    VerticalLayout content;
+
+    public GameSettingsView(){
+;
+        daysSlider.setOrientation(SliderOrientation.HORIZONTAL);
+        daysSlider.setCaption("Select Game Duration");
+        daysSlider.setResolution(0);
+        daysSlider.setWidth(90, Sizeable.Unit.MM);
+        daysSlider.setValue(new Double(1));
+        daysSlider.setImmediate(true);
+        daysSlider.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                final Double value = Double.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue()));
+                daysCount = value;
+                daysSliderValue.setValue(String.valueOf(value)+" Days");
+            }
+        });
+
+        speedSlider.setOrientation(SliderOrientation.HORIZONTAL);
+        speedSlider.setCaption("Select Game Speed");
+        speedSlider.setResolution(0);
+        speedSlider.setWidth(90, Sizeable.Unit.MM);
+        speedSlider.setValue(new Double(1));
+        speedSlider.setImmediate(true);
+        speedSlider.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                final Double value = (Double) valueChangeEvent.getProperty().getValue();
+                speedFactor = value;
+                speedSliderValue.setValue(String.valueOf(value)+"X");
+            }
+        });
+
+        daysSliderValue.setValue("1 Day");
+        daysSliderValue.setImmediate(true);
+
+        speedSliderValue.setValue("1X");
+        speedSliderValue.setImmediate(true);
+
+        speedLayout.addComponent(speedSlider);
+        speedLayout.addComponent(speedSliderValue);
+        speedLayout.setSpacing(true);
+        speedLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        speedLayout.setMargin(true);
+
+        daysLayout.addComponent(daysSlider);
+        daysLayout.addComponent(daysSliderValue);
+        daysLayout.setSpacing(true);
+        daysLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        daysLayout.setMargin(true);
+
+        VerticalLayout finalLayout = new VerticalLayout();
+        finalLayout.addComponent(daysLayout);
+        finalLayout.addComponent(speedLayout);
+        finalLayout.setMargin(true);
+
+        content = new VerticalLayout();
+        content.addComponent(finalLayout);
+        content.setComponentAlignment(finalLayout, Alignment.MIDDLE_CENTER);
+
+    }
+
+
+
     @Override
     public String getCaption() {
-        return null;
+        return "Game Settings";
     }
 
     @Override
     public Component getContent() {
-        return null;
+        return content;
     }
 
     @Override
     public boolean onAdvance() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean onBack() {
-        return false;
+        return true;
+    }
+
+    public double getDaysCount(){
+        return daysCount;
+    }
+
+    public double getSpeedFactor(){
+        return speedFactor;
     }
 }

@@ -19,10 +19,14 @@
 package org.investovator.ui.nngaming.config;
 
 import com.vaadin.data.Property;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
-import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.core.data.api.CompanyData;
+import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.exeptions.DataAccessException;
 import org.vaadin.teemu.wizards.WizardStep;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -31,24 +35,21 @@ import java.util.Set;
  * @version: ${Revision}
  */
 public class ParameterSelectView implements WizardStep{
-    String[] selectedParameters = null;
-    Boolean addNewParamStatus;
 
     TwinColSelect parameterSelectList;
-
     VerticalLayout content;
+
+    private ArrayList<String> selectedParameters = null;
+    private ArrayList<String> stockIDList;
+
+    private CompanyData companyData;
 
 
     public ParameterSelectView() {
-        addNewParamStatus = false;
 
-        parameterSelectList = new TwinColSelect("Select Input Parameters for Game");
-        parameterSelectList.addItem(TradingDataAttribute.HIGH_PRICE.toString());
-        parameterSelectList.addItem(TradingDataAttribute.LOW_PRICE.toString());
-        parameterSelectList.addItem(TradingDataAttribute.CLOSING_PRICE.toString());
-        parameterSelectList.addItem(TradingDataAttribute.SHARES.toString());
-        parameterSelectList.addItem(TradingDataAttribute.TRADES.toString());
-        parameterSelectList.addItem(TradingDataAttribute.TURNOVER.toString());
+        parameterSelectList = new TwinColSelect("Select Analysis Parameters for Game");
+        parameterSelectList.setHeight(28, Sizeable.Unit.MM);
+        parameterSelectList.setNullSelectionAllowed(false);
 
         parameterSelectList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -56,14 +57,11 @@ public class ParameterSelectView implements WizardStep{
 
                 Set<String> results = (Set<String>) valueChangeEvent.getProperty().getValue();
 
-                selectedParameters = new String[results.size()];
-
-                int i = 0;
+                selectedParameters = new ArrayList<>();
 
                 for (Iterator<String> iterator = results.iterator(); iterator.hasNext(); ) {
                     String next = iterator.next();
-                    selectedParameters[i] = next;
-                    i++;
+                    selectedParameters.add(next.substring(0,next.indexOf(" ")));
                 }
 
             }
@@ -71,11 +69,39 @@ public class ParameterSelectView implements WizardStep{
 
         content = new VerticalLayout();
         content.addComponents(parameterSelectList);
+        content.setComponentAlignment(parameterSelectList, Alignment.MIDDLE_CENTER);
+        content.setMargin(true);
+    }
+
+    public void update(){
+
+        parameterSelectList.removeAllItems();
+
+        try {
+            companyData = new CompanyDataImpl();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            stockIDList = companyData.getAvailableStockIds();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
+        for (Iterator<String> iterator = stockIDList.iterator(); iterator.hasNext(); ) {
+
+            String next = iterator.next();
+            parameterSelectList.addItem(next+" "+"Stock Price");
+
+        }
+
+        parameterSelectList.setValue(stockIDList.get(0)+" "+"Stock Price");
     }
 
     @Override
     public String getCaption() {
-        return "Select Input Parameters";
+        return "Select Analysis Parameters";
     }
 
     @Override
@@ -87,7 +113,7 @@ public class ParameterSelectView implements WizardStep{
     public boolean onAdvance() {
         if(selectedParameters == null)
         {
-            Notification.show("Please Select Input Parameters", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Please Select Analysis Parameters", Notification.Type.TRAY_NOTIFICATION);
             return false;
         }
         else{
@@ -97,10 +123,10 @@ public class ParameterSelectView implements WizardStep{
 
     @Override
     public boolean onBack() {
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
-    public String[] getSelectedParameters(){
+    public ArrayList<String> getSelectedParameters(){
         return selectedParameters;
     }
 }

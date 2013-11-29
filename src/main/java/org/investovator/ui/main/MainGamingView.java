@@ -1,19 +1,14 @@
 package org.investovator.ui.main;
 
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.MyVaadinUI;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.utils.enums.GameModes;
-import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.ui.authentication.Authenticator;
-import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.main.components.AdminGameCreateView;
 import org.investovator.ui.main.components.AdminGameDetailView;
-import org.investovator.ui.main.components.UserGameDetailsView;
-import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 /**

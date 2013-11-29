@@ -1,5 +1,6 @@
 package org.investovator;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -9,21 +10,19 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.UI;
-import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.agentgaming.user.AgentDashboard;
 import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.dataplayback.admin.dashboard.AdminDashboardLoader;
 import org.investovator.ui.dataplayback.user.dashboard.UserDashboardLoader;
 import org.investovator.ui.main.AgentConfigDashboard;
-//import org.investovator.ui.nngaming.NNGamingDashBoard;
-//import org.investovator.ui.nngaming.config.NNGamingView;
+import org.investovator.ui.nngaming.NNGamingDashBoard;
 import org.investovator.ui.main.UserDashboard;
 import org.investovator.ui.utils.UIConstants;
 
 import javax.servlet.annotation.WebServlet;
 
 @Theme("dashboard")
-//@PreserveOnRefresh
+@PreserveOnRefresh
 @SuppressWarnings("serial")
 @Push(PushMode.MANUAL)
 public class MyVaadinUI extends UI
@@ -64,7 +63,7 @@ public class MyVaadinUI extends UI
         navigator.addView(UIConstants.MAINVIEW, new AgentConfigDashboard());
         navigator.addView(UIConstants.DATAPLAY_USR_DASH, new UserDashboardLoader());
         navigator.addView(UIConstants.DATA_PLAYBACK_ADMIN_DASH,new AdminDashboardLoader());
-//        navigator.addView(UIConstants.NN_DASH_VIEW, new NNGamingDashBoard());
+        navigator.addView(UIConstants.NN_DASH_VIEW, new NNGamingDashBoard());
         navigator.addView(UIConstants.AGENT_DASH_VIEW, new AgentDashboard());
         navigator.addView(UIConstants.USER_VIEW, new UserDashboard());
 

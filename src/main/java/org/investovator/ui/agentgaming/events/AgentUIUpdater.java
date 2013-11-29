@@ -24,6 +24,7 @@ import net.sourceforge.jasa.agent.TradingAgent;
 import net.sourceforge.jasa.event.OrderPlacedEvent;
 import net.sourceforge.jasa.event.TransactionExecutedEvent;
 import net.sourceforge.jasa.market.Order;
+import org.investovator.agentsimulation.api.utils.HollowTradingAgent;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.events.GameEventListener;
@@ -164,7 +165,7 @@ public class AgentUIUpdater implements EventListener {
                 }
             }
         }
-
+        }
 
     }
-}
+

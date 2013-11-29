@@ -1,10 +1,7 @@
 package org.investovator.ui.agentgaming.user;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.*;
 import org.investovator.agentsimulation.api.JASAFacade;
-import org.investovator.ann.nngaming.util.GameTypes;
-import org.investovator.controller.GameFacade;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.core.data.api.UserData;

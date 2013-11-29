@@ -18,12 +18,8 @@
 
 package org.investovator.ui.agentgaming.user.components;
 
-import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
-import net.sourceforge.jabm.event.EventListener;
-import net.sourceforge.jabm.event.SimEvent;
-import net.sourceforge.jasa.event.TransactionExecutedEvent;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.events.GameEventListener;
@@ -36,6 +32,7 @@ import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.Session;
 
 import java.util.HashMap;
+
 
 /**
  * @author Amila Surendra
@@ -169,7 +166,6 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
-
 
     }
 

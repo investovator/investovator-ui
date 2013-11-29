@@ -23,6 +23,7 @@ import org.investovator.controller.GameController;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
+import org.investovator.ui.nngaming.config.NNGamingView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +69,10 @@ public class AdminGameCreateView extends GameDetailsView {
                     "agent populations in the configuration window. This game mode allows the user to get full stock " +
                     "market trading experience and test trading strategies with set of intelligent players.";
 
-            case NN_GAME: return "Generic NN based game - description description description description description " +
-                    "description description description description description description description description " +
-                    "description description description description description description description " +
-                    "description description description";
+            case NN_GAME: return "This game mode allows users to play in a virtual market based on Neural Networks. " +
+                    "This is a multi player game where users are allowed to join a running game at any instance. The game " +
+                    "creator can configure a game with several parameters. Users can analyse the dependencies among stocks using " +
+                    "the provided Stock Analysis View.";
 
             case PAYBACK_ENG: return "This game mode allows the users to play back past data sets of users' convenience. "+
                     "The game creator can select the securities he desires and select a start date. The game modes can "+
@@ -108,7 +109,7 @@ public class AdminGameCreateView extends GameDetailsView {
                 startAgentCreateWizard();
                 break;
             case NN_GAME:
-                Notification.show("Add Methods to NN creation");
+                startNNCreateWizard();
                 break;
         }
 
@@ -165,6 +166,30 @@ public class AdminGameCreateView extends GameDetailsView {
             @Override
             public void windowClose(Window.CloseEvent closeEvent) {
                 //getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                getUI().getPage().reload();
+            }
+        });
+
+        // Add it to the root component
+        UI.getCurrent().addWindow(subWindow);
+
+    }
+
+    private void startNNCreateWizard() {
+        NNGamingView subWindow = new NNGamingView("Create New Game");
+
+        // set window characteristics
+        subWindow.setHeight("50%");
+        subWindow.setWidth("40%");
+        subWindow.center();
+        subWindow.setClosable(false);
+        subWindow.setDraggable(false);
+        subWindow.setResizable(false);
+        subWindow.setModal(true);
+
+        subWindow.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
                 getUI().getPage().reload();
             }
         });

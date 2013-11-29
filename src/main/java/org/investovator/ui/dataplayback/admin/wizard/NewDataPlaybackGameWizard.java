@@ -24,36 +24,30 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.time.DateUtils;
 import org.investovator.controller.GameController;
-//import org.investovator.controller.GameControllerFacade;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
-import org.investovator.core.data.api.utils.TradingDataAttribute;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.configuration.GameConfiguration;
 import org.investovator.dataplaybackengine.configuration.GameConfigurationImpl;
 import org.investovator.dataplaybackengine.configuration.GameTypes;
 import org.investovator.dataplaybackengine.configuration.GameTypesImpl;
-import org.investovator.dataplaybackengine.exceptions.GameAlreadyStartedException;
-import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.dataplaybackengine.utils.StockUtils;
-//import org.investovator.ui.dataplayback.gametype.GameConfiguration;
-//import org.investovator.ui.dataplayback.gametype.GameTypes;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.Session;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
+
+//import org.investovator.controller.GameControllerFacade;
+//import org.investovator.ui.dataplayback.gametype.GameConfiguration;
+//import org.investovator.ui.dataplayback.gametype.GameTypes;
 
 /**
  * @author: ishan
