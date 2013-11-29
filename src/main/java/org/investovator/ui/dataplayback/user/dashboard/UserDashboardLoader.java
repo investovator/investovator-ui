@@ -22,6 +22,7 @@ package org.investovator.ui.dataplayback.user.dashboard;
 import com.vaadin.navigator.ViewChangeListener;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.analysis.AnalysisPanel;
+import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryDecisionMakingPanel;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryMultiPlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryStockDataView;
@@ -30,7 +31,6 @@ import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeStockDat
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
-import org.investovator.ui.utils.dashboard.dataplayback.BasicStockDataView;
 
 import java.util.LinkedHashMap;
 
@@ -55,6 +55,7 @@ public class UserDashboardLoader extends BasicDashboard {
                 map.put("main view", new DailySummaryMultiPlayerMainView());
                 map.put("stocks", new DailySummaryStockDataView());
                 map.put("analysis", new AnalysisPanel());
+                map.put("decision maker",new DailySummaryDecisionMakingPanel());
 
 
             }
@@ -62,6 +63,8 @@ public class UserDashboardLoader extends BasicDashboard {
                 map.put("main view", new DailySummarySinglePlayerMainView());
                 map.put("stocks", new DailySummaryStockDataView());
                 map.put("analysis", new AnalysisPanel());
+                map.put("decision maker",new DailySummaryDecisionMakingPanel());
+
 
             }
         }
@@ -70,6 +73,8 @@ public class UserDashboardLoader extends BasicDashboard {
             map.put("main view", new RealTimeMainView());
             map.put("stocks", new RealTimeStockDataView());
             map.put("analysis", new AnalysisPanel());
+//            map.put("decision maker",new DailySummaryDecisionMakingPanel());
+
 
         }
 
