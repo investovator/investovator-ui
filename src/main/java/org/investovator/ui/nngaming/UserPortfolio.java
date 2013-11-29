@@ -20,7 +20,6 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
-import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
@@ -30,6 +29,8 @@ import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.nngaming.beans.StockSummaryBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
+import org.investovator.ui.nngaming.eventobjects.PortfolioData;
+import org.investovator.ui.utils.Session;
 
 import java.util.HashMap;
 
@@ -51,19 +52,24 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     private double USERBLOCKEDCASH = 0.0;
 
     private EventBroadcaster eventBroadcaster;
+    private String currentInstance;
 
     public UserPortfolio() {
+
+        currentInstance = Session.getCurrentGameInstance();
+
         setupUI();
 
         eventBroadcaster = EventBroadcaster.getInstance();
         eventBroadcaster.addListener(this);
+
+
     }
 
     public void setupUI(){
 
         this.setWidth("100%");
         this.setHeight("100%");
-        this.setCaption("Portfolio Summary");
         addStyleName("center-caption");
 
 
@@ -103,7 +109,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         }
 
         try {
-            portfolio = userData.getUserPortfolio(currentUser);
+            portfolio = userData.getUserPortfolio(currentInstance,currentUser);
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -111,7 +117,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         if(portfolio == null) {
             try {
                 portfolio = new PortfolioImpl(currentUser, USERCASH, USERBLOCKEDCASH);
-                userData.updateUserPortfolio(currentUser, portfolio);
+                userData.updateUserPortfolio(currentInstance,currentUser, portfolio);
             } catch (DataAccessException e1) {
                 e1.printStackTrace();
             }
@@ -119,9 +125,9 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         try {
             currentUser = Authenticator.getInstance().getCurrentUser();
-            Double balance = userData.getUserPortfolio(currentUser).getCashBalance();
+            Double balance = userData.getUserPortfolio(currentInstance,currentUser).getCashBalance();
             accountBalance.setValue(String.format("%.2f", balance));
-            Double blocked = userData.getUserPortfolio(currentUser).getBlockedCash();
+            Double blocked = userData.getUserPortfolio(currentInstance,currentUser).getBlockedCash();
             blockedAmount.setValue(String.format("%.2f", blocked));
         } catch (DataAccessException e) {
             e.printStackTrace();
@@ -150,7 +156,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         try {
             UserData userData = new UserDataImpl();
-            Portfolio userPortfolio =   userData.getUserPortfolio(Authenticator.getInstance().getCurrentUser());
+            Portfolio userPortfolio =   userData.getUserPortfolio(currentInstance,Authenticator.getInstance().getCurrentUser());
             final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
 
             UI.getCurrent().access(new Runnable() {
@@ -161,8 +167,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
                     for (String stock : shares.keySet()) {
 
                         int quantity = shares.get(stock).get(Terms.QNTY).intValue();
-                        double avgPrice = shares.get(stock).get(Terms.PRICE);
-                        StockSummaryBean tmp = new StockSummaryBean(stock, quantity, avgPrice);
+                        StockSummaryBean tmp = new StockSummaryBean(stock, quantity);
 
                         shownStocks.addBean(tmp);
                     }
@@ -193,9 +198,8 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         stocksSummaryTable.setColumnHeader("stockID", "Stock");
         stocksSummaryTable.setColumnHeader("stocks", "Shares");
-        stocksSummaryTable.setColumnHeader("value", "Total Value");
 
-        stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks","value"});
+        stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks"});
 
 
         updateStocksTable();
@@ -204,9 +208,24 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     @Override
     public void onBroadcast(Object object) {
 
-        if (object instanceof PortfolioChangedEvent){
-            updatePortfolio(((PortfolioChangedEvent) object).getPortfolio());
-            updateStocksTable();
+        String userName = Authenticator.getInstance().getCurrentUser();
+
+        if (object instanceof PortfolioData){
+
+            if(((PortfolioData) object).getUserName().equals(userName)){
+
+                if(((PortfolioData) object).isOrderExecuted()){
+                    updatePortfolio(((PortfolioData) object).getPortfolio());
+                    updateStocksTable();
+                }
+                else {
+                    updatePortfolio(((PortfolioData) object).getPortfolio());
+                }
+            }
+            else {
+                return;
+            }
+
         }
 
     }

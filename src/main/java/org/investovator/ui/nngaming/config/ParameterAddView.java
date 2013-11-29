@@ -18,13 +18,13 @@
 
 package org.investovator.ui.nngaming.config;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.*;
-import org.vaadin.easyuploads.UploadField;
+import org.investovator.ui.utils.ConfigHelper;
 import org.vaadin.teemu.wizards.WizardStep;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 
@@ -32,44 +32,75 @@ import java.util.HashMap;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class ParameterAddView implements WizardStep, Upload.SucceededListener, Upload.Receiver {
+public class ParameterAddView implements WizardStep, Upload.SucceededListener {
 
-    HashMap<String, String> newParameters;
+    private HashMap<String, String> newParameters;
 
-    UploadField upload;
-    Label newParam;
-    Label dataSet;
-    TextField newParamField;
+    private Upload upload;;
+    private TextField newParamField;
+    private Button submit;
+    private String newParameter;
 
-    FormLayout formContent;
-    VerticalLayout content;
+    private HorizontalLayout layout;
+    private VerticalLayout content;
 
 
     public ParameterAddView() {
 
         newParameters = new HashMap();
 
-        upload = new UploadField();
-        newParam = new Label("Specify New Parameter");
-        dataSet = new Label("Specify Data Set");
+        upload = new Upload();
+        upload.setCaption("Select Data File");
+        upload.setButtonCaption(null);
+
         newParamField = new TextField();
+        newParamField.setCaption("Specify New Parameter");
+        newParamField.setRequired(true);
+        newParamField.setImmediate(true);
 
-        upload.setButtonCaption("Choose Files");
-        /*upload.addSucceededListener(this);
-        upload.setReceiver(this);
-        upload.*/
+        submit = new Button("Upload Data");
 
-        Button addParam = new Button("Add Parameter");
-        addParam.addClickListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                System.out.println(upload.isValid());
+        layout = new HorizontalLayout();
+        layout.addComponent(newParamField);
+        layout.setSpacing(true);
+        layout.setMargin(true);
+
+        HorizontalLayout bottomLayout = new HorizontalLayout();
+        bottomLayout.addComponent(upload);
+        bottomLayout.addComponent(submit);
+        bottomLayout.setSpacing(true);
+        bottomLayout.setMargin(true);
+        bottomLayout.setComponentAlignment(upload, Alignment.MIDDLE_LEFT);
+        bottomLayout.setComponentAlignment(submit, Alignment.MIDDLE_RIGHT);
+
+        content = new VerticalLayout();
+        content.addComponent(layout);
+        content.addComponent(bottomLayout);
+
+        bindListeners();
+    }
+
+    private void bindListeners(){
+        submit.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                if(!newParamField.getValue().isEmpty() && upload.getUploadSize()!=0){
+                    newParameter = newParamField.getValue();
+                    newParamField.setValue("");
+                    upload.submitUpload();
+                }
+                else {
+                    Notification.show("Please enter a valid input parameter or file", Notification.Type.TRAY_NOTIFICATION);
+                }
+
             }
         });
 
-        formContent = new FormLayout();
-        formContent.addComponents(newParam, newParamField, dataSet, upload,addParam);
-        content = new VerticalLayout();
-        content.addComponent(formContent);
+        //File Receivers
+        upload.setReceiver(new DataFileReceiver());
+        upload.addSucceededListener(this);
+
     }
 
     @Override
@@ -84,6 +115,7 @@ public class ParameterAddView implements WizardStep, Upload.SucceededListener, U
 
     @Override
     public boolean onAdvance() {
+        //todo
         return true;
     }
 
@@ -102,28 +134,50 @@ public class ParameterAddView implements WizardStep, Upload.SucceededListener, U
 
     @Override
     public void uploadSucceeded(Upload.SucceededEvent succeededEvent) {
-        Notification.show("Parameter Added");
+        Notification.show("Parameter Added Successfully", Notification.Type.TRAY_NOTIFICATION);
     }
 
-    @Override
-    public OutputStream receiveUpload(String filename,String mimeType) {
-        File file;
-        FileOutputStream fos;
+    private String getUploadPath(){
 
-        try {
-            // Open the file for writing.
-            file = new File(filename);
-            fos = new FileOutputStream(file);
-            String newParameter = newParamField.getValue();
+        String path = ConfigHelper.getBasepath() + "/resources/";
 
-            addParameter(newParameter,file.getAbsolutePath());
-            newParamField.setValue("");
-
-        } catch (final java.io.FileNotFoundException e) {
-            new Notification("Could not open file<br/>",e.getMessage(),
-                    Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
-            return null;
+        File folder = new File(path);
+        if(!folder.exists()){
+            folder.mkdir();
         }
-        return fos;
+
+        return path;
     }
+
+    private class DataFileReceiver implements Upload.Receiver{
+
+        private File file;
+
+        public File getFile(){
+            return  file;
+        }
+
+
+        @Override
+        public OutputStream receiveUpload(String fileName, String mimeType) {
+            // Create upload stream
+            FileOutputStream fos = null; // Stream to write to
+            try {
+                // Open the file for writing.
+                file = new File(getUploadPath()+newParameter+".txt");
+                try {
+                    file.createNewFile();
+                    addParameter(newParameter,(getUploadPath()+newParameter+".txt"));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                fos = new FileOutputStream(file);
+            } catch (final java.io.FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            return fos; // Return the output stream to write to
+        }
+    }
+
 }

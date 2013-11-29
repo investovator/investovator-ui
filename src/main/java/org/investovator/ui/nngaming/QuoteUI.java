@@ -25,7 +25,7 @@ import com.vaadin.ui.*;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.Order;
-import org.investovator.ui.nngaming.utils.PlayableStockManager;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -139,7 +139,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
 
     public void update(){
 
-        ArrayList<String> stockIDs = PlayableStockManager.getInstance().getStockList();
+        ArrayList<String> stockIDs = GameDataHelper.getInstance().getStockList();
 
         for (String stock : stockIDs) {
             stockSelect.addItem(stock);

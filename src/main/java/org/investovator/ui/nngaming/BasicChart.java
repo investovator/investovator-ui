@@ -1,20 +1,20 @@
 /*
-* investovator, Stock Market Gaming Framework
-*     Copyright (C) 2013  investovator
-*
-*     This program is free software: you can redistribute it and/or modify
-*     it under the terms of the GNU General Public License as published by
-*     the Free Software Foundation, either version 3 of the License, or
-*     (at your option) any later version.
-*
-*     This program is distributed in the hope that it will be useful,
-*     but WITHOUT ANY WARRANTY; without even the implied warranty of
-*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*     GNU General Public License for more details.
-*
-*     You should have received a copy of the GNU General Public License
-*     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * investovator, Stock Market Gaming Framework
+ *     Copyright (C) 2013  investovator
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 package org.investovator.ui.nngaming;
 
@@ -22,17 +22,17 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.ui.nngaming.utils.PlayableStockManager;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 
 import java.util.*;
 
 /**
-* @author: Hasala Surasinghe
-* @version: ${Revision}
-*/
+ * @author: Hasala Surasinghe
+ * @version: ${Revision}
+ */
 public class BasicChart extends Chart{
 
-    private PlayableStockManager playableStockManager;
+    private GameDataHelper gameDataHelper;
     private EventBroadcaster eventBroadcaster;
     private ArrayList<String> stockList;
     private NNGamingFacade nnGamingFacade;
@@ -51,9 +51,9 @@ public class BasicChart extends Chart{
         predictedValues = new ArrayList<>();
         dateValues = new ArrayList<>();
 
-        playableStockManager = PlayableStockManager.getInstance();
+        gameDataHelper = GameDataHelper.getInstance();
 
-        stockList = playableStockManager.getStockList();
+        stockList = gameDataHelper.getStockList();
 
         if(!(stockList.isEmpty())){
             initChart();
@@ -74,8 +74,6 @@ public class BasicChart extends Chart{
 
             String stock = stockList.get(i);
             int lastIndex = stockDataSeriesList.get(stockList.indexOf(stock)).size() - 1;
-
-            System.out.println(lastIndex);
 
             DataSeriesItem item =  stockDataSeriesList.get(stockList.indexOf(stock)).get(lastIndex);
             stockDataSeriesList.get(stockList.indexOf(stockList.get(i))).remove(item);
@@ -117,6 +115,7 @@ public class BasicChart extends Chart{
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setDataLabels(new Labels(true));
+        plotOptions.setAnimation(true);
         configuration.setPlotOptions(plotOptions);
 
         Legend legend = configuration.getLegend();
@@ -155,7 +154,6 @@ public class BasicChart extends Chart{
         System.out.println("Executed");
 
         final int stockListSize = stockList.size();
-       // stockDataSeriesList = eventBroadcaster.getStockDataSeriesList();
 
         for(int i = 0; i < stockListSize; i++){
 
@@ -178,8 +176,7 @@ public class BasicChart extends Chart{
             });
 
         }
-
-       // eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
+        eventBroadcaster.setStockDataSeriesList(stockDataSeriesList);
 
     }
 

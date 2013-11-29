@@ -22,7 +22,7 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-import org.investovator.ui.nngaming.utils.PlayableStockManager;
+import org.investovator.ui.nngaming.utils.GameDataHelper;
 
 import java.util.*;
 
@@ -32,7 +32,7 @@ import java.util.*;
 */
 public class QuantityChart extends Chart {
 
-    private PlayableStockManager playableStockManager;
+    private GameDataHelper gameDataHelper;
     private EventBroadcaster eventBroadcaster;
     private ArrayList<String> stockList;
     private NNGamingFacade nnGamingFacade;
@@ -51,9 +51,9 @@ public class QuantityChart extends Chart {
         predictedValues = new ArrayList<>();
         dateValues = new ArrayList<>();
 
-        playableStockManager = PlayableStockManager.getInstance();
+        gameDataHelper = GameDataHelper.getInstance();
 
-        stockList = playableStockManager.getStockList();
+        stockList = gameDataHelper.getStockList();
 
         if(!(stockList.isEmpty())){
             initChart();
@@ -90,13 +90,12 @@ public class QuantityChart extends Chart {
         legend.setVerticalAlign(VerticalAlign.BOTTOM);
         legend.setBorderWidth(1);
 
-        Tooltip tooltip = configuration.getTooltip();
-        tooltip.setFormatter(" +': '+ this.y");
-        configuration.setTooltip(tooltip);
-
         PlotOptionsColumn plot = new PlotOptionsColumn();
         plot.setPointPadding(0.2);
         plot.setBorderWidth(0);
+        plot.setDataLabels(new Labels(true));
+        plot.setAnimation(true);
+        configuration.setPlotOptions(plot);
 
         prepareDataSeriesLists();
 

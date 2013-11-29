@@ -26,13 +26,11 @@ public class StockSummaryBean {
 
     private String stockID;
     private int stocks;
-    private double value;
 
-    public StockSummaryBean(String stockID, int stocks, double value) {
+    public StockSummaryBean(String stockID, int stocks) {
 
         this.stockID = stockID;
         this.stocks = stocks;
-        this.value = value;
 
     }
 
@@ -52,11 +50,4 @@ public class StockSummaryBean {
         this.stocks = stocks;
     }
 
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
 }

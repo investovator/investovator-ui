@@ -4,17 +4,15 @@ package org.investovator.ui.agentgaming.config;
 //import com.vaadin.server.VaadinService;
 //import com.vaadin.ui.Window;
 //import org.investovator.controller.GameControllerFacade;
-import org.investovator.controller.config.ConfigGenerator;
-//=======
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.*;
-import com.vaadin.ui.*;
+import com.vaadin.server.VaadinService;
+import com.vaadin.ui.Window;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
-//>>>>>>> newFacadeStructure
+import org.investovator.controller.config.ConfigGenerator;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
+import org.investovator.core.commons.events.GameEventListener;
 import org.investovator.ui.dataplayback.util.ProgressWindow;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -22,6 +20,9 @@ import org.vaadin.teemu.wizards.event.*;
 
 import java.util.HashMap;
 import java.util.Iterator;
+
+//=======
+//>>>>>>> newFacadeStructure
 
 /**
  * @author Amila Surendra
@@ -157,7 +158,7 @@ public class AgentGamingView extends Window implements WizardProgressListener {
         ProgressWindow test = new ProgressWindow("Creating Agent Game");
         try {
             String instance = controller.createGameInstance(GameModes.AGENT_GAME);
-            controller.registerListener(instance, test);
+            controller.registerListener(instance, (GameEventListener) test);
             getUI().addWindow(test);
             controller.startGame(instance);
 

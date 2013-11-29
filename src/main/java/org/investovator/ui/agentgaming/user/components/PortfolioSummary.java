@@ -18,23 +18,18 @@
 
 package org.investovator.ui.agentgaming.user.components;
 
-import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.ui.*;
-import net.sourceforge.jabm.event.EventListener;
-import net.sourceforge.jabm.event.SimEvent;
-import net.sourceforge.jasa.event.TransactionExecutedEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.investovator.controller.utils.events.PortfolioChangedEvent;
 import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.events.GameEventListener;
 import org.investovator.core.commons.utils.Portfolio;
-import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.authentication.Authenticator;
-
-import java.util.HashMap;
 
 /**
  * @author Amila Surendra
@@ -101,13 +96,13 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
             e.printStackTrace();
         }
 
-        try {
-            String currentUser = Authenticator.getInstance().getCurrentUser();
-            accountBalance.setValue(Double.toString(userData.getUserPortfolio(currentUser).getCashBalance()));
-            blockedAmount.setValue(Double.toString(userData.getUserPortfolio(currentUser).getBlockedCash()));
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            String currentUser = Authenticator.getInstance().getCurrentUser();
+//           // accountBalance.setValue(Double.toString(userData.getUserPortfolio(currentUser).getCashBalance()));
+//           // blockedAmount.setValue(Double.toString(userData.getUserPortfolio(currentUser).getBlockedCash()));
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//        }
 
         updateStocksTable();
         unmatchedOrders.update();
@@ -142,32 +137,32 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         final BeanContainer<String, StockSummary> shownStocks = (BeanContainer<String, StockSummary>) stocksSummaryTable.getContainerDataSource();
 
 
-        try {
-            UserData userData = new UserDataImpl();
-            Portfolio userPortfolio =   userData.getUserPortfolio(Authenticator.getInstance().getCurrentUser());
-            final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
-
-            UI.getCurrent().access(new Runnable() {
-                @Override
-                public void run() {
-                    shownStocks.removeAllItems();
-
-                    for (String stock : shares.keySet()) {
-
-                        int quantity = shares.get(stock).get(Terms.QNTY).intValue();
-                        double avgPrice = shares.get(stock).get(Terms.PRICE);
-                        StockSummary tmp = new StockSummary(stock, quantity, avgPrice);
-
-                        shownStocks.addBean(tmp);
-                    }
-
-                    getUI().push();
-                }
-            });
-
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            UserData userData = new UserDataImpl();
+//           // Portfolio userPortfolio =   userData.getUserPortfolio(Authenticator.getInstance().getCurrentUser());
+//           // final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
+//
+//            UI.getCurrent().access(new Runnable() {
+//                @Override
+//                public void run() {
+//                    shownStocks.removeAllItems();
+//
+//                    for (String stock : shares.keySet()) {
+//
+//                        int quantity = shares.get(stock).get(Terms.QNTY).intValue();
+//                        double avgPrice = shares.get(stock).get(Terms.PRICE);
+//                        StockSummary tmp = new StockSummary(stock, quantity, avgPrice);
+//
+//                        shownStocks.addBean(tmp);
+//                    }
+//
+//                    getUI().push();
+//                }
+//            });
+//
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//        }
 
 
     }

@@ -19,10 +19,8 @@
 package org.investovator.ui.nngaming.config;
 
 import com.vaadin.data.Property;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TwinColSelect;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.server.Sizeable;
+import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -48,6 +46,8 @@ public class StockSelectView implements WizardStep{
 
         stockSelectList = new TwinColSelect("Select Stocks for Game");
 
+        stockSelectList.setHeight(28, Sizeable.Unit.MM);
+
         stockSelectList.setNullSelectionAllowed(false);
 
         stockSelectList.addValueChangeListener(new Property.ValueChangeListener() {
@@ -67,6 +67,8 @@ public class StockSelectView implements WizardStep{
 
         content = new VerticalLayout();
         content.addComponent(stockSelectList);
+        content.setComponentAlignment(stockSelectList, Alignment.MIDDLE_CENTER);
+        content.setMargin(true);
     }
 
     public void update(){
@@ -109,7 +111,7 @@ public class StockSelectView implements WizardStep{
     public boolean onAdvance() {
         if(selectedStocks == null)
         {
-            Notification.show("Please Select Stocks", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Please Select Stocks for the Game", Notification.Type.TRAY_NOTIFICATION);
             return false;
         }
         else{

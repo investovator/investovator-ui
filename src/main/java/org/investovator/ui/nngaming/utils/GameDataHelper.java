@@ -18,9 +18,6 @@
 
 package org.investovator.ui.nngaming.utils;
 
-import com.vaadin.addon.charts.model.DataSeries;
-import org.investovator.ui.nngaming.beans.OrderBean;
-
 import java.util.ArrayList;
 
 /**
@@ -30,26 +27,17 @@ import java.util.ArrayList;
 public class GameDataHelper {
 
     private static GameDataHelper instance;
-    private ArrayList<ArrayList<OrderBean>> stockBeanListBuy;
-    private ArrayList<ArrayList<OrderBean>> stockBeanListSell;
-    private int currentDay = 1;
-    private int currentIndex;
-    private String selectedStock;
-
-    private ArrayList<DataSeries> stockDataSeriesList;
+    private ArrayList<String> stockList;
+    private ArrayList<String> analysisParameters;
 
     private GameDataHelper(){
 
-        if(stockBeanListBuy == null){
-            stockBeanListBuy = new ArrayList<>();
+        if(stockList == null){
+            stockList = new ArrayList<>();
         }
-        if(stockBeanListSell == null){
-            stockBeanListSell = new ArrayList<>();
+        if(analysisParameters == null){
+            analysisParameters = new ArrayList<>();
         }
-        if(stockDataSeriesList == null){
-            stockDataSeriesList = new ArrayList<>();
-        }
-        currentIndex = 0;
 
     }
 
@@ -63,51 +51,23 @@ public class GameDataHelper {
         return instance;
     }
 
-    public ArrayList<ArrayList<OrderBean>> getStockBeanListBuy() {
-        return stockBeanListBuy;
+    public void setStocks(ArrayList<String> stockIDs){
+
+        this.stockList = stockIDs;
+
     }
 
-    public void setStockBeanListBuy(ArrayList<ArrayList<OrderBean>> stockBeanListBuy) {
-        this.stockBeanListBuy = stockBeanListBuy;
+    public ArrayList<String> getStockList(){
+
+        return stockList;
+
     }
 
-    public ArrayList<ArrayList<OrderBean>> getStockBeanListSell() {
-        return stockBeanListSell;
+    public ArrayList<String> getAnalysisParameters() {
+        return analysisParameters;
     }
 
-    public void setStockBeanListSell(ArrayList<ArrayList<OrderBean>> stockBeanListSell) {
-        this.stockBeanListSell = stockBeanListSell;
-    }
-
-    public int getCurrentDay() {
-        return currentDay;
-    }
-
-    public void setCurrentDay(int currentDay) {
-        this.currentDay = currentDay;
-    }
-
-    public int getCurrentIndex(){
-        return currentIndex;
-    }
-
-    public void setCurrentIndex(int currentIndex) {
-        this.currentIndex = currentIndex;
-    }
-
-    public ArrayList<DataSeries> getStockDataSeriesList() {
-        return stockDataSeriesList;
-    }
-
-    public void setStockDataSeriesList(ArrayList<DataSeries> stockDataSeriesList) {
-        this.stockDataSeriesList = stockDataSeriesList;
-    }
-
-    public String getSelectedStock() {
-        return selectedStock;
-    }
-
-    public void setSelectedStock(String selectedStock) {
-        this.selectedStock = selectedStock;
+    public void setAnalysisParameters(ArrayList<String> analysisParameters) {
+        this.analysisParameters = analysisParameters;
     }
 }

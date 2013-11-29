@@ -1,20 +1,20 @@
 /*
-* investovator, Stock Market Gaming Framework
-*     Copyright (C) 2013  investovator
-*
-*     This program is free software: you can redistribute it and/or modify
-*     it under the terms of the GNU General Public License as published by
-*     the Free Software Foundation, either version 3 of the License, or
-*     (at your option) any later version.
-*
-*     This program is distributed in the hope that it will be useful,
-*     but WITHOUT ANY WARRANTY; without even the implied warranty of
-*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*     GNU General Public License for more details.
-*
-*     You should have received a copy of the GNU General Public License
-*     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * investovator, Stock Market Gaming Framework
+ *     Copyright (C) 2013  investovator
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 package org.investovator.ui.nngaming;
 
@@ -26,12 +26,14 @@ import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
+import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 /**
-* @author: Hasala Surasinghe
-* @version: ${Revision}
-*/
+ * @author: Hasala Surasinghe
+ * @version: ${Revision}
+ */
 public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent {
 
 
@@ -67,7 +69,6 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         //Setup Layout
         content = new VerticalLayout();
         content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-       // content.setSpacing(true);
 
         HorizontalLayout row1 = new HorizontalLayout();
         HorizontalLayout row2 = new HorizontalLayout();
@@ -94,7 +95,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         content.setExpandRatio(row1, 1.3f);
         content.setExpandRatio(row2, 1.3f);
-        content.setExpandRatio(row3, 1.3f);
+        content.setExpandRatio(row3, 1.0f);
 
         GridLayout orderBookLayout = new GridLayout(2,1);
 
@@ -121,6 +122,10 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         row2.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
 
+        orderBookLayout.setCaption("Order Book");
+        quoteUI.setCaption("Quote UI");
+        userPortfolio.setCaption(Session.getCurrentUser()+" - Portfolio Summary");
+
         orderBookLayout.addStyleName("center-caption");
         quoteUI.addStyleName("center-caption");
         currentPriceChart.addStyleName("center-caption");
@@ -142,7 +147,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         orderBookSell.setPageLength(4);
         orderBookSell.setImmediate(true);
 
-        orderBookSell.setColumnHeader("orderValue", "Order Value" );
+        orderBookSell.setColumnHeader("orderValue", "Order Price" );
         orderBookSell.setColumnHeader("quantity", "Quantity");
 
         return orderBookSell;
@@ -160,7 +165,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         orderBookBuy.setPageLength(4);
         orderBookBuy.setImmediate(true);
 
-        orderBookBuy.setColumnHeader("orderValue", "Order Value" );
+        orderBookBuy.setColumnHeader("orderValue", "Order Price" );
         orderBookBuy.setColumnHeader("quantity", "Quantity");
 
         return orderBookBuy;
@@ -169,7 +174,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
     @Override
     public void onEnter() {
 
-       /* if (currentPriceChart.isConnectorEnabled()) {
+        if (currentPriceChart.isConnectorEnabled()) {
             getSession().lock();
             try {
 
@@ -178,7 +183,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
             } finally {
                 getSession().unlock();
             }
-        }*/
+        }
 
         quoteUI.update();
         userPortfolio.update();
@@ -260,8 +265,8 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
 
             if(((TableData) object).getStockBeanListBuy().isEmpty() || ((TableData) object).getStockBeanListSell().isEmpty()
-                    || ((TableData) object).getStockBeanListBuy().size() <= stockIndex || ((TableData) object).getStockBeanListSell()
-                    .size() <= stockIndex){
+                    || ((TableData) object).getStockBeanListBuy().size() <= stockIndex ||
+                    ((TableData) object).getStockBeanListSell().size() <= stockIndex){
 
                 updateTables(buyBeans, sellBeans);
 
@@ -310,6 +315,10 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
                     getSession().unlock();
                 }
             }
+        }
+
+        if(object instanceof PortfolioData){
+            return;
         }
 
     }
