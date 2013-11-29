@@ -33,6 +33,7 @@ import org.investovator.dataplaybackengine.utils.DateUtils;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.Session;
+import org.investovator.ui.utils.dashboard.DecisionMakerPanel;
 
 import java.util.Date;
 import java.util.HashMap;
