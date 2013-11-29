@@ -28,6 +28,7 @@ import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 /**
  * @author: Hasala Surasinghe
@@ -68,7 +69,6 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         //Setup Layout
         content = new VerticalLayout();
         content.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-       // content.setSpacing(true);
 
         HorizontalLayout row1 = new HorizontalLayout();
         HorizontalLayout row2 = new HorizontalLayout();
@@ -95,7 +95,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         content.setExpandRatio(row1, 1.3f);
         content.setExpandRatio(row2, 1.3f);
-        content.setExpandRatio(row3, 1.3f);
+        content.setExpandRatio(row3, 1.0f);
 
         GridLayout orderBookLayout = new GridLayout(2,1);
 
@@ -121,6 +121,10 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         row3.addComponent(bottomLayout);
 
         row2.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
+
+        orderBookLayout.setCaption("Order Book");
+        quoteUI.setCaption("Quote UI");
+        userPortfolio.setCaption(Session.getCurrentUser()+" - Portfolio Summary");
 
         orderBookLayout.addStyleName("center-caption");
         quoteUI.addStyleName("center-caption");
@@ -170,7 +174,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
     @Override
     public void onEnter() {
 
-       /* if (currentPriceChart.isConnectorEnabled()) {
+        if (currentPriceChart.isConnectorEnabled()) {
             getSession().lock();
             try {
 
@@ -179,7 +183,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
             } finally {
                 getSession().unlock();
             }
-        }*/
+        }
 
         quoteUI.update();
         userPortfolio.update();

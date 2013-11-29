@@ -94,6 +94,7 @@ public class QuantityChart extends Chart {
         plot.setPointPadding(0.2);
         plot.setBorderWidth(0);
         plot.setDataLabels(new Labels(true));
+        plot.setAnimation(true);
         configuration.setPlotOptions(plot);
 
         prepareDataSeriesLists();

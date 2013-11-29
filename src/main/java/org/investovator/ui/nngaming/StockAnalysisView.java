@@ -53,7 +53,7 @@ public class StockAnalysisView extends DashboardPanel {
     HorizontalLayout configBar;
 
     TextField inputParameter;
-    ComboBox parameterSelect;
+    ComboBox stockSelect;
 
     Button chartUpdate;
 
@@ -62,8 +62,10 @@ public class StockAnalysisView extends DashboardPanel {
 
     Date startDate = null;
     Date endDate = null;
+    Date minDate = null;
+    Date maxDate = null;
 
-    private double analysisValue = 50;
+    private double analysisValue = 250;
 
 
     public StockAnalysisView() {
@@ -87,19 +89,19 @@ public class StockAnalysisView extends DashboardPanel {
         createParamInputField();
         createParameterSelect();
 
-        configBar.addComponent(parameterSelect);
+        configBar.addComponent(stockSelect);
         configBar.addComponent(inputParameter);
         configBar.addComponent(startDatePicker);
         configBar.addComponent(endDatePicker);
         configBar.addComponent(chartUpdate);
 
-        configBar.setExpandRatio(parameterSelect,4);
+        configBar.setExpandRatio(stockSelect,4);
         configBar.setExpandRatio(startDatePicker,2);
         configBar.setExpandRatio(inputParameter,2);
         configBar.setExpandRatio(endDatePicker,2);
         configBar.setExpandRatio(chartUpdate,2);
 
-        configBar.setCaption("Stock Price Analysis");
+        configBar.setCaption("Stock Market Share Price Analysis");
 
         layout.addComponent(configBar);
         layout.addComponent(reportLayout);
@@ -115,10 +117,10 @@ public class StockAnalysisView extends DashboardPanel {
     }
 
     private void createParameterSelect(){
-        parameterSelect = new ComboBox();
-        parameterSelect.setCaption("Select Parameter");
-        parameterSelect.setImmediate(true);
-        parameterSelect.setNullSelectionAllowed(false);
+        stockSelect = new ComboBox();
+        stockSelect.setCaption("Select StockID");
+        stockSelect.setImmediate(true);
+        stockSelect.setNullSelectionAllowed(false);
     }
 
     private void setDefaults() {
@@ -131,6 +133,9 @@ public class StockAnalysisView extends DashboardPanel {
         attributes.add(TradingDataAttribute.LOW_PRICE);
 
         Date[] dates = nnGamingFacade.getDateRange(stockIDs.get(0));
+
+        minDate = dates[0];
+        maxDate = dates[1];
 
         endDate = dates[1];
         java.util.Calendar tmp = java.util.Calendar.getInstance();
@@ -145,10 +150,10 @@ public class StockAnalysisView extends DashboardPanel {
         startDatePicker.setValue(startDate);
         endDatePicker.setValue(endDate);
 
-        for(int i = 0; i < analysisIDs.size(); i++){
-            parameterSelect.addItem(analysisIDs.get(i)+" - Stock Price");
+        for(int i = 0; i < stockIDs.size(); i++){
+            stockSelect.addItem(stockIDs.get(i));
         }
-        parameterSelect.setValue(analysisIDs.get(0)+" - Stock Price");
+        stockSelect.setValue(stockIDs.get(0));
     }
 
     private void createReportLayout() {
@@ -192,6 +197,12 @@ public class StockAnalysisView extends DashboardPanel {
                 final String valueString = String.valueOf(event.getProperty().getValue());
                 startDate = startDatePicker.getValue();
 
+                if(startDate.before(minDate) || startDate.after(maxDate)){
+                    Notification.show("Please select a date within "+minDate+" - "+maxDate+" range",
+                            Notification.Type.TRAY_NOTIFICATION);
+                    return;
+                }
+
                 java.util.Calendar tmp = java.util.Calendar.getInstance();
                 tmp.setTime(startDate);
                 tmp.add(java.util.Calendar.MONTH, 1);
@@ -218,6 +229,12 @@ public class StockAnalysisView extends DashboardPanel {
             @Override
             public void valueChange(final Property.ValueChangeEvent event) {
                 endDate = endDatePicker.getValue();
+
+                if(endDate.before(minDate) || endDate.after(maxDate)){
+                    Notification.show("Please select a date within "+minDate+" - "+maxDate+" range",
+                            Notification.Type.TRAY_NOTIFICATION);
+                    return;
+                }
 
                 java.util.Calendar tmp = java.util.Calendar.getInstance();
                 tmp.setTime(endDate);
@@ -250,23 +267,23 @@ public class StockAnalysisView extends DashboardPanel {
                     Notification.show("Please insert a valid input value", Notification.Type.TRAY_NOTIFICATION);
                 }
                 else{
-                    String analysisParam = (String) parameterSelect.getValue();
-                    analysisParam = analysisParam.substring(0,analysisParam.indexOf(" "));
+                    String stockID = (String) stockSelect.getValue();
 
                     reportLayout.removeAllComponents();
                     charts.clear();
 
-                    for(int i = 0; i < stockIDs.size(); i++){
+                    for(int i = 0; i < analysisIDs.size(); i++){
 
-                        if(stockIDs.get(i).equals(analysisParam)) continue;
+                        if(analysisIDs.get(i).equals(stockID)) continue;
 
-                        graphData = nnGamingFacade.getAnalysisData(startDate,endDate,stockIDs.get(i), GameTypes.ANALYSIS_GAME,
-                                analysisValue,analysisParam);
+                        graphData = nnGamingFacade.getAnalysisData(startDate,endDate,stockID, GameTypes.ANALYSIS_GAME,
+                                analysisValue,analysisIDs.get(i));
 
-                        AnalysisChart analysisChart = new AnalysisChart(stockIDs.get(i));
+                        AnalysisChart analysisChart = new AnalysisChart(stockID);
                         charts.add(analysisChart);
-                        analysisChart.addSeries(stockIDs.get(i) + " - Actual Stock Prices", graphData, ACTUAL_INDEX);
-                        analysisChart.addSeries(stockIDs.get(i)+" - Predicted Stock Prices",graphData,PREDICTED_INDEX);
+                        analysisChart.addSeries(stockID + " - Actual Stock Prices", graphData, ACTUAL_INDEX);
+                        analysisChart.addSeries(stockID+" - Stock Price @ "+analysisIDs.get(i)+" average price = "+analysisValue,
+                                graphData,PREDICTED_INDEX);
                         reportLayout.addComponent(analysisChart);
 
                     }
@@ -278,20 +295,20 @@ public class StockAnalysisView extends DashboardPanel {
 
     private void addInitialCharts(){
 
-        String analysisParam = (String) parameterSelect.getValue();
-        analysisParam = analysisParam.substring(0,analysisParam.indexOf(" "));
+        String stockID = (String) stockSelect.getValue();
 
-        for(int i = 0; i < stockIDs.size(); i++){
+        for(int i = 0; i < analysisIDs.size(); i++){
 
-            if(stockIDs.get(i).equals(analysisParam)) continue;
+            if(analysisIDs.get(i).equals(stockID)) continue;
 
-            graphData = nnGamingFacade.getAnalysisData(startDate,endDate,stockIDs.get(i), GameTypes.ANALYSIS_GAME,
-                        analysisValue,analysisParam);
+            graphData = nnGamingFacade.getAnalysisData(startDate,endDate,stockID, GameTypes.ANALYSIS_GAME,
+                        analysisValue,analysisIDs.get(i));
 
-            AnalysisChart analysisChart = new AnalysisChart(stockIDs.get(i));
+            AnalysisChart analysisChart = new AnalysisChart(stockID);
             charts.add(analysisChart);
-            analysisChart.addSeries(stockIDs.get(i) + " - Actual Stock Prices", graphData, ACTUAL_INDEX);
-            analysisChart.addSeries(stockIDs.get(i)+" - Predicted Stock Prices",graphData,PREDICTED_INDEX);
+            analysisChart.addSeries(stockID + " - Actual Stock Prices", graphData, ACTUAL_INDEX);
+            analysisChart.addSeries(stockID+" - Stock Price @ "+analysisIDs.get(i)+" average price = "+analysisValue,
+                    graphData,PREDICTED_INDEX);
             reportLayout.addComponent(analysisChart);
 
         }

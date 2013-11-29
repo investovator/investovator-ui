@@ -46,7 +46,7 @@ public class AnalysisChart extends Chart {
         setWidth("100%");
 
         Configuration configuration = new Configuration();
-        configuration.getChart().setType(ChartType.LINE);
+        configuration.getChart().setType(ChartType.SPLINE);
 
         configuration.getxAxis().setType(AxisType.DATETIME);
 

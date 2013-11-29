@@ -55,19 +55,21 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     private String currentInstance;
 
     public UserPortfolio() {
+
+        currentInstance = Session.getCurrentGameInstance();
+
         setupUI();
 
         eventBroadcaster = EventBroadcaster.getInstance();
         eventBroadcaster.addListener(this);
 
-        currentInstance = Session.getCurrentGameInstance();
+
     }
 
     public void setupUI(){
 
         this.setWidth("100%");
         this.setHeight("100%");
-        this.setCaption("Portfolio Summary");
         addStyleName("center-caption");
 
 
