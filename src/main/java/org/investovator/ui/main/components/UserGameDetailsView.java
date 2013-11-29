@@ -21,6 +21,7 @@ package org.investovator.ui.main.components;
 import com.vaadin.ui.Button;
 import org.investovator.controller.GameController;
 import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 
@@ -55,7 +56,8 @@ public class UserGameDetailsView extends GameDetailsView {
                    return;
                 }
                 Session.setCurrentGameInstance(gameInstance);
-                getUI().getNavigator().navigateTo(UIConstants.getUserDashboardURL(mode));
+                getUI().getNavigator().navigateTo(UIConstants.getUserDashboardURL(Authenticator.UserType.ORDINARY,
+                        mode));
             }
         });
 

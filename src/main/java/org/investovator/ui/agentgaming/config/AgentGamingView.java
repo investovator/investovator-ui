@@ -14,10 +14,12 @@ import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.commons.events.GameEventListener;
 import org.investovator.ui.dataplayback.util.ProgressWindow;
+import org.investovator.ui.utils.TestDataGenerator;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -47,7 +49,6 @@ public class AgentGamingView extends Window implements WizardProgressListener {
 
     public AgentGamingView() {
 
-        agentWiz.getCancelButton().setVisible(false);
         agentWiz.setWidth("90%");
         agentWiz.setHeight("90%");
 
@@ -158,7 +159,16 @@ public class AgentGamingView extends Window implements WizardProgressListener {
         ProgressWindow test = new ProgressWindow("Creating Agent Game");
         try {
             String instance = controller.createGameInstance(GameModes.AGENT_GAME);
-            controller.registerListener(instance, (GameEventListener) test);
+
+            //TODO: Remove - Generate test data
+            String[] stocks = new String[stockSelect.getSelectedStocks().length - 1];
+            for (int i = 0; i < stocks.length ; i++) {
+                stocks[i] = stockSelect.getSelectedStocks()[i];
+            }
+
+            TestDataGenerator.createTestData(instance,"testUser1", stocks);
+
+            controller.registerListener(instance, test);
             getUI().addWindow(test);
             controller.startGame(instance);
 
@@ -184,7 +194,7 @@ public class AgentGamingView extends Window implements WizardProgressListener {
 
     @Override
     public void wizardCancelled(WizardCancelledEvent event) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        closeWindow();
     }
 }
 
