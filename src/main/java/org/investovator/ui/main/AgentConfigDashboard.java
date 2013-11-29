@@ -3,6 +3,7 @@ package org.investovator.ui.main;
 import com.vaadin.navigator.ViewChangeListener;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.IconLoader;
 
 import java.util.LinkedHashMap;
 
@@ -20,12 +21,12 @@ public class AgentConfigDashboard extends BasicDashboard {
     }
 
     @Override
-    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
-        LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
+    public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
+        LinkedHashMap<IconLoader, DashboardPanel> menuList = new LinkedHashMap<IconLoader, DashboardPanel>();
         configView = new MainGamingView();
         dataImportView = new DataImportPanel();
-        menuList.put("game summary", configView);
-        menuList.put("data import", dataImportView);
+        menuList.put(IconLoader.GAME_SUMMARY, configView);
+        menuList.put(IconLoader.DATA_IMPORT, dataImportView);
         return menuList;
     }
 

@@ -13,6 +13,7 @@ import org.investovator.ui.utils.TestDataGenerator;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.IconLoader;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -74,13 +75,13 @@ public class AgentDashboard extends BasicDashboard {
     }
 
     @Override
-    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
-        LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
+    public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
+        LinkedHashMap<IconLoader, DashboardPanel> menuList = new LinkedHashMap<IconLoader, DashboardPanel>();
         mainDashView = new DashboardPlayingView();
         reportView = new ReportsView();
-        menuList.put("my dashboard", mainDashView);
-        menuList.put("watch list", new WatchListView());
-        menuList.put("market reports", reportView);
+        menuList.put(IconLoader.MAIN_VIEW, mainDashView);
+        menuList.put(IconLoader.WATCH_LIST, new WatchListView());
+        menuList.put(IconLoader.REPORTS, reportView);
 
         return menuList;
     }

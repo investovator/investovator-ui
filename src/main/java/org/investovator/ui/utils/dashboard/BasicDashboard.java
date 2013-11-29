@@ -5,6 +5,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.ui.GlobalView;
+import org.investovator.ui.utils.UIConstants;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -30,7 +31,7 @@ public abstract class BasicDashboard extends GlobalView {
 
 
     //used to store the buttons of the menu bar and their respective panels
-    private LinkedHashMap<String, DashboardPanel> menuItems;
+    private LinkedHashMap<IconLoader, DashboardPanel> menuItems;
 
     public BasicDashboard(String name) {
         super();
@@ -82,7 +83,7 @@ public abstract class BasicDashboard extends GlobalView {
      * Also the icon names for those buttons should be in the form of "icon-<KEY_NAME>"
      * @return
      */
-    public abstract LinkedHashMap<String, DashboardPanel> getMenuItems();
+    public abstract LinkedHashMap<IconLoader, DashboardPanel> getMenuItems();
 
     /**
      * Draws the basic dashboard components such as menus, backgrounds, buttons
@@ -187,11 +188,10 @@ public abstract class BasicDashboard extends GlobalView {
         });
 
         //add the buttons to the menu bar
-        for (final String item : menuItems.keySet()) {
+        for (final IconLoader item : menuItems.keySet()) {
 
-            Button b = new NativeButton(item.substring(0, 1).toUpperCase()
-                    + item.substring(1).replace('-', ' '));
-            b.addStyleName("icon-sales");
+            Button b = new NativeButton(IconLoader.getName(item));
+            b.addStyleName(IconLoader.nameToIcon(item));
 
             //add the click listener
             b.addClickListener(new Button.ClickListener() {
@@ -209,7 +209,7 @@ public abstract class BasicDashboard extends GlobalView {
                     //navigate to the view
 
                     content.removeAllComponents();
-                    DashboardPanel addedPanel = menuItems.get(clickEvent.getButton().getCaption().toLowerCase());
+                    DashboardPanel addedPanel = menuItems.get(item);
                     content.addComponent(addedPanel);
                     addedPanel.onEnter();
 

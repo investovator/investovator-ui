@@ -30,6 +30,7 @@ import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeStockDat
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.IconLoader;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicStockDataView;
 
 import java.util.LinkedHashMap;
@@ -45,31 +46,31 @@ public class UserDashboardLoader extends BasicDashboard {
     }
 
     @Override
-    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
-        LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
+    public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
+        LinkedHashMap<IconLoader,DashboardPanel> map=new LinkedHashMap<IconLoader, DashboardPanel>();
 
         //if this is a daily summary data game
         if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.DAILY_SUMMARY_PLAYER){
             //if this is a multiplayer game
             if(DataPlaybackEngineStates.isMultiplayer){
-                map.put("main view", new DailySummaryMultiPlayerMainView());
-                map.put("stocks", new DailySummaryStockDataView());
-                map.put("analysis", new AnalysisPanel());
+                map.put(IconLoader.MAIN_VIEW, new DailySummaryMultiPlayerMainView());
+                map.put(IconLoader.STOCKS, new DailySummaryStockDataView());
+                map.put(IconLoader.ANALYSIS, new AnalysisPanel());
 
 
             }
             else{
-                map.put("main view", new DailySummarySinglePlayerMainView());
-                map.put("stocks", new DailySummaryStockDataView());
-                map.put("analysis", new AnalysisPanel());
+                map.put(IconLoader.MAIN_VIEW, new DailySummarySinglePlayerMainView());
+                map.put(IconLoader.STOCKS, new DailySummaryStockDataView());
+                map.put(IconLoader.ANALYSIS, new AnalysisPanel());
 
             }
         }
         //if this is a real time data game
         else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
-            map.put("main view", new RealTimeMainView());
-            map.put("stocks", new RealTimeStockDataView());
-            map.put("analysis", new AnalysisPanel());
+            map.put(IconLoader.MAIN_VIEW, new RealTimeMainView());
+            map.put(IconLoader.STOCKS, new RealTimeStockDataView());
+            map.put(IconLoader.ANALYSIS, new AnalysisPanel());
 
         }
 

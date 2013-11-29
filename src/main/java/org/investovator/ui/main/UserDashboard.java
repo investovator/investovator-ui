@@ -21,6 +21,7 @@ package org.investovator.ui.main;
 import com.vaadin.navigator.ViewChangeListener;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.IconLoader;
 
 import java.util.LinkedHashMap;
 
@@ -40,10 +41,10 @@ public class UserDashboard extends BasicDashboard {
     }
 
     @Override
-    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
+    public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
 
-        LinkedHashMap<String, DashboardPanel> panels = new LinkedHashMap<>();
-        panels.put("my games", new MyGamesPanel());
+        LinkedHashMap<IconLoader, DashboardPanel> panels = new LinkedHashMap<>();
+        panels.put(IconLoader.GAME_SUMMARY, new MyGamesPanel());
         return panels;
     }
 }

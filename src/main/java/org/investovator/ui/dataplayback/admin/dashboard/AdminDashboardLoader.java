@@ -34,6 +34,7 @@ import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView
 import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.IconLoader;
 
 import java.util.LinkedHashMap;
 
@@ -48,8 +49,8 @@ public class AdminDashboardLoader extends BasicDashboard{
     }
 
     @Override
-    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
-        LinkedHashMap<String,DashboardPanel> map=new LinkedHashMap<String, DashboardPanel>();
+    public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
+        LinkedHashMap<IconLoader,DashboardPanel> map=new LinkedHashMap<IconLoader, DashboardPanel>();
         //initialize the player via controller
 //        GameController controller= GameControllerImpl.getInstance();
 
@@ -83,7 +84,7 @@ public class AdminDashboardLoader extends BasicDashboard{
 //        panel2.setContent(panelContent2);
 //        map.put("test 2", panel2);
 
-        map.put("overview", new DataPlaybackEngineAdminDashboard());
+        map.put(IconLoader.OVERVIEW, new DataPlaybackEngineAdminDashboard());
 
 
         return map;

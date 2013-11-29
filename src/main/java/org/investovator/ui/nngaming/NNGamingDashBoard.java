@@ -24,6 +24,7 @@ import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+import org.investovator.ui.utils.dashboard.IconLoader;
 
 import java.util.LinkedHashMap;
 
@@ -41,13 +42,13 @@ public class NNGamingDashBoard extends BasicDashboard{
     }
 
     @Override
-    public LinkedHashMap<String, DashboardPanel> getMenuItems() {
-        LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
+    public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
+        LinkedHashMap<IconLoader, DashboardPanel> menuList = new LinkedHashMap<IconLoader, DashboardPanel>();
         mainDashView = new DashboardPlayingView();
         stockAnalysisView = new StockAnalysisView();
 
-        menuList.put("main view", mainDashView);
-        menuList.put("stock analysis",stockAnalysisView);
+        menuList.put(IconLoader.MAIN_VIEW, mainDashView);
+        menuList.put(IconLoader.ANALYSIS,stockAnalysisView);
 
         return menuList;
     }
