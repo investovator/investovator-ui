@@ -57,6 +57,7 @@ public class AnalysisChart extends Chart {
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setDataLabels(new Labels(true));
+        plotOptions.setAnimation(true);
         configuration.setPlotOptions(plotOptions);
 
         Legend legend = configuration.getLegend();

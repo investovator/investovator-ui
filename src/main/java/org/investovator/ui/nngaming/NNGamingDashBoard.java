@@ -19,7 +19,6 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
-import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
@@ -55,8 +54,6 @@ public class NNGamingDashBoard extends BasicDashboard{
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
-        //TODO: remove temporary instance
-        Session.setCurrentGameInstance(GameModes.NN_GAME.toString());
 
         if(Session.getCurrentGameInstance() == null)
             getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);

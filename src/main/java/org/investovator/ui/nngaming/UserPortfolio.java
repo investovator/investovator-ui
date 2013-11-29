@@ -109,6 +109,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         }
 
         try {
+            userData.addUserToGameInstance(currentInstance,currentUser);
             portfolio = userData.getUserPortfolio(currentInstance,currentUser);
         } catch (DataAccessException e) {
             e.printStackTrace();
