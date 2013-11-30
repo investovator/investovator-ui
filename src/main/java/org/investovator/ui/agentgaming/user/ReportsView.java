@@ -75,6 +75,7 @@ public class ReportsView extends DashboardPanel {
         reportSelect.setNullSelectionAllowed(false);
         reportSelect.addItem("market price");
         reportSelect.addItem("market spread");
+        reportSelect.addItem("mid");
 
         reportSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
