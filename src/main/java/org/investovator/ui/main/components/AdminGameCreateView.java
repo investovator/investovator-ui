@@ -24,6 +24,7 @@ import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.nngaming.config.NNGamingView;
+import org.investovator.ui.utils.UIConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,8 +138,8 @@ public class AdminGameCreateView extends GameDetailsView {
         subWindow.addCloseListener(new Window.CloseListener() {
             @Override
             public void windowClose(Window.CloseEvent closeEvent) {
-                //getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
-                getUI().getPage().reload();
+                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+//                getUI().getPage().reload();
             }
         });
 
@@ -165,8 +166,8 @@ public class AdminGameCreateView extends GameDetailsView {
         subWindow.addCloseListener(new Window.CloseListener() {
             @Override
             public void windowClose(Window.CloseEvent closeEvent) {
-                //getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
-                getUI().getPage().reload();
+                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+//                getUI().getPage().reload();
             }
         });
 
@@ -190,7 +191,9 @@ public class AdminGameCreateView extends GameDetailsView {
         subWindow.addCloseListener(new Window.CloseListener() {
             @Override
             public void windowClose(Window.CloseEvent closeEvent) {
-                getUI().getPage().reload();
+                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+
+//                getUI().getPage().reload();
             }
         });
 
