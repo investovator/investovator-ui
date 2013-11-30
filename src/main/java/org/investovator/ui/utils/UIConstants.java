@@ -15,6 +15,7 @@ import org.investovator.ui.authentication.Authenticator;
 public class UIConstants {
 
     //vadin UI views
+    public static final String LOGIN_VIEW = "";
     public static final String MAINVIEW = "main";
     public static final String AGENTVIEW = "agentView";
     public static final String DATAPLAY_USR_DASH = "dataPlaybackDashboard";

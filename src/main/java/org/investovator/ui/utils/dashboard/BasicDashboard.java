@@ -50,7 +50,7 @@ public abstract class BasicDashboard extends GlobalView {
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
         if(!authenticator.isLoggedIn()){
-            getUI().getNavigator().navigateTo("");
+            getUI().getNavigator().navigateTo(UIConstants.LOGIN_VIEW);
             return;
         }
 
@@ -171,7 +171,7 @@ public abstract class BasicDashboard extends GlobalView {
                                 exit.addClickListener(new Button.ClickListener() {
                                     @Override
                                     public void buttonClick(Button.ClickEvent event) {
-                                        getUI().getNavigator().navigateTo("");
+                                        getUI().getNavigator().navigateTo(UIConstants.LOGIN_VIEW);
                                     }
                                 });
                             }

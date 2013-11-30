@@ -5,10 +5,14 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyDataImpl;
+import org.investovator.core.data.api.UserData;
+import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.agentgaming.ReportHelper;
 import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 import org.investovator.ui.agentgaming.user.components.TimeSeriesChart;
+import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.ArrayList;
@@ -22,6 +26,7 @@ import java.util.List;
 public class ReportsView extends DashboardPanel {
 
     VerticalLayout layout;
+    GridLayout reportLayout;
     HashMap<String,TimeSeriesChart> charts;
 
     ComboBox stockSelect;
@@ -44,6 +49,8 @@ public class ReportsView extends DashboardPanel {
         layout.setMargin(true);
         layout.setSpacing(true);
 
+        createReportLayout();
+
         //Stock Select
         stockSelect = new ComboBox();
         stockSelect.setNullSelectionAllowed(false);
@@ -59,12 +66,7 @@ public class ReportsView extends DashboardPanel {
         addButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                for(TimeSeriesChart chart : charts.values()){
-                    addedStocks.add(selectedStock);
-                    chart.addStock(selectedStock);
-                    chart.update();
-                    chart.drawChart();
-                }
+                 addStock(selectedStock);
             }
         });
 
@@ -73,6 +75,7 @@ public class ReportsView extends DashboardPanel {
         reportSelect.setNullSelectionAllowed(false);
         reportSelect.addItem("market price");
         reportSelect.addItem("market spread");
+        reportSelect.addItem("mid");
 
         reportSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -86,33 +89,9 @@ public class ReportsView extends DashboardPanel {
         addReportButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                if(!charts.containsKey(selectedReport)) {
-
-                    final TimeSeriesChart newChart = new TimeSeriesChart(selectedReport);
-                    charts.put( selectedReport,newChart  );
-
-                    UI.getCurrent().access(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(String stock : addedStocks){
-                                newChart.addStock(stock);
-                            }
-                            for(TimeSeriesChart chart : charts.values()){
-                                chart.update();
-                                chart.drawChart();
-                            }
-                            layout.addComponent(newChart);
-                            layout.setComponentAlignment(newChart, Alignment.TOP_CENTER);
-
-                            UI.getCurrent().push();
-                        }
-                    });
-                }
-
+                addChart(selectedReport);
             }
         });
-
-        charts.put( "market price", new TimeSeriesChart("market price"));
 
         HorizontalLayout stockSelectBar = new HorizontalLayout();
         stockSelectBar.setHeight("50px");
@@ -123,17 +102,83 @@ public class ReportsView extends DashboardPanel {
         stockSelectBar.addComponent(addReportButton);
 
         layout.addComponent(stockSelectBar);
-
-        for(TimeSeriesChart chart : charts.values()){
-            layout.addComponent(chart);
-            layout.setComponentAlignment(chart, Alignment.TOP_CENTER);
-        }
-
+        layout.addComponent(reportLayout);
         this.setContent(layout);
+    }
+
+    private void createReportLayout() {
+        reportLayout = new GridLayout();
+        reportLayout.setSpacing(true);
+        reportLayout.setMargin(true);
+        reportLayout.setColumns(2);
+        reportLayout.setWidth("100%");
+        reportLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        reportLayout.setColumnExpandRatio(1, 1);
+        reportLayout.setColumnExpandRatio(2, 1);
+
+
+        reportLayout.setSpacing(true);
+    }
+
+
+    private void addChart(String report){
+        if(!charts.containsKey(report)) {
+
+            final TimeSeriesChart newChart = new TimeSeriesChart(report);
+            newChart.setHeight("300px");
+            newChart.setWidth("100%");
+
+            charts.put( report,newChart  );
+
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    for(String stock : addedStocks){
+                        newChart.addStock(stock);
+                    }
+                    for(TimeSeriesChart chart : charts.values()){
+                        chart.update();
+                        chart.drawChart();
+                    }
+                    reportLayout.addComponent(newChart);
+                    reportLayout.setComponentAlignment(newChart, Alignment.MIDDLE_CENTER);
+
+                    UI.getCurrent().push();
+                }
+            });
+        }
+    }
+
+
+    private void addStock(String stock){
+        for(TimeSeriesChart chart : charts.values()){
+            addedStocks.add(stock);
+            chart.addStock(stock);
+            chart.update();
+            chart.drawChart();
+        }
     }
 
     @Override
     public void onEnter() {
+
+        addChart("market price");
+        addChart("market spread");
+
+        UserData userData = null;
+
+        try {
+            userData = new UserDataImpl();
+            ArrayList<String > stocks = userData.getWatchList(Session.getCurrentGameInstance(),Authenticator.getInstance().getCurrentUser());
+
+            for(String stock : stocks) {
+                addStock(stock);
+            }
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
 
         //Fill Stocks on page load
         try {
@@ -142,14 +187,11 @@ public class ReportsView extends DashboardPanel {
                 if(!stockSelect.containsId(stock)) stockSelect.addItem(stock);
             }
 
-            if(selectedStock==null) selectedStock=stocks.get(0);
+            stockSelect.select(stocks.get(0));
+            reportSelect.select("market price");
 
         } catch (DataAccessException e) {
             e.printStackTrace();
-        }
-
-        for(TimeSeriesChart chart : charts.values()){
-            chart.update();
         }
     }
 
