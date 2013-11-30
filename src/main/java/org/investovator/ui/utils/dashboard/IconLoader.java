@@ -48,17 +48,17 @@ public enum  IconLoader {
             case GAME_SUMMARY:
                 return "icon-dashboard";
             case MAIN_VIEW:
-                return "icon-dashboard";
+                return "icon-monitor";
             case DATA_IMPORT:
-                return "icon-dashboard";
+                return "icon-upload";
             case STOCKS:
-                return "icon-dashboard";
+                return "icon-th-list";
             case OVERVIEW:
-                return "icon-dashboard";
+                return "icon-vcard";
             case WATCH_LIST:
-                return "icon-dashboard";
+                return "icon-eye";
             case REPORTS:
-                return "icon-dashboard";
+                return "icon-doc";
             default:
                 return "icon-reports";
         }

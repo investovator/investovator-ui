@@ -410,6 +410,30 @@
 	content: "\2715";
 }
 
+.icon-monitor.v-nativebutton:before, .icon-monitor > .v-button-wrap:before, .icon-monitor.v-label:before, .v-menubar-menuitem-icon-monitor:before {
+	content: "\1f4bb";
+}
+
+.icon-upload.v-nativebutton:before, .icon-upload > .v-button-wrap:before, .icon-upload.v-label:before, .v-menubar-menuitem-icon-upload:before {
+	content: "\1f4e4";
+}
+
+.icon-doc.v-nativebutton:before, .icon-doc > .v-button-wrap:before, .icon-doc.v-label:before, .v-menubar-menuitem-icon-doc:before {
+	content: "\1f4c4";
+}
+
+.icon-vcard.v-nativebutton:before, .icon-vcard > .v-button-wrap:before, .icon-vcard.v-label:before, .v-menubar-menuitem-icon-vcard:before {
+	content: "\e722";
+}
+
+.icon-eye.v-nativebutton:before, .icon-eye > .v-button-wrap:before, .icon-eye.v-label:before, .v-menubar-menuitem-icon-eye:before {
+	content: "\e70a";
+}
+
+.icon-th-list.v-nativebutton:before, .icon-th-list > .v-button-wrap:before, .icon-th-list.v-label:before, .v-menubar-menuitem-icon-th-list:before {
+	content: "\2630";
+}
+
 @-webkit-keyframes spinner {
 		0% {
 		background-position: 0 0;

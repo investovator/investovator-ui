@@ -85,7 +85,7 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     @Override
     public void wizardCompleted(WizardCompletedEvent wizardCompletedEvent) {
-        Notification.show("Complete");
+//        Notification.show("Complete");
 
         //initialize the player via controller
         GameController controller= GameControllerImpl.getInstance();
