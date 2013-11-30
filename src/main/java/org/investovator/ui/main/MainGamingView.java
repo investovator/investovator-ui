@@ -9,6 +9,7 @@ import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.main.components.AdminGameCreateView;
 import org.investovator.ui.main.components.AdminGameDetailView;
+import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 /**
@@ -69,7 +70,7 @@ public class MainGamingView extends DashboardPanel {
 
         //if not logged in
         if (!Authenticator.getInstance().isLoggedIn()) {
-            ((MyVaadinUI) MyVaadinUI.getCurrent()).getNavigator().navigateTo("");
+            ((MyVaadinUI) MyVaadinUI.getCurrent()).getNavigator().navigateTo(UIConstants.LOGIN_VIEW);
         }
 
         GameController controller = GameControllerImpl.getInstance();

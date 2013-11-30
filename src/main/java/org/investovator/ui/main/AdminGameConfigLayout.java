@@ -24,6 +24,7 @@ import org.investovator.ui.agentgaming.config.AgentGamingView;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.admin.wizard.NewDataPlaybackGameWizard;
 import org.investovator.ui.nngaming.config.NNGamingView;
+import org.investovator.ui.utils.UIConstants;
 
 /**
  * @author: ishan
@@ -56,7 +57,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                     startAgentCreateWizard();
                 }
                 else {
-                    getUI().getNavigator().navigateTo("");
+                    getUI().getNavigator().navigateTo(UIConstants.LOGIN_VIEW);
                 }
             }
         });
@@ -121,7 +122,7 @@ public class AdminGameConfigLayout extends VerticalLayout {
                     startNNCreateWizard();
                 }
                 else {
-                    getUI().getNavigator().navigateTo("");
+                    getUI().getNavigator().navigateTo(UIConstants.LOGIN_VIEW);
                 }
             }
         });

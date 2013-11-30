@@ -4,6 +4,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.utils.UIConstants;
 
 /**
  * @author Amila Surendra
@@ -23,7 +24,7 @@ public abstract class GlobalView extends VerticalLayout implements View
 
 
         if(!authenticator.isLoggedIn()){
-            getUI().getNavigator().navigateTo("");
+            getUI().getNavigator().navigateTo(UIConstants.LOGIN_VIEW);
         }
 
         setupUI(viewChangeEvent);
