@@ -7,10 +7,12 @@
             <bean-name>gbmPriceProcess$stockID</bean-name>
             <bean-name>gbmPriceTimeSeriesReport$stockID</bean-name>
             <bean-name>currentPriceReportVariables$stockID</bean-name>
+
             <bean-name>currentPriceTimeSeriesReportVariables$stockID</bean-name>
             <bean-name>spreadTimeSeriesReportVariables$stockID</bean-name>
-            <bean-name>equilibriumPriceTimeSeriesReport$stockID</bean-name>
+            <bean-name>midPriceReportTimeSeriesVariables$stockID</bean-name>
 
+            <bean-name>equilibriumPriceTimeSeriesReport$stockID</bean-name>
             <bean-name>equilibriumPriceReportVariables$stockID</bean-name>
             <bean-name>equilibriumPriceUpdater$stockID</bean-name>
             <bean-name>currentPriceTimeSeriesReport$stockID</bean-name>
@@ -31,10 +33,13 @@
     <dependencies>
 
         <!--Added for investovator timeline-->
-        <bean id="currentPriceTimeSeriesReportVariables$stockID" class="net.sourceforge.jasa.report.timeseries.CurrentPriceReportTimeseriesVariables">
+        <bean id="currentPriceTimeSeriesReportVariables$stockID" class="org.investovator.agentsimulation.multiasset.report.timeseries.CurrentPriceReportTimeseriesVariables">
         </bean>
 
-        <bean id="spreadTimeSeriesReportVariables$stockID" class="net.sourceforge.jasa.report.timeseries.SpreadReportTimeseriesVariables">
+        <bean id="spreadTimeSeriesReportVariables$stockID" class="org.investovator.agentsimulation.multiasset.report.timeseries.SpreadReportTimeseriesVariables">
+        </bean>
+
+        <bean id="midPriceReportTimeSeriesVariables$stockID" class="org.investovator.agentsimulation.multiasset.report.timeseries.MidPriceReportTimeSeriesVariables">
         </bean>
         <!--Added for investovator timeline-->
 
