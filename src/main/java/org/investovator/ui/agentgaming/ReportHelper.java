@@ -20,7 +20,7 @@ package org.investovator.ui.agentgaming;
 
 import net.sourceforge.jabm.report.Report;
 import net.sourceforge.jasa.report.CurrentPriceReportVariables;
-import net.sourceforge.jasa.report.timeseries.PriceReportTimeseriesVariables;
+import org.investovator.agentsimulation.multiasset.report.timeseries.PriceReportTimeseriesVariables;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
