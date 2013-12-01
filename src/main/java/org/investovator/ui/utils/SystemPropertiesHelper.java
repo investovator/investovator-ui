@@ -110,7 +110,7 @@ public class SystemPropertiesHelper implements
                     new File(filePath));
 
             //HASU ticker data
-            filePath = context.getRealPath("/WEB-INF/testdata/HASU_ticker.csv");
+            filePath = context.getRealPath("/WEB-INF/testdata/HASU_ticker_.csv");
             historyData.importCSV(CompanyStockTransactionsData.DataType.TICKER,"HASU","MM/dd/yyyy HH:mm:ss.SSS",
                     new File(filePath));
 
