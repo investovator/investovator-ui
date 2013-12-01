@@ -403,9 +403,9 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 
     private void updateQuantityChart(final StockUpdateEvent event)  {
 
-        if(event.getData()==null){
-            return;
-        }
+//        if(event.getData()==null){
+//            return;
+//        }
 
         //iterate every series in the chart at the moment
         for (Series series : quantityChart.getConfiguration().getSeries()) {
@@ -413,16 +413,37 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
+//                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
+//
+//                            dSeries.add(new DataSeriesItem(event.getTime(),
+//                                    event.getData().get(TradingDataAttribute.SHARES)), true, true);
+//
+//                        } else {
+//                            dSeries.add(new DataSeriesItem(event.getTime(),
+//                                    event.getData().get(TradingDataAttribute.SHARES)));
+//
+//                        }
+                final float value;
+                //if new data is available
+                if(event.getData()!=null ){
+                    value=event.getData().get(TradingDataAttribute.SHARES);
+                }
+                else {
+                    value=0;
 
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.SHARES)), true, true);
+                }
 
-                        } else {
-                            dSeries.add(new DataSeriesItem(event.getTime(),
-                                    event.getData().get(TradingDataAttribute.SHARES)));
+                if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
 
-                        }
+                    dSeries.add(new DataSeriesItem(event.getTime(),value
+                    ), true, true);
+
+                } else {
+                    dSeries.add(new DataSeriesItem(event.getTime(),
+                            value));
+
+                }
+
 
             }
 
@@ -613,11 +634,12 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             final StockUpdateEvent event = (StockUpdateEvent) arg;
             updateTickerChart(event);
 
+            //update quantity chart
+            updateQuantityChart(event);
+
             //if event contains data
             if(event.getData()!=null){
 
-                //update quantity chart
-                updateQuantityChart(event);
 
                 //update the table
                 updateStockPriceTable(event);

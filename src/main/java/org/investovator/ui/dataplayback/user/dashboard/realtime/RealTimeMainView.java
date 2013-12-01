@@ -330,11 +330,12 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //update the ticker chart
             updateTickerChart(event);
 
+            //update quantity chart
+            updateQuantityChart(event);
+
             //if event contains data
             if(event.getData()!=null){
 
-                //update quantity chart
-                updateQuantityChart(event);
 
                 //update the table
                 updateStockPriceTable(event);
@@ -388,16 +389,24 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             final DataSeries dSeries = (DataSeries) series;
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
+                final float value;
+                //if new data is available
+                if(event.getData()!=null ){
+                    value=event.getData().get(TradingDataAttribute.SHARES);
+                }
+                else {
+                    value=0;
 
+                }
 
                             if (dSeries.getData().size() > TICKER_CHART_LENGTH) {
 
-                                dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)), true, true);
+                                dSeries.add(new DataSeriesItem(event.getTime(),value
+                                        ), true, true);
 
                             } else {
                                 dSeries.add(new DataSeriesItem(event.getTime(),
-                                        event.getData().get(TradingDataAttribute.SHARES)));
+                                        value));
 
                             }
 
