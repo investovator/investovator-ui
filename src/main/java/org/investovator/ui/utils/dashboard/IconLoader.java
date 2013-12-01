@@ -72,7 +72,7 @@ public enum  IconLoader {
             case GAME_SUMMARY:
                 return "Game Summary";
             case MAIN_VIEW:
-                return "Main View";
+                return "Dashboard";
             case DATA_IMPORT:
                 return "Data Import";
             case STOCKS:
