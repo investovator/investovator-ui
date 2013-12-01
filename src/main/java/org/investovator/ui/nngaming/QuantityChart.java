@@ -213,7 +213,9 @@ public class QuantityChart extends Chart {
 
             for (Iterator<Date> iterator = dateList.iterator(); iterator.hasNext(); ) {
                 Date next = iterator.next();
-                dataSeries.add(new DataSeriesItem(next,Float.valueOf(dataMap.get(next))));
+                float value = Float.valueOf(dataMap.get(next));
+                value = Float.valueOf(String.format("%.0f", value));
+                dataSeries.add(new DataSeriesItem(next,value));
             }
             stockDataSeriesList.add(dataSeries);
 

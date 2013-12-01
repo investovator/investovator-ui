@@ -192,15 +192,18 @@ public class EventBroadcaster implements EventListener,Observer{
                                 double oldQty = stockData.get(Terms.QNTY);
 
                                 stockData.put(Terms.QNTY, oldQty + ((Order) object).getOrderStockCount());
+                                stockData.put(Terms.PRICE, 12.0);
                                 shares.put(stockID, stockData);
                             } else {
                                 HashMap<String, Double> stockData = new HashMap<>();
-                                stockData.put(Terms.QNTY, Double.valueOf(((Order) object).getOrderStockCount()));
+                                stockData.put(Terms.QNTY, 0.0 + ((Order) object).getOrderStockCount());
+                                stockData.put(Terms.PRICE, 12.0);
                                 shares.put(stockID, stockData);
                             }
 
                             portfolio.setShares(shares);
 
+                            userData.addUserToGameInstance(Session.getCurrentGameInstance(),Session.getCurrentUser());
                             userData.updateUserPortfolio(currentInstance,username, portfolio);
                             notifyListeners(new PortfolioData(portfolio,true,username));
 
@@ -344,6 +347,22 @@ public class EventBroadcaster implements EventListener,Observer{
             notifyListeners(new TableData(stockBeanListBuy,stockBeanListSell,playableStocks));
 
             notifyListeners(new GraphData(currentIndex));
+
+            String userName = Session.getCurrentUser();
+            Portfolio portfolio = null;
+
+            try {
+
+                portfolio = userData.getUserPortfolio(currentInstance,userName);
+                portfolio.setCashBalance(portfolio.getCashBalance() + portfolio.getBlockedCash());
+                portfolio.setBlockedCash(0.0);
+                userData.updateUserPortfolio(currentInstance,userName,portfolio);
+
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+
+            notifyListeners(new PortfolioData(portfolio,false,userName));
 
             currentIndex++;
 

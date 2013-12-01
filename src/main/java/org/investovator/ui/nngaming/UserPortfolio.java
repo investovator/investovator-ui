@@ -26,7 +26,6 @@ import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.nngaming.beans.StockSummaryBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
@@ -58,6 +57,17 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         currentInstance = Session.getCurrentGameInstance();
 
+        if(userData == null){
+            try {
+                userData = new UserDataImpl();
+
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        loadUserPortfolio();
+
         setupUI();
 
         eventBroadcaster = EventBroadcaster.getInstance();
@@ -68,10 +78,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
     public void setupUI(){
 
-        this.setWidth("100%");
         this.setHeight("100%");
-        addStyleName("center-caption");
-
 
         accountBalance=new Label();
         accountBalance.setCaption("Cash Balance");
@@ -84,48 +91,54 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         HorizontalLayout portSummary = new HorizontalLayout();
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
+        portSummary.setWidth("100%");
         portSummary.setSpacing(true);
+        portSummary.setExpandRatio(accountBalance,1);
+        portSummary.setExpandRatio(blockedAmount,1);
 
-        VerticalLayout component = new VerticalLayout();
-        component.addComponent(portSummary);
-        component.addComponent(stocksSummaryTable);
-        component.setExpandRatio(portSummary, 1);
-        component.setExpandRatio(stocksSummaryTable, 1);
+        HorizontalLayout stockSummary = new HorizontalLayout();
+        stockSummary.addComponent(stocksSummaryTable);
+        stockSummary.setWidth("100%");
 
-        this.addComponent(component);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(portSummary);
+        layout.addComponent(stockSummary);
+        layout.setWidth("100%");
+
+        this.addComponent(layout);
+
+        this.setImmediate(true);
+        this.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        this.setWidth("100%");
+
     }
 
-
-    public void update(){
-        String currentUser = Authenticator.getInstance().getCurrentUser();
+    private void loadUserPortfolio(){
         Portfolio portfolio = null;
-
-        if(userData == null){
-            try {
-                userData = new UserDataImpl();
-            } catch (DataAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        String currentUser = Session.getCurrentUser();
 
         try {
-            userData.addUserToGameInstance(currentInstance,currentUser);
+            userData.addUserToGameInstance(currentInstance,Session.getCurrentUser());
             portfolio = userData.getUserPortfolio(currentInstance,currentUser);
         } catch (DataAccessException e) {
-            e.printStackTrace();
+
+            if(portfolio == null) {
+                try {
+                    portfolio = new PortfolioImpl(currentUser, USERCASH, USERBLOCKEDCASH);
+                    userData.updateUserPortfolio(currentInstance,currentUser, portfolio);
+                } catch (DataAccessException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
         }
 
-        if(portfolio == null) {
-            try {
-                portfolio = new PortfolioImpl(currentUser, USERCASH, USERBLOCKEDCASH);
-                userData.updateUserPortfolio(currentInstance,currentUser, portfolio);
-            } catch (DataAccessException e1) {
-                e1.printStackTrace();
-            }
-        }
+    }
+
+    public void update(){
 
         try {
-            currentUser = Authenticator.getInstance().getCurrentUser();
+            String currentUser = Session.getCurrentUser();
             Double balance = userData.getUserPortfolio(currentInstance,currentUser).getCashBalance();
             accountBalance.setValue(String.format("%.2f", balance));
             Double blocked = userData.getUserPortfolio(currentInstance,currentUser).getBlockedCash();
@@ -154,10 +167,8 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         final BeanContainer<String, StockSummaryBean> shownStocks = (BeanContainer<String, StockSummaryBean>) stocksSummaryTable.getContainerDataSource();
 
-
         try {
-            UserData userData = new UserDataImpl();
-            Portfolio userPortfolio =   userData.getUserPortfolio(currentInstance,Authenticator.getInstance().getCurrentUser());
+            Portfolio userPortfolio =  userData.getUserPortfolio(currentInstance,Session.getCurrentUser());
             final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
 
             UI.getCurrent().access(new Runnable() {
@@ -190,18 +201,17 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         myStocks.setBeanIdProperty("stockID");
 
 
-        stocksSummaryTable  = new Table("My Portfolio", myStocks);
+        stocksSummaryTable  = new Table("", myStocks);
 
-        stocksSummaryTable.setSizeFull();
-        stocksSummaryTable.setWidth("90%");
+        stocksSummaryTable.setWidth("80%");
         stocksSummaryTable.setSelectable(true);
         stocksSummaryTable.setImmediate(true);
+        stocksSummaryTable.setPageLength(4);
 
         stocksSummaryTable.setColumnHeader("stockID", "Stock");
         stocksSummaryTable.setColumnHeader("stocks", "Shares");
 
         stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks"});
-
 
         updateStocksTable();
     }
@@ -209,7 +219,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     @Override
     public void onBroadcast(Object object) {
 
-        String userName = Authenticator.getInstance().getCurrentUser();
+        String userName = Session.getCurrentUser();
 
         if (object instanceof PortfolioData){
 
