@@ -171,11 +171,16 @@ public class StockAnalysisView extends DashboardPanel {
     private void createParamInputField(){
 
         inputParameter = new TextField("Input Value");
+        inputParameter.setImmediate(true);
         inputParameter.setValue(String.valueOf(analysisValue));
         inputParameter.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                analysisValue = Double.parseDouble(inputParameter.getValue());
+                 try {
+                        analysisValue = Double.parseDouble(inputParameter.getValue());
+                 }catch (NumberFormatException e){
+                     Notification.show("Please insert a valid input value", Notification.Type.TRAY_NOTIFICATION);
+                 }
             }
         });
 
@@ -266,7 +271,10 @@ public class StockAnalysisView extends DashboardPanel {
                 if(inputParameter.getValue().equals("0") || inputParameter.getValue().isEmpty()){
                     Notification.show("Please insert a valid input value", Notification.Type.TRAY_NOTIFICATION);
                 }
-                else{
+
+                try {
+                    analysisValue = Double.parseDouble(inputParameter.getValue());
+
                     String stockID = (String) stockSelect.getValue();
 
                     reportLayout.removeAllComponents();
@@ -287,9 +295,15 @@ public class StockAnalysisView extends DashboardPanel {
                         reportLayout.addComponent(analysisChart);
 
                     }
+
+
+                }catch (NumberFormatException e){
+                    Notification.show("Please insert a valid input value", Notification.Type.TRAY_NOTIFICATION);
                 }
 
+
             }
+
         });
     }
 

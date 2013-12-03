@@ -38,17 +38,17 @@ public class GameSettingsView implements WizardStep {
     HorizontalLayout daysLayout = new HorizontalLayout();
 
     double daysCount;
-    double speedFactor;
+    double speedFactor = 1;
 
     VerticalLayout content;
 
     public GameSettingsView(){
-;
+
         daysSlider.setOrientation(SliderOrientation.HORIZONTAL);
         daysSlider.setCaption("Select Game Duration");
         daysSlider.setResolution(0);
         daysSlider.setWidth(90, Sizeable.Unit.MM);
-        daysSlider.setValue(new Double(1));
+        daysSlider.setValue((double) 1);
         daysSlider.setImmediate(true);
         daysSlider.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -63,7 +63,7 @@ public class GameSettingsView implements WizardStep {
         speedSlider.setCaption("Select Game Speed");
         speedSlider.setResolution(0);
         speedSlider.setWidth(90, Sizeable.Unit.MM);
-        speedSlider.setValue(new Double(1));
+        speedSlider.setValue((double) 1);
         speedSlider.setImmediate(true);
         speedSlider.addValueChangeListener(new Property.ValueChangeListener() {
             @Override

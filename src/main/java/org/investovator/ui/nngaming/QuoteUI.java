@@ -22,10 +22,11 @@ import com.vaadin.data.Property;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
-import org.investovator.ui.authentication.Authenticator;
+import org.investovator.ui.nngaming.eventinterfaces.PortfolioUpdateEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.Order;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
+import org.investovator.ui.utils.Session;
 
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -53,6 +54,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
 
     private EventBroadcaster eventBroadcaster;
     private List<SymbolChangeEvent> symbolListeners;
+    private List<PortfolioUpdateEvent> portfolioListeners;
 
     public QuoteUI() {
 
@@ -60,6 +62,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         eventBroadcaster = EventBroadcaster.getInstance();
 
         symbolListeners = new ArrayList<>();
+        portfolioListeners = new ArrayList<>();
 
     }
 
@@ -150,7 +153,7 @@ public class QuoteUI extends VerticalLayout implements EventListener {
 
     }
 
-    public void addListener(SymbolChangeEvent listener){
+    public void addSymbolListener(SymbolChangeEvent listener){
         this.symbolListeners.add(listener);
     }
 
@@ -159,6 +162,17 @@ public class QuoteUI extends VerticalLayout implements EventListener {
             symbolListeners.get(i).onSymbolChange(selectedStock);
         }
     }
+
+    public void addPortfolioListener(PortfolioUpdateEvent listener){
+        this.portfolioListeners.add(listener);
+    }
+
+    private void notifyListeners(boolean update){
+        for (int i = 0; i < portfolioListeners.size(); i++) {
+            portfolioListeners.get(i).onPortfolioUpdate(update);
+        }
+    }
+
 
     private void setAmount(){
         amount.setValue( Float.toString(orderPrice*orderStockCount));
@@ -209,7 +223,8 @@ public class QuoteUI extends VerticalLayout implements EventListener {
                  stocks.setValue("");
                  amount.setValue("");
 
-                 String userName = Authenticator.getInstance().getCurrentUser();
+                 String userName = Session.getCurrentUser();
+                 notifyListeners(true);
                  eventBroadcaster.setEvent(new Order(userName,selectedStock, isBuy, orderPrice, orderStockCount));
             }
 

@@ -132,8 +132,10 @@ public class QuantityChart extends Chart {
             Date[] dates = dateValues.get(stockList.indexOf(stock));
             DataSeriesItem item =  stockDataSeriesList.get(stockList.indexOf(stock)).get(0);
             stockDataSeriesList.get(stockList.indexOf(stockList.get(i))).remove(item);
+            float value = values[currentIndex];
+            value = Float.valueOf(String.format("%.0f", value));
             stockDataSeriesList.get(stockList.indexOf(stock)).add(
-                    new DataSeriesItem(dates[currentIndex], values[currentIndex]));
+                    new DataSeriesItem(dates[currentIndex], value));
 
             getUI().access(new Runnable() {
                 @Override

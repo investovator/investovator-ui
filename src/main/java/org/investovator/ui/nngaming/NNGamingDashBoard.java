@@ -19,6 +19,7 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
+import org.investovator.ui.analysis.AnalysisPanel;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
@@ -34,6 +35,7 @@ public class NNGamingDashBoard extends BasicDashboard{
 
     DashboardPlayingView mainDashView;
     StockAnalysisView stockAnalysisView;
+    AnalysisPanel analysisPanel;
 
     public NNGamingDashBoard() {
         super("<span><center>investovator</center></span>Dashboard");
@@ -44,9 +46,11 @@ public class NNGamingDashBoard extends BasicDashboard{
         LinkedHashMap<String, DashboardPanel> menuList = new LinkedHashMap<String, DashboardPanel>();
         mainDashView = new DashboardPlayingView();
         stockAnalysisView = new StockAnalysisView();
+        analysisPanel = new AnalysisPanel();
 
         menuList.put("main view", mainDashView);
         menuList.put("stock analysis",stockAnalysisView);
+        menuList.put("analysis",analysisPanel);
 
         return menuList;
     }

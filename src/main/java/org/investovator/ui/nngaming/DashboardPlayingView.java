@@ -21,12 +21,10 @@ package org.investovator.ui.nngaming;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
+import org.investovator.ui.nngaming.eventinterfaces.PortfolioUpdateEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
@@ -34,13 +32,14 @@ import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
+import java.util.Date;
 import java.util.Locale;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent {
+public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent, PortfolioUpdateEvent {
 
 
     //Layout Components
@@ -56,6 +55,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
     private EventBroadcaster eventBroadcaster;
     private String selectedStock;
+    private boolean updateStatus = false;
 
     boolean simulationRunning = false;
 
@@ -66,7 +66,8 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         createUI();
 
-        quoteUI.addListener(this);
+        quoteUI.addSymbolListener(this);
+        quoteUI.addPortfolioListener(this);
     }
 
 
@@ -139,9 +140,6 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         row3.addComponent(orderBook);
         row3.addComponent(quote);
         row3.addComponent(userPort);
-//        row3.setExpandRatio(orderBook,1.4f);
-//        row3.setExpandRatio(quote,1.0f);
-//        row3.setExpandRatio(userPort,1.0f);
 
         row1.setComponentAlignment(currentPriceChart, Alignment.MIDDLE_CENTER);
         row2.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
@@ -277,7 +275,13 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
                 stockIndex = 0;
             }
             else{
-                stockIndex = ((TableData) object).getStockList().indexOf(selectedStock);
+                if(((TableData) object).getStockList() == null || ((TableData) object).getStockList().isEmpty()){
+                    Notification.show("Stock Table Update was not successful", Notification.Type.TRAY_NOTIFICATION);
+                    return;
+                }
+                else{
+                    stockIndex = ((TableData) object).getStockList().indexOf(selectedStock);
+                }
             }
 
 
@@ -334,9 +338,34 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
             }
         }
 
-        if(object instanceof PortfolioData){
-            return;
+        if(object instanceof Date){
+            userPortfolio.updateDate((Date) object);
         }
+
+        if(object instanceof PortfolioData){
+
+            if(updateStatus){
+
+                if(((PortfolioData) object).isOrderExecuted()){
+                    userPortfolio.updatePortfolio(((PortfolioData) object).getPortfolio());
+                    userPortfolio.updateStocksTable();
+                }
+                else {
+                    userPortfolio.updatePortfolio(((PortfolioData) object).getPortfolio());
+                }
+                updateStatus = false;
+            }
+            else {
+                return;
+            }
+        }
+
+    }
+
+    @Override
+    public void onPortfolioUpdate(boolean update) {
+
+        updateStatus = true;
 
     }
 }

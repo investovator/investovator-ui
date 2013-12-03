@@ -20,6 +20,7 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
@@ -27,17 +28,19 @@ import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.nngaming.beans.StockSummaryBean;
-import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
-import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.utils.Session;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
+public class UserPortfolio extends HorizontalLayout {
 
     //External Data
     UserData userData;
@@ -45,6 +48,7 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     //Layout Components
     Label accountBalance;
     Label blockedAmount;
+    Label date;
     Table stocksSummaryTable;
 
     private double USERCASH = 1000000.0;
@@ -52,10 +56,12 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
     private EventBroadcaster eventBroadcaster;
     private String currentInstance;
+    private NNGamingFacade nnGamingFacade;
 
     public UserPortfolio() {
 
         currentInstance = Session.getCurrentGameInstance();
+        nnGamingFacade = NNGamingFacade.getInstance();
 
         if(userData == null){
             try {
@@ -70,9 +76,6 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
 
         setupUI();
 
-        eventBroadcaster = EventBroadcaster.getInstance();
-        eventBroadcaster.addListener(this);
-
 
     }
 
@@ -86,13 +89,18 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         blockedAmount = new Label();
         blockedAmount.setCaption("Blocked Amount");
 
+        date = new Label();
+        date.setCaption("Date");
+
         createStocksTable();
 
         HorizontalLayout portSummary = new HorizontalLayout();
+        portSummary.addComponent(date);
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
         portSummary.setWidth("100%");
         portSummary.setSpacing(true);
+        portSummary.setExpandRatio(date,1);
         portSummary.setExpandRatio(accountBalance,1);
         portSummary.setExpandRatio(blockedAmount,1);
 
@@ -143,6 +151,13 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
             accountBalance.setValue(String.format("%.2f", balance));
             Double blocked = userData.getUserPortfolio(currentInstance,currentUser).getBlockedCash();
             blockedAmount.setValue(String.format("%.2f", blocked));
+            Date currentDate = nnGamingFacade.getDateRange("SAMP")[1];
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            calendar.setTime(currentDate);
+            calendar.add(Calendar.DATE,3);
+            DateFormat df = new SimpleDateFormat("dd MMM yyyy");
+            String dateString = df.format(calendar.getTime());
+            date.setValue(dateString);
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -150,20 +165,27 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     }
 
 
-    public void updatePortfolio(Portfolio portfolio){
+    public void updatePortfolio(final Portfolio portfolio){
 
         if (this.isConnectorEnabled()) {
             getSession().lock();
             try {
-                accountBalance.setValue(String.format("%.2f", portfolio.getCashBalance()));
-                blockedAmount.setValue(String.format("%.2f", portfolio.getBlockedCash()));
+
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
+                        accountBalance.setValue(String.format("%.2f", portfolio.getCashBalance()));
+                        blockedAmount.setValue(String.format("%.2f", portfolio.getBlockedCash()));
+                    }
+                });
+
             } finally {
                 getSession().unlock();
             }
         }
     }
 
-    private void updateStocksTable(){
+    public void updateStocksTable(){
 
         final BeanContainer<String, StockSummaryBean> shownStocks = (BeanContainer<String, StockSummaryBean>) stocksSummaryTable.getContainerDataSource();
 
@@ -216,28 +238,27 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         updateStocksTable();
     }
 
-    @Override
-    public void onBroadcast(Object object) {
+    public void updateDate(final Date currentDate){
 
-        String userName = Session.getCurrentUser();
+        if (this.isConnectorEnabled()) {
+            getSession().lock();
+            try {
 
-        if (object instanceof PortfolioData){
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
+                        DateFormat df = new SimpleDateFormat("dd MMM yyyy");
+                        String dateString = df.format(currentDate);
+                        date.setValue(dateString);
+                        getUI().push();
+                    }
+                });
 
-            if(((PortfolioData) object).getUserName().equals(userName)){
-
-                if(((PortfolioData) object).isOrderExecuted()){
-                    updatePortfolio(((PortfolioData) object).getPortfolio());
-                    updateStocksTable();
-                }
-                else {
-                    updatePortfolio(((PortfolioData) object).getPortfolio());
-                }
+            } finally {
+                getSession().unlock();
             }
-            else {
-                return;
-            }
-
         }
 
     }
+
 }

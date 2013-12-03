@@ -20,10 +20,10 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.ui.Notification;
-import org.investovator.ann.nngaming.MarketEventReceiver;
+import org.investovator.ann.nngaming.eventmanager.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
-import org.investovator.ann.nngaming.events.AddBidEvent;
-import org.investovator.ann.nngaming.events.DayChangedEvent;
+import org.investovator.ann.nngaming.eventmanager.events.AddBidEvent;
+import org.investovator.ann.nngaming.eventmanager.events.DayChangedEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
@@ -62,6 +62,7 @@ public class EventBroadcaster implements EventListener,Observer{
     private UserData userData;
     private boolean tableUpdateStatus;
     private String currentInstance;
+    private Date currentDate;
 
     private EventBroadcaster(){
 
@@ -87,6 +88,9 @@ public class EventBroadcaster implements EventListener,Observer{
             e.printStackTrace();
         }
 
+        currentDate = nnGamingFacade.getDateRange("SAMP")[1];
+        getNextBusinessDay(currentDate);
+
         tableUpdateStatus = false;
 
     }
@@ -110,6 +114,23 @@ public class EventBroadcaster implements EventListener,Observer{
             broadcastListeners.get(i).onBroadcast(object);
         }
     }
+
+    private void getNextBusinessDay(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        if (dayOfWeek == Calendar.FRIDAY) {
+            calendar.add(Calendar.DATE, 3);
+        } else if (dayOfWeek == Calendar.SATURDAY) {
+            calendar.add(Calendar.DATE, 2);
+        } else {
+            calendar.add(Calendar.DATE, 1);
+        }
+
+        currentDate = calendar.getTime();
+    }
+
 
     public void setEvent(Object object){
 
@@ -203,7 +224,6 @@ public class EventBroadcaster implements EventListener,Observer{
 
                             portfolio.setShares(shares);
 
-                            userData.addUserToGameInstance(Session.getCurrentGameInstance(),Session.getCurrentUser());
                             userData.updateUserPortfolio(currentInstance,username, portfolio);
                             notifyListeners(new PortfolioData(portfolio,true,username));
 
@@ -348,21 +368,26 @@ public class EventBroadcaster implements EventListener,Observer{
 
             notifyListeners(new GraphData(currentIndex));
 
+            getNextBusinessDay(currentDate);
+            notifyListeners(currentDate);
+
             String userName = Session.getCurrentUser();
             Portfolio portfolio = null;
+            double blockedCash;
 
             try {
 
                 portfolio = userData.getUserPortfolio(currentInstance,userName);
-                portfolio.setCashBalance(portfolio.getCashBalance() + portfolio.getBlockedCash());
-                portfolio.setBlockedCash(0.0);
-                userData.updateUserPortfolio(currentInstance,userName,portfolio);
-
+                blockedCash = portfolio.getBlockedCash();
+                if(blockedCash > 0){
+                    portfolio.setCashBalance(portfolio.getCashBalance() + portfolio.getBlockedCash());
+                    portfolio.setBlockedCash(0.0);
+                    userData.updateUserPortfolio(currentInstance,userName,portfolio);
+                    notifyListeners(new PortfolioData(portfolio,false,userName));
+                }
             } catch (DataAccessException e) {
                 e.printStackTrace();
             }
-
-            notifyListeners(new PortfolioData(portfolio,false,userName));
 
             currentIndex++;
 
