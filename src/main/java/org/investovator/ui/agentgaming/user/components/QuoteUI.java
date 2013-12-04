@@ -3,6 +3,7 @@ package org.investovator.ui.agentgaming.user.components;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.investovator.agentsimulation.api.JASAFacade;
+import org.investovator.core.commons.utils.ExecutionResult;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
@@ -48,6 +49,7 @@ public class QuoteUI extends VerticalLayout {
         HorizontalLayout sideSelectLayout = new HorizontalLayout();
 
         sideSelect = new ComboBox("Select side");
+        sideSelect.setImmediate(true);
         sideSelect.addItem(OrderSide.BUY);
         sideSelect.addItem(OrderSide.SELL);
         sideSelect.select(OrderSide.BUY);
@@ -112,6 +114,7 @@ public class QuoteUI extends VerticalLayout {
 
         //Stock Select
         stockSelect = new ComboBox();
+        stockSelect.setImmediate(true);
         stockSelect.setCaption("Select stock to trade");
         stockSelect.setNullSelectionAllowed(false);
         stockSelect.setWidth("100%");
@@ -175,7 +178,11 @@ public class QuoteUI extends VerticalLayout {
     Button.ClickListener tradeButtonClickListener = new Button.ClickListener() {
         @Override
         public void buttonClick(Button.ClickEvent clickEvent) {
-            JASAFacade.getMarketFacade().putLimitOrder(Authenticator.getInstance().getCurrentUser(), selectedStock, orderStockCount, orderPrice, isBuy);
+            ExecutionResult result = JASAFacade.getMarketFacade().putLimitOrder(Authenticator.getInstance().getCurrentUser(), selectedStock, orderStockCount, orderPrice, isBuy);
+            if(result != null){
+                if(result.isSuccess()) Notification.show("Order was successful.", Notification.Type.TRAY_NOTIFICATION);
+                else Notification.show(result.getMessage(), Notification.Type.TRAY_NOTIFICATION);
+            }
         }
     };
 
@@ -191,9 +198,16 @@ public class QuoteUI extends VerticalLayout {
     Property.ValueChangeListener sideSelectValueChangeListener = new Property.ValueChangeListener() {
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-            final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
-            if (valueString.equals(OrderSide.BUY)) isBuy = true;
-            else isBuy = false;
+
+            if( ((OrderSide)sideSelect.getValue()) == OrderSide.BUY ){
+                isBuy = true;
+            }else {
+                isBuy = false;
+            }
+
+//            final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
+//            if (valueString.equals(OrderSide.BUY)) isBuy = true;
+//            else if(valueString.equals(OrderSide.SELL)) isBuy = false;
 
         }
     };
