@@ -20,18 +20,7 @@
 package org.investovator.ui.dataplayback.admin.dashboard;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
-import org.investovator.controller.GameController;
-import org.investovator.controller.GameControllerImpl;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
-import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
-import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.dataplayback.admin.DataPlaybackEngineAdminDashboard;
-import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
-import org.investovator.ui.dataplayback.user.dashboard.realtime.RealTimeMainView;
-import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 import org.investovator.ui.utils.dashboard.IconLoader;

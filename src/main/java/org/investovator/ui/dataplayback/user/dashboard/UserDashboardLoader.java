@@ -31,7 +31,6 @@ import org.investovator.ui.dataplayback.util.DataPlaybackEngineStates;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 import org.investovator.ui.utils.dashboard.IconLoader;
-import org.investovator.ui.utils.dashboard.dataplayback.BasicStockDataView;
 
 import java.util.LinkedHashMap;
 

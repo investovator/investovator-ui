@@ -1,6 +1,5 @@
 package org.investovator.ui.analysis;
 
-import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
@@ -15,14 +14,9 @@ import org.investovator.analysis.technical.utils.IndicatorType;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.api.CompanyStockTransactionsData;
 import org.investovator.core.data.api.CompanyStockTransactionsDataImpl;
-import org.investovator.core.data.api.utils.StockTradingDataImpl;
-import org.investovator.core.data.cassandraexplorer.excelimporter.HistoryData;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.agentgaming.ReportHelper;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
 

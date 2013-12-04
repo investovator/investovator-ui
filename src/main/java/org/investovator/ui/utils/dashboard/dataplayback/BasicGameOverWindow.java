@@ -20,17 +20,11 @@
 package org.investovator.ui.utils.dashboard.dataplayback;
 
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.ui.dataplayback.beans.PlayerBasicInformationBean;
-import org.investovator.ui.dataplayback.beans.PlayerInformationBean;
 import org.investovator.ui.utils.UIConstants;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author: ishan

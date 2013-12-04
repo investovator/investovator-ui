@@ -25,16 +25,12 @@ import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
 import org.investovator.controller.command.exception.CommandExecutionException;
 import org.investovator.controller.command.exception.CommandSettingsException;
 import org.investovator.core.commons.utils.Portfolio;
-import org.investovator.dataplaybackengine.DataPlayerFacade;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
-import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.DataPlayer;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicGameOverWindow;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author: ishan

@@ -1,7 +1,5 @@
 package org.investovator.ui.agentgaming.user.components;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import org.investovator.core.data.api.CompanyData;
@@ -10,14 +8,9 @@ import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
-import org.investovator.ui.main.beans.CompanyDataBean;
-import org.investovator.ui.main.components.StockSelectComboBox;
 import org.investovator.ui.utils.Session;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 
 /**

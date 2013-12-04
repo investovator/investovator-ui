@@ -15,8 +15,8 @@ import org.investovator.ui.authentication.LoginView;
 import org.investovator.ui.dataplayback.admin.dashboard.AdminDashboardLoader;
 import org.investovator.ui.dataplayback.user.dashboard.UserDashboardLoader;
 import org.investovator.ui.main.AgentConfigDashboard;
-import org.investovator.ui.nngaming.NNGamingDashBoard;
 import org.investovator.ui.main.UserDashboard;
+import org.investovator.ui.nngaming.NNGamingDashBoard;
 import org.investovator.ui.utils.UIConstants;
 
 import javax.servlet.annotation.WebServlet;

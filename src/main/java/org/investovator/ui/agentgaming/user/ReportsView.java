@@ -1,15 +1,11 @@
 package org.investovator.ui.agentgaming.user;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.agentgaming.ReportHelper;
-import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
 import org.investovator.ui.agentgaming.user.components.TimeSeriesChart;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.Session;
@@ -17,7 +13,6 @@ import org.investovator.ui.utils.dashboard.DashboardPanel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Amila Surendra

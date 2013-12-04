@@ -2,15 +2,11 @@ package org.investovator.ui.agentgaming.user.components;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.ui.authentication.Authenticator;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * @author Amila Surendra

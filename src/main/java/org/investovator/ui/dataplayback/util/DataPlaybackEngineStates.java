@@ -20,7 +20,6 @@
 package org.investovator.ui.dataplayback.util;
 
 import org.investovator.dataplaybackengine.configuration.GameTypes;
-import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 
 import java.util.Date;
 

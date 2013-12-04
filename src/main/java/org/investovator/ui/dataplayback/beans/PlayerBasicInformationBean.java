@@ -21,7 +21,6 @@ package org.investovator.ui.dataplayback.beans;
 
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
-import org.investovator.dataplaybackengine.player.DataPlayer;
 
 import java.util.HashMap;
 import java.util.Iterator;

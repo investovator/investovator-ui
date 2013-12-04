@@ -20,10 +20,10 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.ui.Notification;
-import org.investovator.ann.nngaming.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
-import org.investovator.ann.nngaming.events.AddBidEvent;
-import org.investovator.ann.nngaming.events.DayChangedEvent;
+import org.investovator.ann.nngaming.eventmanager.MarketEventReceiver;
+import org.investovator.ann.nngaming.eventmanager.events.AddBidEvent;
+import org.investovator.ann.nngaming.eventmanager.events.DayChangedEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
@@ -39,7 +39,6 @@ import org.investovator.ui.nngaming.eventobjects.TableData;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.utils.Session;
 
-import java.util.EventListener;
 import java.util.*;
 
 /**

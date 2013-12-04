@@ -1,13 +1,10 @@
 package org.investovator.ui.main.components;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
-import org.investovator.ui.agentgaming.beans.StockItemBean;
 import org.investovator.ui.main.beans.CompanyDataBean;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

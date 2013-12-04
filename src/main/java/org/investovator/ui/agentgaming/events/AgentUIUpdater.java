@@ -32,7 +32,6 @@ import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.agentsimulation.api.utils.HollowTradingAgent;
 import org.investovator.ui.utils.Session;
 
 import java.util.ArrayList;

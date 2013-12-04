@@ -1,20 +1,12 @@
 package org.investovator.ui.authentication;
 
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Notification;
-import org.investovator.MyVaadinUI;
 import org.investovator.core.auth.DirectoryDAO;
 import org.investovator.core.auth.DirectoryDAOImpl;
 import org.investovator.core.auth.exceptions.AuthenticationException;
-import org.investovator.core.auth.utils.LdapUtils;
 import org.investovator.ui.utils.Session;
 
 import javax.jcr.SimpleCredentials;
-import javax.swing.*;
 import java.util.HashMap;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  *

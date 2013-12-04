@@ -1,13 +1,9 @@
 package org.investovator.ui.agentgaming.user.components;
 
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import org.investovator.agentsimulation.api.JASAFacade;
 import org.investovator.controller.GameController;
 import org.investovator.controller.GameControllerImpl;
-import org.investovator.controller.GameFacade;
 import org.investovator.controller.command.agent.UnmatchedOrdersCommand;
 import org.investovator.controller.command.exception.CommandExecutionException;
 import org.investovator.controller.command.exception.CommandSettingsException;

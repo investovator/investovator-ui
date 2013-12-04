@@ -2,8 +2,6 @@ package org.investovator.ui.agentgaming.user;
 
 import com.vaadin.navigator.ViewChangeListener;
 import org.investovator.agentsimulation.api.JASAFacade;
-import org.investovator.controller.utils.enums.GameModes;
-import org.investovator.controller.utils.enums.GameStates;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;

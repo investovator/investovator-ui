@@ -18,7 +18,10 @@
 
 package org.investovator.ui.main.components;
 
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import org.investovator.controller.GameController;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.ui.agentgaming.config.AgentGamingView;

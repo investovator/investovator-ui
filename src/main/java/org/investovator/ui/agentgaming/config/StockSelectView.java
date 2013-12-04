@@ -6,7 +6,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import org.investovator.core.data.api.CompanyDataImpl;
-import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.vaadin.teemu.wizards.WizardStep;
 

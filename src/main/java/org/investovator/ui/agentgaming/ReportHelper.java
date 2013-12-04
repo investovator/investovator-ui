@@ -20,17 +20,19 @@ package org.investovator.ui.agentgaming;
 
 import net.sourceforge.jabm.report.Report;
 import net.sourceforge.jasa.report.CurrentPriceReportVariables;
+import org.investovator.agentsimulation.api.JASAFacade;
+import org.investovator.agentsimulation.api.MarketFacade;
 import org.investovator.agentsimulation.multiasset.report.timeseries.PriceReportTimeseriesVariables;
 import org.investovator.core.data.api.CompanyData;
 import org.investovator.core.data.api.CompanyDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.agentsimulation.api.JASAFacade;
-
-import java.util.*;
-
-import org.investovator.agentsimulation.api.MarketFacade;
 import org.investovator.ui.agentgaming.beans.StockItemBean;
 import org.investovator.ui.agentgaming.beans.TimeSeriesNode;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * @author Amila Surendra

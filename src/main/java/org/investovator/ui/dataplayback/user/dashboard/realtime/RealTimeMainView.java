@@ -29,12 +29,10 @@ import org.investovator.controller.GameControllerImpl;
 import org.investovator.controller.command.dataplayback.GetDataPlayerCommand;
 import org.investovator.controller.command.exception.CommandExecutionException;
 import org.investovator.controller.command.exception.CommandSettingsException;
-import org.investovator.controller.dataplaybackengine.DataPlaybackGameFacade;
 import org.investovator.core.commons.events.GameEvent;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
-//import org.investovator.dataplaybackengine.events.PlaybackEvent;
 import org.investovator.dataplaybackengine.events.PlaybackEventListener;
 import org.investovator.dataplaybackengine.events.PlaybackFinishedEvent;
 import org.investovator.dataplaybackengine.events.StockUpdateEvent;
@@ -43,7 +41,6 @@ import org.investovator.dataplaybackengine.exceptions.UserAlreadyJoinedException
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.exceptions.player.PlayerStateException;
 import org.investovator.dataplaybackengine.market.OrderType;
-import org.investovator.dataplaybackengine.player.DailySummaryDataPLayer;
 import org.investovator.dataplaybackengine.player.DataPlayer;
 import org.investovator.dataplaybackengine.player.RealTimeDataPlayer;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
@@ -58,6 +55,8 @@ import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
 import java.util.Date;
+
+//import org.investovator.dataplaybackengine.events.PlaybackEvent;
 
 /**
  * @author: ishan

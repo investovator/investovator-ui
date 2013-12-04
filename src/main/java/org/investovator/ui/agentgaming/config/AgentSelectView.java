@@ -2,12 +2,10 @@ package org.investovator.ui.agentgaming.config;
 
 import com.vaadin.data.Property;
 import com.vaadin.server.Sizeable;
-import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
-import org.investovator.controller.config.ConfigGenerator;
 import org.vaadin.teemu.wizards.WizardStep;
 
 import java.util.Iterator;

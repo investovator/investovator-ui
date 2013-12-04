@@ -4,6 +4,7 @@ package org.investovator.ui.agentgaming.config;
 //import com.vaadin.server.VaadinService;
 //import com.vaadin.ui.Window;
 //import org.investovator.controller.GameControllerFacade;
+
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Window;
 import org.investovator.controller.GameController;
@@ -12,14 +13,12 @@ import org.investovator.controller.config.ConfigGenerator;
 import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
-import org.investovator.core.commons.events.GameEventListener;
 import org.investovator.ui.dataplayback.util.ProgressWindow;
 import org.investovator.ui.utils.TestDataGenerator;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 

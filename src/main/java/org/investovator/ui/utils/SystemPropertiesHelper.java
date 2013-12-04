@@ -2,8 +2,6 @@ package org.investovator.ui.utils;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.investovator.core.commons.configuration.ConfigLoader;
-import org.investovator.core.commons.utils.Portfolio;
-import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.data.api.*;
 import org.investovator.core.data.exeptions.DataAccessException;
 
