@@ -167,6 +167,31 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         buySellButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+                //check for invalid orders
+                boolean invalidOrder=false;
+                String numericRegex="^[0-9]+$";
+                //conditions to check
+                if(stocksList.getValue()==null ||
+                        quantity.getValue()==null ||
+                        !quantity.getValue().toString().matches(numericRegex)) {
+                        invalidOrder=true;
+
+                }
+                //if this is a sell order
+                else if(((OrderType) orderSide.getValue())==OrderType.SELL){
+                    //check if te user has this stock
+                    BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
+                            portfolioTable.getContainerDataSource();
+
+                    if(!beans.containsId(stocksList.getValue().toString())){
+                        invalidOrder=true;
+                    }
+                }
+
+                if(invalidOrder){
+                    Notification.show("Invalid Order");
+                    return;
+                }
 
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
@@ -177,6 +202,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                         updatePortfolioTable(stocksList.getValue().toString());
                         //update account info
                         updateAccountBalance();
+                        Notification.show("Order executed successfully", Notification.Type.TRAY_NOTIFICATION);
                     }
                     else{
 
