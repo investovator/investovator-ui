@@ -464,7 +464,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     public void updateAccountBalance(){
         try {
             Double bal=player.getMyPortfolio(this.userName).getCashBalance();
-            this.accBalance.setValue(bal.toString());
+            this.accBalance.setValue(String.format("%.2f",bal));
         } catch (UserJoinException e) {
             e.printStackTrace();
         }

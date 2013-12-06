@@ -57,6 +57,7 @@ import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
@@ -635,7 +636,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void updateAccountBalance(){
         try {
             Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
-            this.accBalance.setValue(bal.toString());
+            this.accBalance.setValue(String.format("%.2f",bal));
         } catch (UserJoinException e) {
             e.printStackTrace();
         }

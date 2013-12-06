@@ -645,7 +645,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
     public void updateAccountBalance(){
         try {
             Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
-            this.accBalance.setValue(bal.toString());
+            this.accBalance.setValue(String.format("%.2f",bal));
         } catch (UserJoinException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
