@@ -151,11 +151,11 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             this.updateAccountBalance();
         }
         catch (UserAlreadyJoinedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (CommandExecutionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (CommandSettingsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -241,7 +241,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());
                 } catch (UserJoinException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 }
 
             }});

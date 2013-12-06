@@ -54,10 +54,8 @@ import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
-import java.text.DecimalFormat;
 import java.util.Date;
 
-//import org.investovator.dataplaybackengine.events.PlaybackEvent;
 
 /**
  * @author: ishan
@@ -155,8 +153,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                 } catch (UserJoinException e) {
                     Notification.show("First joint the game", Notification.Type.ERROR_MESSAGE);
                 }
-//            }
-//        });
 
     }
 
@@ -270,9 +266,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         } catch (CommandSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-//        catch (PlayerStateException e) {
-//            e.printStackTrace();
-//        }
     }
 
 
@@ -353,7 +346,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
     @Override
     public void eventOccurred(GameEvent arg) {
-//         Notification.show("DED");
 
         //if this is a stock price update
         if (arg instanceof StockUpdateEvent) {
@@ -394,15 +386,12 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         }
         //if the game has stopped
         else if (arg instanceof PlaybackFinishedEvent) {
-//            System.out.println("Game over");
-//            Notification.show("DDDDd", Notification.Type.ERROR_MESSAGE);
 
             //if this UI is not a destroyed one
             if(getUI()!=null){
                 getUI().addWindow(new DataPlaybackGameOverWindow(this.userName, this.userType));
             }
 
-//            this.setContent(new DataPlaybackGameOverWindow(this.userName));
 
             //push the changes
             UI.getCurrent().access(new Runnable() {
@@ -540,9 +529,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
 
             }
-//            catch (PlayerStateException e) {
-//                e.printStackTrace();
-//            }
             catch (UserJoinException e) {
                 e.printStackTrace();
             }
@@ -633,9 +619,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         } catch (UserJoinException e) {
             e.printStackTrace();
         }
-//        catch (PlayerStateException e) {
-//            e.printStackTrace();
-//        }
 
 
         return form;
@@ -648,9 +631,6 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         } catch (UserJoinException e) {
             e.printStackTrace();
         }
-//        catch (PlayerStateException e) {
-//            e.printStackTrace();
-//        }
 
     }
 }

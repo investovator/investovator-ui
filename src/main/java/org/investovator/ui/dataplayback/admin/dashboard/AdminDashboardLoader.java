@@ -40,38 +40,6 @@ public class AdminDashboardLoader extends BasicDashboard{
     @Override
     public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
         LinkedHashMap<IconLoader,DashboardPanel> map=new LinkedHashMap<IconLoader, DashboardPanel>();
-        //initialize the player via controller
-//        GameController controller= GameControllerImpl.getInstance();
-
-
-//        try{
-//        if(DataPlaybackEngineStates.gameConfig.getPlayerType()== PlayerTypes.REAL_TIME_DATA_PLAYER){
-//            if(DataPlayerFacade.getInstance().getRealTimeDataPlayer().isMultiplayer()){
-////                Notification.show("Not implemented-load admin summary view");
-//
-//            }
-//        }
-//        else if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.DAILY_SUMMARY_PLAYER){
-//            if(DataPlayerFacade.getInstance().getDailySummaryDataPLayer().isMultiplayer()){
-////                Notification.show("Not implemented-load admin summary view");
-//            }
-//        }
-//        }catch (PlayerStateException ex){
-//            ex.printStackTrace();
-//        }
-
-
-//        VerticalLayout panelContent2 = new VerticalLayout();
-//        panelContent2.addComponent(new Button("Test 2"));
-//
-//        DashboardPanel panel2 = new DashboardPanel() {
-//            @Override
-//            public void onEnter() {
-//                //To change body of implemented methods use File | Settings | File Templates.
-//            }
-//        };
-//        panel2.setContent(panelContent2);
-//        map.put("test 2", panel2);
 
         map.put(IconLoader.OVERVIEW, new DataPlaybackEngineAdminDashboard());
 
@@ -82,6 +50,5 @@ public class AdminDashboardLoader extends BasicDashboard{
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

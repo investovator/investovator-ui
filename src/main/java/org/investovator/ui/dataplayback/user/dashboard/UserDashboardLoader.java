@@ -79,6 +79,5 @@ public class UserDashboardLoader extends BasicDashboard {
 
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
