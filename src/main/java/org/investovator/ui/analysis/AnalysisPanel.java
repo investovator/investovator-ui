@@ -170,7 +170,7 @@ public class AnalysisPanel extends DashboardPanel {
             endDate = dateRange[1];
             Calendar tmp = Calendar.getInstance();
             tmp.setTime(endDate);
-            tmp.add(Calendar.MONTH, -1);
+            tmp.add(Calendar.MONTH, -2);
             startDate = tmp.getTime();
 
 
@@ -240,9 +240,9 @@ public class AnalysisPanel extends DashboardPanel {
     private void addInitialCharts() {
 
         addReport(IndicatorType.EMA.name());
-        addReport(IndicatorType.SMA.name());
-        addReport(IndicatorType.TRIMA.name());
         addReport(IndicatorType.RSI.name());
+        addReport(IndicatorType.MACD.name());
+        addReport(IndicatorType.BBAND.name());
     }
 
     private void createReportLayout() {
