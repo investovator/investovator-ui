@@ -62,6 +62,10 @@ public abstract class BasicGameOverWindow extends Window {
 
 
         Portfolio myPortfolio=this.getMyPortfolio(username);
+        if(myPortfolio==null){
+            this.close();
+            return;
+        }
         Label rankLabel=new Label("<H2 align=\"center\">Congratulations "+
                 myPortfolio.getUsername()+". You Won..!</H2>");
 

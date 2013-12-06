@@ -135,7 +135,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
-
+            super.userName=this.userName;
 
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();

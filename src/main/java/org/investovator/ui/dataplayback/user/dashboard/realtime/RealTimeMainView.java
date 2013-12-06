@@ -69,7 +69,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
 
-    private String userName;
+    public String userName;
 
     private DataPlayer player;
 
