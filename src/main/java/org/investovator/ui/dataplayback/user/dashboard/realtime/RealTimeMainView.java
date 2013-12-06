@@ -54,6 +54,7 @@ import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicMainView;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 //import org.investovator.dataplaybackengine.events.PlaybackEvent;
@@ -67,7 +68,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
 
-    private String userName;
+    protected String userName;
+    private Authenticator.UserType userType;
 
     private DataPlayer player;
 
@@ -166,6 +168,31 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
         buySellButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+                //check for invalid orders
+                boolean invalidOrder=false;
+                String numericRegex="^[0-9]+$";
+                //conditions to check
+                if(stocksList.getValue()==null ||
+                        quantity.getValue()==null ||
+                        !quantity.getValue().toString().matches(numericRegex)) {
+                        invalidOrder=true;
+
+                }
+                //if this is a sell order
+                else if(((OrderType) orderSide.getValue())==OrderType.SELL){
+                    //check if te user has this stock
+                    BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
+                            portfolioTable.getContainerDataSource();
+
+                    if(!beans.containsId(stocksList.getValue().toString())){
+                        invalidOrder=true;
+                    }
+                }
+
+                if(invalidOrder){
+                    Notification.show("Invalid Order");
+                    return;
+                }
 
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
@@ -176,6 +203,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
                         updatePortfolioTable(stocksList.getValue().toString());
                         //update account info
                         updateAccountBalance();
+                        Notification.show("Order executed successfully", Notification.Type.TRAY_NOTIFICATION);
                     }
                     else{
 
@@ -218,6 +246,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
+            this.userType=Authenticator.getInstance().getMyPrivileges();
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
             controller.runCommand(Session.getCurrentGameInstance(),command );
@@ -225,6 +254,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this,this.userName);
+            }
+            //else add this as a listener
+            else{
+                this.player.setObserver(this);
             }
 
             //update the account balance
@@ -364,7 +397,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //            System.out.println("Game over");
 //            Notification.show("DDDDd", Notification.Type.ERROR_MESSAGE);
 
-            getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+            //if this UI is not a destroyed one
+            if(getUI()!=null){
+                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName, this.userType));
+            }
 
 //            this.setContent(new DataPlaybackGameOverWindow(this.userName));
 
@@ -608,7 +644,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     public void updateAccountBalance(){
         try {
             Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
-            this.accBalance.setValue(bal.toString());
+            this.accBalance.setValue(String.format("%.2f",bal));
         } catch (UserJoinException e) {
             e.printStackTrace();
         }

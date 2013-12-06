@@ -27,6 +27,7 @@ import org.investovator.controller.command.exception.CommandSettingsException;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.dataplaybackengine.exceptions.UserJoinException;
 import org.investovator.dataplaybackengine.player.DataPlayer;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicGameOverWindow;
 
@@ -38,8 +39,8 @@ import java.util.ArrayList;
  */
 public class DataPlaybackGameOverWindow extends BasicGameOverWindow{
 
-    public DataPlaybackGameOverWindow(String username) {
-        super(username);
+    public DataPlaybackGameOverWindow(String username, Authenticator.UserType userType) {
+        super(username, userType);
     }
 
     @Override
