@@ -24,6 +24,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.investovator.core.commons.utils.Portfolio;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.dataplayback.beans.PlayerBasicInformationBean;
 import org.investovator.ui.dataplayback.beans.PlayerInformationBean;
 import org.investovator.ui.utils.UIConstants;
@@ -39,8 +40,9 @@ import java.util.Map;
 public abstract class BasicGameOverWindow extends Window {
 
     String username;
+    Authenticator.UserType userType;
 
-    public BasicGameOverWindow(String username) {
+    public BasicGameOverWindow(String username, Authenticator.UserType userType) {
         // set window characteristics
         this.center();
         this.setClosable(false);
@@ -49,6 +51,7 @@ public abstract class BasicGameOverWindow extends Window {
         this.setModal(true);
 
         this.username=username;
+        this.userType=userType;
 
         setupUI();
 
@@ -83,7 +86,13 @@ public abstract class BasicGameOverWindow extends Window {
         exitGame.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                //if admin
+                if(userType== Authenticator.UserType.ADMIN){
+                    getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
+                }
+                else{
+                    getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);
+                }
                 close();
             }
         });

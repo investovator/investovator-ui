@@ -69,7 +69,8 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
     //decides the number of points shown in the ticker chart
     private static int TICKER_CHART_LENGTH = 10;
 
-    public String userName;
+    protected String userName;
+    private Authenticator.UserType userType;
 
     private DataPlayer player;
 
@@ -246,6 +247,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
+            this.userType=Authenticator.getInstance().getMyPrivileges();
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
             controller.runCommand(Session.getCurrentGameInstance(),command );
@@ -398,7 +400,7 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 
             //if this UI is not a destroyed one
             if(getUI()!=null){
-                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName, this.userType));
             }
 
 //            this.setContent(new DataPlaybackGameOverWindow(this.userName));

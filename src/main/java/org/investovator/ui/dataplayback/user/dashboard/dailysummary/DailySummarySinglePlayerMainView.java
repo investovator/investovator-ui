@@ -69,6 +69,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
     private static int OHLC_CHART_LENGTH = 10;
 
     private String userName;
+    private Authenticator.UserType userType;
+
 
     private DailySummaryDataPLayer player;
 
@@ -349,6 +351,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         //join the game
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
+            this.userType=Authenticator.getInstance().getMyPrivileges();
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
             controller.runCommand(Session.getCurrentGameInstance(),command );
@@ -682,7 +685,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         else if (arg instanceof PlaybackFinishedEvent) {
             //if this UI is not a destroyed one
             if(getUI()!=null){
-                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName, this.userType));
             }
         }
 
