@@ -195,6 +195,11 @@ public class QuoteUI extends VerticalLayout {
                 return;
             }
 
+            if(selectedStock == null){
+                Notification.show("Select stock to trade", Notification.Type.TRAY_NOTIFICATION);
+                return;
+            }
+
             ExecutionResult result = JASAFacade.getMarketFacade().putLimitOrder(Authenticator.getInstance().getCurrentUser(), selectedStock, orderStockCount, orderPrice, isBuy);
             if(result != null){
                 if(result.isSuccess()) Notification.show("Order was successful.", Notification.Type.TRAY_NOTIFICATION);
