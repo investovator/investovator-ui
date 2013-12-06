@@ -22,6 +22,7 @@ import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
+import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.dataplayback.BasicGameOverWindow;
 
@@ -37,7 +38,7 @@ public class NNGameOverWindow extends BasicGameOverWindow{
     private ArrayList<String> users;
 
     public NNGameOverWindow(String username) {
-        super(username);
+        super(username, Authenticator.UserType.ORDINARY);
         try {
             userData = new UserDataImpl();
         } catch (DataAccessException e) {
