@@ -156,6 +156,7 @@ public class AgentGamingView extends Window implements WizardProgressListener {
         GameController controller = GameControllerImpl.getInstance();
 
         ProgressWindow test = new ProgressWindow("Creating Agent Game");
+
         try {
             String instance = controller.createGameInstance(GameModes.AGENT_GAME);
 
@@ -166,6 +167,13 @@ public class AgentGamingView extends Window implements WizardProgressListener {
             }
 
             TestDataGenerator.createTestData(instance,"testUser1", stocks);
+            TestDataGenerator.createTestData(instance,"admin", stocks);
+            TestDataGenerator.createTestData(instance,"dexter", stocks);
+            TestDataGenerator.createTestData(instance,"saman", stocks);
+            TestDataGenerator.createTestData(instance,"white", stocks);
+            TestDataGenerator.createTestData(instance,"monica", stocks);
+            TestDataGenerator.createTestData(instance,"patrick", stocks);
+            TestDataGenerator.createTestData(instance,"quinn", stocks);
 
             controller.registerListener(instance, test);
             getUI().addWindow(test);
