@@ -22,6 +22,7 @@ package org.investovator.ui.dataplayback.user.dashboard;
 import com.vaadin.navigator.ViewChangeListener;
 import org.investovator.dataplaybackengine.player.type.PlayerTypes;
 import org.investovator.ui.analysis.AnalysisPanel;
+import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryDecisionMakingPanel;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryMultiPlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummarySinglePlayerMainView;
 import org.investovator.ui.dataplayback.user.dashboard.dailysummary.DailySummaryStockDataView;
@@ -55,13 +56,17 @@ public class UserDashboardLoader extends BasicDashboard {
                 map.put(IconLoader.MAIN_VIEW, new DailySummaryMultiPlayerMainView());
                 map.put(IconLoader.STOCKS, new DailySummaryStockDataView());
                 map.put(IconLoader.ANALYSIS, new AnalysisPanel());
+                map.put(IconLoader.DECISION_MAKER,new DailySummaryDecisionMakingPanel());
 
 
             }
             else{
+
                 map.put(IconLoader.MAIN_VIEW, new DailySummarySinglePlayerMainView());
                 map.put(IconLoader.STOCKS, new DailySummaryStockDataView());
                 map.put(IconLoader.ANALYSIS, new AnalysisPanel());
+                map.put(IconLoader.DECISION_MAKER,new DailySummaryDecisionMakingPanel());
+
 
             }
         }
