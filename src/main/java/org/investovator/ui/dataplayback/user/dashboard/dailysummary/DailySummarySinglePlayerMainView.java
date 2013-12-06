@@ -358,6 +358,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this, this.userName);
             }
+            //else add this as a listener
+            else{
+                this.player.setObserver(this);
+            }
             //update the account balance
             this.updateAccountBalance();
         }
@@ -676,7 +680,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         }
         //if the game has stopped
         else if (arg instanceof PlaybackFinishedEvent) {
-            getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+            //if this UI is not a destroyed one
+            if(getUI()!=null){
+                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+            }
         }
 
         //push the changes

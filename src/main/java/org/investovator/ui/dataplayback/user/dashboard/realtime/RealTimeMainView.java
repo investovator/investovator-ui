@@ -254,6 +254,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this,this.userName);
             }
+            //else add this as a listener
+            else{
+                this.player.setObserver(this);
+            }
 
             //update the account balance
             this.updateAccountBalance();
@@ -392,7 +396,10 @@ public class RealTimeMainView extends BasicMainView implements PlaybackEventList
 //            System.out.println("Game over");
 //            Notification.show("DDDDd", Notification.Type.ERROR_MESSAGE);
 
-            getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+            //if this UI is not a destroyed one
+            if(getUI()!=null){
+                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+            }
 
 //            this.setContent(new DataPlaybackGameOverWindow(this.userName));
 

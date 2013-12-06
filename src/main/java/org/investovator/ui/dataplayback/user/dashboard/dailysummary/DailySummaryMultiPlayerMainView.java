@@ -146,6 +146,10 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this, this.userName);
             }
+            //else add this as a listener
+            else{
+                 this.player.setObserver(this);
+            }
             //update the account balance
             this.updateAccountBalance();
         }
