@@ -171,11 +171,16 @@ public class StockAnalysisView extends DashboardPanel {
     private void createParamInputField(){
 
         inputParameter = new TextField("Input Value");
+        inputParameter.setImmediate(true);
         inputParameter.setValue(String.valueOf(analysisValue));
         inputParameter.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                analysisValue = Double.parseDouble(inputParameter.getValue());
+                 try {
+                        analysisValue = Double.parseDouble(inputParameter.getValue());
+                 }catch (NumberFormatException e){
+                     Notification.show("Please insert a valid input value", Notification.Type.TRAY_NOTIFICATION);
+                 }
             }
         });
 
@@ -263,10 +268,14 @@ public class StockAnalysisView extends DashboardPanel {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-                if(inputParameter.getValue().equals("0") || inputParameter.getValue().isEmpty()){
+                if(inputParameter.getValue().equals("0") || inputParameter.getValue().isEmpty() ||
+                        analysisValue < 0){
                     Notification.show("Please insert a valid input value", Notification.Type.TRAY_NOTIFICATION);
                 }
-                else{
+
+                try {
+                    analysisValue = Double.parseDouble(inputParameter.getValue());
+
                     String stockID = (String) stockSelect.getValue();
 
                     reportLayout.removeAllComponents();
@@ -281,15 +290,21 @@ public class StockAnalysisView extends DashboardPanel {
 
                         AnalysisChart analysisChart = new AnalysisChart(stockID);
                         charts.add(analysisChart);
-                        analysisChart.addSeries(stockID + " - Actual Stock Prices", graphData, ACTUAL_INDEX);
-                        analysisChart.addSeries(stockID+" - Stock Price @ "+analysisIDs.get(i)+" average price = "+analysisValue,
+                        analysisChart.addSeries(stockID + " - Actual Stock Price", graphData, ACTUAL_INDEX);
+                        analysisChart.addSeries(stockID+" - Stock Price if "+analysisIDs.get(i)+" average price = "+analysisValue,
                                 graphData,PREDICTED_INDEX);
                         reportLayout.addComponent(analysisChart);
 
                     }
+
+
+                }catch (NumberFormatException e){
+                    Notification.show("Please insert a valid input value", Notification.Type.TRAY_NOTIFICATION);
                 }
 
+
             }
+
         });
     }
 
@@ -306,8 +321,8 @@ public class StockAnalysisView extends DashboardPanel {
 
             AnalysisChart analysisChart = new AnalysisChart(stockID);
             charts.add(analysisChart);
-            analysisChart.addSeries(stockID + " - Actual Stock Prices", graphData, ACTUAL_INDEX);
-            analysisChart.addSeries(stockID+" - Stock Price @ "+analysisIDs.get(i)+" average price = "+analysisValue,
+            analysisChart.addSeries(stockID + " - Actual Stock Price", graphData, ACTUAL_INDEX);
+            analysisChart.addSeries(stockID+" - Stock Price if "+analysisIDs.get(i)+" average price = "+analysisValue,
                     graphData,PREDICTED_INDEX);
             reportLayout.addComponent(analysisChart);
 

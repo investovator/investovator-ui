@@ -20,25 +20,27 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.*;
+import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
 import org.investovator.core.data.api.UserData;
 import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
-import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.nngaming.beans.StockSummaryBean;
-import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
-import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.utils.Session;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
+public class UserPortfolio extends VerticalLayout {
 
     //External Data
     UserData userData;
@@ -46,32 +48,39 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     //Layout Components
     Label accountBalance;
     Label blockedAmount;
+    Label date;
     Table stocksSummaryTable;
 
     private double USERCASH = 1000000.0;
     private double USERBLOCKEDCASH = 0.0;
 
-    private EventBroadcaster eventBroadcaster;
     private String currentInstance;
+    private NNGamingFacade nnGamingFacade;
 
     public UserPortfolio() {
 
         currentInstance = Session.getCurrentGameInstance();
+        nnGamingFacade = NNGamingFacade.getInstance();
+
+        if(userData == null){
+            try {
+                userData = new UserDataImpl();
+
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        loadUserPortfolio();
 
         setupUI();
-
-        eventBroadcaster = EventBroadcaster.getInstance();
-        eventBroadcaster.addListener(this);
 
 
     }
 
     public void setupUI(){
 
-        this.setWidth("100%");
         this.setHeight("100%");
-        addStyleName("center-caption");
-
 
         accountBalance=new Label();
         accountBalance.setCaption("Cash Balance");
@@ -79,56 +88,74 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         blockedAmount = new Label();
         blockedAmount.setCaption("Blocked Amount");
 
+        date = new Label();
+        date.setCaption("Date");
+
         createStocksTable();
 
         HorizontalLayout portSummary = new HorizontalLayout();
+        portSummary.addComponent(date);
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
+        portSummary.setWidth("80%");
         portSummary.setSpacing(true);
+        portSummary.setExpandRatio(date,1);
+        portSummary.setExpandRatio(accountBalance,1);
+        portSummary.setExpandRatio(blockedAmount,1);
 
-        VerticalLayout component = new VerticalLayout();
-        component.addComponent(portSummary);
-        component.addComponent(stocksSummaryTable);
-        component.setExpandRatio(portSummary, 1);
-        component.setExpandRatio(stocksSummaryTable, 1);
+        HorizontalLayout stockSummary = new HorizontalLayout();
+        stockSummary.addComponent(stocksSummaryTable);
+        stockSummary.setComponentAlignment(stocksSummaryTable,Alignment.MIDDLE_CENTER);
+        stockSummary.setWidth("80%");
 
-        this.addComponent(component);
+
+        this.addComponent(portSummary);
+        this.addComponent(stockSummary);
+        this.setComponentAlignment(portSummary,Alignment.MIDDLE_CENTER);
+        this.setComponentAlignment(stockSummary,Alignment.MIDDLE_CENTER);
+
+        this.setImmediate(true);
+        this.setWidth("100%");
+
     }
 
-
-    public void update(){
-        String currentUser = Authenticator.getInstance().getCurrentUser();
+    private void loadUserPortfolio(){
         Portfolio portfolio = null;
-
-        if(userData == null){
-            try {
-                userData = new UserDataImpl();
-            } catch (DataAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        String currentUser = Session.getCurrentUser();
 
         try {
+            userData.addUserToGameInstance(currentInstance,Session.getCurrentUser());
             portfolio = userData.getUserPortfolio(currentInstance,currentUser);
         } catch (DataAccessException e) {
-            e.printStackTrace();
+
+            if(portfolio == null) {
+                try {
+                    portfolio = new PortfolioImpl(currentUser, USERCASH, USERBLOCKEDCASH);
+                    userData.updateUserPortfolio(currentInstance,currentUser, portfolio);
+                } catch (DataAccessException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
         }
 
-        if(portfolio == null) {
-            try {
-                portfolio = new PortfolioImpl(currentUser, USERCASH, USERBLOCKEDCASH);
-                userData.updateUserPortfolio(currentInstance,currentUser, portfolio);
-            } catch (DataAccessException e1) {
-                e1.printStackTrace();
-            }
-        }
+    }
+
+    public void update(){
 
         try {
-            currentUser = Authenticator.getInstance().getCurrentUser();
+            String currentUser = Session.getCurrentUser();
             Double balance = userData.getUserPortfolio(currentInstance,currentUser).getCashBalance();
             accountBalance.setValue(String.format("%.2f", balance));
             Double blocked = userData.getUserPortfolio(currentInstance,currentUser).getBlockedCash();
             blockedAmount.setValue(String.format("%.2f", blocked));
+            Date currentDate = nnGamingFacade.getDateRange("SAMP")[1];
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            calendar.setTime(currentDate);
+            calendar.add(Calendar.DATE,3);
+            DateFormat df = new SimpleDateFormat("dd MMM yyyy");
+            String dateString = df.format(calendar.getTime());
+            date.setValue(dateString);
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -136,27 +163,32 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
     }
 
 
-    public void updatePortfolio(Portfolio portfolio){
+    public void updatePortfolio(final Portfolio portfolio){
 
         if (this.isConnectorEnabled()) {
             getSession().lock();
             try {
-                accountBalance.setValue(String.format("%.2f", portfolio.getCashBalance()));
-                blockedAmount.setValue(String.format("%.2f", portfolio.getBlockedCash()));
+
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
+                        accountBalance.setValue(String.format("%.2f", portfolio.getCashBalance()));
+                        blockedAmount.setValue(String.format("%.2f", portfolio.getBlockedCash()));
+                    }
+                });
+
             } finally {
                 getSession().unlock();
             }
         }
     }
 
-    private void updateStocksTable(){
+    public void updateStocksTable(){
 
         final BeanContainer<String, StockSummaryBean> shownStocks = (BeanContainer<String, StockSummaryBean>) stocksSummaryTable.getContainerDataSource();
 
-
         try {
-            UserData userData = new UserDataImpl();
-            Portfolio userPortfolio =   userData.getUserPortfolio(currentInstance,Authenticator.getInstance().getCurrentUser());
+            Portfolio userPortfolio =  userData.getUserPortfolio(currentInstance,Session.getCurrentUser());
             final HashMap<String, HashMap<String, Double>> shares = userPortfolio.getShares();
 
             UI.getCurrent().access(new Runnable() {
@@ -189,44 +221,42 @@ public class UserPortfolio extends HorizontalLayout implements BroadcastEvent {
         myStocks.setBeanIdProperty("stockID");
 
 
-        stocksSummaryTable  = new Table("My Portfolio", myStocks);
+        stocksSummaryTable  = new Table("", myStocks);
 
-        stocksSummaryTable.setSizeFull();
-        stocksSummaryTable.setWidth("90%");
+        stocksSummaryTable.setWidth("80%");
         stocksSummaryTable.setSelectable(true);
         stocksSummaryTable.setImmediate(true);
+        stocksSummaryTable.setPageLength(4);
 
         stocksSummaryTable.setColumnHeader("stockID", "Stock");
         stocksSummaryTable.setColumnHeader("stocks", "Shares");
 
         stocksSummaryTable.setVisibleColumns(new String[]{"stockID","stocks"});
 
-
         updateStocksTable();
     }
 
-    @Override
-    public void onBroadcast(Object object) {
+    public void updateDate(final Date currentDate){
 
-        String userName = Authenticator.getInstance().getCurrentUser();
+        if (this.isConnectorEnabled()) {
+            getSession().lock();
+            try {
 
-        if (object instanceof PortfolioData){
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
+                        DateFormat df = new SimpleDateFormat("dd MMM yyyy");
+                        String dateString = df.format(currentDate);
+                        date.setValue(dateString);
+                        getUI().push();
+                    }
+                });
 
-            if(((PortfolioData) object).getUserName().equals(userName)){
-
-                if(((PortfolioData) object).isOrderExecuted()){
-                    updatePortfolio(((PortfolioData) object).getPortfolio());
-                    updateStocksTable();
-                }
-                else {
-                    updatePortfolio(((PortfolioData) object).getPortfolio());
-                }
+            } finally {
+                getSession().unlock();
             }
-            else {
-                return;
-            }
-
         }
 
     }
+
 }

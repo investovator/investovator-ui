@@ -24,17 +24,24 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
+import org.investovator.ui.nngaming.eventinterfaces.PortfolioUpdateEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
+import org.investovator.ui.nngaming.eventobjects.GameOverEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
+import org.investovator.ui.nngaming.utils.NNGameOverWindow;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
+
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent {
+public class DashboardPlayingView extends DashboardPanel implements BroadcastEvent, SymbolChangeEvent, PortfolioUpdateEvent {
 
 
     //Layout Components
@@ -50,6 +57,7 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
     private EventBroadcaster eventBroadcaster;
     private String selectedStock;
+    private boolean updateStatus = false;
 
     boolean simulationRunning = false;
 
@@ -60,7 +68,8 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         createUI();
 
-        quoteUI.addListener(this);
+        quoteUI.addSymbolListener(this);
+        quoteUI.addPortfolioListener(this);
     }
 
 
@@ -74,16 +83,13 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         HorizontalLayout row2 = new HorizontalLayout();
         HorizontalLayout row3 = new HorizontalLayout();
 
-        row1.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-        row2.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-
         row1.setWidth("100%");
         row2.setWidth("100%");
         row3.setWidth("100%");
 
-        row1.setHeight(70, Unit.MM);
-        row2.setHeight(50,Unit.MM);
-        row3.setHeight(45,Unit.MM);
+        row1.setHeight(50,Unit.PERCENTAGE);
+        row2.setHeight(20,Unit.PERCENTAGE);
+        row3.setHeight(30,Unit.PERCENTAGE);
 
         row1.setMargin(new MarginInfo(true, true, false, true));
         row2.setMargin(new MarginInfo(true, true, false, true));
@@ -92,12 +98,6 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         content.addComponent(row1);
         content.addComponent(row2);
         content.addComponent(row3);
-
-        content.setExpandRatio(row1, 1.3f);
-        content.setExpandRatio(row2, 1.3f);
-        content.setExpandRatio(row3, 1.0f);
-
-        GridLayout orderBookLayout = new GridLayout(2,1);
 
         currentPriceChart = new BasicChart();
         quantityChart = new QuantityChart();
@@ -108,41 +108,50 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         quoteUI = new QuoteUI();
         userPortfolio = new UserPortfolio();
 
+        HorizontalLayout orderBookLayout = new HorizontalLayout();
+        orderBookLayout.setWidth("100%");
         orderBookLayout.addComponent(orderBookSell);
         orderBookLayout.addComponent(orderBookBuy);
+        orderBookLayout.setComponentAlignment(orderBookSell,Alignment.MIDDLE_RIGHT);
+        orderBookLayout.setComponentAlignment(orderBookBuy,Alignment.MIDDLE_LEFT);
 
-        GridLayout bottomLayout = new GridLayout(3,1);
-        bottomLayout.addComponent(orderBookLayout);
-        bottomLayout.addComponent(quoteUI);
-        bottomLayout.addComponent(userPortfolio);
+        VerticalLayout orderBook = new VerticalLayout();
+        orderBook.addComponent(orderBookLayout);
+
+        orderBook.setCaption("Order Book");
+        quoteUI.setCaption("Quote UI");
+        userPortfolio.setCaption(Session.getCurrentUser().toUpperCase(Locale.US)+" - Portfolio Summary");
+
+        orderBook.addStyleName("center-caption");
+        quoteUI.addStyleName("center-caption");
+        userPortfolio.addStyleName("center-caption");
 
         row1.addComponent(currentPriceChart);
         row2.addComponent(quantityChart);
-        row3.addComponent(bottomLayout);
+        row3.setSpacing(true);
+        row3.addComponent(orderBook);
+        row3.addComponent(quoteUI);
+        row3.addComponent(userPortfolio);
+        row3.setExpandRatio(orderBook,1.2f);
+        row3.setExpandRatio(quoteUI,1.0f);
+        row3.setExpandRatio(userPortfolio,1.0f);
 
+        row1.setComponentAlignment(currentPriceChart, Alignment.MIDDLE_CENTER);
         row2.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
 
-        orderBookLayout.setCaption("Order Book");
-        quoteUI.setCaption("Quote UI");
-        userPortfolio.setCaption(Session.getCurrentUser()+" - Portfolio Summary");
-
-        orderBookLayout.addStyleName("center-caption");
-        quoteUI.addStyleName("center-caption");
-        currentPriceChart.addStyleName("center-caption");
-        userPortfolio.addStyleName("center-caption");
-        quantityChart.addStyleName("center-caption");
-
+        content.setSizeFull();
         this.setContent(content);
+
 
     }
 
     private Table getSellSideTable() {
 
-        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
+        BeanItemContainer<OrderBean> beans = new BeanItemContainer<>(OrderBean.class);
         Table orderBookSell = new Table("Sell Order Side", beans);
 
         orderBookSell.setHeight("100%");
-        orderBookSell.setWidth("45%");
+        orderBookSell.setWidth("100%");
         orderBookSell.setSelectable(true);
         orderBookSell.setPageLength(4);
         orderBookSell.setImmediate(true);
@@ -155,12 +164,12 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
     private Table getBuySideTable() {
 
-        BeanItemContainer<OrderBean> beans = new BeanItemContainer<OrderBean>(OrderBean.class);
+        BeanItemContainer<OrderBean> beans = new BeanItemContainer<>(OrderBean.class);
 
         Table orderBookBuy = new Table("Buy Order Side",beans);
 
         orderBookBuy.setHeight("100%");
-        orderBookBuy.setWidth("45%");
+        orderBookBuy.setWidth("100%");
         orderBookBuy.setSelectable(true);
         orderBookBuy.setPageLength(4);
         orderBookBuy.setImmediate(true);
@@ -174,21 +183,24 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
     @Override
     public void onEnter() {
 
-        if (currentPriceChart.isConnectorEnabled()) {
-            getSession().lock();
-            try {
+//        if (currentPriceChart.isConnectorEnabled()) {
+//            getSession().lock();
+//            try {
+//
+//                currentPriceChart.updateGraph();
+//
+//            } finally {
+//                getSession().unlock();
+//            }
+//        }
 
-                currentPriceChart.updateGraph();
+        if(!simulationRunning){
+            quoteUI.update();
+            userPortfolio.update();
 
-            } finally {
-                getSession().unlock();
-            }
+            simulationRunning = true;
         }
 
-        quoteUI.update();
-        userPortfolio.update();
-
-        simulationRunning = true;
 
     }
 
@@ -260,7 +272,13 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
                 stockIndex = 0;
             }
             else{
-                stockIndex = ((TableData) object).getStockList().indexOf(selectedStock);
+                if(((TableData) object).getStockList() == null || ((TableData) object).getStockList().isEmpty()){
+                    Notification.show("Stock Table Update was not successful", Notification.Type.TRAY_NOTIFICATION);
+                    return;
+                }
+                else{
+                    stockIndex = ((TableData) object).getStockList().indexOf(selectedStock);
+                }
             }
 
 
@@ -317,9 +335,54 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
             }
         }
 
-        if(object instanceof PortfolioData){
-            return;
+        if(object instanceof Date){
+            userPortfolio.updateDate((Date) object);
         }
+
+        if(object instanceof PortfolioData){
+
+            if(updateStatus){
+
+                if(((PortfolioData) object).isOrderExecuted()){
+                    userPortfolio.updatePortfolio(((PortfolioData) object).getPortfolio());
+                    userPortfolio.updateStocksTable();
+                }
+                else {
+                    userPortfolio.updatePortfolio(((PortfolioData) object).getPortfolio());
+                }
+                updateStatus = false;
+            }
+            else {
+                return;
+            }
+        }
+
+        if(object instanceof GameOverEvent){
+
+            getSession().lock();
+            try {
+
+                getUI().access(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        getUI().addWindow(new NNGameOverWindow(Session.getCurrentUser()));
+                        getUI().push();
+                    }
+                });
+
+            } finally {
+                getSession().unlock();
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onPortfolioUpdate(boolean update) {
+
+        updateStatus = true;
 
     }
 }

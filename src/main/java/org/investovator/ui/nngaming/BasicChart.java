@@ -151,8 +151,6 @@ public class BasicChart extends Chart{
 
         }
 
-        System.out.println("Executed");
-
         final int stockListSize = stockList.size();
 
         for(int i = 0; i < stockListSize; i++){

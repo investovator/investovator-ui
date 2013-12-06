@@ -18,6 +18,7 @@
 
 package org.investovator.ui.nngaming.config;
 
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.investovator.ann.config.ConfigReceiver;
@@ -27,6 +28,7 @@ import org.investovator.controller.utils.enums.GameModes;
 import org.investovator.controller.utils.exceptions.GameCreationException;
 import org.investovator.controller.utils.exceptions.GameProgressingException;
 import org.investovator.core.data.api.utils.TradingDataAttribute;
+import org.investovator.ui.dataplayback.util.ProgressWindow;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.utils.ConfigHelper;
 import org.investovator.ui.utils.Session;
@@ -114,17 +116,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
 
         GameDataHelper.getInstance().setStocks(selectedStockIDs);
         GameDataHelper.getInstance().setAnalysisParameters(analysisParameters);
-
-        /*ProgressWindow test = new ProgressWindow("Creating Game....Please Wait!!");
-        GameControllerFacade.getInstance().registerListener(test);
-        getUI().addWindow(test);
-
-        test.addCloseListener(new Window.CloseListener() {
-            @Override
-            public void windowClose(Window.CloseEvent closeEvent) {
-                closeWindow();
-            }
-        });*/
+        GameDataHelper.getInstance().setDaysCount(daysCount);
 
         GameController gameController = GameControllerImpl.getInstance();
 
@@ -135,9 +127,20 @@ public class NNGamingView extends Window implements WizardProgressListener{
         setUpParams[3] = daysCount;
         setUpParams[4] = speedFactor;
 
+        ProgressWindow progressWindow = new ProgressWindow("Creating Game....");
+
         try {
             String instance = gameController.createGameInstance(GameModes.NN_GAME);
             Session.setCurrentGameInstance(instance);
+
+            gameController.registerListener(instance,progressWindow);
+            UI.getCurrent().addWindow(progressWindow);
+            progressWindow.addCloseListener(new Window.CloseListener() {
+                @Override
+                public void windowClose(Window.CloseEvent closeEvent) {
+                    closeWindow();
+                }
+            });
 
             gameController.setupGame(instance, setUpParams);
 
@@ -150,8 +153,6 @@ public class NNGamingView extends Window implements WizardProgressListener{
             e.printStackTrace();
         }
 
-
-        this.closeWindow();
 
     }
 

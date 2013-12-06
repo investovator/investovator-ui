@@ -19,7 +19,7 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.navigator.ViewChangeListener;
-import org.investovator.controller.utils.enums.GameModes;
+import org.investovator.ui.analysis.AnalysisPanel;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.UIConstants;
 import org.investovator.ui.utils.dashboard.BasicDashboard;
@@ -36,6 +36,7 @@ public class NNGamingDashBoard extends BasicDashboard{
 
     DashboardPlayingView mainDashView;
     StockAnalysisView stockAnalysisView;
+    AnalysisPanel analysisPanel;
 
     public NNGamingDashBoard() {
         super("<span><center>investovator</center></span>Dashboard");
@@ -43,12 +44,14 @@ public class NNGamingDashBoard extends BasicDashboard{
 
     @Override
     public LinkedHashMap<IconLoader, DashboardPanel> getMenuItems() {
-        LinkedHashMap<IconLoader, DashboardPanel> menuList = new LinkedHashMap<IconLoader, DashboardPanel>();
+        LinkedHashMap<IconLoader, DashboardPanel> menuList = new LinkedHashMap<>();
         mainDashView = new DashboardPlayingView();
         stockAnalysisView = new StockAnalysisView();
+        analysisPanel = new AnalysisPanel();
 
         menuList.put(IconLoader.MAIN_VIEW, mainDashView);
-        menuList.put(IconLoader.ANALYSIS,stockAnalysisView);
+        menuList.put(IconLoader.STOCKS,stockAnalysisView);
+        menuList.put(IconLoader.ANALYSIS,analysisPanel);
 
         return menuList;
     }
@@ -56,8 +59,6 @@ public class NNGamingDashBoard extends BasicDashboard{
     @Override
     public void setupUI(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
-        //TODO: remove temporary instance
-        Session.setCurrentGameInstance(GameModes.NN_GAME.toString());
 
         if(Session.getCurrentGameInstance() == null)
             getUI().getNavigator().navigateTo(UIConstants.USER_VIEW);

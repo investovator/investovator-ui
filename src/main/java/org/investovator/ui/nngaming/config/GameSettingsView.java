@@ -19,8 +19,6 @@
 package org.investovator.ui.nngaming.config;
 
 import com.vaadin.data.Property;
-import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import org.vaadin.teemu.wizards.WizardStep;
 
@@ -30,71 +28,54 @@ import org.vaadin.teemu.wizards.WizardStep;
  */
 public class GameSettingsView implements WizardStep {
 
-    Label daysSliderValue = new Label();
-    Label speedSliderValue = new Label();
-    Slider daysSlider = new Slider(1, 20);
-    Slider speedSlider = new Slider(1,5);
-    HorizontalLayout speedLayout = new HorizontalLayout();
-    HorizontalLayout daysLayout = new HorizontalLayout();
+    TextField days;
+    TextField speed;
 
-    double daysCount;
-    double speedFactor;
+    private int MAX_SPEED_FACTOR = 5;
+    private int daysCount = 1;
+    private int speedFactor = 1;
 
     VerticalLayout content;
 
     public GameSettingsView(){
-;
-        daysSlider.setOrientation(SliderOrientation.HORIZONTAL);
-        daysSlider.setCaption("Select Game Duration");
-        daysSlider.setResolution(0);
-        daysSlider.setWidth(90, Sizeable.Unit.MM);
-        daysSlider.setValue(new Double(1));
-        daysSlider.setImmediate(true);
-        daysSlider.addValueChangeListener(new Property.ValueChangeListener() {
+
+        days = new TextField();
+        days.setCaption("Select Game Duration");
+        days.setValue(String.valueOf(daysCount));
+        days.setImmediate(true);
+        days.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                final Double value = Double.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue()));
-                daysCount = value;
-                daysSliderValue.setValue(String.valueOf(value)+" Days");
+            try {
+                daysCount = Integer.parseInt(days.getValue());
+            } catch (NumberFormatException e){
+                Notification.show("Please enter a valid input value", Notification.Type.TRAY_NOTIFICATION);
+            }
+
             }
         });
 
-        speedSlider.setOrientation(SliderOrientation.HORIZONTAL);
-        speedSlider.setCaption("Select Game Speed");
-        speedSlider.setResolution(0);
-        speedSlider.setWidth(90, Sizeable.Unit.MM);
-        speedSlider.setValue(new Double(1));
-        speedSlider.setImmediate(true);
-        speedSlider.addValueChangeListener(new Property.ValueChangeListener() {
+
+        speed = new TextField();
+        speed.setCaption("Select Game Speed");
+        speed.setValue(String.valueOf(speedFactor));
+        speed.setImmediate(true);
+        speed.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                final Double value = (Double) valueChangeEvent.getProperty().getValue();
-                speedFactor = value;
-                speedSliderValue.setValue(String.valueOf(value)+"X");
+            try{
+                speedFactor = Integer.parseInt(speed.getValue());
+            } catch (NumberFormatException e){
+                Notification.show("Please enter a valid input value", Notification.Type.TRAY_NOTIFICATION);
+            }
+
             }
         });
-
-        daysSliderValue.setValue("1 Day");
-        daysSliderValue.setImmediate(true);
-
-        speedSliderValue.setValue("1X");
-        speedSliderValue.setImmediate(true);
-
-        speedLayout.addComponent(speedSlider);
-        speedLayout.addComponent(speedSliderValue);
-        speedLayout.setSpacing(true);
-        speedLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-        speedLayout.setMargin(true);
-
-        daysLayout.addComponent(daysSlider);
-        daysLayout.addComponent(daysSliderValue);
-        daysLayout.setSpacing(true);
-        daysLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-        daysLayout.setMargin(true);
 
         VerticalLayout finalLayout = new VerticalLayout();
-        finalLayout.addComponent(daysLayout);
-        finalLayout.addComponent(speedLayout);
+        finalLayout.addComponent(days);
+        finalLayout.addComponent(speed);
+        finalLayout.setSpacing(true);
         finalLayout.setMargin(true);
 
         content = new VerticalLayout();
@@ -102,8 +83,6 @@ public class GameSettingsView implements WizardStep {
         content.setComponentAlignment(finalLayout, Alignment.MIDDLE_CENTER);
 
     }
-
-
 
     @Override
     public String getCaption() {
@@ -117,7 +96,30 @@ public class GameSettingsView implements WizardStep {
 
     @Override
     public boolean onAdvance() {
-        return true;
+
+        if(daysCount <= 0 || speedFactor <= 0 || days.getValue().isEmpty() ||
+                speed.getValue().isEmpty()){
+            Notification.show("Please enter a valid input value", Notification.Type.TRAY_NOTIFICATION);
+            return false;
+        }
+
+        try{
+            daysCount = Integer.parseInt(days.getValue());
+            speedFactor = Integer.parseInt(speed.getValue());
+
+            if(speedFactor > MAX_SPEED_FACTOR)  {
+                Notification.show("Please enter a value within range 1 - 5", Notification.Type.TRAY_NOTIFICATION);
+                return false;
+            }
+            else {
+                return true;
+            }
+
+        }   catch (NumberFormatException e){
+            Notification.show("Please enter a valid input value", Notification.Type.TRAY_NOTIFICATION);
+            return false;
+        }
+
     }
 
     @Override
