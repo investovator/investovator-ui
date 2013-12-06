@@ -19,8 +19,6 @@
 package org.investovator.ui.nngaming;
 
 import com.vaadin.data.Property;
-import com.vaadin.server.Page;
-import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import org.investovator.ui.nngaming.eventinterfaces.PortfolioUpdateEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
@@ -72,48 +70,43 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         //Trade Button
         tradeButton = new Button("Place Order");
         tradeButton.addClickListener(tradeButtonClickListener);
+        tradeButton.setWidth("100%");
 
         //Price Layout
-        HorizontalLayout priceLayout = new HorizontalLayout();
-
         price = new TextField("Price");
         price.addValueChangeListener(priceValueChangedListener);
         price.setImmediate(true);
+        price.setWidth("100%");
 
         amount= new Label();
         amount.setCaption("Amount");
         amount.addStyleName("outlined");
-
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setSpacing(true);
-        buttonLayout.setWidth("100%");
-        buttonLayout.addComponent(amount);
-        buttonLayout.addComponent(tradeButton);
-        buttonLayout.setExpandRatio(amount,1);
-        buttonLayout.setExpandRatio(tradeButton,1);
-        buttonLayout.setComponentAlignment(tradeButton,Alignment.BOTTOM_RIGHT);
+        amount.setWidth("100%");
 
         stocks = new TextField("Stocks");
         stocks.addValueChangeListener(stocksChangedListener);
         stocks.setImmediate(true);
-
-        priceLayout.setSpacing(true);
-        priceLayout.setWidth("100%");
-        priceLayout.addComponent(price);
-        priceLayout.addComponent(stocks);
-        priceLayout.setExpandRatio(price,1);
-        priceLayout.setExpandRatio(stocks,1);
+        stocks.setWidth("100%");
 
         //Stock Select
         stockSelect = new ComboBox();
         stockSelect.setCaption("Select stock to trade");
         stockSelect.setNullSelectionAllowed(false);
         stockSelect.setImmediate(true);
+        stockSelect.setWidth("100%");
         stockSelect.addValueChangeListener(selectSymbolValueChange);
 
-        //Side Select
-        HorizontalLayout selectLayout = new HorizontalLayout();
+        VerticalLayout column1 = new VerticalLayout();
+        column1.setSpacing(true);
+        column1.setWidth("100%");
+        column1.addComponent(stockSelect);
+        column1.setComponentAlignment(stockSelect,Alignment.MIDDLE_LEFT);
+        column1.addComponent(price);
+        column1.setComponentAlignment(price,Alignment.MIDDLE_LEFT);
+        column1.addComponent(amount);
+        column1.setComponentAlignment(amount,Alignment.MIDDLE_LEFT);
 
+        //Side Select
         sideSelect = new ComboBox("Select Order Type");
         sideSelect.addItem("Buy Order");
         sideSelect.addItem("Sell Order");
@@ -122,20 +115,28 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         sideSelect.setNullSelectionAllowed(false);
         sideSelect.addValueChangeListener(sideSelectValueChangeListener);
         sideSelect.setImmediate(true);
+        sideSelect.setWidth("100%");
 
-        selectLayout.setSpacing(true);
-        selectLayout.setWidth("100%");
-        selectLayout.addComponent(stockSelect);
-        selectLayout.addComponent(sideSelect);
-        selectLayout.setExpandRatio(stockSelect,1);
-        selectLayout.setExpandRatio(sideSelect,1);
+        VerticalLayout column2 = new VerticalLayout();
 
-        this.addComponent(selectLayout);
-        this.addComponent(priceLayout);
-        this.addComponent(buttonLayout);
+        column2.setSpacing(true);
+        column2.setWidth("100%");
+        column2.addComponent(sideSelect);
+        column2.setComponentAlignment(sideSelect,Alignment.MIDDLE_RIGHT);
+        column2.addComponent(stocks);
+        column2.setComponentAlignment(stocks,Alignment.MIDDLE_RIGHT);
+        column2.addComponent(tradeButton);
+        column2.setComponentAlignment(tradeButton,Alignment.BOTTOM_RIGHT);
 
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.addComponent(column1);
+        layout.addComponent(column2);
+        layout.setSpacing(true);
+
+        this.addComponent(layout);
+        this.setComponentAlignment(layout,Alignment.MIDDLE_CENTER);
+        this.setSpacing(true);
         this.setImmediate(true);
-        this.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         this.setWidth("100%");
 
     }
@@ -184,8 +185,13 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
             if(!(valueString.isEmpty())) {
-                orderPrice = Float.parseFloat(valueString);
-                setAmount();
+               try {
+                   orderPrice = Float.parseFloat(valueString);
+                   setAmount();
+               } catch (NumberFormatException e){
+                   Notification.show("Please enter a valid Stock Price", Notification.Type.TRAY_NOTIFICATION);
+               }
+
             }
         }
     };
@@ -195,8 +201,13 @@ public class QuoteUI extends VerticalLayout implements EventListener {
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
             if(!(valueString.isEmpty())){
-                orderStockCount = Integer.parseInt(valueString);
-                setAmount();
+                try{
+                    orderStockCount = Integer.parseInt(valueString);
+                    setAmount();
+                } catch (NumberFormatException e){
+                    Notification.show("Please enter a valid Stock Quantity");
+                }
+
             }
         }
     };
@@ -208,17 +219,17 @@ public class QuoteUI extends VerticalLayout implements EventListener {
 
             if((stocks.getValue().isEmpty()) || (price.getValue().isEmpty() || (stocks.getValue().equals("0"))
             || (price.getValue().equals("0"))) || (stockSelect.getValue() == null)){
-                Notification notification = new Notification("Please enter a valid Stock Price & Amount",
-                        Notification.Type.TRAY_NOTIFICATION);
-                notification.setPosition(Position.BOTTOM_RIGHT);
-                notification.show(Page.getCurrent());
+                Notification.show("Please enter a valid Stock Price & Quantity", Notification.Type.TRAY_NOTIFICATION);
 
                 price.setValue("");
                 stocks.setValue("");
                 amount.setValue("");
             }
 
-            else{
+            try{
+                 orderPrice = Float.parseFloat(price.getValue());
+                 orderStockCount = Integer.parseInt(stocks.getValue());
+
                  price.setValue("");
                  stocks.setValue("");
                  amount.setValue("");
@@ -226,6 +237,8 @@ public class QuoteUI extends VerticalLayout implements EventListener {
                  String userName = Session.getCurrentUser();
                  notifyListeners(true);
                  eventBroadcaster.setEvent(new Order(userName,selectedStock, isBuy, orderPrice, orderStockCount));
+            } catch (NumberFormatException e){
+                Notification.show("Please enter a valid Stock Price & Quantity", Notification.Type.TRAY_NOTIFICATION);
             }
 
         }

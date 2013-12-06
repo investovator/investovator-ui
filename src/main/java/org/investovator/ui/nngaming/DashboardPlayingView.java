@@ -26,9 +26,11 @@ import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventinterfaces.PortfolioUpdateEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
+import org.investovator.ui.nngaming.eventobjects.GameOverEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
+import org.investovator.ui.nngaming.utils.NNGameOverWindow;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -81,16 +83,13 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         HorizontalLayout row2 = new HorizontalLayout();
         HorizontalLayout row3 = new HorizontalLayout();
 
-        row1.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        row2.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-
         row1.setWidth("100%");
         row2.setWidth("100%");
         row3.setWidth("100%");
 
-        row1.setHeight(70, Unit.MM);
-        row2.setHeight(50,Unit.MM);
-        row3.setHeight(40,Unit.MM);
+        row1.setHeight(50,Unit.PERCENTAGE);
+        row2.setHeight(20,Unit.PERCENTAGE);
+        row3.setHeight(30,Unit.PERCENTAGE);
 
         row1.setMargin(new MarginInfo(true, true, false, true));
         row2.setMargin(new MarginInfo(true, true, false, true));
@@ -118,13 +117,6 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         VerticalLayout orderBook = new VerticalLayout();
         orderBook.addComponent(orderBookLayout);
-        orderBook.addComponent(orderBookLayout);
-
-        VerticalLayout quote = new VerticalLayout();
-        quote.addComponent(quoteUI);
-
-        VerticalLayout userPort = new VerticalLayout();
-        userPort.addComponent(userPortfolio);
 
         orderBook.setCaption("Order Book");
         quoteUI.setCaption("Quote UI");
@@ -138,13 +130,18 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
         row2.addComponent(quantityChart);
         row3.setSpacing(true);
         row3.addComponent(orderBook);
-        row3.addComponent(quote);
-        row3.addComponent(userPort);
+        row3.addComponent(quoteUI);
+        row3.addComponent(userPortfolio);
+        row3.setExpandRatio(orderBook,1.2f);
+        row3.setExpandRatio(quoteUI,1.0f);
+        row3.setExpandRatio(userPortfolio,1.0f);
 
         row1.setComponentAlignment(currentPriceChart, Alignment.MIDDLE_CENTER);
         row2.setComponentAlignment(quantityChart, Alignment.MIDDLE_CENTER);
 
+        content.setSizeFull();
         this.setContent(content);
+
 
     }
 
@@ -358,6 +355,26 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
             else {
                 return;
             }
+        }
+
+        if(object instanceof GameOverEvent){
+
+            getSession().lock();
+            try {
+
+                getUI().access(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        getUI().addWindow(new NNGameOverWindow(Session.getCurrentUser()));
+                        getUI().push();
+                    }
+                });
+
+            } finally {
+                getSession().unlock();
+            }
+
         }
 
     }

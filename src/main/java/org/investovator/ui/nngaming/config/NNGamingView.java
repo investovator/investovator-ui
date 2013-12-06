@@ -116,6 +116,7 @@ public class NNGamingView extends Window implements WizardProgressListener{
 
         GameDataHelper.getInstance().setStocks(selectedStockIDs);
         GameDataHelper.getInstance().setAnalysisParameters(analysisParameters);
+        GameDataHelper.getInstance().setDaysCount(daysCount);
 
         GameController gameController = GameControllerImpl.getInstance();
 

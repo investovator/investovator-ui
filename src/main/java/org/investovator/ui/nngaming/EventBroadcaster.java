@@ -20,10 +20,11 @@ package org.investovator.ui.nngaming;
 
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.ui.Notification;
-import org.investovator.ann.nngaming.eventmanager.MarketEventReceiver;
 import org.investovator.ann.nngaming.NNGamingFacade;
+import org.investovator.ann.nngaming.eventmanager.MarketEventReceiver;
 import org.investovator.ann.nngaming.eventmanager.events.AddBidEvent;
 import org.investovator.ann.nngaming.eventmanager.events.DayChangedEvent;
+import org.investovator.controller.GameControllerImpl;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
 import org.investovator.core.commons.utils.Terms;
@@ -32,14 +33,10 @@ import org.investovator.core.data.api.UserDataImpl;
 import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
-import org.investovator.ui.nngaming.eventobjects.GraphData;
-import org.investovator.ui.nngaming.eventobjects.Order;
-import org.investovator.ui.nngaming.eventobjects.PortfolioData;
-import org.investovator.ui.nngaming.eventobjects.TableData;
+import org.investovator.ui.nngaming.eventobjects.*;
 import org.investovator.ui.nngaming.utils.GameDataHelper;
 import org.investovator.ui.utils.Session;
 
-import java.util.EventListener;
 import java.util.*;
 
 /**
@@ -387,6 +384,17 @@ public class EventBroadcaster implements EventListener,Observer{
                 }
             } catch (DataAccessException e) {
                 e.printStackTrace();
+            }
+
+            if(currentDay == gameDataHelper.getDaysCount()){
+
+                notifyListeners(new GameOverEvent());
+                GameControllerImpl.getInstance().stopGame(Session.getCurrentGameInstance());
+                try {
+                    userData.clearUserDataOnGameInstance(Session.getCurrentGameInstance());
+                } catch (DataAccessException e) {
+                    e.printStackTrace();
+                }
             }
 
             currentIndex++;

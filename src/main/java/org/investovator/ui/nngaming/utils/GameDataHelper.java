@@ -29,6 +29,7 @@ public class GameDataHelper {
     private static GameDataHelper instance;
     private ArrayList<String> stockList;
     private ArrayList<String> analysisParameters;
+    private int daysCount;
 
     private GameDataHelper(){
 
@@ -69,5 +70,13 @@ public class GameDataHelper {
 
     public void setAnalysisParameters(ArrayList<String> analysisParameters) {
         this.analysisParameters = analysisParameters;
+    }
+
+    public int getDaysCount() {
+        return daysCount;
+    }
+
+    public void setDaysCount(int daysCount) {
+        this.daysCount = daysCount;
     }
 }

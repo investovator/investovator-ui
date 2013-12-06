@@ -40,7 +40,7 @@ import java.util.HashMap;
  * @author: Hasala Surasinghe
  * @version: ${Revision}
  */
-public class UserPortfolio extends HorizontalLayout {
+public class UserPortfolio extends VerticalLayout {
 
     //External Data
     UserData userData;
@@ -54,7 +54,6 @@ public class UserPortfolio extends HorizontalLayout {
     private double USERCASH = 1000000.0;
     private double USERBLOCKEDCASH = 0.0;
 
-    private EventBroadcaster eventBroadcaster;
     private String currentInstance;
     private NNGamingFacade nnGamingFacade;
 
@@ -98,7 +97,7 @@ public class UserPortfolio extends HorizontalLayout {
         portSummary.addComponent(date);
         portSummary.addComponent(accountBalance);
         portSummary.addComponent(blockedAmount);
-        portSummary.setWidth("100%");
+        portSummary.setWidth("80%");
         portSummary.setSpacing(true);
         portSummary.setExpandRatio(date,1);
         portSummary.setExpandRatio(accountBalance,1);
@@ -106,17 +105,16 @@ public class UserPortfolio extends HorizontalLayout {
 
         HorizontalLayout stockSummary = new HorizontalLayout();
         stockSummary.addComponent(stocksSummaryTable);
-        stockSummary.setWidth("100%");
+        stockSummary.setComponentAlignment(stocksSummaryTable,Alignment.MIDDLE_CENTER);
+        stockSummary.setWidth("80%");
 
-        VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(portSummary);
-        layout.addComponent(stockSummary);
-        layout.setWidth("100%");
 
-        this.addComponent(layout);
+        this.addComponent(portSummary);
+        this.addComponent(stockSummary);
+        this.setComponentAlignment(portSummary,Alignment.MIDDLE_CENTER);
+        this.setComponentAlignment(stockSummary,Alignment.MIDDLE_CENTER);
 
         this.setImmediate(true);
-        this.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         this.setWidth("100%");
 
     }
