@@ -23,7 +23,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.investovator.ann.nngaming.eventmanager.events.GameOverEvent;
-import org.investovator.ui.dataplayback.util.DataPlaybackGameOverWindow;
 import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventinterfaces.PortfolioUpdateEvent;
@@ -347,13 +346,10 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         if(object instanceof GameOverEvent){
 
-            System.out.println("before");
 
-             UI.getCurrent().addWindow(new DataPlaybackGameOverWindow(Session.getCurrentUser()));
-             getUI().push();
+             //UI.getCurrent().addWindow(new NNGameOverWindow(Session.getCurrentUser()));
+             //getUI().push();
 
-
-            System.out.println("end");
 
         }
 
