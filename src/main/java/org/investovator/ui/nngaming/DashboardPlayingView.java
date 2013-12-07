@@ -347,13 +347,11 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         if(object instanceof GameOverEvent){
 
-            System.out.println("before");
 
              UI.getCurrent().addWindow(new DataPlaybackGameOverWindow(Session.getCurrentUser()));
              getUI().push();
 
 
-            System.out.println("end");
 
         }
 

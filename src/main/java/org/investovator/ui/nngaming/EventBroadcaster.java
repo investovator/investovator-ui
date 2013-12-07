@@ -356,7 +356,6 @@ public class EventBroadcaster implements EventListener,Observer{
         playableStocks = gameDataHelper.getStockList();
 
         if(arg instanceof DayChangedEvent){
-            System.out.println("DayChanged");
 
             stockBeanListBuy.clear();
 
@@ -397,8 +396,6 @@ public class EventBroadcaster implements EventListener,Observer{
 
             currentDay++;
 
-
-            System.out.println("TableUpdated");
         }
 
         if(arg instanceof AddBidEvent){
