@@ -22,15 +22,15 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import org.investovator.ann.nngaming.eventmanager.events.GameOverEvent;
+import org.investovator.ui.dataplayback.util.DataPlaybackGameOverWindow;
 import org.investovator.ui.nngaming.beans.OrderBean;
 import org.investovator.ui.nngaming.eventinterfaces.BroadcastEvent;
 import org.investovator.ui.nngaming.eventinterfaces.PortfolioUpdateEvent;
 import org.investovator.ui.nngaming.eventinterfaces.SymbolChangeEvent;
-import org.investovator.ui.nngaming.eventobjects.GameOverEvent;
 import org.investovator.ui.nngaming.eventobjects.GraphData;
 import org.investovator.ui.nngaming.eventobjects.PortfolioData;
 import org.investovator.ui.nngaming.eventobjects.TableData;
-import org.investovator.ui.nngaming.utils.NNGameOverWindow;
 import org.investovator.ui.utils.Session;
 import org.investovator.ui.utils.dashboard.DashboardPanel;
 
@@ -183,24 +183,12 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
     @Override
     public void onEnter() {
 
-//        if (currentPriceChart.isConnectorEnabled()) {
-//            getSession().lock();
-//            try {
-//
-//                currentPriceChart.updateGraph();
-//
-//            } finally {
-//                getSession().unlock();
-//            }
-//        }
-
         if(!simulationRunning){
             quoteUI.update();
             userPortfolio.update();
 
             simulationRunning = true;
         }
-
 
     }
 
@@ -359,21 +347,13 @@ public class DashboardPlayingView extends DashboardPanel implements BroadcastEve
 
         if(object instanceof GameOverEvent){
 
-            getSession().lock();
-            try {
+            System.out.println("before");
 
-                getUI().access(new Runnable() {
-                    @Override
-                    public void run() {
+             UI.getCurrent().addWindow(new DataPlaybackGameOverWindow(Session.getCurrentUser()));
+             getUI().push();
 
-                        getUI().addWindow(new NNGameOverWindow(Session.getCurrentUser()));
-                        getUI().push();
-                    }
-                });
 
-            } finally {
-                getSession().unlock();
-            }
+            System.out.println("end");
 
         }
 

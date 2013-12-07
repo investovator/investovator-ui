@@ -18,7 +18,6 @@
 
 package org.investovator.ui.nngaming.config;
 
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.investovator.ann.config.ConfigReceiver;
@@ -128,19 +127,20 @@ public class NNGamingView extends Window implements WizardProgressListener{
         setUpParams[4] = speedFactor;
 
         ProgressWindow progressWindow = new ProgressWindow("Creating Game....");
+        progressWindow.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent closeEvent) {
+                closeWindow();
+            }
+        });
 
         try {
             String instance = gameController.createGameInstance(GameModes.NN_GAME);
             Session.setCurrentGameInstance(instance);
 
+            getUI().addWindow(progressWindow);
+            getUI().push();
             gameController.registerListener(instance,progressWindow);
-            UI.getCurrent().addWindow(progressWindow);
-            progressWindow.addCloseListener(new Window.CloseListener() {
-                @Override
-                public void windowClose(Window.CloseEvent closeEvent) {
-                    closeWindow();
-                }
-            });
 
             gameController.setupGame(instance, setUpParams);
 

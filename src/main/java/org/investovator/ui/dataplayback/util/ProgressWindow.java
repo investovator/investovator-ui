@@ -42,6 +42,7 @@ public class ProgressWindow extends Window implements GameEventListener {
         if (event instanceof GameCreationProgressChanged){
             synchronized (UI.getCurrent()){
                 progressBar.setValue(((GameCreationProgressChanged) event).getProgress());
+                getUI().push();
                 if(((GameCreationProgressChanged) event).getProgress() == 1) this.close();
             }
         }

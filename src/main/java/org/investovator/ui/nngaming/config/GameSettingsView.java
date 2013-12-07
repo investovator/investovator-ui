@@ -108,7 +108,7 @@ public class GameSettingsView implements WizardStep {
             speedFactor = Integer.parseInt(speed.getValue());
 
             if(speedFactor > MAX_SPEED_FACTOR)  {
-                Notification.show("Please enter a value within range 1 - 5", Notification.Type.TRAY_NOTIFICATION);
+                Notification.show("Please enter a Game Speed within range 1 - 5", Notification.Type.TRAY_NOTIFICATION);
                 return false;
             }
             else {

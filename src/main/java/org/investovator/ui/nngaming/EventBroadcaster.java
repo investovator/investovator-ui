@@ -24,6 +24,7 @@ import org.investovator.ann.nngaming.NNGamingFacade;
 import org.investovator.ann.nngaming.eventmanager.MarketEventReceiver;
 import org.investovator.ann.nngaming.eventmanager.events.AddBidEvent;
 import org.investovator.ann.nngaming.eventmanager.events.DayChangedEvent;
+import org.investovator.ann.nngaming.eventmanager.events.GameOverEvent;
 import org.investovator.controller.GameControllerImpl;
 import org.investovator.core.commons.utils.Portfolio;
 import org.investovator.core.commons.utils.PortfolioImpl;
@@ -388,13 +389,8 @@ public class EventBroadcaster implements EventListener,Observer{
 
             if(currentDay == gameDataHelper.getDaysCount()){
 
-                notifyListeners(new GameOverEvent());
                 GameControllerImpl.getInstance().stopGame(Session.getCurrentGameInstance());
-                try {
-                    userData.clearUserDataOnGameInstance(Session.getCurrentGameInstance());
-                } catch (DataAccessException e) {
-                    e.printStackTrace();
-                }
+
             }
 
             currentIndex++;
@@ -411,6 +407,10 @@ public class EventBroadcaster implements EventListener,Observer{
 
             notifyListeners(new TableData(stockBeanListBuy, stockBeanListSell, playableStocks));
 
+        }
+
+        if(arg instanceof GameOverEvent){
+            notifyListeners(arg);
         }
     }
 
