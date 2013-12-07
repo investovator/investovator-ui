@@ -110,7 +110,24 @@ public abstract class GameDetailsView extends HorizontalLayout {
     }
 
     public Image getImage(){
-        FileResource resource = new FileResource(new File(ConfigHelper.getImagePath()+"game_icon.jpg"));
+        String iconName = "game_icon.jpg";
+        GameModes imageMode = null;
+
+        if(gameInstance!=null){
+            imageMode = controller.getGameMode(gameInstance);
+        }else if(gameMode != null){
+            imageMode = gameMode;
+        }
+
+        if(imageMode != null){
+           switch (imageMode){
+               case AGENT_GAME:iconName="agent2.jpg"; break;
+               case NN_GAME:iconName="prediction_based.jpg"; break;
+               case PAYBACK_ENG:iconName="game_icon.jpg"; break;
+           }
+        }
+
+        FileResource resource = new FileResource(new File(ConfigHelper.getImagePath()+iconName));
         Image img = new Image(null,resource);
         img.setHeight("50px");
         img.setWidth("50px");

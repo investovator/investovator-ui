@@ -31,7 +31,8 @@ public enum  IconLoader {
     STOCKS,
     OVERVIEW,
     WATCH_LIST,
-    REPORTS;
+    REPORTS,
+    DECISION_MAKER;
 
 
 
@@ -83,6 +84,8 @@ public enum  IconLoader {
                 return "Watch List";
             case REPORTS:
                 return "Market Reports";
+            case DECISION_MAKER:
+                return "Decision Maker";
             default:
                 return "Undefined";
         }

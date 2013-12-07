@@ -66,6 +66,8 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
     private static int OHLC_CHART_LENGTH = 10;
 
     private String userName;
+    private Authenticator.UserType userType;
+
 
     private DailySummaryDataPLayer player;
 
@@ -156,6 +158,34 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
+                //check for invalid orders
+                boolean invalidOrder=false;
+                String numericRegex="^[0-9]+$";
+                //conditions to check
+                if(stocksList.getValue()==null ||
+                        quantity.getValue()==null ||
+                        !quantity.getValue().toString().matches(numericRegex)) {
+                    invalidOrder=true;
+
+                }
+                //if this is a sell order
+                else if(((OrderType) orderSide.getValue())==OrderType.SELL){
+                    //check if te user has this stock
+                    BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
+                            portfolioTable.getContainerDataSource();
+
+                    if(!beans.containsId(stocksList.getValue().toString())){
+                        invalidOrder=true;
+                    }
+                }
+
+                if(invalidOrder){
+                    Notification.show("Invalid Order");
+                    return;
+                }
+
+
+
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
@@ -194,64 +224,7 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-                //get the events
-//                try {
-//                    StockUpdateEvent[] events =
                             player.playNextDay();
-                    //iterate every event
-//                    for (final StockUpdateEvent event : events) {
-                        //iterate every series in the chart at the moment
-//                        for (Series series : mainChart.getConfiguration().getSeries()) {
-//                            final DataSeries dSeries = (DataSeries) series;
-//                            //if there's a match
-//                            if (event.getStockId().equals(dSeries.getName()) && (event.getData()!=null)) {
-//                                final float value;
-//                                //if new data is available
-//                                if(event.getData()!=null ){
-//                                    value=event.getData().get(DataPlaybackEngineStates.gameConfig.getAttributeToMatch());
-//                                }
-//                                else {
-//                                    //get the value of the last stock
-//                                    value=dSeries.get(dSeries.size()-1).getY().floatValue();
-//                                    System.out.println("missing - "+event.getTime()+" - "+value);
-//                                }
-//
-//                                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
-//
-//                                            dSeries.add(new DataSeriesItem(event.getTime(),value), true, true);
-//
-//                                        } else {
-//                                            dSeries.add(new DataSeriesItem(event.getTime(),value));
-//
-//                                        }
-//
-//                            }
-//
-//                        }
-//
-//                        //update the table
-//                        BeanContainer<String,StockNamePriceBean> beans = (BeanContainer<String,StockNamePriceBean>)
-//                                stockPriceTable.getContainerDataSource();
-//
-//
-//                        if (stockPriceTable.isConnectorEnabled() && (event.getData()!=null)) {
-//                            getSession().lock();
-//                            try {
-//                                beans.removeItem(event.getStockId());
-//                                beans.addBean(new StockNamePriceBean(event.getStockId(),
-//                                        event.getData().get(DataPlaybackEngineStates.
-//                                                gameConfig.getAttributeToMatch())));
-//                            } finally {
-//                                getSession().unlock();
-//                            }
-//                        }
-//
-//                        //update the quantity chart
-//                        updateQuantityChart(event);
-//
-//                    }
-
-                    //update the profit chart
                     updateProfitChart(player.getCurrentTime());
 
                     //push the changes
@@ -263,9 +236,6 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
                     });
 
 
-//                } catch (GameFinishedException e) {
-//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                }
 
             }
         });
@@ -318,32 +288,28 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         //join the game
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
+            this.userType=Authenticator.getInstance().getMyPrivileges();
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
             controller.runCommand(Session.getCurrentGameInstance(),command );
             this.player=(DailySummaryDataPLayer)command.getPlayer();
-//            this.player= DataPlaybackGameFacade.getInstance().getDataPlayerFacade().getDailySummaryDataPLayer();
             //join the game if the user has not already done so
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this, this.userName);
             }
+            //else add this as a listener
+            else{
+                this.player.setObserver(this);
+            }
             //update the account balance
             this.updateAccountBalance();
         }
-//        catch (PlayerStateException e) {
-//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//
-//            e.printStackTrace();
-//        }
-//        catch (DataAccessException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
         catch (UserAlreadyJoinedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (CommandSettingsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (CommandExecutionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -400,9 +366,6 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 
     private void updateQuantityChart(final StockUpdateEvent event)  {
 
-//        if(event.getData()==null){
-//            return;
-//        }
 
         //iterate every series in the chart at the moment
         for (Series series : quantityChart.getConfiguration().getSeries()) {
@@ -410,16 +373,6 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
             //if this series matches the stock events stock
             if (dSeries.getName().equalsIgnoreCase(event.getStockId())) {
 
-//                        if (dSeries.getData().size() > OHLC_CHART_LENGTH) {
-//
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.SHARES)), true, true);
-//
-//                        } else {
-//                            dSeries.add(new DataSeriesItem(event.getTime(),
-//                                    event.getData().get(TradingDataAttribute.SHARES)));
-//
-//                        }
                 final float value;
                 //if new data is available
                 if(event.getData()!=null ){
@@ -503,7 +456,6 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
                 new DateTimeLabelFormats("%e. %b", "%b"));
 
         DataSeries ls = new DataSeries();
-//                ls.setName(stock);
 
         //add dummy points to fill it up
         for(int counter=1;counter<=PROFIT_CHART_LENGTH;counter++){
@@ -561,9 +513,6 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
 
 
         }
-//        catch (PlayerStateException e) {
-//            e.printStackTrace();
-//        }
         catch (UserJoinException e) {
             e.printStackTrace();
         }
@@ -603,9 +552,6 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         } catch (UserJoinException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-//        catch (PlayerStateException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
 
 
         return form;
@@ -614,13 +560,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
     public void updateAccountBalance(){
         try {
             Double bal=this.player.getMyPortfolio(this.userName).getCashBalance();
-            this.accBalance.setValue(bal.toString());
+            this.accBalance.setValue(String.format("%.2f",bal));
         } catch (UserJoinException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-//        catch (PlayerStateException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
 
     }
 
@@ -645,7 +588,10 @@ public class DailySummarySinglePlayerMainView extends BasicMainView implements P
         }
         //if the game has stopped
         else if (arg instanceof PlaybackFinishedEvent) {
-            getUI().addWindow(new DataPlaybackGameOverWindow(this.userName));
+            //if this UI is not a destroyed one
+            if(getUI()!=null){
+                getUI().addWindow(new DataPlaybackGameOverWindow(this.userName, this.userType));
+            }
         }
 
         //push the changes

@@ -269,7 +269,7 @@
 
         <bean id="constantFundamentalPrice$stockID"
               class="net.sourceforge.jabm.util.MutableDoubleWrapper">
-            <property name="value" value="500.0"/>
+            <property name="value" value="${$stockID.init.price}"/>
         </bean>
 
         <bean id="gbmFundamentalPrice$stockID" scope="singleton"

@@ -80,10 +80,10 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
 
         } catch (CommandSettingsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
             //todo - add a forwarder and an error tip
         } catch (CommandExecutionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
 
@@ -94,8 +94,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         VerticalLayout gameConfigLayout=new VerticalLayout();
         gameConfigLayout.addComponent(setupGameConfigBox());
         gameConfigLayout.setMargin(new MarginInfo(true,true,true,true));
-//        gameConfigLayout.setCaption("User Portfolio");
-//        gameConfigLayout.addStyleName("center-caption");
         this.content.addComponent(gameConfigLayout,1,0);
 
         //add the game stats
@@ -109,8 +107,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         Table leaderboard=setupLeaderBoard();
         tableLayout.addComponent(leaderboard);
         tableLayout.setMargin(new MarginInfo(false,true,true,true));
-//        tableLayout.setCaption("User Portfolio");
-//        tableLayout.addStyleName("center-caption");
         this.content.addComponent(tableLayout,0,0,0,1);
 
         //add the pie chart
@@ -118,8 +114,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         VerticalLayout pieChartLayout=new VerticalLayout();
         pieChartLayout.addComponent(this.stockPieChart);
         pieChartLayout.setMargin(new MarginInfo(true,true,true,true));
-//        pieChartLayout.setCaption("User Portfolio");
-//        pieChartLayout.addStyleName("center-caption");
         this.content.addComponent(pieChartLayout,1,1,2,1);
     }
 
@@ -171,7 +165,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         UI.getCurrent().access(new Runnable() {
             @Override
             public void run() {
-//                while(true){
                     TimeZone defaultTz=TimeZone.getDefault();
                     TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
                     SimpleDateFormat sDate = new SimpleDateFormat("HH:mm:ss");
@@ -184,7 +177,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-//                }
             }
         });
 
@@ -238,14 +230,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
                 new BeanContainer<String,PlayerInformationBean>(PlayerInformationBean.class);
         beans.setBeanIdProperty("userName");
 
-//        HashMap<String,Portfolio> portfolios=player.getAllPortfolios();
-//        Iterator it=portfolios.entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry entry=(Map.Entry)it.next();
-//            Portfolio portfolio =(Portfolio)entry.getValue();
-//
-//            beans.addBean(new PlayerInformationBean(portfolio,player));
-//        }
 
         ArrayList<Portfolio> portfolios=player.getAllPortfolios();
         for(Portfolio portfolio:portfolios){
@@ -295,7 +279,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         PlotOptionsPie plotOptions = new PlotOptionsPie();
         plotOptions.setCursor(Cursor.POINTER);
         plotOptions.setShowInLegend(true);
-//        plotOptions.setSize("120%");
 
         Labels dataLabels = new Labels();
         dataLabels.setEnabled(true);
@@ -308,12 +291,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
         DataSeries series = new DataSeries();
         series.setName("Total valuation: ");
-        //if the stock items has been set
-//        if(DataPlaybackEngineStates.playingSymbols!=null){
-//            for(String stock:DataPlaybackEngineStates.playingSymbols){
-//                series.add(new DataSeriesItem(stock, 0));
-//            }
-//        }
         conf.setSeries(series);
 
         conf.disableCredits();
@@ -330,8 +307,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
         chart.setCaption("User Portfolio");
         chart.addStyleName("center-caption");
 
-//        chart.setWidth(75,Unit.PERCENTAGE);
-//        chart.setHeight(55,Unit.MM);
 
 
         return chart;
@@ -387,9 +362,6 @@ public class DataPlaybackEngineAdminDashboard extends DashboardPanel implements 
 
     @Override
     public void eventOccurred(GameEvent event) {
-//        this.content.removeAllComponents();
-//
-//        addUIElements();
 
     }
 }

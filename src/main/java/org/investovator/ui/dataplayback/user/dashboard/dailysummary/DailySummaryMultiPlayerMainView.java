@@ -132,7 +132,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
 
         try {
             this.userName=Authenticator.getInstance().getCurrentUser();
-
+            super.userName=this.userName;
 
             GameController controller= GameControllerImpl.getInstance();
             GetDataPlayerCommand command=new GetDataPlayerCommand();
@@ -143,15 +143,19 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             if(!this.player.hasUserJoined(this.userName)){
                 this.player.joinGame(this, this.userName);
             }
+            //else add this as a listener
+            else{
+                 this.player.setObserver(this);
+            }
             //update the account balance
             this.updateAccountBalance();
         }
         catch (UserAlreadyJoinedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (CommandExecutionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (CommandSettingsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -192,6 +196,34 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
+                //check for invalid orders
+                boolean invalidOrder=false;
+                String numericRegex="^[0-9]+$";
+                //conditions to check
+                if(stocksList.getValue()==null ||
+                        quantity.getValue()==null ||
+                        !quantity.getValue().toString().matches(numericRegex)) {
+                    invalidOrder=true;
+
+                }
+                //if this is a sell order
+                else if(((OrderType) orderSide.getValue())==OrderType.SELL){
+                    //check if te user has this stock
+                    BeanContainer<String,PortfolioBean> beans = (BeanContainer<String,PortfolioBean>)
+                            portfolioTable.getContainerDataSource();
+
+                    if(!beans.containsId(stocksList.getValue().toString())){
+                        invalidOrder=true;
+                    }
+                }
+
+                if(invalidOrder){
+                    Notification.show("Invalid Order");
+                    return;
+                }
+
+
+
                 try {
                     Boolean status= player.executeOrder(stocksList.getValue().toString(),
                             Integer.parseInt(quantity.getValue().toString()), ((OrderType) orderSide.getValue()),
@@ -209,7 +241,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
                 } catch (InvalidOrderException e) {
                     Notification.show(e.getMessage());
                 } catch (UserJoinException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 }
 
             }});
@@ -433,7 +465,7 @@ public class DailySummaryMultiPlayerMainView extends RealTimeMainView{
     public void updateAccountBalance(){
         try {
             Double bal=player.getMyPortfolio(this.userName).getCashBalance();
-            this.accBalance.setValue(bal.toString());
+            this.accBalance.setValue(String.format("%.2f",bal));
         } catch (UserJoinException e) {
             e.printStackTrace();
         }

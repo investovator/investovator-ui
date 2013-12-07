@@ -31,6 +31,7 @@ import org.investovator.core.data.exeptions.DataAccessException;
 import org.investovator.ui.authentication.Authenticator;
 import org.investovator.ui.utils.Session;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 
@@ -101,8 +102,9 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
 
         try {
             String currentUser = Authenticator.getInstance().getCurrentUser();
-            accountBalance.setValue(Double.toString(userData.getUserPortfolio(Session.getCurrentGameInstance(),currentUser).getCashBalance()));
-            blockedAmount.setValue(Double.toString(userData.getUserPortfolio(Session.getCurrentGameInstance(),currentUser).getBlockedCash()));
+            DecimalFormat df = new DecimalFormat("#.##");
+            accountBalance.setValue(df.format(userData.getUserPortfolio(Session.getCurrentGameInstance(),currentUser).getCashBalance()));
+            blockedAmount.setValue(df.format(userData.getUserPortfolio(Session.getCurrentGameInstance(),currentUser).getBlockedCash()));
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -127,8 +129,9 @@ public class PortfolioSummary extends HorizontalLayout implements GameEventListe
         if (this.isConnectorEnabled()) {
             getSession().lock();
             try {
-                accountBalance.setValue(Double.toString(portfolio.getCashBalance()));
-                blockedAmount.setValue(Double.toString(portfolio.getBlockedCash()));
+                DecimalFormat df = new DecimalFormat("#.##");
+                accountBalance.setValue(df.format(portfolio.getCashBalance()));
+                blockedAmount.setValue(df.format(portfolio.getBlockedCash()));
             } finally {
                 getSession().unlock();
             }

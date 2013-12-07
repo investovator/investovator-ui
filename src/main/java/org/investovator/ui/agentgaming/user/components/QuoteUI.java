@@ -160,8 +160,12 @@ public class QuoteUI extends VerticalLayout {
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
-            orderPrice = Float.parseFloat(valueString);
-            setAmount();
+            try{
+                orderPrice = Float.parseFloat(valueString);
+                setAmount();
+            }catch (NumberFormatException e){
+                Notification.show("Enter valid price", Notification.Type.TRAY_NOTIFICATION);
+            }
         }
     };
 
@@ -169,8 +173,12 @@ public class QuoteUI extends VerticalLayout {
         @Override
         public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
             final String valueString = String.valueOf(valueChangeEvent.getProperty().getValue());
-            orderStockCount = Integer.parseInt(valueString);
-            setAmount();
+            try{
+                orderStockCount = Integer.parseInt(valueString);
+                setAmount();
+            }catch (NumberFormatException e){
+                Notification.show("Enter valid stock quantity", Notification.Type.TRAY_NOTIFICATION);
+            }
         }
     };
 
@@ -178,6 +186,20 @@ public class QuoteUI extends VerticalLayout {
     Button.ClickListener tradeButtonClickListener = new Button.ClickListener() {
         @Override
         public void buttonClick(Button.ClickEvent clickEvent) {
+
+            try{
+                Double.parseDouble(price.getValue());
+                Integer.parseInt(stocks.getValue());
+            }catch (NumberFormatException e){
+                Notification.show("Input fields are not valid", Notification.Type.TRAY_NOTIFICATION);
+                return;
+            }
+
+            if(selectedStock == null){
+                Notification.show("Select stock to trade", Notification.Type.TRAY_NOTIFICATION);
+                return;
+            }
+
             ExecutionResult result = JASAFacade.getMarketFacade().putLimitOrder(Authenticator.getInstance().getCurrentUser(), selectedStock, orderStockCount, orderPrice, isBuy);
             if(result != null){
                 if(result.isSuccess()) Notification.show("Order was successful.", Notification.Type.TRAY_NOTIFICATION);

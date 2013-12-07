@@ -46,6 +46,8 @@ public class MultiStockChart extends Chart{
         configuration.getChart().setType(ChartType.SPLINE);
         configuration.disableCredits();
         configuration.getxAxis().setType(AxisType.DATETIME);
+        configuration.getyAxis().setTitle("Price");
+        configuration.getxAxis().setTitle("Time");
 
         drawChart(configuration);
     }

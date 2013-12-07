@@ -27,9 +27,10 @@ public class MultiPlotTimeSeriesChart extends Chart {
         final Configuration configuration = new Configuration();
         configuration.setTitle("Last Traded Price");
 
-        configuration.getChart().setType(ChartType.SPLINE);
+        configuration.getChart().setType(ChartType.LINE);
         configuration.disableCredits();
         configuration.getxAxis().setType(AxisType.DATETIME);
+        configuration.getChart().setZoomType(ZoomType.XY);
 
         drawChart(configuration);
     }
