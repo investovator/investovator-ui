@@ -56,7 +56,7 @@ public class AdminGameDetailView extends GameDetailsView {
                     return;
                 }
                 controller.stopGame(gameInstance);
-                getUI().getPage().reload();
+                getUI().getNavigator().navigateTo(UIConstants.MAINVIEW);
             }
         });
 

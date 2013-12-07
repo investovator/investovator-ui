@@ -72,7 +72,7 @@ public class MyVaadinUI extends UI
         getUI().setErrorHandler(new DefaultErrorHandler(){
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
-                doDefault(event);
+                //doDefault(event);
             }
         });
 
