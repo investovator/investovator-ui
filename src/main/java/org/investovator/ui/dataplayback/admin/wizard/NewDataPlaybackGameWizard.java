@@ -45,9 +45,6 @@ import org.vaadin.teemu.wizards.event.*;
 import java.util.*;
 import java.util.Calendar;
 
-//import org.investovator.controller.GameControllerFacade;
-//import org.investovator.ui.dataplayback.gametype.GameConfiguration;
-//import org.investovator.ui.dataplayback.gametype.GameTypes;
 
 /**
  * @author: ishan
@@ -85,7 +82,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
 
     @Override
     public void wizardCompleted(WizardCompletedEvent wizardCompletedEvent) {
-//        Notification.show("Complete");
 
         //initialize the player via controller
         GameController controller= GameControllerImpl.getInstance();
@@ -93,14 +89,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             Session.setCurrentGameInstance(controller.createGameInstance(GameModes.PAYBACK_ENG));
             String gameId=Session.getCurrentGameInstance();
 
-            //setup the game
-//            Object[] arr=new Object[6];
-//            arr[0]=DataPlaybackEngineStates.gameConfig.getPlayerType();
-//            arr[1]=DataPlaybackEngineStates.playingSymbols;
-//            arr[2]=DataPlaybackEngineStates.gameStartDate;
-//            arr[3]=DataPlaybackEngineStates.gameConfig.getInterestedAttributes();
-//            arr[4]=DataPlaybackEngineStates.gameConfig.getAttributeToMatch();
-//            arr[5]=DataPlaybackEngineStates.isMultiplayer;
 
             GameConfiguration config=new GameConfigurationImpl(DataPlaybackEngineStates.gameStartDate,
                     DataPlaybackEngineStates.playingSymbols,
@@ -118,53 +106,6 @@ public class NewDataPlaybackGameWizard extends Wizard implements WizardProgressL
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-//        //initialize the necessary player
-//        DataPlayerFacade.getInstance().createPlayer(DataPlaybackEngineStates.gameConfig.getPlayerType(),
-//                DataPlaybackEngineStates.playingSymbols,
-//                DataPlaybackEngineStates.gameStartDate,
-//                DataPlaybackEngineStates.gameConfig.getInterestedAttributes(),
-//                DataPlaybackEngineStates.gameConfig.getAttributeToMatch(),
-//                DataPlaybackEngineStates.isMultiplayer);
-
-        //start the game now
-//        if(DataPlaybackEngineStates.gameConfig.getPlayerType()==PlayerTypes.REAL_TIME_DATA_PLAYER){
-//            try {
-//                DataPlayerFacade.getInstance().getRealTimeDataPlayer().startGame(3);
-////                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
-//            } catch (PlayerStateException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            } catch (GameProgressingException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            } catch (GameAlreadyStartedException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
-//        }
-//        else {
-//            try {
-//                //if this is a multiplayer game
-//                if(DataPlaybackEngineStates.isMultiplayer==true){
-//
-//                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame(3);
-//                }
-//                else{
-//                    DataPlayerFacade.getInstance().getDailySummaryDataPLayer().startGame();
-//
-//                }
-//                GameControllerFacade.getInstance().startGame(GameModes.PAYBACK_ENG,null);
-//
-//            }  catch (PlayerStateException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//
-//            } catch (GameProgressingException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//
-//            } catch (GameAlreadyStartedException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//            }
-//        }
 
         this.window.close();
     }
